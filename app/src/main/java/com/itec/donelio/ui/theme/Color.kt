@@ -1,4 +1,4 @@
-package com.example.sistemadegestinagronomodonelio.ui.theme
+package com.itec.donelio.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
