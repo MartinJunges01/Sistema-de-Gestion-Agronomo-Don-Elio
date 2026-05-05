@@ -1,7 +1,9 @@
 // DonElioHomeScreen.kt
 package com.itec.donelio.presentation.ui.screens
 
+import androidx.activity.compose.BackHandler // <-- IMPORTANTE PARA EL BOTÓN FÍSICO DE ATRÁS
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,7 +29,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Canvas
 
 val Stone50 = Color(0xFFFAFAF9)
 val Stone800 = Color(0xFF292524)
@@ -40,12 +41,33 @@ enum class Destino {
     Insumos, FormularioInsumo, CatalogoInsumos,
     Reportes,
     NuevaTarea, Observaciones, ConfiguracionDB,
-    Tareas, Cosechas, FormularioCosecha // Agregados flujos de cosecha
+    Tareas, Cosechas, FormularioCosecha
 }
 
 @Composable
 fun DonElioApp() {
-    var pantallaActual by remember { mutableStateOf(Destino.Login) }
+    // 1. CREAMOS UN HISTORIAL DE NAVEGACIÓN (Nuestra memoria)
+    var historial by remember { mutableStateOf(listOf(Destino.Login)) }
+    val pantallaActual = historial.last()
+
+    // 2. FUNCIÓN PARA IR A UNA PANTALLA NUEVA (La agrega al historial)
+    val navegar: (Destino) -> Unit = { destino ->
+        if (pantallaActual != destino) {
+            historial = historial + destino
+        }
+    }
+
+    // 3. FUNCIÓN PARA VOLVER UN PASO EXACTO PARA ATRÁS
+    val volverAtras: () -> Unit = {
+        if (historial.size > 1) {
+            historial = historial.dropLast(1)
+        }
+    }
+
+    // 4. ESTO PERMITE QUE EL BOTÓN FÍSICO "ATRÁS" DEL CELULAR FUNCIONE BIEN
+    BackHandler(enabled = historial.size > 1) {
+        volverAtras()
+    }
 
     Scaffold(
         containerColor = Stone50,
@@ -53,12 +75,13 @@ fun DonElioApp() {
             if (pantallaActual in listOf(Destino.Home, Destino.Campanias, Destino.CatalogoInsumos, Destino.Cosechas)) {
                 FloatingActionButton(
                     onClick = {
-                        pantallaActual = when(pantallaActual) {
+                        val destinoNuevo = when(pantallaActual) {
                             Destino.Campanias -> Destino.FormularioCampania
                             Destino.CatalogoInsumos -> Destino.FormularioInsumo
                             Destino.Cosechas -> Destino.FormularioCosecha
                             else -> Destino.NuevaTarea
                         }
+                        navegar(destinoNuevo)
                     },
                     containerColor = Emerald600,
                     contentColor = Color.White,
@@ -69,63 +92,86 @@ fun DonElioApp() {
             }
         },
         bottomBar = {
-            if (pantallaActual in listOf(Destino.Home, Destino.Tareas, Destino.Insumos, Destino.Reportes)) {
-                DonElioBottomNav(pantallaActual) { nuevoDestino -> pantallaActual = nuevoDestino }
+            // Mostrar la barra inferior en todas las pantallas menos Login y Registro
+            if (pantallaActual != Destino.Login && pantallaActual != Destino.Registro) {
+                DonElioBottomNav(pantallaActual) { nuevoDestino -> navegar(nuevoDestino) }
             }
         }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (pantallaActual) {
-                Destino.Login -> LoginScreen(onLoginSuccess = { pantallaActual = Destino.Home }, onGoToRegister = { pantallaActual = Destino.Registro })
-                Destino.Registro -> RegistroScreen(onRegisterSuccess = { pantallaActual = Destino.Home }, onGoToLogin = { pantallaActual = Destino.Login })
+                // ACCESOS
+                Destino.Login -> LoginScreen(onLoginSuccess = { navegar(Destino.Home) }, onGoToRegister = { navegar(Destino.Registro) })
+                Destino.Registro -> RegistroScreen(onRegisterSuccess = { navegar(Destino.Home) }, onGoToLogin = { navegar(Destino.Login) })
 
+                // HOME
                 Destino.Home -> DonElioHomeScreen(
-                    onGoToConfig = { pantallaActual = Destino.ConfiguracionDB },
-                    onGoToCampanias = { pantallaActual = Destino.Campanias }
+                    onGoToConfig = { navegar(Destino.ConfiguracionDB) },
+                    onGoToCampanias = { navegar(Destino.Campanias) }
                 )
 
+                // TAREAS
                 Destino.Tareas -> TareasScreen(
-                    onGoToNuevaTarea = { pantallaActual = Destino.NuevaTarea },
-                    onGoToCampanias = { pantallaActual = Destino.DetalleCampania }
+                    onGoToNuevaTarea = { navegar(Destino.NuevaTarea) },
+                    onGoToCampanias = { navegar(Destino.DetalleCampania) },
+                    onBack = volverAtras // <-- Vuelve a donde estabas antes
                 )
+                Destino.NuevaTarea -> NuevaTareaScreen(onBack = volverAtras)
 
-                Destino.Campanias -> CampaniasScreen(onGoToDetail = { pantallaActual = Destino.DetalleCampania })
+                // CAMPAÑAS
+                Destino.Campanias -> CampaniasScreen(
+                    onGoToDetail = { navegar(Destino.DetalleCampania) },
+                    onBack = volverAtras
+                )
                 Destino.DetalleCampania -> DetalleCampaniaScreen(
-                    onBack = { pantallaActual = Destino.Campanias },
-                    onGoToObs = { pantallaActual = Destino.Observaciones },
-                    onGoToTask = { pantallaActual = Destino.Tareas },
-                    onGoToCosechas = { pantallaActual = Destino.Cosechas },
-                    onGoToInsumos = { pantallaActual = Destino.Insumos }
+                    onBack = volverAtras,
+                    onGoToObs = { navegar(Destino.Observaciones) },
+                    onGoToTask = { navegar(Destino.Tareas) },
+                    onGoToCosechas = { navegar(Destino.Cosechas) },
+                    onGoToInsumos = { navegar(Destino.Insumos) }
                 )
-                Destino.FormularioCampania -> FormularioCampaniaScreen { pantallaActual = Destino.Campanias }
+                Destino.FormularioCampania -> FormularioCampaniaScreen(onBack = volverAtras)
 
-                Destino.Cosechas -> CosechasScreen(onBack = { pantallaActual = Destino.DetalleCampania })
-                Destino.FormularioCosecha -> FormularioCosechaScreen { pantallaActual = Destino.Cosechas }
+                // COSECHAS
+                Destino.Cosechas -> CosechasScreen(onBack = volverAtras)
+                Destino.FormularioCosecha -> FormularioCosechaScreen(onBack = volverAtras)
 
+                // INSUMOS
                 Destino.Insumos -> InsumosScreen(
-                    onGoToCatalogo = { pantallaActual = Destino.CatalogoInsumos },
-                    onGoToCampanias = { pantallaActual = Destino.DetalleCampania }
+                    onGoToCatalogo = { navegar(Destino.CatalogoInsumos) },
+                    onGoToCampanias = { navegar(Destino.DetalleCampania) },
+                    onBack = volverAtras
                 )
                 Destino.CatalogoInsumos -> CatalogoInsumosScreen(
-                    onBack = { pantallaActual = Destino.Insumos },
-                    onGoToFormulario = { pantallaActual = Destino.FormularioInsumo }
+                    onBack = volverAtras,
+                    onGoToFormulario = { navegar(Destino.FormularioInsumo) }
                 )
-                Destino.FormularioInsumo -> FormularioInsumoScreen { pantallaActual = Destino.CatalogoInsumos }
-                Destino.Reportes -> ReportesScreen()
-                Destino.NuevaTarea -> NuevaTareaScreen { pantallaActual = Destino.Tareas }
-                Destino.Observaciones -> ObservacionesScreen { pantallaActual = Destino.DetalleCampania }
-                Destino.ConfiguracionDB -> ConfiguracionDBScreen { pantallaActual = Destino.Home }
+                Destino.FormularioInsumo -> FormularioInsumoScreen(onBack = volverAtras)
+
+                // OTROS
+                Destino.Reportes -> ReportesScreen(onBack = volverAtras)
+                Destino.Observaciones -> ObservacionesScreen(onBack = volverAtras)
+                Destino.ConfiguracionDB -> ConfiguracionDBScreen(onBack = volverAtras)
             }
         }
     }
 }
 
+
 // --- PANTALLA TAREAS (CU5 y CU5.4) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit) {
+fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Tareas", fontWeight = FontWeight.Bold) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        TopAppBar(
+            title = { Text("Tareas", fontWeight = FontWeight.Bold) },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
+        )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
                 Text("Campaña Activa", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(vertical = 8.dp))
@@ -291,12 +337,17 @@ fun FormularioCosechaScreen(onBack: () -> Unit) {
         }
     }
 }
+
 // --- PANTALLA REPORTES ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportesScreen() {
+fun ReportesScreen(onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Reportes (CU10)", fontWeight = FontWeight.Bold) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        TopAppBar(
+            title = { Text("Reportes (CU10)", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
+        )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
@@ -452,9 +503,13 @@ fun RegistroScreen(onRegisterSuccess: () -> Unit, onGoToLogin: () -> Unit) {
 // --- CAMPANAS ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CampaniasScreen(onGoToDetail: () -> Unit) {
+fun CampaniasScreen(onGoToDetail: () -> Unit, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Campañas (CU1-CU4)", fontWeight = FontWeight.Bold) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        TopAppBar(
+            title = { Text("Campañas (CU1-CU4)", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
+        )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().clickable { onGoToDetail() }) {
@@ -473,10 +528,11 @@ fun CampaniasScreen(onGoToDetail: () -> Unit) {
 // --- INSUMOS (VINCULACIÓN) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit) {
+fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Vincular Insumos (CU9)", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
                     Icon(Icons.Default.Settings, contentDescription = "Catálogo", modifier = Modifier.size(20.dp), tint = Emerald600)
@@ -566,29 +622,6 @@ fun CatalogoInsumosScreen(onBack: () -> Unit, onGoToFormulario: () -> Unit) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Agregar Nuevo Insumo", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-    }
-}
-
-// --- DETALLE CAMPANIA ---
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DetalleCampaniaScreen(onBack: () -> Unit, onGoToObs: () -> Unit, onGoToTask: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Campaña Soja 2026", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Emerald800, titleContentColor = Color.White, navigationIconContentColor = Color.White))
-        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            item {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
-                    Button(onClick = onGoToTask, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Stone800)) { Text("Ver Tareas (CU5)", fontSize = 12.sp) }
-                    Button(onClick = onGoToObs, modifier = Modifier.weight(1f), colors = ButtonDefaults.buttonColors(containerColor = Stone800)) { Text("Observaciones (CU8)", fontSize = 12.sp) }
-                }
-            }
-            item { Text("Cosechas Registradas (CU6)", fontWeight = FontWeight.Bold, fontSize = 18.sp) }
-            item {
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
-                    ListItem(headlineContent = { Text("Cosecha Lote Norte") }, supportingContent = { Text("Fecha: 05/05/26 | Silobolsa 1") }, trailingContent = { Text("200 Tn", fontWeight = FontWeight.Bold, color = Emerald600) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
                 }
             }
         }
