@@ -40,7 +40,7 @@ enum class Destino {
     Insumos, FormularioInsumo, CatalogoInsumos,
     Reportes,
     NuevaTarea, Observaciones, ConfiguracionDB,
-    Tareas
+    Tareas, Cosechas, FormularioCosecha // Agregados flujos de cosecha
 }
 
 @Composable
@@ -50,12 +50,13 @@ fun DonElioApp() {
     Scaffold(
         containerColor = Stone50,
         floatingActionButton = {
-            if (pantallaActual in listOf(Destino.Home, Destino.Campanias, Destino.Insumos, Destino.Tareas, Destino.CatalogoInsumos)) {
+            if (pantallaActual in listOf(Destino.Home, Destino.Campanias, Destino.CatalogoInsumos, Destino.Cosechas)) {
                 FloatingActionButton(
                     onClick = {
                         pantallaActual = when(pantallaActual) {
                             Destino.Campanias -> Destino.FormularioCampania
                             Destino.CatalogoInsumos -> Destino.FormularioInsumo
+                            Destino.Cosechas -> Destino.FormularioCosecha
                             else -> Destino.NuevaTarea
                         }
                     },
@@ -85,19 +86,25 @@ fun DonElioApp() {
 
                 Destino.Tareas -> TareasScreen(
                     onGoToNuevaTarea = { pantallaActual = Destino.NuevaTarea },
-                    onGoToCampanias = { pantallaActual = Destino.Campanias }
+                    onGoToCampanias = { pantallaActual = Destino.DetalleCampania }
                 )
 
                 Destino.Campanias -> CampaniasScreen(onGoToDetail = { pantallaActual = Destino.DetalleCampania })
                 Destino.DetalleCampania -> DetalleCampaniaScreen(
                     onBack = { pantallaActual = Destino.Campanias },
                     onGoToObs = { pantallaActual = Destino.Observaciones },
-                    onGoToTask = { pantallaActual = Destino.NuevaTarea }
+                    onGoToTask = { pantallaActual = Destino.Tareas },
+                    onGoToCosechas = { pantallaActual = Destino.Cosechas },
+                    onGoToInsumos = { pantallaActual = Destino.Insumos }
                 )
                 Destino.FormularioCampania -> FormularioCampaniaScreen { pantallaActual = Destino.Campanias }
+
+                Destino.Cosechas -> CosechasScreen(onBack = { pantallaActual = Destino.DetalleCampania })
+                Destino.FormularioCosecha -> FormularioCosechaScreen { pantallaActual = Destino.Cosechas }
+
                 Destino.Insumos -> InsumosScreen(
                     onGoToCatalogo = { pantallaActual = Destino.CatalogoInsumos },
-                    onGoToCampanias = { pantallaActual = Destino.Campanias }
+                    onGoToCampanias = { pantallaActual = Destino.DetalleCampania }
                 )
                 Destino.CatalogoInsumos -> CatalogoInsumosScreen(
                     onBack = { pantallaActual = Destino.Insumos },
@@ -105,7 +112,7 @@ fun DonElioApp() {
                 )
                 Destino.FormularioInsumo -> FormularioInsumoScreen { pantallaActual = Destino.CatalogoInsumos }
                 Destino.Reportes -> ReportesScreen()
-                Destino.NuevaTarea -> NuevaTareaScreen { pantallaActual = Destino.Home }
+                Destino.NuevaTarea -> NuevaTareaScreen { pantallaActual = Destino.Tareas }
                 Destino.Observaciones -> ObservacionesScreen { pantallaActual = Destino.DetalleCampania }
                 Destino.ConfiguracionDB -> ConfiguracionDBScreen { pantallaActual = Destino.Home }
             }
@@ -113,23 +120,23 @@ fun DonElioApp() {
     }
 }
 
-// --- PANTALLA TAREAS (ACTUALIZADA) ---
+// --- PANTALLA TAREAS (CU5 y CU5.4) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Tareas (CU5)", fontWeight = FontWeight.Bold) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        TopAppBar(title = { Text("Tareas", fontWeight = FontWeight.Bold) }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            // Tarjeta Campaña Activa
             item {
                 Text("Campaña Activa", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(vertical = 8.dp))
                 CampanaSeleccionadaCard(onClick = onGoToCampanias)
             }
             item {
                 Text("Pendientes", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(vertical = 8.dp))
+                var completada1 by remember { mutableStateOf(false) }
                 Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFFFFBEB)), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth().clickable { onGoToNuevaTarea() }) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Warning, contentDescription = "Alerta", tint = Color(0xFFD97706))
+                        Checkbox(checked = completada1, onCheckedChange = { completada1 = it }, colors = CheckboxDefaults.colors(checkedColor = Emerald600))
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text("Riego pendiente", fontWeight = FontWeight.Bold, color = Color(0xFF78350F))
@@ -140,9 +147,10 @@ fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit) {
             }
             item {
                 Text("En Progreso", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                var completada2 by remember { mutableStateOf(false) }
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().clickable { onGoToNuevaTarea() }) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Refresh, contentDescription = "En progreso", tint = Emerald600)
+                        Checkbox(checked = completada2, onCheckedChange = { completada2 = it }, colors = CheckboxDefaults.colors(checkedColor = Emerald600))
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text("Aplicar fungicida", fontWeight = FontWeight.Bold, color = Stone800)
@@ -152,22 +160,137 @@ fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit) {
                 }
             }
             item {
-                Text("Completadas", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().clickable { onGoToNuevaTarea() }) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = "Completada", tint = Color.Gray)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Cosecha Lote Norte", fontWeight = FontWeight.Bold, color = Color.Gray)
-                            Text("Finalizada el 05/04", fontSize = 14.sp, color = Color.Gray)
-                        }
-                    }
+                Button(onClick = onGoToNuevaTarea, modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600)) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Programar Nueva Tarea")
                 }
             }
         }
     }
 }
 
+// --- PANTALLA DETALLE CAMPAÑA (CU2 - HUB CENTRAL) ---
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DetalleCampaniaScreen(onBack: () -> Unit, onGoToObs: () -> Unit, onGoToTask: () -> Unit, onGoToCosechas: () -> Unit, onGoToInsumos: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Campaña Soja 2026", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Emerald800, titleContentColor = Color.White, navigationIconContentColor = Color.White),
+            actions = {
+                IconButton(onClick = { /* Confirmar Eliminación (CU3) */ }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar Campaña", tint = Color.White)
+                }
+            }
+        )
+        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            item {
+                Text("Gestión de la Campaña", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Stone800, modifier = Modifier.padding(bottom = 8.dp))
+            }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+                    ModuleCard(title = "Tareas", icon = Icons.Default.CheckCircle, onClick = onGoToTask, modifier = Modifier.weight(1f))
+                    ModuleCard(title = "Insumos", icon = Icons.Default.Inventory, onClick = onGoToInsumos, modifier = Modifier.weight(1f))
+                }
+            }
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
+                    ModuleCard(title = "Cosechas", icon = Icons.Default.Agriculture, onClick = onGoToCosechas, modifier = Modifier.weight(1f))
+                    ModuleCard(title = "Observaciones", icon = Icons.Default.NoteAlt, onClick = onGoToObs, modifier = Modifier.weight(1f))
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { /* CU4: Editar Campaña */ }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Stone800)) {
+                    Icon(Icons.Default.Edit, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Editar Datos de Campaña")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ModuleCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = modifier.height(100.dp).clickable { onClick() }) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, contentDescription = title, tint = Emerald600, modifier = Modifier.size(32.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(title, fontWeight = FontWeight.Bold, color = Stone800)
+        }
+    }
+}
+
+// --- PANTALLAS DE COSECHAS (CU6 Y CU7) ---
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CosechasScreen(onBack: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(title = { Text("Gestión de Cosechas", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item { Text("Cosechas Almacenadas", fontWeight = FontWeight.Bold, color = Stone800) }
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Emerald600), modifier = Modifier.fillMaxWidth()) {
+                    ListItem(
+                        headlineContent = { Text("Lote Norte - Soja", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("Silobolsa 1 | 05/05/2026") },
+                        trailingContent = { Text("200 Tn", fontWeight = FontWeight.Bold, color = Emerald800) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                }
+            }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { Text("Cosechas No Almacenadas (Venta/Reserva)", fontWeight = FontWeight.Bold, color = Stone800) }
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFFEF3C7)), border = BorderStroke(1.dp, Color(0xFFD97706)), modifier = Modifier.fillMaxWidth()) {
+                    ListItem(
+                        headlineContent = { Text("Lote Sur - Venta Directa", fontWeight = FontWeight.Bold) },
+                        supportingContent = { Text("Precio: $45,000 | 10/05/2026") },
+                        trailingContent = { Text("150 Tn", fontWeight = FontWeight.Bold, color = Color(0xFFB45309)) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FormularioCosechaScreen(onBack: () -> Unit) {
+    var almacenado by remember { mutableStateOf(true) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cultivo") }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cantidad") }, modifier = Modifier.weight(1f))
+                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Unidad (Ej. Tn)") }, modifier = Modifier.weight(1f))
+            }
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Fecha") }, modifier = Modifier.fillMaxWidth(), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
+
+            // Switch CU7
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+                Checkbox(checked = almacenado, onCheckedChange = { almacenado = it }, colors = CheckboxDefaults.colors(checkedColor = Emerald600))
+                Text("Almacenar en el establecimiento", fontWeight = FontWeight.Medium)
+            }
+
+            if (almacenado) {
+                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Almacén (Silo, Silobolsa)") }, modifier = Modifier.fillMaxWidth())
+            } else {
+                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Tipo (Venta, Alimento Vacuno, Reserva)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Precio (Opcional)") }, modifier = Modifier.fillMaxWidth(), leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) })
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+            Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Guardar Registro", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
+        }
+    }
+}
 // --- PANTALLA REPORTES ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
