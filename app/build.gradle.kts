@@ -36,8 +36,8 @@ android {
     }
 }
 
-dependencies {
-    // Tus dependencias actuales...
+kotlin {
+    jvmToolchain(11)
 }
 dependencies {
     // Mantenemos tus dependencias intactas por ahora
@@ -73,6 +73,7 @@ dependencies {
 
     // Navigation Compose (Enrutamiento de pantallas)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
 
     // Corrutinas (Asincronía y flujos de datos)
     implementation(libs.kotlinx.coroutines.android)
