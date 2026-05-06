@@ -1,7 +1,7 @@
 // DonElioHomeScreen.kt
 package com.itec.donelio.presentation.ui.screens
 
-import androidx.activity.compose.BackHandler // <-- IMPORTANTE PARA EL BOTÓN FÍSICO DE ATRÁS
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -46,25 +46,21 @@ enum class Destino {
 
 @Composable
 fun DonElioApp() {
-    // 1. CREAMOS UN HISTORIAL DE NAVEGACIÓN (Nuestra memoria)
     var historial by remember { mutableStateOf(listOf(Destino.Login)) }
     val pantallaActual = historial.last()
 
-    // 2. FUNCIÓN PARA IR A UNA PANTALLA NUEVA (La agrega al historial)
     val navegar: (Destino) -> Unit = { destino ->
         if (pantallaActual != destino) {
             historial = historial + destino
         }
     }
 
-    // 3. FUNCIÓN PARA VOLVER UN PASO EXACTO PARA ATRÁS
     val volverAtras: () -> Unit = {
         if (historial.size > 1) {
             historial = historial.dropLast(1)
         }
     }
 
-    // 4. ESTO PERMITE QUE EL BOTÓN FÍSICO "ATRÁS" DEL CELULAR FUNCIONE BIEN
     BackHandler(enabled = historial.size > 1) {
         volverAtras()
     }
@@ -92,7 +88,6 @@ fun DonElioApp() {
             }
         },
         bottomBar = {
-            // Mostrar la barra inferior en todas las pantallas menos Login y Registro
             if (pantallaActual != Destino.Login && pantallaActual != Destino.Registro) {
                 DonElioBottomNav(pantallaActual) { nuevoDestino -> navegar(nuevoDestino) }
             }
@@ -100,25 +95,20 @@ fun DonElioApp() {
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             when (pantallaActual) {
-                // ACCESOS
                 Destino.Login -> LoginScreen(onLoginSuccess = { navegar(Destino.Home) }, onGoToRegister = { navegar(Destino.Registro) })
                 Destino.Registro -> RegistroScreen(onRegisterSuccess = { navegar(Destino.Home) }, onGoToLogin = { navegar(Destino.Login) })
 
-                // HOME
                 Destino.Home -> DonElioHomeScreen(
                     onGoToConfig = { navegar(Destino.ConfiguracionDB) },
                     onGoToCampanias = { navegar(Destino.Campanias) }
                 )
 
-                // TAREAS
                 Destino.Tareas -> TareasScreen(
                     onGoToNuevaTarea = { navegar(Destino.NuevaTarea) },
                     onGoToCampanias = { navegar(Destino.DetalleCampania) },
-                    onBack = volverAtras // <-- Vuelve a donde estabas antes
+                    onBack = volverAtras
                 )
-                Destino.NuevaTarea -> NuevaTareaScreen(onBack = volverAtras)
 
-                // CAMPAÑAS
                 Destino.Campanias -> CampaniasScreen(
                     onGoToDetail = { navegar(Destino.DetalleCampania) },
                     onBack = volverAtras
@@ -132,11 +122,9 @@ fun DonElioApp() {
                 )
                 Destino.FormularioCampania -> FormularioCampaniaScreen(onBack = volverAtras)
 
-                // COSECHAS
                 Destino.Cosechas -> CosechasScreen(onBack = volverAtras)
                 Destino.FormularioCosecha -> FormularioCosechaScreen(onBack = volverAtras)
 
-                // INSUMOS
                 Destino.Insumos -> InsumosScreen(
                     onGoToCatalogo = { navegar(Destino.CatalogoInsumos) },
                     onGoToCampanias = { navegar(Destino.DetalleCampania) },
@@ -147,16 +135,14 @@ fun DonElioApp() {
                     onGoToFormulario = { navegar(Destino.FormularioInsumo) }
                 )
                 Destino.FormularioInsumo -> FormularioInsumoScreen(onBack = volverAtras)
-
-                // OTROS
                 Destino.Reportes -> ReportesScreen(onBack = volverAtras)
+                Destino.NuevaTarea -> NuevaTareaScreen(onBack = volverAtras)
                 Destino.Observaciones -> ObservacionesScreen(onBack = volverAtras)
                 Destino.ConfiguracionDB -> ConfiguracionDBScreen(onBack = volverAtras)
             }
         }
     }
 }
-
 
 // --- PANTALLA TAREAS (CU5 y CU5.4) ---
 @OptIn(ExperimentalMaterial3Api::class)
@@ -165,11 +151,7 @@ fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit, onBa
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Tareas", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                }
-            },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -309,15 +291,24 @@ fun CosechasScreen(onBack: () -> Unit) {
 fun FormularioCosechaScreen(onBack: () -> Unit) {
     var almacenado by remember { mutableStateOf(true) }
 
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var cultivo by remember { mutableStateOf("") }
+    var cantidad by remember { mutableStateOf("") }
+    var unidad by remember { mutableStateOf("") }
+    var fecha by remember { mutableStateOf("") }
+    var almacen by remember { mutableStateOf("") }
+    var tipo by remember { mutableStateOf("") }
+    var precio by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cultivo") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = cultivo, onValueChange = { cultivo = it }, label = { Text("Cultivo") }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cantidad") }, modifier = Modifier.weight(1f))
-                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Unidad (Ej. Tn)") }, modifier = Modifier.weight(1f))
+                OutlinedTextField(value = cantidad, onValueChange = { cantidad = it }, label = { Text("Cantidad") }, modifier = Modifier.weight(1f))
+                OutlinedTextField(value = unidad, onValueChange = { unidad = it }, label = { Text("Unidad (Ej. Tn)") }, modifier = Modifier.weight(1f))
             }
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Fecha") }, modifier = Modifier.fillMaxWidth(), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
+            OutlinedTextField(value = fecha, onValueChange = { fecha = it }, label = { Text("Fecha") }, modifier = Modifier.fillMaxWidth(), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
 
             // Switch CU7
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
@@ -326,10 +317,10 @@ fun FormularioCosechaScreen(onBack: () -> Unit) {
             }
 
             if (almacenado) {
-                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Almacén (Silo, Silobolsa)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = almacen, onValueChange = { almacen = it }, label = { Text("Almacén (Silo, Silobolsa)") }, modifier = Modifier.fillMaxWidth())
             } else {
-                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Tipo (Venta, Alimento Vacuno, Reserva)") }, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(value = "", onValueChange = {}, label = { Text("Precio (Opcional)") }, modifier = Modifier.fillMaxWidth(), leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) })
+                OutlinedTextField(value = tipo, onValueChange = { tipo = it }, label = { Text("Tipo (Venta, Alimento Vacuno, Reserva)") }, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(value = precio, onValueChange = { precio = it }, label = { Text("Precio (Opcional)") }, modifier = Modifier.fillMaxWidth(), leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) })
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -465,15 +456,19 @@ fun DonElioHomeScreen(onGoToConfig: () -> Unit, onGoToCampanias: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit, onGoToRegister: () -> Unit) {
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var usuario by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Surface(shape = RoundedCornerShape(24.dp), color = Color(0xFFD1FAE5), modifier = Modifier.size(100.dp)) { Icon(Icons.Default.Agriculture, contentDescription = null, modifier = Modifier.padding(20.dp), tint = Emerald800) }
         Spacer(modifier = Modifier.height(24.dp))
         Text("Don Elio", fontSize = 36.sp, fontWeight = FontWeight.Bold, color = Emerald800)
         Text("Sistema de Gestión Agrícola", color = Color.Gray, fontSize = 16.sp)
         Spacer(modifier = Modifier.height(48.dp))
-        OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre de usuario") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+        OutlinedTextField(value = usuario, onValueChange = { usuario = it }, label = { Text("Nombre de usuario") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = "", onValueChange = {}, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), singleLine = true, visualTransformation = PasswordVisualTransformation())
+        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), singleLine = true, visualTransformation = PasswordVisualTransformation())
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = onLoginSuccess, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Ingresar", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
         Spacer(modifier = Modifier.height(16.dp))
@@ -484,15 +479,20 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onGoToRegister: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(onRegisterSuccess: () -> Unit, onGoToLogin: () -> Unit) {
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var nombre by remember { mutableStateOf("") }
+    var usuario by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Text("Crear Cuenta", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = Emerald800)
         Text("Configura tu acceso local", color = Color.Gray, fontSize = 16.sp)
         Spacer(modifier = Modifier.height(40.dp))
-        OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre Completo") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+        OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre Completo") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre de usuario") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+        OutlinedTextField(value = usuario, onValueChange = { usuario = it }, label = { Text("Nombre de usuario") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(value = "", onValueChange = {}, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), singleLine = true, visualTransformation = PasswordVisualTransformation())
+        OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), singleLine = true, visualTransformation = PasswordVisualTransformation())
         Spacer(modifier = Modifier.height(32.dp))
         Button(onClick = onRegisterSuccess, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Registrarse", fontSize = 18.sp, fontWeight = FontWeight.Bold) }
         Spacer(modifier = Modifier.height(16.dp))
@@ -529,10 +529,18 @@ fun CampaniasScreen(onGoToDetail: () -> Unit, onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBack: () -> Unit) {
+    var menuExpandido by remember { mutableStateOf(false) }
+    var insumoSeleccionado by remember { mutableStateOf("") }
+    val insumosDisponibles = listOf("Herbicida Atrazina", "Fertilizante DAP", "Insecticida Lambda", "Semilla Trigo 50kg")
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Vincular Insumos (CU9)", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                }
+            },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
                     Icon(Icons.Default.Settings, contentDescription = "Catálogo", modifier = Modifier.size(20.dp), tint = Emerald600)
@@ -543,15 +551,58 @@ fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBac
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            // Campaña Activa
             item {
                 Text("Campaña Activa", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(vertical = 8.dp))
                 CampanaSeleccionadaCard(onClick = onGoToCampanias)
             }
 
-            // Insumos ya vinculados
             item {
-                Text("Insumos Vinculados", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(vertical = 8.dp))
+                Text("Agregar Nuevo Insumo a la Campaña", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+
+                ExposedDropdownMenuBox(
+                    expanded = menuExpandido,
+                    onExpandedChange = { menuExpandido = it }
+                ) {
+                    OutlinedTextField(
+                        value = if (insumoSeleccionado.isEmpty()) "Seleccionar un insumo..." else insumoSeleccionado,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuExpandido) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = menuExpandido,
+                        onDismissRequest = { menuExpandido = false }
+                    ) {
+                        insumosDisponibles.forEach { insumo ->
+                            DropdownMenuItem(
+                                text = { Text(insumo) },
+                                onClick = {
+                                    insumoSeleccionado = insumo
+                                    menuExpandido = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                if (insumoSeleccionado.isNotEmpty()) {
+                    Button(
+                        onClick = {
+                            insumoSeleccionado = ""
+                        },
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600)
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Vincular Insumo")
+                    }
+                }
+            }
+
+            item {
+                Text("Insumos Ya Vinculados", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
             }
             items(listOf("Urea Granulada", "Fungicida Glifosato", "Semilla Soja 50kg")) { insumo ->
                 Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFD1FAE5)), border = BorderStroke(1.dp, Emerald600), modifier = Modifier.fillMaxWidth()) {
@@ -562,26 +613,9 @@ fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBac
                             Text(insumo, fontWeight = FontWeight.Bold, color = Stone800)
                             Text("Vinculado a campaña activa", fontSize = 12.sp, color = Emerald800)
                         }
-                        Icon(Icons.Default.Delete, contentDescription = "Desvincular", tint = Color(0xFFDC2626))
-                    }
-                }
-            }
-
-            // Insumos disponibles para vincular
-            item {
-                Text("Disponibles para Vincular", fontWeight = FontWeight.Bold, color = Stone800, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-            }
-            items(listOf("Herbicida Atrazina", "Fertilizante DAP", "Insecticida Lambda")) { insumo ->
-                var vinculado by remember { mutableStateOf(false) }
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = vinculado, onCheckedChange = { vinculado = it })
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(insumo, fontWeight = FontWeight.Bold, color = Stone800)
-                            Text("Toca para vincular", fontSize = 12.sp, color = Color.Gray)
+                        IconButton(onClick = { /* Lógica para eliminar la vinculación */ }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Desvincular", tint = Color(0xFFDC2626))
                         }
-                        if (vinculado) Icon(Icons.Default.CheckCircle, contentDescription = "Vinculado", tint = Emerald600)
                     }
                 }
             }
@@ -613,6 +647,16 @@ fun CatalogoInsumosScreen(onBack: () -> Unit, onGoToFormulario: () -> Unit) {
                         headlineContent = { Text(nombre, fontWeight = FontWeight.Bold) },
                         supportingContent = { Text("$categoria | Stock: $stock") },
                         leadingContent = { Icon(Icons.Default.Inventory, contentDescription = null, tint = Emerald600) },
+                        trailingContent = {
+                            Row {
+                                IconButton(onClick = { /* Lógica editar */ }) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Stone800)
+                                }
+                                IconButton(onClick = { /* Lógica eliminar */ }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color(0xFFDC2626))
+                                }
+                            }
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                     )
                 }
@@ -632,10 +676,13 @@ fun CatalogoInsumosScreen(onBack: () -> Unit, onGoToFormulario: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObservacionesScreen(onBack: () -> Unit) {
+    // VARIABLE DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var nota by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Observaciones (CU8)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Escribe una nota...") }, modifier = Modifier.fillMaxWidth().height(150.dp), maxLines = 5)
+            OutlinedTextField(value = nota, onValueChange = { nota = it }, label = { Text("Escribe una nota...") }, modifier = Modifier.fillMaxWidth().height(150.dp), maxLines = 5)
             Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Stone800)) { Icon(Icons.Default.CameraAlt, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Adjuntar Fotografía") }
         }
     }
@@ -658,12 +705,17 @@ fun ConfiguracionDBScreen(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioCampaniaScreen(onBack: () -> Unit) {
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var nombre by remember { mutableStateOf("") }
+    var cultivo by remember { mutableStateOf("") }
+    var fecha by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Crear Campaña (CU1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre de la Campaña") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cultivo (Ej: Soja)") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Fecha de Inicio") }, modifier = Modifier.fillMaxWidth(), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre de la Campaña") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = cultivo, onValueChange = { cultivo = it }, label = { Text("Cultivo (Ej: Soja)") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = fecha, onValueChange = { fecha = it }, label = { Text("Fecha de Inicio") }, modifier = Modifier.fillMaxWidth(), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Guardar Campaña", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
         }
@@ -674,12 +726,21 @@ fun FormularioCampaniaScreen(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FormularioInsumoScreen(onBack: () -> Unit) {
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var nombre by remember { mutableStateOf("") }
+    var categoria by remember { mutableStateOf("") }
+    var cantidad by remember { mutableStateOf("") }
+    var unidad by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Registrar Insumo (CU9.5)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre del Insumo") }, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Categoría (Ej: Semilla, Fertilizante)") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) { OutlinedTextField(value = "", onValueChange = {}, label = { Text("Cantidad") }, modifier = Modifier.weight(1f)); OutlinedTextField(value = "", onValueChange = {}, label = { Text("Unidad (Kg, Lts)") }, modifier = Modifier.weight(1f)) }
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre del Insumo") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(value = categoria, onValueChange = { categoria = it }, label = { Text("Categoría (Ej: Semilla, Fertilizante)") }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(value = cantidad, onValueChange = { cantidad = it }, label = { Text("Cantidad") }, modifier = Modifier.weight(1f))
+                OutlinedTextField(value = unidad, onValueChange = { unidad = it }, label = { Text("Unidad (Kg, Lts)") }, modifier = Modifier.weight(1f))
+            }
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Guardar Insumo", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
         }
@@ -690,12 +751,24 @@ fun FormularioInsumoScreen(onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NuevaTareaScreen(onBack: () -> Unit) {
+    // VARIABLES DE ESTADO PARA ESCRIBIR EN EL FORMULARIO
+    var nombre by remember { mutableStateOf("") }
+    var fecha by remember { mutableStateOf("") }
+    var hora by remember { mutableStateOf("") }
+    var recordatorio by remember { mutableStateOf(true) }
+
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(title = { Text("Nueva Tarea (CU5.1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Nombre de la Tarea") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) { OutlinedTextField(value = "", onValueChange = {}, label = { Text("Fecha") }, modifier = Modifier.weight(1f), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) }); OutlinedTextField(value = "", onValueChange = {}, label = { Text("Hora") }, modifier = Modifier.weight(1f)) }
-            Row(verticalAlignment = Alignment.CenterVertically) { Checkbox(checked = true, onCheckedChange = {}); Text("Activar Notificación de Recordatorio") }
+            OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre de la Tarea") }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                OutlinedTextField(value = fecha, onValueChange = { fecha = it }, label = { Text("Fecha") }, modifier = Modifier.weight(1f), trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null) })
+                OutlinedTextField(value = hora, onValueChange = { hora = it }, label = { Text("Hora") }, modifier = Modifier.weight(1f))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = recordatorio, onCheckedChange = { recordatorio = it })
+                Text("Activar Notificación de Recordatorio")
+            }
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = Emerald600), shape = RoundedCornerShape(12.dp)) { Text("Guardar Tarea", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
         }
