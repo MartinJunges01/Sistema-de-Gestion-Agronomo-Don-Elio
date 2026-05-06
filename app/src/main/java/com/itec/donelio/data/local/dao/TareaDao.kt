@@ -1,0 +1,26 @@
+package com.itec.donelio.data.local.dao
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import com.itec.donelio.data.local.entity.TareaEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface TareaDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTarea(tarea: TareaEntity): Long
+
+    @Update
+    suspend fun updateTarea(tarea: TareaEntity): Int
+
+    @Delete
+    suspend fun deleteTarea(tarea: TareaEntity): Int
+
+    @Query("SELECT * FROM tareas WHERE id_campania = :campaniaId ORDER BY fecha ASC, hora ASC")
+    fun getTareasPorCampania(campaniaId: Int): Flow<List<TareaEntity>>
+}
