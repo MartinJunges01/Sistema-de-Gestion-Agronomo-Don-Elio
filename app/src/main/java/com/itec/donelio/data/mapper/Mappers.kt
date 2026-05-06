@@ -1,24 +1,22 @@
 package com.itec.donelio.data.mapper
 
-import com.tu.paquete.data.local.entities.CampaniaEntity
-import com.tu.paquete.domain.model.Campania
+import com.itec.donelio.data.local.entity.CampaniaEntity
+import com.itec.donelio.domain.model.Campania
 
-// De Room a Dominio (Para leer datos)
 fun CampaniaEntity.toDomain(): Campania {
     return Campania(
-        id = this.id,
-        nombre = this.nombre,
-        fechaInicio = this.fechaInicio,
-        estaActiva = this.estaActiva
+        id = id_campania,
+        nombre = nombre,
+        fechaInicio = fecha,
+        estaActiva = true
     )
 }
 
-// De Dominio a Room (Para guardar datos)
 fun Campania.toEntity(): CampaniaEntity {
     return CampaniaEntity(
-        id = this.id,
-        nombre = this.nombre,
-        fechaInicio = this.fechaInicio,
-        estaActiva = this.estaActiva
+        id_campania = id,
+        nombre = nombre,
+        fecha = fechaInicio,
+        cultivo = ""
     )
 }
