@@ -23,4 +23,7 @@ interface InsumoDao {
 
     @Query("SELECT * FROM insumos ORDER BY nombre ASC")
     fun getCatalogoInsumos(): Flow<List<InsumoEntity>>
+
+    @Query("SELECT * FROM insumos WHERE id_insumo = :id")
+    suspend fun getInsumoById(id: Int): InsumoEntity?
 }

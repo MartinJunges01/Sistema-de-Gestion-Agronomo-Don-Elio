@@ -23,4 +23,7 @@ interface TareaDao {
 
     @Query("SELECT * FROM tareas WHERE id_campania = :campaniaId ORDER BY fecha ASC, hora ASC")
     fun getTareasPorCampania(campaniaId: Int): Flow<List<TareaEntity>>
+
+    @Query("SELECT * FROM tareas WHERE id_tarea = :id")
+    suspend fun getTareaById(id: Int): TareaEntity?
 }
