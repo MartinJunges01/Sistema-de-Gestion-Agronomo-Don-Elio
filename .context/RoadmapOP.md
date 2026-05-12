@@ -1,0 +1,168 @@
+# Roadmap de Desarrollo - Estado Actual
+
+Este archivo refleja el progreso del proyecto "Don Elio".
+
+---
+
+## Fase 1: Configuración Inicial y Arquitectura Base
+- [x] **Issue 1: Configuración Inicial del Proyecto**
+  - [x] Crear nuevo proyecto seleccionando "Empty Compose Activity".
+  - [x] Configurar `build.gradle` (nivel app y nivel proyecto).
+  - [x] Configurar el archivo `strings.xml` y limpiar recursos.
+- [x] **Issue 2: Implementación de Dependencias Base (Gradle)**
+  - [x] Añadir dependencias de Room.
+  - [x] Añadir dependencias de Corrutinas.
+  - [x] Añadir dependencias del inyector de dependencias (Dagger-Hilt).
+  - [x] Añadir dependencias de Navigation Compose.
+  - [x] Añadir dependencias de testing.
+- [x] **Issue 3: Creación de Estructura de Directorios (Clean Architecture)**
+  - [x] Crear paquete `data` con subpaquetes.
+  - [x] Crear paquete `domain` con subpaquetes.
+  - [x] Crear paquete `presentation` con subpaquetes.
+  - [x] Crear paquete `di`.
+  - [x] Crear paquete `core` o `common`.
+- [x] **Issue 4: Inicialización de Inyección de Dependencias (Hilt)**
+  - [x] Crear la clase principal `DonElioApplication`.
+  - [x] Anotar la clase con `@HiltAndroidApp`.
+  - [x] Registrar la clase `DonElioApplication` en `AndroidManifest.xml`.
+  - [x] Crear un módulo base vacío en el paquete `di`.
+  - [x] Anotar la `MainActivity` con `@AndroidEntryPoint`.
+
+## Fase 2: Capa de Datos (Data Layer) - Modelado en Room
+- [x] **Issue 1: Modelado de Entidades Principales (Room Entities)**
+  - [x] Crear CampaniaEntity.
+  - [x] Crear TareaEntity.
+  - [x] Crear CosechaEntity.
+  - [x] Crear CosechaNoAlmacenadaEntity.
+  - [x] Crear InsumoEntity.
+  - [x] Crear ObservacionEntity.
+- [x] **Issue 2: Modelado de Relaciones Muchos a Muchos (N:M)**
+  - [x] Crear CampaniaInsumoEntity.
+  - [x] Configurar las claves foráneas.
+- [x] **Issue 3: Implementación de Type Converters**
+  - [x] Crear clase Converters.kt.
+  - [x] Implementar @TypeConverter para Date.
+  - [x] Implementar @TypeConverter para Time.
+- [x] **Issue 4: Creación de los DAOs (Data Access Objects)**
+  - [x] Crear CampaniaDao.
+  - [x] Crear TareaDao.
+  - [x] Crear CosechaDao.
+  - [x] Crear InsumoDao.
+  - [x] Crear CampaniaInsumoDao.
+- [x] **Issue 5: Configuración de la Database e Inyección (Hilt)**
+  - [x] Crear la clase abstracta DonElioDatabase.
+  - [x] Añadir todas las Entities al decorador @Database.
+  - [x] Anotar la base de datos con @TypeConverters.
+  - [x] Crear un módulo en el paquete `di`.
+  - [x] Crear métodos con @Provides y @Singleton.
+  - [x] Crear métodos con @Provides para cada uno de los DAOs.
+
+## Fase 3: Capa de Dominio (Domain Layer)
+- [x] **Issue 1: Definición de Modelos de Dominio (Domain Models)**
+  - [x] Crear las `data class` de dominio.
+  - [x] Crear archivos de extensión (`Mappers.kt`).
+- [x] **Issue 2: Definición de Interfaces de Repositorios**
+  - [x] Crear `CampaniaRepository`.
+  - [x] Crear `TareaRepository`.
+  - [x] Crear `CosechaRepository` e `InsumoRepository`.
+- [x] **Issue 3: Implementación de los Repositorios (Data Layer)**
+  - [x] Crear `CampaniaRepositoryImpl` en la capa `data/repository`.
+  - [x] Crear `TareaRepositoryImpl`, `CosechaRepositoryImpl` e `InsumoRepositoryImpl`.
+  - [x] Implementar la lógica interna y mapeo.
+  - [x] Configurar Hilt (`RepositoryModule.kt`).
+- [ ] **Issue 4: Casos de Uso (Use Cases) - Módulo de Campañas y Tareas**
+  - [ ] Crear `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
+  - [ ] Crear `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase`.
+  - [ ] Crear `ConfirmarTareaUseCase` (CU5.4).
+  - [ ] Inyectar los repositorios correspondientes.
+- [ ] **Issue 5: Casos de Uso (Use Cases) - Módulo de Cosechas, Insumos y Observaciones**
+  - [ ] Crear `RegistrarCosechaUseCase`.
+  - [ ] Crear `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase` y `ObtenerCatalogoInsumosUseCase`.
+  - [ ] Crear `AsignarInsumoACampaniaUseCase`.
+  - [ ] Crear `GuardarObservacionUseCase`.
+- [ ] **Issue 6: (Opcional) Wrapper de Resultados y Manejo de Errores**
+  - [ ] Crear una clase sellada `Resource<T>` o `Result<T>`.
+  - [ ] Ajustar los Use Cases más complejos para que retornen un `Flow<Resource<T>>`.
+
+## Fase 4: Interfaz de Usuario y ViewModels
+- [ ] **Issue 1: Configuración de Navegación y Layout Principal**
+  - [ ] Definir las rutas de navegación.
+  - [ ] Crear el NavHost principal en la MainActivity.
+  - [ ] Configurar un Scaffold global.
+- [ ] **Issue 2: Pantalla Principal (Dashboard / Home de Campañas)**
+  - [ ] Crear el HomeViewModel.
+  - [ ] Diseñar lista (LazyColumn) de campañas.
+  - [ ] Implementar FAB para crear nueva campaña.
+- [ ] **Issue 3: Formularios de ABM de Campañas (Crear / Editar)**
+  - [ ] Crear CampaniaFormViewModel.
+  - [ ] Diseñar la pantalla de formulario.
+  - [ ] Implementar validación de errores.
+  - [ ] Conectar botón "Guardar".
+- [ ] **Issue 4: Pantalla de "Detalle de Campaña"**
+  - [ ] Crear CampaniaDetailViewModel.
+  - [ ] Diseñar interfaz con "Tabs" (Tareas, Insumos, Cosechas, Observaciones).
+  - [ ] Mostrar encabezado fijo.
+- [ ] **Issue 5: Módulo de Tareas en Campaña (Crear, Listar y Confirmar)**
+  - [ ] Diseñar lista de tareas.
+  - [ ] Crear diálogo/pantalla para nueva tarea.
+  - [ ] Implementar Checkbox para confirmar tarea.
+- [ ] **Issue 6: Módulo de Insumos (Catálogo Global y Asignación)**
+  - [ ] Pantalla para crear y listar insumos.
+  - [ ] Formulario de egreso en pestaña "Insumos".
+
+## Fase 5: Integración con Hardware (Cámara y Notificaciones)
+- [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
+  - [ ] Añadir permisos en `AndroidManifest.xml`.
+  - [ ] Implementar gestor de permisos en Compose.
+  - [ ] Crear `FileProvider`.
+- [ ] **Issue 2: Módulo de Observaciones con Imágenes (CU8)**
+  - [ ] Crear `ObservacionViewModel`.
+  - [ ] Diseñar pantalla "Nueva Observación".
+  - [ ] Implementar botones de cámara/galería.
+  - [ ] Implementar Coil para vista previa.
+  - [ ] Lógica de guardado de URI.
+- [ ] **Issue 3: Configuración de Permisos de Notificaciones y Alarmas**
+  - [ ] Añadir permisos (`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`).
+  - [ ] Implementar solicitud de permiso en Compose.
+- [ ] **Issue 4: Sistema de Recordatorios de Tareas (CU5)**
+  - [ ] Crear Notification Channel.
+  - [ ] Implementar `BroadcastReceiver`.
+  - [ ] Modificar `CrearTareaUseCase` y `EditarTareaUseCase` para usar `AlarmManager`/`WorkManager`.
+  - [ ] Crear caso de uso para cancelar alarma.
+
+## Fase 6: Análisis de Datos y Respaldos
+- [ ] **Issue 1: Dashboard de Reportes y Estadísticas (CU10)**
+  - [ ] Crear `EstadisticasViewModel`.
+  - [ ] Integrar librería de gráficos (Vico/YCharts).
+  - [ ] Diseñar pantalla "Reportes y Estadísticas".
+- [ ] **Issue 2: Exportación de Reportes a Archivos (CU11)**
+  - [ ] Implementar `Storage Access Framework` (SAF).
+  - [ ] Escribir utilidad CSV/Excel o PDF.
+  - [ ] Conectar botón "Exportar Reporte".
+- [ ] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
+  - [ ] Crear `BackupViewModel`.
+  - [ ] Obtener ruta de `.db` y usar SAF para guardar.
+- [ ] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
+  - [ ] Utilizar SAF (`OpenDocument`).
+  - [ ] Mostrar cuadro de advertencia.
+  - [ ] Implementar lógica de sobrescritura de `.db`.
+
+## Fase 7: Calidad, Testing y Producción
+- [ ] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
+  - [ ] Pruebas unitarias para Casos de Uso.
+  - [ ] Pruebas unitarias para ViewModels.
+  - [ ] Pruebas instrumentadas para DAOs.
+- [ ] **Issue 2: Refinamiento de Usabilidad y UI/UX**
+  - [ ] Revisar navegación.
+  - [ ] Implementar Feedback Visual (Snackbar).
+  - [ ] Revisar accesibilidad.
+  - [ ] Implementar "Empty States".
+- [ ] **Issue 3: Pruebas de Rendimiento y Entorno Offline**
+  - [ ] Probar sin conexión.
+  - [ ] Cargar datos masivos de prueba.
+  - [ ] Optimizar listas.
+- [ ] **Issue 4: Preparación para Producción y Generación de APK**
+  - [ ] Habilitar R8/ProGuard.
+  - [ ] Crear Keystore.
+  - [ ] Actualizar versionCode/versionName.
+  - [ ] Generar APK firmado.
