@@ -34,7 +34,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideCampaniaDao(db: DonElioDatabase): CampaniaDao {
-        return db.campaniaDao
+            return db.campaniaDao
     }
 
     @Provides
