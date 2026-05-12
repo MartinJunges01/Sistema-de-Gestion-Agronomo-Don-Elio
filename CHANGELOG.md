@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-05-12] - Implementación de Casos de Uso (Campañas y Tareas) - F3/Issue4**
+- Creación de `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
+- Creación de `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase` y `ConfirmarTareaUseCase`.
+- Cada Use Case con `@Inject constructor` y validación de nombre no vacío.
+
 **[2026-05-12] - Inicialización de documentación de seguimiento**
 - Creación de `CHANGELOG.md` en la raíz para el seguimiento de tareas.
 - Ajuste de `donelioOP.md` para referenciar `.context/RoadmapOP.md`.

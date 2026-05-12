@@ -70,11 +70,11 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Crear `TareaRepositoryImpl`, `CosechaRepositoryImpl` e `InsumoRepositoryImpl`.
   - [x] Implementar la lógica interna y mapeo.
   - [x] Configurar Hilt (`RepositoryModule.kt`).
-- [ ] **Issue 4: Casos de Uso (Use Cases) - Módulo de Campañas y Tareas**
-  - [ ] Crear `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
-  - [ ] Crear `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase`.
-  - [ ] Crear `ConfirmarTareaUseCase` (CU5.4).
-  - [ ] Inyectar los repositorios correspondientes.
+- [x] **Issue 4: Casos de Uso (Use Cases) - Módulo de Campañas y Tareas**
+  - [x] Crear `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
+  - [x] Crear `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase`.
+  - [x] Crear `ConfirmarTareaUseCase` (CU5.4).
+  - [x] Inyectar los repositorios correspondientes.
 - [ ] **Issue 5: Casos de Uso (Use Cases) - Módulo de Cosechas, Insumos y Observaciones**
   - [ ] Crear `RegistrarCosechaUseCase`.
   - [ ] Crear `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase` y `ObtenerCatalogoInsumosUseCase`.
