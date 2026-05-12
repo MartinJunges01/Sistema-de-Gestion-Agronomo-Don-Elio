@@ -426,7 +426,8 @@ fun ReportesRendimientoScreen(onBack: () -> Unit) {
     }
 }
 
-// --- PANTALLAS DE ACCESO ---
+// --- PANTALLAS DE ACCESO --- //comentario para que med deje commitear
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(onLoginSuccess: () -> Unit, onGoToRegister: () -> Unit) {
