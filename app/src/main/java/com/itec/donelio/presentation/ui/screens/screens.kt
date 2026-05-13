@@ -10,22 +10,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,6 +76,7 @@ fun DonElioApp() {
                 FloatingActionButton(
                     onClick = {
                         val destinoNuevo = when(pantallaActual) {
+                            Destino.Home -> Destino.FormularioCampania
                             Destino.Campanias -> Destino.FormularioCampania
                             Destino.CatalogoInsumos -> Destino.FormularioInsumo
                             Destino.Cosechas -> Destino.FormularioCosecha
@@ -102,12 +105,12 @@ fun DonElioApp() {
 
                 Destino.Home -> DashboardOperacionesScreen(
                     onGoToConfig = { navegar(Destino.ConfiguracionDB) },
-                    onGoToCampanias = { navegar(Destino.Campanias) }
+                    onGoToDetalle = { navegar(Destino.DetalleCampania) }
                 )
 
                 Destino.Tareas -> TareasScreen(
                     onGoToNuevaTarea = { navegar(Destino.NuevaTarea) },
-                    onGoToCampanias = { navegar(Destino.DetalleCampania) },
+                    onGoToDetalle = { navegar(Destino.DetalleCampania) },
                     onBack = volverAtras
                 )
 
@@ -124,12 +127,15 @@ fun DonElioApp() {
                 )
                 Destino.FormularioCampania -> FormularioCampaniaScreen(onBack = volverAtras)
 
-                Destino.Cosechas -> CosechasScreen(onBack = volverAtras)
+                Destino.Cosechas -> CosechasScreen(
+                    onBack = volverAtras,
+                    onGoToCampaniaDetalle = { navegar(Destino.DetalleCampania) }
+                )
                 Destino.FormularioCosecha -> FormularioCosechaScreen(onBack = volverAtras)
 
                 Destino.Insumos -> InsumosScreen(
                     onGoToCatalogo = { navegar(Destino.CatalogoInsumos) },
-                    onGoToCampanias = { navegar(Destino.DetalleCampania) },
+                    onGoToCampaniaDetalle = { navegar(Destino.DetalleCampania) },
                     onBack = volverAtras
                 )
                 Destino.CatalogoInsumos -> CatalogoInsumosScreen(
@@ -141,7 +147,10 @@ fun DonElioApp() {
                 Destino.Reportes -> ReportesRendimientoScreen(onBack = volverAtras)
 
                 Destino.NuevaTarea -> NuevaTareaScreen(onBack = volverAtras)
-                Destino.Observaciones -> ObservacionesScreen(onBack = volverAtras)
+                Destino.Observaciones -> ObservacionesScreen(
+                    onBack = volverAtras,
+                    onGoToCampaniaDetalle = { navegar(Destino.DetalleCampania) }
+                )
                 Destino.ConfiguracionDB -> ConfiguracionDBScreen(onBack = volverAtras)
             }
         }
@@ -150,7 +159,7 @@ fun DonElioApp() {
 
 // --- 1. DASHBOARD DE OPERACIONES (HOME FUSIONADO) ---
 @Composable
-fun DashboardOperacionesScreen(onGoToConfig: () -> Unit, onGoToCampanias: () -> Unit) {
+fun DashboardOperacionesScreen(onGoToConfig: () -> Unit, onGoToDetalle: () -> Unit) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 80.dp), // Espacio para el BottomNav
@@ -204,7 +213,7 @@ fun DashboardOperacionesScreen(onGoToConfig: () -> Unit, onGoToCampanias: () -> 
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text("Campaña Activa", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 12.dp))
-                CampanaSeleccionadaCard(onClick = onGoToCampanias)
+                CampanaSeleccionadaCard(onClick = onGoToDetalle)
             }
         }
 
@@ -227,7 +236,7 @@ fun GestionParcelasScreen(onGoToDetail: () -> Unit, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Gestión de Parcelas", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
         LazyColumn(
@@ -274,14 +283,18 @@ fun GestionParcelasScreen(onGoToDetail: () -> Unit, onBack: () -> Unit) {
 // --- 3. CALENDARIO Y TAREAS FUSIONADO ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit, onBack: () -> Unit) {
+fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToDetalle: () -> Unit, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Agenda y Tareas", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            item {
+                CampanaSeleccionadaCard(onClick = onGoToDetalle)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             // Calendario Selector
             item {
                 Text("Planificación Estratégica", color = TextoSecundario)
@@ -305,7 +318,7 @@ fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit, onBa
                 }
             }
 
-            item { Divider(color = Color(0xFFE7E5E4), modifier = Modifier.padding(vertical = 8.dp)) }
+            item { HorizontalDivider(color = Color(0xFFE7E5E4), modifier = Modifier.padding(vertical = 8.dp)) }
 
             item {
                 Text("Pendientes de Hoy", fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 18.sp)
@@ -354,45 +367,89 @@ fun TareasScreen(onGoToNuevaTarea: () -> Unit, onGoToCampanias: () -> Unit, onBa
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReportesRendimientoScreen(onBack: () -> Unit) {
+    val campanas = listOf("Campaña Soja 2026", "Campaña Maíz 2026", "Campaña Trigo 2025")
+    var campania1Expandido by remember { mutableStateOf(false) }
+    var campania2Expandido by remember { mutableStateOf(false) }
+    var campania1 by remember { mutableStateOf(campanas[0]) }
+    var campania2 by remember { mutableStateOf(campanas[1]) }
+
     Column(modifier = Modifier.fillMaxSize()) {
+        var mostrarMenuExportar by remember { mutableStateOf(false) }
+
         TopAppBar(
             title = { Text("Reportes y Análisis", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
-        )
-        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-            item {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()) {
-                    Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = AgriVerde)) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Producción Total", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                            Text("850 Tn", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        }
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+            actions = {
+                Box {
+                    IconButton(onClick = { mostrarMenuExportar = true }) {
+                        Icon(Icons.Default.FileDownload, contentDescription = "Exportar", tint = AgriVerde)
                     }
-                    Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = AgriAzul)) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Rentabilidad", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                            Text("+12.4%", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        }
+                    DropdownMenu(
+                        expanded = mostrarMenuExportar,
+                        onDismissRequest = { mostrarMenuExportar = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Exportar a Excel") },
+                            onClick = { mostrarMenuExportar = false },
+                            leadingIcon = { Icon(Icons.Default.TableChart, contentDescription = null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Exportar a PDF") },
+                            onClick = { mostrarMenuExportar = false },
+                            leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) }
+                        )
                     }
                 }
-            }
-
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+        )
+        LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             item {
-                Text("Gráfico de Cosecha (Estacional)", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                        Canvas(modifier = Modifier.fillMaxSize()) {
-                            val barWidth = size.width / 7f
-                            val maxVal = 100f
-                            val values = listOf(40f, 60f, 30f, 90f)
-                            values.forEachIndexed { index, value ->
-                                val barHeight = (value / maxVal) * size.height
-                                drawRoundRect(
-                                    color = AgriVerde,
-                                    topLeft = Offset((index * 2) * barWidth, size.height - barHeight),
-                                    size = Size(barWidth, barHeight),
-                                    cornerRadius = CornerRadius(8f, 8f)
+                Text("Comparar Campañas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    ExposedDropdownMenuBox(
+                        expanded = campania1Expandido,
+                        onExpandedChange = { campania1Expandido = it },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        OutlinedTextField(
+                            value = campania1,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Campaña A") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = campania1Expandido) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            textStyle = TextStyle(fontSize = 14.sp)
+                        )
+                        ExposedDropdownMenu(expanded = campania1Expandido, onDismissRequest = { campania1Expandido = false }) {
+                            campanas.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(item) },
+                                    onClick = { campania1 = item; campania1Expandido = false }
+                                )
+                            }
+                        }
+                    }
+                    ExposedDropdownMenuBox(
+                        expanded = campania2Expandido,
+                        onExpandedChange = { campania2Expandido = it },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        OutlinedTextField(
+                            value = campania2,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Campaña B") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = campania2Expandido) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            textStyle = TextStyle(fontSize = 14.sp)
+                        )
+                        ExposedDropdownMenu(expanded = campania2Expandido, onDismissRequest = { campania2Expandido = false }) {
+                            campanas.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(item) },
+                                    onClick = { campania2 = item; campania2Expandido = false }
                                 )
                             }
                         }
@@ -401,26 +458,159 @@ fun ReportesRendimientoScreen(onBack: () -> Unit) {
             }
 
             item {
-                Text("Evolución de Costos", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                Text("Métricas Comparativas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    CardMetricaComparativa(
+                        titulo = "Rendimiento",
+                        valor1 = "4.2 Tn/ha",
+                        valor2 = "3.8 Tn/ha",
+                        color = AgriVerde,
+                        modifier = Modifier.weight(1f)
+                    )
+                    CardMetricaComparativa(
+                        titulo = "Ganancias",
+                        valor1 = "$1,200,000",
+                        valor2 = "$980,000",
+                        color = AgriAzul,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    CardMetricaComparativa(
+                        titulo = "Costos Totales",
+                        valor1 = "$450,000",
+                        valor2 = "$520,000",
+                        color = Color(0xFFD97706),
+                        modifier = Modifier.weight(1f)
+                    )
+                    CardMetricaComparativa(
+                        titulo = "Insumos Totales",
+                        valor1 = "2,400 kg",
+                        valor2 = "3,100 kg",
+                        color = TextoPrincipal,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            item {
+                Text("Evolución Mensual de Costos", fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(220.dp)) {
                     Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                        Canvas(modifier = Modifier.fillMaxSize().padding(vertical = 16.dp)) {
-                            val values = listOf(8000f, 9200f, 11000f, 12450f)
-                            val minVal = 7000f
-                            val maxVal = 13000f
-                            val stepX = size.width / (values.size - 1)
-                            for (i in 0 until values.size - 1) {
-                                val startX = i * stepX
-                                val startY = size.height - ((values[i] - minVal) / (maxVal - minVal) * size.height)
-                                val endX = (i + 1) * stepX
-                                val endY = size.height - ((values[i + 1] - minVal) / (maxVal - minVal) * size.height)
-                                drawLine(color = AgriAzul, start = Offset(startX, startY), end = Offset(endX, endY), strokeWidth = 8f, cap = StrokeCap.Round)
-                                drawCircle(color = AgriVerde, radius = 12f, center = Offset(startX, startY))
-                                if (i == values.size - 2) drawCircle(color = AgriVerde, radius = 12f, center = Offset(endX, endY))
+                        Canvas(modifier = Modifier.fillMaxSize().padding(top = 16.dp, bottom = 24.dp, start = 8.dp, end = 8.dp)) {
+                            val meses = listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun")
+                            val valores1 = listOf(80f, 95f, 70f, 110f, 90f, 120f)
+                            val valores2 = listOf(60f, 85f, 90f, 75f, 100f, 95f)
+                            val maxVal = 130f
+                            val stepX = size.width / (meses.size - 1)
+
+                            for (i in 0 until meses.size - 1) {
+                                val x1 = i * stepX
+                                val y1 = size.height - (valores1[i] / maxVal * size.height)
+                                val x2 = (i + 1) * stepX
+                                val y2 = size.height - (valores1[i + 1] / maxVal * size.height)
+                                drawLine(color = AgriVerde, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
+                                drawCircle(color = AgriVerde, radius = 8f, center = Offset(x1, y1))
+                                if (i == meses.size - 2) drawCircle(color = AgriVerde, radius = 8f, center = Offset(x2, y2))
                             }
+
+                            for (i in 0 until meses.size - 1) {
+                                val x1 = i * stepX
+                                val y1 = size.height - (valores2[i] / maxVal * size.height)
+                                val x2 = (i + 1) * stepX
+                                val y2 = size.height - (valores2[i + 1] / maxVal * size.height)
+                                drawLine(color = Color(0xFFD97706), start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
+                                drawCircle(color = Color(0xFFD97706), radius = 8f, center = Offset(x1, y1))
+                                if (i == meses.size - 2) drawCircle(color = Color(0xFFD97706), radius = 8f, center = Offset(x2, y2))
+                            }
+                        }
+                        Row(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun").forEach { Text(it, fontSize = 11.sp, color = TextoSecundario) }
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(24.dp), modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(12.dp).clip(RoundedCornerShape(2.dp)).background(AgriVerde))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(campania1, fontSize = 12.sp, color = TextoSecundario)
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(12.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFD97706)))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(campania2, fontSize = 12.sp, color = TextoSecundario)
+                    }
+                }
+            }
+
+            item {
+                Text("Evolución Mensual de Insumos", fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(220.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                        Canvas(modifier = Modifier.fillMaxSize().padding(top = 16.dp, bottom = 24.dp, start = 8.dp, end = 8.dp)) {
+                            val meses = listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun")
+                            val valores1 = listOf(400f, 650f, 500f, 800f, 600f, 750f)
+                            val valores2 = listOf(300f, 550f, 700f, 450f, 650f, 500f)
+                            val maxVal = 900f
+                            val stepX = size.width / (meses.size - 1)
+
+                            for (i in 0 until meses.size - 1) {
+                                val x1 = i * stepX
+                                val y1 = size.height - (valores1[i] / maxVal * size.height)
+                                val x2 = (i + 1) * stepX
+                                val y2 = size.height - (valores1[i + 1] / maxVal * size.height)
+                                drawLine(color = AgriAzul, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
+                                drawCircle(color = AgriAzul, radius = 8f, center = Offset(x1, y1))
+                                if (i == meses.size - 2) drawCircle(color = AgriAzul, radius = 8f, center = Offset(x2, y2))
+                            }
+
+                            for (i in 0 until meses.size - 1) {
+                                val x1 = i * stepX
+                                val y1 = size.height - (valores2[i] / maxVal * size.height)
+                                val x2 = (i + 1) * stepX
+                                val y2 = size.height - (valores2[i + 1] / maxVal * size.height)
+                                drawLine(color = TextoSecundario, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
+                                drawCircle(color = TextoSecundario, radius = 8f, center = Offset(x1, y1))
+                                if (i == meses.size - 2) drawCircle(color = TextoSecundario, radius = 8f, center = Offset(x2, y2))
+                            }
+                        }
+                        Row(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun").forEach { Text(it, fontSize = 11.sp, color = TextoSecundario) }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CardMetricaComparativa(
+    titulo: String,
+    valor1: String,
+    valor2: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp), modifier = modifier) {
+        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.Start) {
+            Text(titulo, fontSize = 12.sp, color = TextoSecundario, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(color))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(valor1, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFD1D5DB)))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(valor2, fontSize = 14.sp, color = TextoSecundario)
             }
         }
     }
@@ -476,15 +666,20 @@ fun RegistroScreen(onRegisterSuccess: () -> Unit, onGoToLogin: () -> Unit) {
 // --- INSUMOS (VINCULACIÓN) ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBack: () -> Unit) {
-    var menuExpandido by remember { mutableStateOf(false) }
-    var insumoSeleccionado by remember { mutableStateOf("") }
-    val insumosDisponibles = listOf("Herbicida Atrazina", "Fertilizante DAP", "Insecticida Lambda", "Semilla Trigo 50kg")
+fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampaniaDetalle: () -> Unit, onBack: () -> Unit) {
+    var mostrarBottomSheet by remember { mutableStateOf(false) }
+    var busqueda by remember { mutableStateOf("") }
+    var cantidad by remember { mutableStateOf("") }
+    var precio by remember { mutableStateOf("") }
+
+    val insumosVinculados = listOf("Urea Granulada", "Fungicida Glifosato", "Semilla Soja 50kg")
+    val insumosCatalogo = listOf("Herbicida Atrazina", "Fertilizante DAP", "Insecticida Lambda", "Semilla Trigo 50kg", "Urea Granulada", "Fungicida Glifosato")
+    val filtrados = if (busqueda.isBlank()) insumosCatalogo else insumosCatalogo.filter { it.contains(busqueda, ignoreCase = true) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Vincular Insumos (CU9)", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
                     Icon(Icons.Default.Settings, contentDescription = "Catálogo", modifier = Modifier.size(20.dp), tint = AgriVerde)
@@ -497,56 +692,26 @@ fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBac
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
                 Text("Campaña Activa", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(vertical = 8.dp))
-                CampanaSeleccionadaCard(onClick = onGoToCampanias)
+                CampanaSeleccionadaCard(onClick = onGoToCampaniaDetalle)
             }
 
             item {
-                Text("Agregar Nuevo Insumo a la Campaña", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
-
-                ExposedDropdownMenuBox(
-                    expanded = menuExpandido,
-                    onExpandedChange = { menuExpandido = it }
+                Button(
+                    onClick = { mostrarBottomSheet = true },
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    OutlinedTextField(
-                        value = if (insumoSeleccionado.isEmpty()) "Seleccionar un insumo..." else insumoSeleccionado,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuExpandido) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = menuExpandido,
-                        onDismissRequest = { menuExpandido = false }
-                    ) {
-                        insumosDisponibles.forEach { insumo ->
-                            DropdownMenuItem(
-                                text = { Text(insumo) },
-                                onClick = {
-                                    insumoSeleccionado = insumo
-                                    menuExpandido = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                if (insumoSeleccionado.isNotEmpty()) {
-                    Button(
-                        onClick = { insumoSeleccionado = "" },
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AgriVerde)
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Vincular Insumo")
-                    }
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Vincular Nuevo Insumo", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
             item {
-                Text("Insumos Ya Vinculados", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
+                Text("Insumos Ya Vinculados", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
             }
-            items(listOf("Urea Granulada", "Fungicida Glifosato", "Semilla Soja 50kg")) { insumo ->
+            items(insumosVinculados) { insumo ->
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.CheckCircle, contentDescription = "Vinculado", tint = AgriVerde)
@@ -555,11 +720,85 @@ fun InsumosScreen(onGoToCatalogo: () -> Unit, onGoToCampanias: () -> Unit, onBac
                             Text(insumo, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                             Text("Vinculado a campaña activa", fontSize = 12.sp, color = TextoSecundario)
                         }
-                        IconButton(onClick = { /* Lógica para eliminar */ }) {
+                        IconButton(onClick = { }) {
                             Icon(Icons.Default.Delete, contentDescription = "Desvincular", tint = Color(0xFFDC2626))
                         }
                     }
                 }
+            }
+        }
+    }
+
+    if (mostrarBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { mostrarBottomSheet = false },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("Vincular Insumo a Campaña", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
+
+                OutlinedTextField(
+                    value = busqueda,
+                    onValueChange = { busqueda = it },
+                    label = { Text("Buscar insumo en catálogo") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                )
+
+                filtrados.forEach { insumo ->
+                    Surface(
+                        modifier = Modifier.fillMaxWidth().clickable { busqueda = insumo },
+                        color = if (busqueda == insumo) AgriVerde.copy(alpha = 0.1f) else Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(insumo, modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp), color = TextoPrincipal)
+                    }
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = cantidad,
+                        onValueChange = { cantidad = it },
+                        label = { Text("Cantidad") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                    OutlinedTextField(
+                        value = precio,
+                        onValueChange = { precio = it },
+                        label = { Text("Precio (opcional)") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
+                    )
+                }
+
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = {
+                            mostrarBottomSheet = false
+                            busqueda = ""
+                            cantidad = ""
+                            precio = ""
+                        },
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                        shape = RoundedCornerShape(12.dp),
+                        enabled = busqueda.isNotBlank() && cantidad.isNotBlank()
+                    ) {
+                        Text("Vincular a Campaña")
+                    }
+                    OutlinedButton(
+                        onClick = { onGoToCatalogo() },
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Agregar al catálogo")
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -572,7 +811,7 @@ fun CatalogoInsumosScreen(onBack: () -> Unit, onGoToFormulario: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Catálogo de Insumos", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -615,7 +854,7 @@ fun DetalleCampaniaScreen(onBack: () -> Unit, onGoToObs: () -> Unit, onGoToTask:
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Campaña Soja 2026", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriVerde, titleContentColor = Color.White, navigationIconContentColor = Color.White),
             actions = {
                 IconButton(onClick = { }) { Icon(Icons.Default.Delete, contentDescription = "Eliminar Campaña", tint = Color.White) }
@@ -663,10 +902,14 @@ fun ModuleCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVec
 // --- PANTALLAS DE COSECHAS ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CosechasScreen(onBack: () -> Unit) {
+fun CosechasScreen(onBack: () -> Unit, onGoToCampaniaDetalle: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Gestión de Cosechas", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Gestión de Cosechas", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                CampanaSeleccionadaCard(onClick = onGoToCampaniaDetalle)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             item { Text("Cosechas Almacenadas", fontWeight = FontWeight.Bold, color = TextoPrincipal) }
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, AgriVerde), modifier = Modifier.fillMaxWidth()) {
@@ -707,7 +950,7 @@ fun FormularioCosechaScreen(onBack: () -> Unit) {
     var precio by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(value = cultivo, onValueChange = { cultivo = it }, label = { Text("Cultivo") }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -737,12 +980,14 @@ fun FormularioCosechaScreen(onBack: () -> Unit) {
 // --- OBSERVACIONES ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ObservacionesScreen(onBack: () -> Unit) {
+fun ObservacionesScreen(onBack: () -> Unit, onGoToCampaniaDetalle: () -> Unit) {
     var nota by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Observaciones (CU8)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Observaciones (CU8)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            CampanaSeleccionadaCard(onClick = onGoToCampaniaDetalle)
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(value = nota, onValueChange = { nota = it }, label = { Text("Escribe una nota...") }, modifier = Modifier.fillMaxWidth().height(150.dp), maxLines = 5)
             Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = TextoPrincipal)) { Icon(Icons.Default.CameraAlt, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Adjuntar Fotografía") }
         }
@@ -754,7 +999,7 @@ fun ObservacionesScreen(onBack: () -> Unit) {
 @Composable
 fun ConfiguracionDBScreen(onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Base de Datos (CU12/CU13)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Base de Datos (CU12/CU13)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = TextoPrincipal)) { Icon(Icons.Default.Upload, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Exportar Base de Datos (Respaldo)") }
             Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = AgriVerde)) { Icon(Icons.Default.Download, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Importar Base de Datos") }
@@ -771,7 +1016,7 @@ fun FormularioCampaniaScreen(onBack: () -> Unit) {
     var fecha by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Crear Campaña (CU1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Crear Campaña (CU1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre de la Campaña") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = cultivo, onValueChange = { cultivo = it }, label = { Text("Cultivo (Ej: Soja)") }, modifier = Modifier.fillMaxWidth())
@@ -787,18 +1032,14 @@ fun FormularioCampaniaScreen(onBack: () -> Unit) {
 fun FormularioInsumoScreen(onBack: () -> Unit) {
     var nombre by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
-    var cantidad by remember { mutableStateOf("") }
     var unidad by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Registrar Insumo (CU9.5)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Registrar Insumo (CU9.5)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre del Insumo") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = categoria, onValueChange = { categoria = it }, label = { Text("Categoría (Ej: Semilla, Fertilizante)") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                OutlinedTextField(value = cantidad, onValueChange = { cantidad = it }, label = { Text("Cantidad") }, modifier = Modifier.weight(1f))
-                OutlinedTextField(value = unidad, onValueChange = { unidad = it }, label = { Text("Unidad (Kg, Lts)") }, modifier = Modifier.weight(1f))
-            }
+            OutlinedTextField(value = unidad, onValueChange = { unidad = it }, label = { Text("Unidad de medida (Kg, Lts, bolsas)") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = AgriVerde), shape = RoundedCornerShape(12.dp)) { Text("Guardar Insumo", fontSize = 16.sp, fontWeight = FontWeight.Bold) }
         }
@@ -814,7 +1055,7 @@ fun NuevaTareaScreen(onBack: () -> Unit) {
     var recordatorio by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Nueva Tarea (CU5.1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
+        TopAppBar(title = { Text("Nueva Tarea (CU5.1)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
         Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre de la Tarea") }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -886,15 +1127,22 @@ fun AgriCoreBottomNav(pantallaActual: Destino, onNavigate: (Destino) -> Unit) {
         NavigationBarItem(
             selected = pantallaActual == Destino.Campanias,
             onClick = { onNavigate(Destino.Campanias) },
-            icon = { Icon(Icons.Default.Map, contentDescription = "Parcelas") },
-            label = { Text("Parcelas") },
+            icon = { Icon(Icons.Default.Map, contentDescription = "Campañas") },
+            label = { Text("Campañas") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(
             selected = pantallaActual == Destino.Tareas,
             onClick = { onNavigate(Destino.Tareas) },
-            icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Agenda") },
-            label = { Text("Agenda") },
+            icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Tareas") },
+            label = { Text("Tareas") },
+            colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
+        )
+        NavigationBarItem(
+            selected = pantallaActual == Destino.Insumos,
+            onClick = { onNavigate(Destino.Insumos) },
+            icon = { Icon(Icons.Default.Inventory, contentDescription = "Insumos") },
+            label = { Text("Insumos") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(

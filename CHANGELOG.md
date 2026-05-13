@@ -1,5 +1,17 @@
 # Changelog
 
+**[2026-05-12] - Card campaña activa en Tareas/Cosechas/Observaciones + botón exportar en Reportes + diagrama de flujo**
+- TareasScreen, CosechasScreen y ObservacionesScreen: añadida `CampanaSeleccionadaCard` de la campaña activa.
+- ReportesRendimientoScreen: añadido botón de exportar (Excel/PDF) en TopAppBar con `DropdownMenu`.
+- Creado `docs/FLOW.md` con diagrama Mermaid de navegación y tabla de cobertura de Casos de Uso.
+
+**[2026-05-12] - Refactor de navegación global, módulo de insumos y reportes**
+- BottomNav: añadido acceso directo a `Destino.Insumos`; renombrado "Agenda" → "Tareas" y "Parcelas" → "Campañas".
+- Home: `CampanaSeleccionadaCard` ahora navega a `DetalleCampania`; botón + navega a `FormularioCampania`.
+- InsumosScreen: reemplazado formulario inline por `ModalBottomSheet` con buscador, selector cantidad/precio y botón "Agregar al catálogo".
+- FormularioInsumoScreen: simplificado a solo campos Nombre, Categoría y Unidad.
+- ReportesRendimientoScreen: añadidas tarjetas de métricas comparativas (Rendimiento, Ganancias, Costos, Insumos); selector dropdown para comparar dos campañas; gráficos Canvas de evolución mensual (Costos/Insumos) con leyenda bicolor.
+
 **[2026-05-12] - Inicialización de documentación de seguimiento**
 - Creación de `CHANGELOG.md` en la raíz para el seguimiento de tareas.
 - Ajuste de `donelioOP.md` para referenciar `.context/RoadmapOP.md`.
