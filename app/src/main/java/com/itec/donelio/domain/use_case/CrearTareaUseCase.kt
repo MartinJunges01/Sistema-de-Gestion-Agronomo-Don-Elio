@@ -1,7 +1,12 @@
 package com.itec.donelio.domain.use_case
 
+import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.repository.TareaRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 /**
@@ -11,25 +16,31 @@ import javax.inject.Inject
 class CrearTareaUseCase @Inject constructor(
     private val tareaRepository: TareaRepository
 ) {
-    suspend operator fun invoke(
+    operator fun invoke(
         nombre: String,
         fecha: Long,
         hora: String,
         notificar: Boolean,
         idCampania: Int
-    ) {
-        if (nombre.isBlank()) {
-            throw IllegalArgumentException("El nombre de la tarea no puede estar vacío")
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading)
+        try {
+            if (nombre.isBlank()) {
+                throw IllegalArgumentException("El nombre de la tarea no puede estar vacío")
+            }
+            val tarea = Tarea(
+                id = 0,
+                nombre = nombre.trim(),
+                fecha = fecha,
+                hora = hora,
+                notificar = notificar,
+                confirmar = false,
+                idCampania = idCampania
+            )
+            tareaRepository.insertTarea(tarea)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Error desconocido", e))
         }
-        val tarea = Tarea(
-            id = 0,
-            nombre = nombre.trim(),
-            fecha = fecha,
-            hora = hora,
-            notificar = notificar,
-            confirmar = false,
-            idCampania = idCampania
-        )
-        tareaRepository.insertTarea(tarea)
-    }
+    }.flowOn(Dispatchers.IO)
 }

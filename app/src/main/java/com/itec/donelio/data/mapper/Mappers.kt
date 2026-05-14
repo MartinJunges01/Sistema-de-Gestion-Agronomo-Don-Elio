@@ -1,12 +1,17 @@
 package com.itec.donelio.data.mapper
 
 import com.itec.donelio.data.local.entity.CampaniaEntity
+import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
 import com.itec.donelio.data.local.entity.CosechaEntity
 import com.itec.donelio.data.local.entity.InsumoEntity
+import com.itec.donelio.data.local.entity.InsumoUtilizadoRelacion
+import com.itec.donelio.data.local.entity.ObservacionEntity
 import com.itec.donelio.data.local.entity.TareaEntity
 import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.Insumo
+import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.model.Tarea
 
 fun CampaniaEntity.toDomain(): Campania {
@@ -14,7 +19,8 @@ fun CampaniaEntity.toDomain(): Campania {
         id = id_campania,
         nombre = nombre,
         fechaInicio = fecha,
-        estaActiva = true
+        estaActiva = estaActiva,
+        cultivo = cultivo
     )
 }
 
@@ -23,7 +29,8 @@ fun Campania.toEntity(): CampaniaEntity {
         id_campania = id,
         nombre = nombre,
         fecha = fechaInicio,
-        cultivo = ""
+        cultivo = cultivo,
+        estaActiva = estaActiva
     )
 }
 
@@ -89,4 +96,46 @@ fun Insumo.toEntity(): InsumoEntity {
         categoria = categoria,
         unidad = unidad
     )
+}
+
+fun ObservacionEntity.toDomain(): Observacion {
+    return Observacion(
+        id = id_observacion,
+        texto = texto,
+        imagenUri = imagenUri,
+        idCampania = id_campania
+    )
+}
+
+fun Observacion.toEntity(): ObservacionEntity {
+    return ObservacionEntity(
+        id_observacion = id,
+        texto = texto,
+        imagenUri = imagenUri,
+        id_campania = idCampania
+    )
+}
+
+fun CampaniaInsumoEntity.toDomain(): CampaniaInsumo {
+    return CampaniaInsumo(
+        id = idCampaniaInsumo,
+        idCampania = idCampania,
+        idInsumo = idInsumo,
+        cantidad = cantidad,
+        precio = precio
+    )
+}
+
+fun CampaniaInsumo.toEntity(): CampaniaInsumoEntity {
+    return CampaniaInsumoEntity(
+        idCampaniaInsumo = id,
+        idCampania = idCampania,
+        idInsumo = idInsumo,
+        cantidad = cantidad,
+        precio = precio
+    )
+}
+
+fun InsumoUtilizadoRelacion.toDomain(): CampaniaInsumo {
+    return asignacion.toDomain()
 }

@@ -75,14 +75,14 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Crear `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase`.
   - [x] Crear `ConfirmarTareaUseCase` (CU5.4).
   - [x] Inyectar los repositorios correspondientes.
-- [ ] **Issue 5: Casos de Uso (Use Cases) - Módulo de Cosechas, Insumos y Observaciones**
-  - [ ] Crear `RegistrarCosechaUseCase`.
-  - [ ] Crear `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase` y `ObtenerCatalogoInsumosUseCase`.
-  - [ ] Crear `AsignarInsumoACampaniaUseCase`.
-  - [ ] Crear `GuardarObservacionUseCase`.
-- [ ] **Issue 6: (Opcional) Wrapper de Resultados y Manejo de Errores**
-  - [ ] Crear una clase sellada `Resource<T>` o `Result<T>`.
-  - [ ] Ajustar los Use Cases más complejos para que retornen un `Flow<Resource<T>>`.
+- [x] **Issue 5: Casos de Uso (Use Cases) - Módulo de Cosechas, Insumos y Observaciones**
+  - [x] Crear `RegistrarCosechaUseCase`.
+  - [x] Crear `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase` y `ObtenerCatalogoInsumosUseCase`.
+  - [x] Crear `AsignarInsumoACampaniaUseCase`.
+  - [x] Crear `GuardarObservacionUseCase`.
+- [x] **Issue 6: (Opcional) Wrapper de Resultados y Manejo de Errores**
+  - [x] Crear una clase sellada `Resource<T>` o `Result<T>`.
+  - [x] Ajustar los Use Cases más complejos para que retornen un `Flow<Resource<T>>`.
 
 ## Fase 4: Interfaz de Usuario y ViewModels
 - [ ] **Issue 1: Configuración de Navegación y Layout Principal**

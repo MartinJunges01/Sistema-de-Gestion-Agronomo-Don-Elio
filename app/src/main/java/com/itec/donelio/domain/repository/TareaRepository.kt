@@ -4,7 +4,7 @@ import com.itec.donelio.domain.model.Tarea
 import kotlinx.coroutines.flow.Flow
 
 interface TareaRepository {
-    fun getTareasByCampania(campaniaId: Int): Flow<List<Tarea>>
+    fun getTareasByCampania(idCampania: Int): Flow<List<Tarea>>
 
     suspend fun getTareaById(id: Int): Tarea?
 

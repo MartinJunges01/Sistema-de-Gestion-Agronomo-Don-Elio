@@ -5,6 +5,19 @@
 - Cada Use Case con `@Inject constructor` y validación de nombre no vacío.
 - Creación de `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase` y `ConfirmarTareaUseCase`.
 
+**[2026-05-14] - Implementación de Resource<T> y manejo de errores en Use Cases**
+- Creación de `Resource<T>` en `domain/model/` con extensiones `onSuccess`, `onError`, `isSuccess`, `isError`.
+- Refactorización de 7 Use Cases para retornar `Flow<Resource<Unit>>` con emisión de Loading, Success y Error.
+- Manejo de excepciones con try/catch y ejecución en `Dispatchers.IO` mediante `flowOn`.
+
+**[2026-05-14] - Corrección de mapeo Campania, unificación de nomenclatura e implementación de Use Cases faltantes**
+- Corregido mapeo bidireccional `Campania` ↔ `CampaniaEntity`: agregado `cultivo` al modelo de dominio y `estaActiva` a la entidad; eliminados hardcodeos en `Mappers.kt`.
+- Renombrado `campaniaId` → `idCampania` en `TareaRepository`, `CosechaRepository` y sus implementaciones.
+- Creados modelos de dominio `Observacion` y `CampaniaInsumo` para mantener la pureza de la capa domain.
+- Creados `CampaniaInsumoRepository` y `ObservacionRepository` con sus implementaciones y bindings de Hilt.
+- Agregados mappers para `ObservacionEntity` ↔ `Observacion` y `CampaniaInsumoEntity` ↔ `CampaniaInsumo`.
+- Implementados 6 casos de uso: `RegistrarCosechaUseCase`, `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase`, `ObtenerCatalogoInsumosUseCase`, `AsignarInsumoACampaniaUseCase`, `GuardarObservacionUseCase`.
+
 **[2026-05-12] - Card campaña activa en Tareas/Cosechas/Observaciones + botón exportar en Reportes + diagrama de flujo**
 - TareasScreen, CosechasScreen y ObservacionesScreen: añadida `CampanaSeleccionadaCard` de la campaña activa.
 - ReportesRendimientoScreen: añadido botón de exportar (Excel/PDF) en TopAppBar con `DropdownMenu`.

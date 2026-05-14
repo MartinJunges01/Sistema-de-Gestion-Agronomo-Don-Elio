@@ -1,7 +1,12 @@
 package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.repository.CampaniaRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 /**
@@ -11,10 +16,16 @@ import javax.inject.Inject
 class EditarCampaniaUseCase @Inject constructor(
     private val campaniaRepository: CampaniaRepository
 ) {
-    suspend operator fun invoke(campania: Campania) {
-        if (campania.nombre.isBlank()) {
-            throw IllegalArgumentException("El nombre de la campaña no puede estar vacío")
+    operator fun invoke(campania: Campania): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading)
+        try {
+            if (campania.nombre.isBlank()) {
+                throw IllegalArgumentException("El nombre de la campaña no puede estar vacío")
+            }
+            campaniaRepository.updateCampania(campania)
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.localizedMessage ?: "Error desconocido", e))
         }
-        campaniaRepository.updateCampania(campania)
-    }
+    }.flowOn(Dispatchers.IO)
 }
