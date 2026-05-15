@@ -1,5 +1,60 @@
 # Changelog
 
+**[2026-05-15] - Implementación de Módulo de Insumos (F4/Issue6)**
+- Creación de `InsumoCatalogoViewModel` e `InsumoVinculacionViewModel` con carga reactiva desde BD.
+- Conexión de `CatalogoInsumosScreen` al catálogo real con `ObtenerCatalogoInsumosUseCase`.
+- Conexión de `FormularioInsumoScreen` a `CrearInsumoCatalogoUseCase` con validación y spinner.
+- Refactorización de `InsumosScreen` (vinculación) con datos reales, cálculo `cantidad × precio` formateado y atajo "Crear nuevo insumo" si no existe en catálogo.
+- Creación de `FormularioInsumoViewModel` con estado reactivo.
+- Actualización de `TabInsumos` en `DetalleCampaniaScreen` con conteo real y total estimado.
+
+**[2026-05-15] - Implementación de Módulo de Tareas (F4/Issue5)**
+- Creación de `TareaViewModel` con carga reactiva de tareas por campaña desde BD.
+- Creación de `NuevaTareaViewModel` con formulario reactivo, validación y conexión a `CrearTareaUseCase`.
+- Refactorización de `TareasScreen` con datos reales, checkbox de confirmación con `ConfirmarTareaUseCase`, feedback visual (tachado + atenuado).
+- Refactorización de `NuevaTareaScreen` con `DatePickerDialog` M3, validación de nombre y spinner de guardado.
+- Actualización de `TabTareas` en `DetalleCampaniaScreen` con lista real de pendientes y resumen.
+- Actualización de `NavRoute.NuevaTarea` con `campaniaId` opcional.
+
+**[2026-05-14] - Correcciones de bugs y navegación (F4/Issue4)**
+- Bugfix: `CrearCampaniaUseCase` ahora acepta parámetro `cultivo` — el campo ya no se pierde al crear campañas nuevas.
+- Bugfix: `CampaniaFormViewModel` pasa `cultivo` al `crearCampaniaUseCase`.
+- Bugfix: `GestionParcelasScreen`, `TareasScreen`, `InsumosScreen`, `CosechasScreen`, `ObservacionesScreen` ya no hardcodean `campaniaId=1` — todas las rutas aceptan `campaniaId` opcional y lo propagan correctamente.
+- Limpieza: eliminado parámetro `onEditar` no usado en `HeaderCampania`.
+
+**[2026-05-14] - Pantalla Detalle de Campaña con Tabs y encabezado fijo (F4/Issue4)**
+- Creación de `CampaniaDetailViewModel` con `SavedStateHandle` para carga de campaña por ID + eliminación.
+- Rediseño de `DetalleCampaniaScreen` con TopAppBar dinámico, encabezado fijo (nombre, cultivo, fechas, estado) y TabRow con 5 tabs: Info, Tareas, Insumos, Cosechas, Observaciones.
+- Cada tab muestra resumen informativo y botón de navegación a su pantalla completa, pasando `campaniaId`.
+- Actualización de `screens.kt` con `navArgument("campaniaId")` extraído y pasado al ViewModel.
+- Navegación desde detalle a edición de campaña (`onGoToEditar`) con el ID correcto.
+
+**[2026-05-14] - Implementación de Formulario ABM Campañas con validación y DatePicker (F4/Issue3)**
+- Creación de `CampaniaFormViewModel` con `SavedStateHandle` para modo edición/creación.
+- Refactorización de `FormularioCampaniaScreen` con campos nombre/cultivo validados, DatePicker M3, botón guardar con spinner.
+- Actualización de `NavRoute.FormularioCampania` con `campaniaId` opcional vía query param.
+- Integración de `CrearCampaniaUseCase` (creación) y `EditarCampaniaUseCase` (edición) con `LaunchedEffect` para navegación post-guardado.
+
+**[2026-05-14] - Refactor: división de screens.kt en archivos individuales**
+- Separación de 15 pantallas en archivos por feature (login, home, campania, tarea, cosecha, insumo, observacion, reportes, config).
+- Extracción de colores a `theme/AgriCoreColors.kt`.
+- Componentes compartidos movidos a `components/` (6 archivos).
+- Navegación migrada a `navigation/NavRoutes.kt` con sealed class `NavRoute`.
+- Simplificación de la ruta `FormularioCampania` (sin parámetro opcional).
+
+**[2026-05-14] - Implementación de HomeViewModel y Dashboard reactivo (F4/Issue2)**
+- Creación de `HomeViewModel` con inyección de `ObtenerCampaniasUseCase`.
+- Refactorización de `DashboardOperacionesScreen` para consumir datos reales desde BD.
+- Lista reactiva de campañas con navegación al detalle por ID.
+- Estado vacío con indicación visual para crear una nueva campaña.
+
+**[2026-05-14] - Migración a Navigation Compose y Scaffold global (F4/Issue1)**
+- Creación de `NavRoute` (sealed class) reemplazando enum `Destino`.
+- Migración de navegación manual (lista/pila) a `NavHost` + `NavController`.
+- Configuración de BottomNavigationBar con preservación de estado por pestaña.
+- Eliminación de `BackHandler` manual (delegado al NavController).
+- Definicición de rutas con parámetros (`DetalleCampania`, `FormularioCampania`).
+
 **[2026-05-12] - Implementación de Casos de Uso (Campañas y Tareas) - F3/Issue4**
 - Creación de `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
 - Cada Use Case con `@Inject constructor` y validación de nombre no vacío.

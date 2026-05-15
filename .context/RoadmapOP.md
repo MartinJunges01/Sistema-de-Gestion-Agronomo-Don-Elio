@@ -85,30 +85,33 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Ajustar los Use Cases más complejos para que retornen un `Flow<Resource<T>>`.
 
 ## Fase 4: Interfaz de Usuario y ViewModels
-- [ ] **Issue 1: Configuración de Navegación y Layout Principal**
-  - [ ] Definir las rutas de navegación.
-  - [ ] Crear el NavHost principal en la MainActivity.
-  - [ ] Configurar un Scaffold global.
-- [ ] **Issue 2: Pantalla Principal (Dashboard / Home de Campañas)**
-  - [ ] Crear el HomeViewModel.
-  - [ ] Diseñar lista (LazyColumn) de campañas.
-  - [ ] Implementar FAB para crear nueva campaña.
-- [ ] **Issue 3: Formularios de ABM de Campañas (Crear / Editar)**
-  - [ ] Crear CampaniaFormViewModel.
-  - [ ] Diseñar la pantalla de formulario.
-  - [ ] Implementar validación de errores.
-  - [ ] Conectar botón "Guardar".
-- [ ] **Issue 4: Pantalla de "Detalle de Campaña"**
-  - [ ] Crear CampaniaDetailViewModel.
-  - [ ] Diseñar interfaz con "Tabs" (Tareas, Insumos, Cosechas, Observaciones).
-  - [ ] Mostrar encabezado fijo.
-- [ ] **Issue 5: Módulo de Tareas en Campaña (Crear, Listar y Confirmar)**
-  - [ ] Diseñar lista de tareas.
-  - [ ] Crear diálogo/pantalla para nueva tarea.
-  - [ ] Implementar Checkbox para confirmar tarea.
-- [ ] **Issue 6: Módulo de Insumos (Catálogo Global y Asignación)**
-  - [ ] Pantalla para crear y listar insumos.
-  - [ ] Formulario de egreso en pestaña "Insumos".
+- [x] **Issue 1: Configuración de Navegación y Layout Principal**
+  - [x] Definir las rutas de navegación.
+  - [x] Crear el NavHost principal en la MainActivity.
+  - [x] Configurar un Scaffold global.
+- [x] **Issue 2: Pantalla Principal (Dashboard / Home de Campañas)**
+  - [x] Crear el HomeViewModel.
+  - [x] Diseñar lista (LazyColumn) de campañas.
+  - [x] Implementar FAB para crear nueva campaña.
+- [x] **Issue 3: Formularios de ABM de Campañas (Crear / Editar)**
+  - [x] Crear CampaniaFormViewModel.
+  - [x] Diseñar la pantalla de formulario.
+  - [x] Implementar validación de errores.
+  - [x] Conectar botón "Guardar".
+- [x] **Issue 4: Pantalla de "Detalle de Campaña"**
+  - [x] Crear CampaniaDetailViewModel.
+  - [x] Diseñar interfaz con "Tabs" (Tareas, Insumos, Cosechas, Observaciones).
+  - [x] Mostrar encabezado fijo.
+- [x] **Issue 5: Módulo de Tareas en Campaña (Crear, Listar y Confirmar)**
+  - [x] Crear TareaViewModel con carga reactiva de tareas por campaña.
+  - [x] Conexión de TareasScreen y NuevaTareaScreen a CrearTareaUseCase y ConfirmarTareaUseCase.
+  - [x] Checkbox de confirmación con persistencia en BD y feedback visual (tachado).
+  - [x] DatePicker/TimePicker en formulario de nueva tarea.
+- [x] **Issue 6: Módulo de Insumos (Catálogo Global y Asignación)**
+  - [x] Crear InsumoCatalogoViewModel e InsumoVinculacionViewModel.
+  - [x] Conexión de catálogo, formulario y vinculación a Use Cases reales.
+  - [x] Cálculo cantidad × precio en lista de insumos vinculados.
+  - [x] Atajo visual para crear insumo si no existe en catálogo.
 
 ## Fase 5: Integración con Hardware (Cámara y Notificaciones)
 - [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
