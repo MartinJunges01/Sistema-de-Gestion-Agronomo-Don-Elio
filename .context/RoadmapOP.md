@@ -112,6 +112,19 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Conexión de catálogo, formulario y vinculación a Use Cases reales.
   - [x] Cálculo cantidad × precio en lista de insumos vinculados.
   - [x] Atajo visual para crear insumo si no existe en catálogo.
+- [ ] **Issue 7: Módulo de Cosechas (Listar y Registrar)**
+  - [ ] Crear CosechaViewModel con carga reactiva de cosechas por campaña.
+  - [ ] Conectar CosechasScreen a datos reales desde BD.
+  - [ ] Conectar FormularioCosechaScreen a RegistrarCosechaUseCase.
+  - [ ] Actualizar TabCosechas en DetalleCampaniaScreen con datos reales.
+- [ ] **Issue 8: Módulo de Observaciones (Guardar y Listar)**
+  - [ ] Crear ObservacionViewModel con carga reactiva de observaciones por campaña.
+  - [ ] Conectar ObservacionesScreen a GuardarObservacionUseCase.
+  - [ ] Actualizar TabObservaciones en DetalleCampaniaScreen con datos reales.
+- [ ] **Issue 9: Gestión de Campañas (Listado y Navegación)**
+  - [ ] Refactorizar GestionParcelasScreen a GestionCampaniasScreen.
+  - [ ] Conectar a ObtenerCampaniasUseCase para lista real de campañas.
+  - [ ] Navegación al detalle con campaniaId correcto.
 
 ## Fase 5: Integración con Hardware (Cámara y Notificaciones)
 - [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
