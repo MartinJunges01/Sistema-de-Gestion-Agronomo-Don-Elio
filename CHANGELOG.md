@@ -1,5 +1,14 @@
 # Changelog
 
+**[2026-05-15] - Seed data para testing (debug source set)**
+- Configuración de `sourceSets { debug { java.srcDir("src/debug/java") } }` en `app/build.gradle.kts`.
+- Creación de interfaz `DataSeeder` en `src/main/` con `@BindsOptionalOf` para inyección opcional en Hilt.
+- Creación de `DataSeederImpl` en `src/debug/` con 4 campañas, 8 insumos, 8 tareas, 3 cosechas, 5 vinculaciones y 4 observaciones con fechas fijas mediante `Calendar`.
+- Creación de `SeedModule` en `src/debug/` proveyendo `DataSeederImpl` vía Hilt.
+- Creación de `ConfiguracionDBViewModel` con estado `SeedState` (Idle/Cargando/Exito/Error) y método `cargarDatosPrueba()`.
+- Botón "Cargar datos de prueba" en `ConfiguracionDBScreen` visible solo en builds debug, con spinner y Snackbar de feedback.
+- Actualización de `.context/RoadmapOP.md` con Issue 10 de Fase 4.
+
 **[2026-05-15] - Implementación de Módulo de Insumos (F4/Issue6)**
 - Creación de `InsumoCatalogoViewModel` e `InsumoVinculacionViewModel` con carga reactiva desde BD.
 - Conexión de `CatalogoInsumosScreen` al catálogo real con `ObtenerCatalogoInsumosUseCase`.

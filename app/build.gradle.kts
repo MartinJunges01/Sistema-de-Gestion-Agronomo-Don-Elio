@@ -33,6 +33,13 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    sourceSets {
+        getByName("debug") {
+            java.srcDir("src/debug/java")
+        }
     }
 }
 

@@ -125,6 +125,11 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Refactorizar GestionParcelasScreen a GestionCampaniasScreen.
   - [ ] Conectar a ObtenerCampaniasUseCase para lista real de campañas.
   - [ ] Navegación al detalle con campaniaId correcto.
+- [x] **Issue 10: Seed Data para testing (debug source set)**
+  - [x] Configurar sourceSet debug en build.gradle.kts.
+  - [x] Crear DataSeeder con datos de prueba realistas en src/debug/.
+  - [x] Crear SeedModule en src/debug/ con @Provides para Hilt.
+  - [x] Agregar botón "Cargar datos de prueba" en ConfiguracionDB visible solo en debug.
 
 ## Fase 5: Integración con Hardware (Cámara y Notificaciones)
 - [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
