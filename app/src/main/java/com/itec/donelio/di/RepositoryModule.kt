@@ -2,12 +2,14 @@ package com.itec.donelio.di
 
 import com.itec.donelio.data.repository.CampaniaInsumoRepositoryImpl
 import com.itec.donelio.data.repository.CampaniaRepositoryImpl
+import com.itec.donelio.data.repository.CosechaNoAlmacenadaRepositoryImpl
 import com.itec.donelio.data.repository.CosechaRepositoryImpl
 import com.itec.donelio.data.repository.InsumoRepositoryImpl
 import com.itec.donelio.data.repository.ObservacionRepositoryImpl
 import com.itec.donelio.data.repository.TareaRepositoryImpl
 import com.itec.donelio.domain.repository.CampaniaInsumoRepository
 import com.itec.donelio.domain.repository.CampaniaRepository
+import com.itec.donelio.domain.repository.CosechaNoAlmacenadaRepository
 import com.itec.donelio.domain.repository.CosechaRepository
 import com.itec.donelio.domain.repository.InsumoRepository
 import com.itec.donelio.domain.repository.ObservacionRepository
@@ -57,4 +59,10 @@ abstract class RepositoryModule {
     abstract fun bindObservacionRepository(
         impl: ObservacionRepositoryImpl
     ): ObservacionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCosechaNoAlmacenadaRepository(
+        impl: CosechaNoAlmacenadaRepositoryImpl
+    ): CosechaNoAlmacenadaRepository
 }

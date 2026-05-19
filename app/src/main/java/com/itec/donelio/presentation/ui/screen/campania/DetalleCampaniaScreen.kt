@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
@@ -26,6 +26,8 @@ import com.itec.donelio.presentation.ui.theme.TextoSecundario
 import com.itec.donelio.presentation.viewmodel.campania.CampaniaDetailViewModel
 import com.itec.donelio.presentation.viewmodel.tarea.TareaViewModel
 import com.itec.donelio.presentation.viewmodel.insumo.InsumoVinculacionViewModel
+import com.itec.donelio.presentation.viewmodel.cosecha.CosechaViewModel
+import com.itec.donelio.presentation.viewmodel.observacion.ObservacionViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -93,8 +95,11 @@ fun DetalleCampaniaScreen(
                     0 -> TabInfo(campaign = campaign, onEditar = { onGoToEditar(campaign.id) })
                     1 -> TabTareas(campaniaId = campaign.id, onGoToTareas = { onGoToTareas(campaign.id) })
                     2 -> TabInsumos(campaniaId = campaign.id, onGoToInsumos = { onGoToInsumos(campaign.id) })
-                    3 -> TabCosechas(onGoToCosechas = { onGoToCosechas(campaign.id) })
-                    4 -> TabObservaciones(onGoToObservaciones = { onGoToObservaciones(campaign.id) })
+                    3 -> TabCosechas(campaniaId = campaign.id, onGoToCosechas = { onGoToCosechas(campaign.id) })
+                    4 -> TabObservaciones(
+                        campaniaId = campaign.id,
+                        onGoToObservaciones = { onGoToObservaciones(campaign.id) }
+                    )
                 }
             }
         }
@@ -235,13 +240,28 @@ private fun TabInsumos(campaniaId: Int, onGoToInsumos: () -> Unit) {
 }
 
 @Composable
-private fun TabCosechas(onGoToCosechas: () -> Unit) {
+private fun TabCosechas(campaniaId: Int, onGoToCosechas: () -> Unit) {
+    val vm: CosechaViewModel = hiltViewModel(key = "tab_cosechas_$campaniaId")
+    val almacenadas by vm.almacenadas.collectAsState()
+    val noAlmacenadasDetalle by vm.noAlmacenadasDetalle.collectAsState()
+    val totalAlmacenado = almacenadas.sumOf { it.cantidad }
+    val totalNoAlmacenado = noAlmacenadasDetalle.values.sumOf { it.precio }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Resumen de Cosechas", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
-                    Text("200 Tn almacenadas · 150 Tn vendidas", color = TextoSecundario, fontSize = 14.sp)
+                    Text(
+                        "${almacenadas.size} cosechas almacenadas · ${noAlmacenadasDetalle.size} vendidas/reservadas",
+                        color = TextoSecundario, fontSize = 14.sp
+                    )
+                    if (almacenadas.isNotEmpty() || noAlmacenadasDetalle.isNotEmpty()) {
+                        Text(
+                            "${formatCantidad(totalAlmacenado)} almacenadas · $ ${"%,.2f".format(totalNoAlmacenado)} en ventas",
+                            color = AgriVerde, fontWeight = FontWeight.Bold, fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
@@ -256,13 +276,30 @@ private fun TabCosechas(onGoToCosechas: () -> Unit) {
 }
 
 @Composable
-private fun TabObservaciones(onGoToObservaciones: () -> Unit) {
+private fun TabObservaciones(campaniaId: Int, onGoToObservaciones: () -> Unit) {
+    val vm: ObservacionViewModel = hiltViewModel(key = "tab_observaciones_$campaniaId")
+    val observaciones by vm.observaciones.collectAsState()
+    val ultimas = observaciones.take(3)
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Resumen de Observaciones", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
-                    Text("Sin observaciones registradas", color = TextoSecundario, fontSize = 14.sp)
+                    if (observaciones.isEmpty()) {
+                        Text("Sin observaciones registradas", color = TextoSecundario, fontSize = 14.sp)
+                    } else {
+                        Text("${observaciones.size} observaciones registradas", color = TextoSecundario, fontSize = 14.sp)
+                    }
+                }
+            }
+        }
+        ultimas.forEach { obs ->
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(obs.texto, color = TextoPrincipal, fontSize = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    }
                 }
             }
         }
@@ -280,4 +317,12 @@ private fun formatFecha(timestamp: Long): String {
     if (timestamp <= 0) return "—"
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
+}
+
+private fun formatCantidad(cantidad: Double): String {
+    return if (cantidad == cantidad.toLong().toDouble()) {
+        "${cantidad.toLong()} Kg"
+    } else {
+        "%,.2f Kg".format(cantidad)
+    }
 }

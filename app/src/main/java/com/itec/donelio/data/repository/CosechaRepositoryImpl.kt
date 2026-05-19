@@ -23,8 +23,8 @@ class CosechaRepositoryImpl @Inject constructor(
         return cosechaDao.getCosechaById(id)?.toDomain()
     }
 
-    override suspend fun insertCosecha(cosecha: Cosecha) {
-        cosechaDao.insertCosecha(cosecha.toEntity())
+    override suspend fun insertCosecha(cosecha: Cosecha): Long {
+        return cosechaDao.insertCosecha(cosecha.toEntity())
     }
 
     override suspend fun updateCosecha(cosecha: Cosecha) {

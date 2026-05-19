@@ -22,7 +22,7 @@ import com.itec.donelio.presentation.navigation.NavRoute
 import com.itec.donelio.presentation.ui.components.AgriCoreBottomNav
 import com.itec.donelio.presentation.ui.screen.campania.DetalleCampaniaScreen
 import com.itec.donelio.presentation.ui.screen.campania.FormularioCampaniaScreen
-import com.itec.donelio.presentation.ui.screen.campania.GestionParcelasScreen
+import com.itec.donelio.presentation.ui.screen.campania.GestionCampaniasScreen
 import com.itec.donelio.presentation.ui.screen.config.ConfiguracionDBScreen
 import com.itec.donelio.presentation.ui.screen.cosecha.CosechasScreen
 import com.itec.donelio.presentation.ui.screen.cosecha.FormularioCosechaScreen
@@ -55,7 +55,7 @@ fun DonElioApp() {
                             NavRoute.Home.route -> NavRoute.FormularioCampania.createRoute()
                             NavRoute.Campanias.route -> NavRoute.FormularioCampania.createRoute()
                             NavRoute.CatalogoInsumos.route -> NavRoute.FormularioInsumo.route
-                            NavRoute.Cosechas.route -> NavRoute.FormularioCosecha.route
+                            NavRoute.Cosechas.route -> NavRoute.FormularioCosecha.createRoute()
                             else -> NavRoute.NuevaTarea.route
                         }
                         navController.navigate(destinoNuevo)
@@ -112,9 +112,10 @@ fun DonElioApp() {
                         defaultValue = -1
                     })
                 ) { backStackEntry ->
-                    val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
-                    GestionParcelasScreen(
-                        onGoToDetail = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) },
+                    GestionCampaniasScreen(
+                        onGoToDetail = { campaniaIdActual ->
+                            navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaIdActual))
+                        },
                         onBack = { navController.popBackStack() }
                     )
                 }
@@ -176,8 +177,18 @@ fun DonElioApp() {
                         onGoToCampaniaDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) }
                     )
                 }
-                composable(NavRoute.FormularioCosecha.route) {
-                    FormularioCosechaScreen(onBack = { navController.popBackStack() })
+                composable(
+                    route = NavRoute.FormularioCosecha.route,
+                    arguments = listOf(navArgument("campaniaId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    })
+                ) { backStackEntry ->
+                    val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
+                    FormularioCosechaScreen(
+                        campaniaId = campaniaId,
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable(
                     route = NavRoute.Insumos.route,

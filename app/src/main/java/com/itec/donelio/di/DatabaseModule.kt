@@ -66,4 +66,10 @@ object DatabaseModule {
     fun provideObservacionDao(db: DonElioDatabase): ObservacionDao {
         return db.observacionDao
     }
+
+    @Provides
+    @Singleton
+    fun provideCosechaNoAlmacenadaDao(db: DonElioDatabase): CosechaNoAlmacenadaDao {
+        return db.cosechaNoAlmacenadaDao
+    }
 }

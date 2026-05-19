@@ -112,19 +112,22 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Conexión de catálogo, formulario y vinculación a Use Cases reales.
   - [x] Cálculo cantidad × precio en lista de insumos vinculados.
   - [x] Atajo visual para crear insumo si no existe en catálogo.
-- [ ] **Issue 7: Módulo de Cosechas (Listar y Registrar)**
-  - [ ] Crear CosechaViewModel con carga reactiva de cosechas por campaña.
-  - [ ] Conectar CosechasScreen a datos reales desde BD.
-  - [ ] Conectar FormularioCosechaScreen a RegistrarCosechaUseCase.
-  - [ ] Actualizar TabCosechas en DetalleCampaniaScreen con datos reales.
-- [ ] **Issue 8: Módulo de Observaciones (Guardar y Listar)**
-  - [ ] Crear ObservacionViewModel con carga reactiva de observaciones por campaña.
-  - [ ] Conectar ObservacionesScreen a GuardarObservacionUseCase.
-  - [ ] Actualizar TabObservaciones en DetalleCampaniaScreen con datos reales.
-- [ ] **Issue 9: Gestión de Campañas (Listado y Navegación)**
-  - [ ] Refactorizar GestionParcelasScreen a GestionCampaniasScreen.
-  - [ ] Conectar a ObtenerCampaniasUseCase para lista real de campañas.
-  - [ ] Navegación al detalle con campaniaId correcto.
+- [x] **Issue 7: Módulo de Cosechas (Listar y Registrar)**
+  - [x] Crear CosechaViewModel con carga reactiva de cosechas por campaña.
+  - [x] Conectar CosechasScreen a datos reales desde BD.
+  - [x] Conectar FormularioCosechaScreen a RegistrarCosechaUseCase.
+  - [x] Actualizar TabCosechas en DetalleCampaniaScreen con datos reales.
+  - [x] Implementar CosechaNoAlmacenadaDao, modelo, repositorio y use case.
+  - [x] Refactorizar FormularioCosechaScreen para bifurcar almacenada/no-almacenada.
+  - [x] Mostrar tipo y precio en cards de venta/reserva.
+- [x] **Issue 8: Módulo de Observaciones (Guardar y Listar)**
+  - [x] Crear ObservacionViewModel con carga reactiva de observaciones por campaña.
+  - [x] Conectar ObservacionesScreen a GuardarObservacionUseCase.
+  - [x] Actualizar TabObservaciones en DetalleCampaniaScreen con datos reales.
+- [x] **Issue 9: Gestión de Campañas (Listado y Navegación)**
+  - [x] Refactorizar GestionParcelasScreen a GestionCampaniasScreen.
+  - [x] Conectar a ObtenerCampaniasUseCase para lista real de campañas.
+  - [x] Navegación al detalle con campaniaId correcto.
 - [x] **Issue 10: Seed Data para testing (debug source set)**
   - [x] Configurar sourceSet debug en build.gradle.kts.
   - [x] Crear DataSeeder con datos de prueba realistas en src/debug/.

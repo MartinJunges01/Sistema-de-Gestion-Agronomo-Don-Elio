@@ -1,0 +1,115 @@
+package com.itec.donelio.presentation.ui.screen.campania
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Agriculture
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.presentation.ui.theme.AgriFondo
+import com.itec.donelio.presentation.ui.theme.AgriVerde
+import com.itec.donelio.presentation.ui.theme.TextoPrincipal
+import com.itec.donelio.presentation.ui.theme.TextoSecundario
+import com.itec.donelio.presentation.viewmodel.campania.GestionCampaniasViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GestionCampaniasScreen(
+    viewModel: GestionCampaniasViewModel = hiltViewModel(),
+    onGoToDetail: (campaniaId: Int) -> Unit,
+    onBack: () -> Unit
+) {
+    val campanias by viewModel.campanias.collectAsState()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text("Gestión de Campañas", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            if (campanias.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(Icons.Default.Agriculture, contentDescription = null, modifier = Modifier.size(64.dp), tint = TextoSecundario)
+                        Text("No hay campañas", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
+                        Text("Presiona + para crear una", fontSize = 14.sp, color = TextoSecundario)
+                    }
+                }
+            } else {
+                items(campanias, key = { it.id }) { campania ->
+                    CampaniaCard(
+                        campania = campania,
+                        onClick = { onGoToDetail(campania.id) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CampaniaCard(campania: Campania, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(48.dp), contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Eco,
+                    contentDescription = null,
+                    tint = if (campania.estaActiva) AgriVerde else TextoSecundario,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
+                Text(campania.cultivo.ifBlank { "—" }, fontSize = 14.sp, color = TextoSecundario)
+                Text(formatFecha(campania.fechaInicio), fontSize = 12.sp, color = TextoSecundario)
+            }
+            if (campania.estaActiva) {
+                Surface(shape = RoundedCornerShape(8.dp), color = AgriVerde.copy(alpha = 0.1f)) {
+                    Text("Activa", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontSize = 11.sp, color = AgriVerde, fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
+        }
+    }
+}
+
+private fun formatFecha(timestamp: Long): String {
+    if (timestamp <= 0) return "—"
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return sdf.format(Date(timestamp))
+}

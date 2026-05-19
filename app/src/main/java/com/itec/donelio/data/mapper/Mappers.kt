@@ -3,6 +3,7 @@ package com.itec.donelio.data.mapper
 import com.itec.donelio.data.local.entity.CampaniaEntity
 import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
 import com.itec.donelio.data.local.entity.CosechaEntity
+import com.itec.donelio.data.local.entity.CosechaNoAlmacenadaEntity
 import com.itec.donelio.data.local.entity.InsumoEntity
 import com.itec.donelio.data.local.entity.InsumoUtilizadoRelacion
 import com.itec.donelio.data.local.entity.ObservacionEntity
@@ -10,6 +11,7 @@ import com.itec.donelio.data.local.entity.TareaEntity
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Cosecha
+import com.itec.donelio.domain.model.CosechaNoAlmacenada
 import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.model.Tarea
@@ -139,3 +141,9 @@ fun CampaniaInsumo.toEntity(): CampaniaInsumoEntity {
 fun InsumoUtilizadoRelacion.toDomain(): CampaniaInsumo {
     return asignacion.toDomain()
 }
+
+fun CosechaNoAlmacenadaEntity.toDomain(): CosechaNoAlmacenada =
+    CosechaNoAlmacenada(id = id_cosecha_no_alm, tipo = tipo, precio = precio, idCosecha = id_cosecha)
+
+fun CosechaNoAlmacenada.toEntity(): CosechaNoAlmacenadaEntity =
+    CosechaNoAlmacenadaEntity(id_cosecha_no_alm = id, tipo = tipo, precio = precio, id_cosecha = idCosecha)

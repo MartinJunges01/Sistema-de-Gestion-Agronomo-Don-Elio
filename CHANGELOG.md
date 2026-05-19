@@ -1,5 +1,36 @@
 # Changelog
 
+**[2026-05-18] - Refactor de Gestión de Campañas (F4/Issue9)**
+- Creación de `GestionCampaniasViewModel` con carga reactiva de campañas desde `ObtenerCampaniasUseCase`.
+- Creación de `GestionCampaniasScreen` reemplazando `GestionParcelasScreen` (mock) con lista real desde BD.
+- Corrección de navegación: `onGoToDetail` ahora recibe `campaniaId` real del item clickeado.
+- Estado vacío con icono e indicación visual para crear campaña.
+
+**[2026-05-18] - Implementación de Módulo de Observaciones (F4/Issue8)**
+- Creación de `ObservacionViewModel` con carga reactiva de observaciones por campaña desde BD.
+- Creación de `FormularioObservacionViewModel` con formulario reactivo, validación y conexión a `GuardarObservacionUseCase`.
+- Rediseño de `ObservacionesScreen` con formulario para guardar + listado reactivo de observaciones registradas.
+- Actualización de `TabObservaciones` en `DetalleCampaniaScreen` con ViewModel por campaña y últimas 3 observaciones.
+
+**[2026-05-18] - Implementación completa CosechaNoAlmacenada (Venta/Reserva)**
+- Creación de `CosechaNoAlmacenadaDao`, modelo de dominio `CosechaNoAlmacenada`, repositorio e implementación.
+- Creación de `RegistrarCosechaConVentaUseCase` que inserta cosecha base + detalle de venta/reserva.
+- Exposición del DAO en `DonElioDatabase` y DI en `DatabaseModule`/`RepositoryModule`.
+- Mappers `toDomain()`/`toEntity()` para `CosechaNoAlmacenadaEntity`.
+- `CosechaRepository.insertCosecha()` ahora retorna `Long` (ID generado).
+- `CosechaViewModel` ampliado: `almacenadas` (filtrado) y `noAlmacenadasDetalle` (mapa id→detalle).
+- `FormularioCosechaViewModel.guardar()` bifurca entre `RegistrarCosechaUseCase` y `RegistrarCosechaConVentaUseCase` según checkbox.
+- `CosechasScreen` muestra tipo y precio en cards de venta/reserva.
+- `TabCosechas` en `DetalleCampaniaScreen` con key única por campaña y resumen real de ventas.
+
+**[2026-05-18] - Implementación de Módulo de Cosechas (F4/Issue7)**
+- Creación de `CosechaViewModel` con carga reactiva de cosechas por campaña desde BD.
+- Creación de `FormularioCosechaViewModel` con formulario reactivo, validación y conexión a `RegistrarCosechaUseCase`.
+- Refactorización de `CosechasScreen` con datos reales, separación visual almacenadas/no-almacenadas.
+- Refactorización de `FormularioCosechaScreen` con ViewModel, DatePicker, validación de cantidad y spinner de guardado.
+- Agregado parámetro `campaniaId` opcional a `NavRoute.FormularioCosecha`.
+- Actualización de `TabCosechas` en `DetalleCampaniaScreen` con datos reales desde BD.
+
 **[2026-05-15] - Seed data para testing (debug source set)**
 - Configuración de `sourceSets { debug { java.srcDir("src/debug/java") } }` en `app/build.gradle.kts`.
 - Creación de interfaz `DataSeeder` en `src/main/` con `@BindsOptionalOf` para inyección opcional en Hilt.
