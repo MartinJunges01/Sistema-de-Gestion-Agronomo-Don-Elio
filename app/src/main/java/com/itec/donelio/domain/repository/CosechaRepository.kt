@@ -8,7 +8,7 @@ interface CosechaRepository {
 
     suspend fun getCosechaById(id: Int): Cosecha?
 
-    suspend fun insertCosecha(cosecha: Cosecha)
+    suspend fun insertCosecha(cosecha: Cosecha): Long
 
     suspend fun updateCosecha(cosecha: Cosecha)
 
