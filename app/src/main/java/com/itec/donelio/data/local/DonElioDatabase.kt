@@ -33,6 +33,7 @@ abstract class DonElioDatabase : RoomDatabase() {
     abstract val campaniaInsumoDao: CampaniaInsumoDao
     abstract val observacionDao: ObservacionDao
     abstract val cosechaNoAlmacenadaDao: CosechaNoAlmacenadaDao
+    abstract val usuarioDao: UsuarioDao
 
     // Nota: ¡No necesitas escribir el código de estas funciones!
     // Room generará todo el código real por detrás cuando compiles.

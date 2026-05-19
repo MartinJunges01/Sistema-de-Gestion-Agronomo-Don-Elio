@@ -3,7 +3,14 @@ package com.itec.donelio.di
 import android.content.Context
 import androidx.room.Room
 import com.itec.donelio.data.local.DonElioDatabase
-import com.itec.donelio.data.local.dao.*
+import com.itec.donelio.data.local.dao.CampaniaDao
+import com.itec.donelio.data.local.dao.CampaniaInsumoDao
+import com.itec.donelio.data.local.dao.CosechaDao
+import com.itec.donelio.data.local.dao.CosechaNoAlmacenadaDao
+import com.itec.donelio.data.local.dao.InsumoDao
+import com.itec.donelio.data.local.dao.ObservacionDao
+import com.itec.donelio.data.local.dao.TareaDao
+import com.itec.donelio.data.local.dao.UsuarioDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,5 +78,11 @@ object DatabaseModule {
     @Singleton
     fun provideCosechaNoAlmacenadaDao(db: DonElioDatabase): CosechaNoAlmacenadaDao {
         return db.cosechaNoAlmacenadaDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideUsuarioDao(db: DonElioDatabase): UsuarioDao {
+        return db.usuarioDao
     }
 }

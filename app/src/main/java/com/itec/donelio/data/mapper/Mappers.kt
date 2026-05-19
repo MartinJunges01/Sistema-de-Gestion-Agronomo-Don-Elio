@@ -8,6 +8,7 @@ import com.itec.donelio.data.local.entity.InsumoEntity
 import com.itec.donelio.data.local.entity.InsumoUtilizadoRelacion
 import com.itec.donelio.data.local.entity.ObservacionEntity
 import com.itec.donelio.data.local.entity.TareaEntity
+import com.itec.donelio.data.local.entity.UsuarioEntity
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Cosecha
@@ -15,6 +16,7 @@ import com.itec.donelio.domain.model.CosechaNoAlmacenada
 import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.model.Tarea
+import com.itec.donelio.domain.model.Usuario
 
 fun CampaniaEntity.toDomain(): Campania {
     return Campania(
@@ -147,3 +149,9 @@ fun CosechaNoAlmacenadaEntity.toDomain(): CosechaNoAlmacenada =
 
 fun CosechaNoAlmacenada.toEntity(): CosechaNoAlmacenadaEntity =
     CosechaNoAlmacenadaEntity(id_cosecha_no_alm = id, tipo = tipo, precio = precio, id_cosecha = idCosecha)
+
+fun UsuarioEntity.toDomain(): Usuario =
+    Usuario(id = id_usuario, nombre = nombre, nombreUsuario = nombreUsuario, contrasena = contrasena, ultimoAcceso = ultimo_acceso)
+
+fun Usuario.toEntity(): UsuarioEntity =
+    UsuarioEntity(id_usuario = id, nombre = nombre, nombreUsuario = nombreUsuario, contrasena = contrasena, ultimo_acceso = ultimoAcceso)

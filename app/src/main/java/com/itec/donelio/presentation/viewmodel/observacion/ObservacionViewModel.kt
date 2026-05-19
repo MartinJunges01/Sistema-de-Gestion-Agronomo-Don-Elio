@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Observacion
-import com.itec.donelio.domain.repository.ObservacionRepository
+import com.itec.donelio.domain.use_case.ObtenerObservacionesPorCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,12 +14,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ObservacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val observacionRepository: ObservacionRepository
+    private val obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
 
-    val observaciones: StateFlow<List<Observacion>> = observacionRepository
-        .getObservacionesPorCampania(campaniaId)
+    val observaciones: StateFlow<List<Observacion>> = obtenerObservacionesPorCampaniaUseCase(campaniaId)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 }

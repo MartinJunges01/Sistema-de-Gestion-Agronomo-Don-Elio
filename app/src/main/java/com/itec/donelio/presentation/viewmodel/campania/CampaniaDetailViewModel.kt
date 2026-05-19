@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
-import com.itec.donelio.domain.repository.CampaniaRepository
 import com.itec.donelio.domain.use_case.EliminarCampaniaUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class CampaniaDetailState(
-    val campaign: Campania? = null,
+    val campania: Campania? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
     val deleteSuccess: Boolean = false
@@ -25,8 +25,8 @@ data class CampaniaDetailState(
 @HiltViewModel
 class CampaniaDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val campaniaRepository: CampaniaRepository,
-    private val eliminarCampaniaUseCase: EliminarCampaniaUseCase
+    private val eliminarCampaniaUseCase: EliminarCampaniaUseCase,
+    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
@@ -45,17 +45,18 @@ class CampaniaDetailViewModel @Inject constructor(
     private fun cargarCampania() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val campania = campaniaRepository.getCampaniaById(campaniaId)
-            if (campania != null) {
-                _state.update { it.copy(campaign = campania, isLoading = false) }
-            } else {
-                _state.update { it.copy(isLoading = false, error = "Campaña no encontrada") }
+            obtenerCampaniaPorIdUseCase(campaniaId).collect { campania ->
+                if (campania != null) {
+                    _state.update { it.copy(campania = campania, isLoading = false) }
+                } else {
+                    _state.update { it.copy(isLoading = false, error = "Campaña no encontrada") }
+                }
             }
         }
     }
 
     fun eliminarCampania() {
-        val campania = _state.value.campaign ?: return
+        val campania = _state.value.campania ?: return
         viewModelScope.launch {
             eliminarCampaniaUseCase(campania).collect { resource ->
                 when (resource) {
