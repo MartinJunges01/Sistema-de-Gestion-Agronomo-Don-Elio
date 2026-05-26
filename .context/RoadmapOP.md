@@ -164,15 +164,18 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Escribir utilidad CSV/Excel o PDF.
   - [ ] Conectar botón "Exportar Reporte".
 - [ ] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
+  *(Ver también F8/Issue 3.4 — conectar botón "Exportar BD" en ConfiguracionDBScreen)*
   - [ ] Crear `BackupViewModel`.
   - [ ] Obtener ruta de `.db` y usar SAF para guardar.
 - [ ] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
+  *(Ver también F8/Issue 3.5 — conectar botón "Importar BD" en ConfiguracionDBScreen)*
   - [ ] Utilizar SAF (`OpenDocument`).
   - [ ] Mostrar cuadro de advertencia.
   - [ ] Implementar lógica de sobrescritura de `.db`.
 
 ## Fase 7: Calidad, Testing y Producción
 - [ ] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
+  *(Requiere F11/Issue 12 — refactor ViewModels a Use Cases — antes de testear ViewModels)*
   - [ ] Pruebas unitarias para Casos de Uso.
   - [ ] Pruebas unitarias para ViewModels.
   - [ ] Pruebas instrumentadas para DAOs.
@@ -190,3 +193,116 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Crear Keystore.
   - [ ] Actualizar versionCode/versionName.
   - [ ] Generar APK firmado.
+
+## Fase 8: Correcciones de Bugs Críticos (L1 — Alta Prioridad)
+- [ ] **Issue 1: Sistema de Autenticación (Login y Registro)**
+  - [ ] **1.1** Crear `UsuarioDao` en `data/local/dao/` con `insert`, `getByNombre`, `getAll`
+  - [ ] **1.2** Exponer `usuarioDao` en `DonElioDatabase` y proveerlo en `DatabaseModule`
+  - [ ] **1.3** Crear `LoginUseCase` que valide nombre + contraseña contra la DB
+  - [ ] **1.4** Crear `RegistroUseCase` que valide y persista nuevo usuario
+  - [ ] **1.5** Crear `LoginViewModel` con estado `Loading/Success/Error` y navegación
+  - [ ] **1.6** Conectar `LoginScreen` al `LoginViewModel`
+  - [ ] **1.7** Conectar `RegistroScreen` al `RegistroUseCase`
+  - [ ] **1.8** Agregar botón "Invitado" para debug (oculto en release)
+- [ ] **Issue 2: Navegación BottomNav — Rutas Inválidas**
+  - [ ] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
+  - [ ] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
+  - [ ] **2.3** Verificar que `NavRoute.Tareas.createRoute()` y `NavRoute.Insumos.createRoute()` también generan rutas limpias
+  - [ ] **2.4** Confirmar que los `composable` registrados en `screens.kt` matchean correctamente las rutas generadas
+- [ ] **Issue 3: Botones con onClick Vacío (Funcionalidad Faltante)**
+  - [ ] **3.1** Conectar "Desvincular" a `AsignarInsumoACampaniaUseCase.desvincularInsumo()`
+  - [ ] **3.2** Conectar "Editar" en catálogo a `EditarInsumoCatalogoUseCase` con navegación a `FormularioInsumo` con datos precargados
+  - [ ] **3.3** Crear `EliminarInsumoCatalogoUseCase` y conectar botón "Eliminar"
+  - [ ] **3.4** Implementar exportación de DB con SAF *(ver también F6/Issue 3 — unificar implementación)*
+  - [ ] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
+
+## Fase 9: Bugs Funcionales (L2 — Prioridad Media)
+- [ ] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
+  - [ ] **4.1** Cambiar `"$pendientes"` por `"${pendientes.size}"` en la línea 184
+  - [ ] **4.2** Verificar que no haya otros casos similares en el mismo archivo
+- [ ] **Issue 5: Parámetro `onGoToDetalle` No Utilizado en TareasScreen**
+  - [ ] Eliminar el parámetro `onGoToDetalle` de la firma de `TareasScreen`
+  - [ ] Actualizar la llamada a `TareasScreen` en `screens.kt`
+- [ ] **Issue 6: Validación de Campaña Activa en Operaciones**
+  - [ ] **6.1** Agregar estado `campaniaIdValido` en ViewModels de insumo, tarea, cosecha y observación
+  - [ ] **6.2** Deshabilitar botones de acción cuando `campaniaIdValido = false`
+  - [ ] **6.3** Agregar estado `errorPrecio` en `FormularioCosechaViewModel`
+  - [ ] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
+
+## Fase 10: Mejoras Post-Testing (L3 — Prioridad Media)
+- [ ] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
+  - [ ] **7.1** Agregar query `getProximaTarea(fecha: Long)` en `TareaDao`
+  - [ ] **7.2** Crear `ObtenerProximaTareaUseCase`
+  - [ ] **7.3** Modificar `HomeViewModel` para exponer próxima tarea
+  - [ ] **7.4** Modificar `DashboardOperacionesScreen` para mostrar card con datos reales
+- [ ] **Issue 8: Selector de Campaña en Pantallas de Tareas, Insumos, Cosechas y Observaciones**
+  - [ ] **8.1** Crear componente reutilizable `SelectorCampania` (ExposedDropdownMenu)
+  - [ ] **8.2** Agregar `campaniaSeleccionada` state compartido
+  - [ ] **8.3** Modificar `TareasScreen` + `TareaViewModel` para usar selector
+  - [ ] **8.4** Modificar `InsumosScreen` + `InsumoVinculacionViewModel` para usar selector
+  - [ ] **8.5** Modificar `CosechasScreen` + `CosechaViewModel` para usar selector
+  - [ ] **8.6** Modificar `ObservacionesScreen` + `ObservacionViewModel` para usar selector
+- [ ] **Issue 9: Calendario Funcional en Pantalla de Tareas**
+  - [ ] **9.1** Agregar query `getTareasPorFecha(fecha: Long)` en `TareaDao`
+  - [ ] **9.2** Crear `ObtenerTareasDelDiaUseCase`
+  - [ ] **9.3** Crear `TareasDelDiaViewModel` o extender `TareaViewModel`
+  - [ ] **9.4** Reemplazar strip mock por calendario funcional con datos reales
+- [ ] **Issue 10: Formulario Nueva Tarea — Mostrar y Permitir Cambiar Campaña**
+  - [ ] Mostrar nombre de campaña destino en el formulario
+  - [ ] Agregar dropdown para cambiar entre campañas activas
+  - [ ] Preseleccionar última campaña usada en la sesión
+- [ ] **Issue 11: Reportes — ViewModel con Datos Reales + Gráfico de Torta**
+  *(Este issue refina y amplía F6/Issue 1; coordinar implementación)*
+  - [ ] **11.1** Crear `ReportesViewModel` que inyecte `ObtenerCampaniasUseCase`, `CosechaRepository`, `CampaniaInsumoRepository`
+  - [ ] **11.2** Implementar cálculos: costo total = Σ(cantidad × precio) de campania_insumo
+  - [ ] **11.3** Implementar agrupación por categoría de insumo para gráfico de torta
+  - [ ] **11.4** Reemplazar Canvas mock por datos reales en gráficos de evolución mensual
+  - [ ] **11.5** Conectar dropdowns de comparación a lista real de campañas
+
+## Fase 11: Refactor Arquitectónico (L4 — Prioridad Baja)
+- [ ] **Issue 12: ViewModels Violan Clean Architecture — Inyectan Repositorios Directamente**
+  *(Bloquea F7/Issue 1 — pruebas unitarias de ViewModels)*
+  - [ ] **12.1** Identificar qué Use Cases faltan y crearlos
+  - [ ] **12.2** Refactorizar `CampaniaFormViewModel` y `CampaniaDetailViewModel`
+  - [ ] **12.3** Refactorizar `TareaViewModel`
+  - [ ] **12.4** Refactorizar `InsumoVinculacionViewModel`
+  - [ ] **12.5** Refactorizar `CosechaViewModel`
+  - [ ] **12.6** Refactorizar `ObservacionViewModel`
+- [ ] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
+  - [ ] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
+  - [ ] Conectar o eliminar `EditarTareaUseCase`
+  - [ ] Conectar o eliminar `EliminarTareaUseCase`
+
+## Fase 12: Deuda Técnica y Limpieza (L5 — Prioridad Baja)
+- [ ] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
+  - [ ] Eliminar `components/TarjetaTarea.kt` (no usado)
+  - [ ] Eliminar `components/ModuleCard.kt` (no usado)
+  - [ ] Eliminar componentes no usados en `components/SharedComponent.kt`
+  - [ ] Eliminar `data/local/Converters.kt` (TypeConverters no usados)
+  - [ ] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
+  - [ ] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
+  - [ ] Mover tests al package correcto `com.itec.donelio`
+- [ ] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
+  - [ ] Limpiar "CU9" de `InsumosScreen`
+  - [ ] Limpiar "CU9.5" de `FormularioInsumoScreen`
+  - [ ] Limpiar "CU5.1" de `NuevaTareaScreen`
+  - [ ] Limpiar "CU12/CU13" de `ConfiguracionDBScreen`
+  - [ ] Limpiar "CU8" de `ObservacionesScreen`
+- [ ] **Issue 16: Inconsistencias de Nombrado**
+  - [ ] Renombrar `CampanaSeleccionadaCard` → `CampaniaSeleccionadaCard`
+  - [ ] Renombrar `campaign` → `campania` en `CampaniaDetailViewModel`
+- [ ] **Issue 17: CampanaSeleccionadaCard — Datos Dinámicos**
+  - [ ] Aceptar objeto `Campania` como parámetro
+  - [ ] Mostrar nombre, cultivo y fecha reales
+  - [ ] Estado vacío si no hay campaña
+- [ ] **Issue 18: HeaderSectionAgriCore — Nombre de Usuario Dinámico**
+  *(Depende de F8/Issue 1 — Login)*
+  - [ ] Mostrar "Hola, [nombre del usuario]" después del login
+  - [ ] Para invitado: "Hola, Invitado"
+- [ ] **Issue 19: BottomNav — Navegación sin Historial**
+  - [ ] **19.1** Cambiar flags de navegación: `popUpTo(0)` en vez de `saveState/restoreState`
+  - [ ] **19.2** Verificar que no se pierdan datos al cambiar de tab
+- [ ] **Issue 20: Actualización Reactiva al Editar Campaña**
+  - [ ] **20.1** Cambiar `CampaniaDetailViewModel` para exponer un `Flow<Campania?>` reactivo
+  - [ ] **20.2** Usar `ObtenerCampaniasUseCase` + `find` en vez de recarga manual
+  - [ ] **20.3** Verificar que `FormularioCampaniaScreen` notifica el cambio al volver
