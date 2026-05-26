@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -33,6 +34,7 @@ fun NuevaTareaScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val campanias by viewModel.campanias.collectAsState()
 
     LaunchedEffect(state.guardadoExitoso) {
         if (state.guardadoExitoso) onBack()
@@ -48,6 +50,24 @@ fun NuevaTareaScreen(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Column {
+                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = state.campaniaId,
+                    onCampaniaSelected = viewModel::onCampaniaChange,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp, vertical = 0.dp)
+                )
+                if (state.errorCampania != null) {
+                    Text(
+                        text = state.errorCampania!!,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+            }
+
             OutlinedTextField(
                 value = state.nombre,
                 onValueChange = viewModel::onNombreChange,

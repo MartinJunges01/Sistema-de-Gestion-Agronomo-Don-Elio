@@ -11,6 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.presentation.ui.theme.AgriFondo
@@ -24,6 +31,7 @@ fun FormularioInsumoScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
 
     LaunchedEffect(state.guardadoExitoso) {
         if (state.guardadoExitoso) onBack()
@@ -62,6 +70,34 @@ fun FormularioInsumoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+
+            Text("Seleccionar Ícono", fontWeight = FontWeight.Bold)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(5),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth().height(100.dp)
+            ) {
+                items(iconosDisponibles) { icono ->
+                    val isSelected = state.icono == icono
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(if (isSelected) AgriVerde.copy(alpha = 0.2f) else Color.Transparent)
+                            .border(
+                                width = if (isSelected) 2.dp else 1.dp,
+                                color = if (isSelected) AgriVerde else Color.LightGray,
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clickable { viewModel.onIconoChange(icono) },
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+                        Text(text = icono, fontSize = 24.sp)
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = viewModel::guardar,

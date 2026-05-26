@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.presentation.ui.components.HeaderSectionAgriCore
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -36,6 +37,7 @@ fun DashboardOperacionesScreen(
     onGoToDetalle: (campaniaId: Int) -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
+    val tareas by viewModel.tareasPendientes.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -81,6 +83,31 @@ fun DashboardOperacionesScreen(
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Text("90% Óptimo", fontSize = 14.sp, color = AgriVerde, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+
+        if (tareas.isNotEmpty()) {
+            item {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text("Tareas Próximas", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                }
+            }
+            items(tareas, key = { "t_${it.id}" }) { tarea ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.TaskAlt, contentDescription = null, tint = AgriVerde, modifier = Modifier.size(28.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(tarea.nombre, fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 16.sp)
+                            Text("${formatFecha(tarea.fecha)} - ${tarea.hora}", fontSize = 14.sp, color = TextoSecundario)
+                        }
                     }
                 }
             }

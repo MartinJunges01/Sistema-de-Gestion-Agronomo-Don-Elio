@@ -19,6 +19,18 @@ class TareaRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getTareasPendientesGlobales(limite: Int): Flow<List<Tarea>> {
+        return tareaDao.getTareasPendientesGlobales(limite).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getTareasByCampaniaAndFecha(idCampania: Int, fecha: Long): Flow<List<Tarea>> {
+        return tareaDao.getTareasPorCampaniaYFecha(idCampania, fecha).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override suspend fun getTareaById(id: Int): Tarea? {
         return tareaDao.getTareaById(id)?.toDomain()
     }

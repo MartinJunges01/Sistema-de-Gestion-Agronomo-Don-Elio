@@ -5,13 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
-import com.itec.donelio.domain.repository.CampaniaRepository
 import com.itec.donelio.domain.use_case.CrearCampaniaUseCase
 import com.itec.donelio.domain.use_case.EditarCampaniaUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +35,7 @@ class CampaniaFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val crearCampaniaUseCase: CrearCampaniaUseCase,
     private val editarCampaniaUseCase: EditarCampaniaUseCase,
-    private val campaniaRepository: CampaniaRepository
+    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int? = savedStateHandle.get<Int>("campaniaId")
@@ -51,7 +52,7 @@ class CampaniaFormViewModel @Inject constructor(
     private fun cargarCampania(id: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            val campania = campaniaRepository.getCampaniaById(id)
+            val campania = obtenerCampaniaPorIdUseCase(id).first()
             if (campania != null) {
                 _state.update {
                     it.copy(

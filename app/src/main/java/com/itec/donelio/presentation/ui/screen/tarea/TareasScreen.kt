@@ -21,9 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Tarea
+import com.itec.donelio.presentation.ui.components.CalendarioSemanal
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -43,6 +44,10 @@ fun TareasScreen(
     onBack: () -> Unit
 ) {
     val tareas by viewModel.tareas.collectAsState()
+    val campanias by viewModel.campanias.collectAsState()
+    val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
+    val fechaSeleccionada by viewModel.fechaSeleccionada.collectAsState()
+
     val pendientes = tareas.filter { !it.confirmar }
     val completadas = tareas.filter { it.confirmar }
 
@@ -54,25 +59,20 @@ fun TareasScreen(
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             item {
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = campaniaIdSeleccionada,
+                    onCampaniaSelected = { viewModel.seleccionarCampania(it) },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+            item {
                 Text("Planificación Estratégica", color = TextoSecundario)
                 Spacer(modifier = Modifier.height(12.dp))
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(7) { dia ->
-                        val seleccionado = dia == 2
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(if (seleccionado) AgriVerde else Color.White)
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("MAY", fontSize = 12.sp, color = if (seleccionado) Color.White else TextoSecundario)
-                                Text("${10 + dia}", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = if (seleccionado) Color.White else TextoPrincipal)
-                            }
-                        }
-                    }
-                }
+                CalendarioSemanal(
+                    selectedDate = fechaSeleccionada,
+                    onDateSelected = { viewModel.seleccionarFecha(it) }
+                )
             }
 
             item { HorizontalDivider(color = Color(0xFFE7E5E4), modifier = Modifier.padding(vertical = 8.dp)) }

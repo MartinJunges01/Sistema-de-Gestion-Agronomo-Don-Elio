@@ -5,5 +5,6 @@ data class CampaniaInsumo(
     val idCampania: Int,
     val idInsumo: Int,
     val cantidad: Double,
-    val precio: Double
+    val precio: Double,
+    val activo: Boolean = true
 )

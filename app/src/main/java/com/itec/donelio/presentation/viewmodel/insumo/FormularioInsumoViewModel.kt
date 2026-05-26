@@ -15,6 +15,7 @@ data class FormularioInsumoState(
     val nombre: String = "",
     val categoria: String = "",
     val unidad: String = "",
+    val icono: String? = null,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
     val guardadoExitoso: Boolean = false
@@ -40,6 +41,10 @@ class FormularioInsumoViewModel @Inject constructor(
         _state.update { it.copy(unidad = value) }
     }
 
+    fun onIconoChange(value: String?) {
+        _state.update { it.copy(icono = value) }
+    }
+
     fun guardar() {
         val current = _state.value
         if (current.nombre.isBlank()) {
@@ -52,7 +57,8 @@ class FormularioInsumoViewModel @Inject constructor(
                 crearInsumoCatalogoUseCase(
                     nombre = current.nombre.trim(),
                     categoria = current.categoria.trim(),
-                    unidad = current.unidad.trim()
+                    unidad = current.unidad.trim(),
+                    icono = current.icono
                 )
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {

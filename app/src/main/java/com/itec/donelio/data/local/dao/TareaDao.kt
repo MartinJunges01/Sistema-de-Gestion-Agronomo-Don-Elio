@@ -24,6 +24,12 @@ interface TareaDao {
     @Query("SELECT * FROM tareas WHERE id_campania = :campaniaId ORDER BY fecha ASC, hora ASC")
     fun getTareasPorCampania(campaniaId: Int): Flow<List<TareaEntity>>
 
+    @Query("SELECT * FROM tareas WHERE confirmar = 0 ORDER BY fecha ASC, hora ASC LIMIT :limite")
+    fun getTareasPendientesGlobales(limite: Int): Flow<List<TareaEntity>>
+
+    @Query("SELECT * FROM tareas WHERE id_campania = :campaniaId AND fecha = :fecha ORDER BY hora ASC")
+    fun getTareasPorCampaniaYFecha(campaniaId: Int, fecha: Long): Flow<List<TareaEntity>>
+
     @Query("SELECT * FROM tareas WHERE id_tarea = :id")
     suspend fun getTareaById(id: Int): TareaEntity?
 }

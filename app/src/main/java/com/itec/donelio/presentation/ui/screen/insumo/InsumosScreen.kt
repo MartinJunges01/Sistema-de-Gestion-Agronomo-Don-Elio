@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -38,6 +39,8 @@ fun InsumosScreen(
 ) {
     val vinculados by viewModel.insumosVinculados.collectAsState()
     val catalogo by viewModel.catalogo.collectAsState()
+    val campanias by viewModel.campanias.collectAsState()
+    val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
     val catalogoMap = remember(catalogo) { catalogo.associateBy { it.id } }
 
     var mostrarBottomSheet by remember { mutableStateOf(false) }
@@ -62,7 +65,12 @@ fun InsumosScreen(
         )
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
-                Text("Campaña Activa", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(vertical = 8.dp))
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = campaniaIdSeleccionada,
+                    onCampaniaSelected = { viewModel.seleccionarCampania(it) },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             item {
@@ -102,7 +110,7 @@ fun InsumosScreen(
                                     color = if (vinculado.precio > 0) AgriVerde else TextoSecundario
                                 )
                             }
-                            IconButton(onClick = { }) {
+                            IconButton(onClick = { viewModel.desvincularInsumo(vinculado) }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Desvincular", tint = Color(0xFFDC2626))
                             }
                         }
