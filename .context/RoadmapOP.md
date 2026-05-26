@@ -195,15 +195,15 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Generar APK firmado.
 
 ## Fase 8: Correcciones de Bugs Críticos (L1 — Alta Prioridad)
-- [ ] **Issue 1: Sistema de Autenticación (Login y Registro)**
-  - [ ] **1.1** Crear `UsuarioDao` en `data/local/dao/` con `insert`, `getByNombre`, `getAll`
-  - [ ] **1.2** Exponer `usuarioDao` en `DonElioDatabase` y proveerlo en `DatabaseModule`
-  - [ ] **1.3** Crear `LoginUseCase` que valide nombre + contraseña contra la DB
-  - [ ] **1.4** Crear `RegistroUseCase` que valide y persista nuevo usuario
-  - [ ] **1.5** Crear `LoginViewModel` con estado `Loading/Success/Error` y navegación
-  - [ ] **1.6** Conectar `LoginScreen` al `LoginViewModel`
-  - [ ] **1.7** Conectar `RegistroScreen` al `RegistroUseCase`
-  - [ ] **1.8** Agregar botón "Invitado" para debug (oculto en release)
+- [x] **Issue 1: Sistema de Autenticación (Login y Registro)**
+  - [x] **1.1** Crear `UsuarioDao` en `data/local/dao/` con `insert`, `getByNombre`, `getAll`
+  - [x] **1.2** Exponer `usuarioDao` en `DonElioDatabase` y proveerlo en `DatabaseModule`
+  - [x] **1.3** Crear `LoginUseCase` que valide nombre + contraseña contra la DB
+  - [x] **1.4** Crear `RegistroUseCase` que valide y persista nuevo usuario
+  - [x] **1.5** Crear `LoginViewModel` con estado `Loading/Success/Error` y navegación
+  - [x] **1.6** Conectar `LoginScreen` al `LoginViewModel`
+  - [x] **1.7** Conectar `RegistroScreen` al `RegistroUseCase`
+  - [x] **1.8** Agregar botón "Invitado" para debug (oculto en release)
 - [ ] **Issue 2: Navegación BottomNav — Rutas Inválidas**
   - [ ] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
   - [ ] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
@@ -235,43 +235,43 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] **7.2** Crear `ObtenerProximaTareaUseCase`
   - [ ] **7.3** Modificar `HomeViewModel` para exponer próxima tarea
   - [ ] **7.4** Modificar `DashboardOperacionesScreen` para mostrar card con datos reales
-- [ ] **Issue 8: Selector de Campaña en Pantallas de Tareas, Insumos, Cosechas y Observaciones**
-  - [ ] **8.1** Crear componente reutilizable `SelectorCampania` (ExposedDropdownMenu)
-  - [ ] **8.2** Agregar `campaniaSeleccionada` state compartido
-  - [ ] **8.3** Modificar `TareasScreen` + `TareaViewModel` para usar selector
-  - [ ] **8.4** Modificar `InsumosScreen` + `InsumoVinculacionViewModel` para usar selector
-  - [ ] **8.5** Modificar `CosechasScreen` + `CosechaViewModel` para usar selector
-  - [ ] **8.6** Modificar `ObservacionesScreen` + `ObservacionViewModel` para usar selector
-- [ ] **Issue 9: Calendario Funcional en Pantalla de Tareas**
-  - [ ] **9.1** Agregar query `getTareasPorFecha(fecha: Long)` en `TareaDao`
-  - [ ] **9.2** Crear `ObtenerTareasDelDiaUseCase`
-  - [ ] **9.3** Crear `TareasDelDiaViewModel` o extender `TareaViewModel`
-  - [ ] **9.4** Reemplazar strip mock por calendario funcional con datos reales
-- [ ] **Issue 10: Formulario Nueva Tarea — Mostrar y Permitir Cambiar Campaña**
-  - [ ] Mostrar nombre de campaña destino en el formulario
-  - [ ] Agregar dropdown para cambiar entre campañas activas
-  - [ ] Preseleccionar última campaña usada en la sesión
-- [ ] **Issue 11: Reportes — ViewModel con Datos Reales + Gráfico de Torta**
+- [x] **Issue 8: Selector de Campaña en Pantallas de Tareas, Insumos, Cosechas y Observaciones**
+  - [x] **8.1** Crear componente reutilizable `SelectorCampania` (ExposedDropdownMenu)
+  - [x] **8.2** Agregar `campaniaSeleccionada` state compartido
+  - [x] **8.3** Modificar `TareasScreen` + `TareaViewModel` para usar selector
+  - [x] **8.4** Modificar `InsumosScreen` + `InsumoVinculacionViewModel` para usar selector
+  - [x] **8.5** Modificar `CosechasScreen` + `CosechaViewModel` para usar selector
+  - [x] **8.6** Modificar `ObservacionesScreen` + `ObservacionViewModel` para usar selector
+- [x] **Issue 9: Calendario Funcional en Pantalla de Tareas**
+  - [x] **9.1** Agregar query `getTareasPorFecha(fecha: Long)` en `TareaDao`
+  - [x] **9.2** Crear `ObtenerTareasDelDiaUseCase`
+  - [x] **9.3** Crear `TareasDelDiaViewModel` o extender `TareaViewModel`
+  - [x] **9.4** Reemplazar strip mock por calendario funcional con datos reales
+- [x] **Issue 10: Formulario Nueva Tarea — Mostrar y Permitir Cambiar Campaña**
+  - [x] Mostrar nombre de campaña destino en el formulario
+  - [x] Agregar dropdown para cambiar entre campañas activas
+  - [x] Preseleccionar última campaña usada en la sesión
+- [x] **Issue 11: Reportes — ViewModel con Datos Reales + Gráfico de Torta**
   *(Este issue refina y amplía F6/Issue 1; coordinar implementación)*
-  - [ ] **11.1** Crear `ReportesViewModel` que inyecte `ObtenerCampaniasUseCase`, `CosechaRepository`, `CampaniaInsumoRepository`
-  - [ ] **11.2** Implementar cálculos: costo total = Σ(cantidad × precio) de campania_insumo
-  - [ ] **11.3** Implementar agrupación por categoría de insumo para gráfico de torta
-  - [ ] **11.4** Reemplazar Canvas mock por datos reales en gráficos de evolución mensual
-  - [ ] **11.5** Conectar dropdowns de comparación a lista real de campañas
+  - [x] **11.1** Crear `ReportesViewModel` que inyecte `ObtenerCampaniasUseCase`, `CosechaRepository`, `CampaniaInsumoRepository`
+  - [x] **11.2** Implementar cálculos: costo total = Σ(cantidad × precio) de campania_insumo
+  - [x] **11.3** Implementar agrupación por categoría de insumo para gráfico de torta
+  - [x] **11.4** Reemplazar Canvas mock por datos reales en gráficos de evolución mensual
+  - [x] **11.5** Conectar dropdowns de comparación a lista real de campañas
 
 ## Fase 11: Refactor Arquitectónico (L4 — Prioridad Baja)
-- [ ] **Issue 12: ViewModels Violan Clean Architecture — Inyectan Repositorios Directamente**
+- [x] **Issue 12: ViewModels Violan Clean Architecture — Inyectan Repositorios Directamente**
   *(Bloquea F7/Issue 1 — pruebas unitarias de ViewModels)*
-  - [ ] **12.1** Identificar qué Use Cases faltan y crearlos
-  - [ ] **12.2** Refactorizar `CampaniaFormViewModel` y `CampaniaDetailViewModel`
-  - [ ] **12.3** Refactorizar `TareaViewModel`
-  - [ ] **12.4** Refactorizar `InsumoVinculacionViewModel`
-  - [ ] **12.5** Refactorizar `CosechaViewModel`
-  - [ ] **12.6** Refactorizar `ObservacionViewModel`
-- [ ] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
-  - [ ] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
-  - [ ] Conectar o eliminar `EditarTareaUseCase`
-  - [ ] Conectar o eliminar `EliminarTareaUseCase`
+  - [x] **12.1** Identificar qué Use Cases faltan y crearlos
+  - [x] **12.2** Refactorizar `CampaniaFormViewModel` y `CampaniaDetailViewModel`
+  - [x] **12.3** Refactorizar `TareaViewModel`
+  - [x] **12.4** Refactorizar `InsumoVinculacionViewModel`
+  - [x] **12.5** Refactorizar `CosechaViewModel`
+  - [x] **12.6** Refactorizar `ObservacionViewModel`
+- [x] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
+  - [x] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
+  - [x] Conectar o eliminar `EditarTareaUseCase`
+  - [x] Conectar o eliminar `EliminarTareaUseCase`
 
 ## Fase 12: Deuda Técnica y Limpieza (L5 — Prioridad Baja)
 - [ ] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
