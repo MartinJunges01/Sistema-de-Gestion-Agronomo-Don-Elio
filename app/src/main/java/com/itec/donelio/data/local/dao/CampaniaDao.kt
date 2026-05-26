@@ -21,7 +21,6 @@ interface CampaniaDao {
     @Delete
     suspend fun deleteCampania(campania: CampaniaEntity): Int
 
-    // Nota: Reemplaza "campanias" por el nombre exacto que le pusiste a tu tableName en CampaniaEntity
     @Query("SELECT * FROM campanias ORDER BY fecha DESC")
     fun getCampanias(): Flow<List<CampaniaEntity>>
 

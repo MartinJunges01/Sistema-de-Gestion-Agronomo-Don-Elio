@@ -13,8 +13,20 @@ class TareaRepositoryImpl @Inject constructor(
     private val tareaDao: TareaDao
 ) : TareaRepository {
 
-    override fun getTareasByCampania(campaniaId: Int): Flow<List<Tarea>> {
-        return tareaDao.getTareasPorCampania(campaniaId).map { entities ->
+    override fun getTareasByCampania(idCampania: Int): Flow<List<Tarea>> {
+        return tareaDao.getTareasPorCampania(idCampania).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getTareasPendientesGlobales(limite: Int): Flow<List<Tarea>> {
+        return tareaDao.getTareasPendientesGlobales(limite).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getTareasByCampaniaAndFecha(idCampania: Int, fecha: Long): Flow<List<Tarea>> {
+        return tareaDao.getTareasPorCampaniaYFecha(idCampania, fecha).map { entities ->
             entities.map { it.toDomain() }
         }
     }

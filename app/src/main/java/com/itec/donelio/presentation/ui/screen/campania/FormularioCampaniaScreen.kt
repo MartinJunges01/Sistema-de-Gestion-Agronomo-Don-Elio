@@ -1,0 +1,143 @@
+package com.itec.donelio.presentation.ui.screen.campania
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.itec.donelio.presentation.ui.theme.AgriFondo
+import com.itec.donelio.presentation.ui.theme.AgriVerde
+import com.itec.donelio.presentation.viewmodel.campania.CampaniaFormViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FormularioCampaniaScreen(
+    viewModel: CampaniaFormViewModel = hiltViewModel(),
+    onBack: () -> Unit,
+    onGuardadoExitoso: () -> Unit
+) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state.guardadoExitoso) {
+        if (state.guardadoExitoso) {
+            onGuardadoExitoso()
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(
+            title = { Text(if (state.isEditMode) "Editar Campaña" else "Crear Campaña", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+        )
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedTextField(
+                value = state.nombre,
+                onValueChange = viewModel::onNombreChange,
+                label = { Text("Nombre de la Campaña") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errorNombre != null,
+                supportingText = state.errorNombre?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = state.cultivo,
+                onValueChange = viewModel::onCultivoChange,
+                label = { Text("Cultivo (Ej: Soja, Maíz, Trigo)") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errorCultivo != null,
+                supportingText = state.errorCultivo?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
+                singleLine = true
+            )
+
+            var showDatePicker by remember { mutableStateOf(false) }
+            val datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = state.fechaInicio
+            )
+
+            OutlinedTextField(
+                value = formatFecha(state.fechaInicio),
+                onValueChange = {},
+                label = { Text("Fecha de Inicio") },
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                isError = state.errorFecha != null,
+                supportingText = state.errorFecha?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Seleccionar fecha")
+                    }
+                }
+            )
+
+            if (showDatePicker) {
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            datePickerState.selectedDateMillis?.let {
+                                viewModel.onFechaChange(it)
+                            }
+                            showDatePicker = false
+                        }) { Text("Aceptar") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") }
+                    }
+                ) {
+                    DatePicker(state = datePickerState)
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = viewModel::guardar,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                enabled = !state.isLoading,
+                colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.Save, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        if (state.isEditMode) "Actualizar Campaña" else "Guardar Campaña",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun formatFecha(timestamp: Long): String {
+    if (timestamp <= 0) return ""
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return sdf.format(Date(timestamp))
+}

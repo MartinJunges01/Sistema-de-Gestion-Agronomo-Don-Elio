@@ -4,11 +4,11 @@ import com.itec.donelio.domain.model.Cosecha
 import kotlinx.coroutines.flow.Flow
 
 interface CosechaRepository {
-    fun getCosechasByCampania(campaniaId: Int): Flow<List<Cosecha>>
+    fun getCosechasByCampania(idCampania: Int): Flow<List<Cosecha>>
 
     suspend fun getCosechaById(id: Int): Cosecha?
 
-    suspend fun insertCosecha(cosecha: Cosecha)
+    suspend fun insertCosecha(cosecha: Cosecha): Long
 
     suspend fun updateCosecha(cosecha: Cosecha)
 

@@ -18,7 +18,7 @@ import com.itec.donelio.data.local.entity.*
         CampaniaInsumoEntity::class,
         UsuarioEntity::class
     ],
-    version = 1, // Si en el futuro agregas columnas, este número deberá subir a 2
+    version = 2, // Subimos a 2 porque agregamos icono y activo en entidades
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
 // Aquí conectamos el Issue 3
@@ -32,6 +32,8 @@ abstract class DonElioDatabase : RoomDatabase() {
     abstract val insumoDao: InsumoDao
     abstract val campaniaInsumoDao: CampaniaInsumoDao
     abstract val observacionDao: ObservacionDao
+    abstract val cosechaNoAlmacenadaDao: CosechaNoAlmacenadaDao
+    abstract val usuarioDao: UsuarioDao
 
     // Nota: ¡No necesitas escribir el código de estas funciones!
     // Room generará todo el código real por detrás cuando compiles.

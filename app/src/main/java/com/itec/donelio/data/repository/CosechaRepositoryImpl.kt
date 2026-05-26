@@ -13,8 +13,8 @@ class CosechaRepositoryImpl @Inject constructor(
     private val cosechaDao: CosechaDao
 ) : CosechaRepository {
 
-    override fun getCosechasByCampania(campaniaId: Int): Flow<List<Cosecha>> {
-        return cosechaDao.getCosechasPorCampania(campaniaId).map { entities ->
+    override fun getCosechasByCampania(idCampania: Int): Flow<List<Cosecha>> {
+        return cosechaDao.getCosechasPorCampania(idCampania).map { entities ->
             entities.map { it.toDomain() }
         }
     }
@@ -23,8 +23,8 @@ class CosechaRepositoryImpl @Inject constructor(
         return cosechaDao.getCosechaById(id)?.toDomain()
     }
 
-    override suspend fun insertCosecha(cosecha: Cosecha) {
-        cosechaDao.insertCosecha(cosecha.toEntity())
+    override suspend fun insertCosecha(cosecha: Cosecha): Long {
+        return cosechaDao.insertCosecha(cosecha.toEntity())
     }
 
     override suspend fun updateCosecha(cosecha: Cosecha) {

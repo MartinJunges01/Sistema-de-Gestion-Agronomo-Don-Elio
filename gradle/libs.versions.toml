@@ -13,6 +13,7 @@ hilt = "2.52"
 navigationCompose = "2.7.7"
 coroutines = "1.7.3"
 ksp = "2.0.21-1.0.28"
+ycharts = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,9 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 
 # Corrutinas
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# Gráficos (YCharts)
+ycharts = { group = "co.yml", name = "ycharts", version.ref = "ycharts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
