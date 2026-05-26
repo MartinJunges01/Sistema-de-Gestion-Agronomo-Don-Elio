@@ -2,6 +2,8 @@
 package com.itec.donelio.presentation.ui.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -31,6 +33,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import android.net.Uri
+import com.itec.donelio.presentation.viewmodel.BackupUiState
+import com.itec.donelio.presentation.viewmodel.BackupViewModel
+import com.itec.donelio.presentation.MainActivity
+import android.content.ComponentName
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.delay
 
 // --- SISTEMA DE DISEÑO: AGRICORE ---
 val AgriVerde = Color(0xFF2D6A4F) // Verde principal orgánico
@@ -998,11 +1009,147 @@ fun ObservacionesScreen(onBack: () -> Unit, onGoToCampaniaDetalle: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfiguracionDBScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    val backupViewModel: BackupViewModel = hiltViewModel()
+    val backupState by backupViewModel.uiState.collectAsState()
+    val restoreCompleted by backupViewModel.restoreCompleted.collectAsState()
+    var pendingRestoreUri by remember { mutableStateOf<Uri?>(null) }
+
+    val backupLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri: Uri? ->
+        uri?.let { backupViewModel.crearBackup(it) }
+    }
+
+    val restoreLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        pendingRestoreUri = uri
+    }
+
+    LaunchedEffect(backupState) {
+        if (backupState is BackupUiState.Success && !restoreCompleted) {
+            delay(3000)
+            backupViewModel.resetState()
+        } else if (backupState is BackupUiState.Error) {
+            delay(3000)
+            backupViewModel.resetState()
+        }
+    }
+
+    LaunchedEffect(restoreCompleted) {
+        if (restoreCompleted) {
+            val intent = Intent.makeRestartActivityTask(
+                ComponentName(context, MainActivity::class.java)
+            )
+            context.startActivity(intent)
+            Runtime.getRuntime().exit(0)
+        }
+    }
+
+    if (pendingRestoreUri != null) {
+        AlertDialog(
+            onDismissRequest = { pendingRestoreUri = null },
+            title = { Text("Restaurar Base de Datos") },
+            text = {
+                Text(
+                    "Todos los datos actuales serán reemplazados por los del respaldo. " +
+                            "Esta acción no se puede deshacer. ¿Desea continuar?"
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingRestoreUri?.let { backupViewModel.restaurarBackup(it) }
+                    pendingRestoreUri = null
+                }) {
+                    Text("Restaurar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingRestoreUri = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(title = { Text("Base de Datos (CU12/CU13)", fontWeight = FontWeight.Bold) }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } }, colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo))
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = TextoPrincipal)) { Icon(Icons.Default.Upload, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Exportar Base de Datos (Respaldo)") }
-            Button(onClick = { }, modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = AgriVerde)) { Icon(Icons.Default.Download, contentDescription = null); Spacer(modifier = Modifier.width(8.dp)); Text("Importar Base de Datos") }
+        TopAppBar(
+            title = { Text("Base de Datos (CU12/CU13)", fontWeight = FontWeight.Bold) },
+            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+        )
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                onClick = { backupLauncher.launch("don_elio_backup.db") },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = TextoPrincipal),
+                enabled = backupState !is BackupUiState.Loading
+            ) {
+                if (backupState is BackupUiState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.Upload, contentDescription = null)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Exportar Base de Datos (Respaldo)")
+            }
+
+            Button(
+                onClick = { restoreLauncher.launch(arrayOf("*/*")) },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                enabled = backupState !is BackupUiState.Loading
+            ) {
+                if (backupState is BackupUiState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.Download, contentDescription = null)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Importar Base de Datos")
+            }
+
+            when (val state = backupState) {
+                is BackupUiState.Success -> {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = AgriVerde),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = state.message,
+                            color = Color.White,
+                            modifier = Modifier.padding(16.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                is BackupUiState.Error -> {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFDC2626)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = state.message,
+                            color = Color.White,
+                            modifier = Modifier.padding(16.dp),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                else -> {}
+            }
         }
     }
 }
