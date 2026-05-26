@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Observacion
-import com.itec.donelio.presentation.ui.components.CampanaSeleccionadaCard
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -36,6 +36,8 @@ fun ObservacionesScreen(
 ) {
     val formState by formViewModel.state.collectAsState()
     val observaciones by listViewModel.observaciones.collectAsState()
+    val campanias by listViewModel.campanias.collectAsState()
+    val campaniaIdSeleccionada by listViewModel.campaniaIdSeleccionada.collectAsState()
 
     LaunchedEffect(formState.guardadoExitoso) {
         if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
@@ -52,7 +54,14 @@ fun ObservacionesScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item { CampanaSeleccionadaCard(onClick = onGoToCampaniaDetalle) }
+            item {
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = campaniaIdSeleccionada,
+                    onCampaniaSelected = { listViewModel.seleccionarCampania(it) },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
             item {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {

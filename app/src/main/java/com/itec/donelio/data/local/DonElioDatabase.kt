@@ -18,7 +18,7 @@ import com.itec.donelio.data.local.entity.*
         CampaniaInsumoEntity::class,
         UsuarioEntity::class
     ],
-    version = 1, // Si en el futuro agregas columnas, este número deberá subir a 2
+    version = 2, // Subimos a 2 porque agregamos icono y activo en entidades
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
 // Aquí conectamos el Issue 3

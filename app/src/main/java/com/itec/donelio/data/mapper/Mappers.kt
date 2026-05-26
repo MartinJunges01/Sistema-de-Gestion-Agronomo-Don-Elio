@@ -89,7 +89,8 @@ fun InsumoEntity.toDomain(): Insumo {
         id = id_insumo,
         nombre = nombre,
         categoria = categoria,
-        unidad = unidad
+        unidad = unidad,
+        icono = icono
     )
 }
 
@@ -98,7 +99,8 @@ fun Insumo.toEntity(): InsumoEntity {
         id_insumo = id,
         nombre = nombre,
         categoria = categoria,
-        unidad = unidad
+        unidad = unidad,
+        icono = icono
     )
 }
 
@@ -126,7 +128,8 @@ fun CampaniaInsumoEntity.toDomain(): CampaniaInsumo {
         idCampania = idCampania,
         idInsumo = idInsumo,
         cantidad = cantidad,
-        precio = precio
+        precio = precio,
+        activo = activo
     )
 }
 
@@ -136,7 +139,8 @@ fun CampaniaInsumo.toEntity(): CampaniaInsumoEntity {
         idCampania = idCampania,
         idInsumo = idInsumo,
         cantidad = cantidad,
-        precio = precio
+        precio = precio,
+        activo = activo
     )
 }
 

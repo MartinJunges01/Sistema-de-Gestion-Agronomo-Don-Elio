@@ -155,10 +155,10 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Crear caso de uso para cancelar alarma.
 
 ## Fase 6: Análisis de Datos y Respaldos
-- [ ] **Issue 1: Dashboard de Reportes y Estadísticas (CU10)**
-  - [ ] Crear `EstadisticasViewModel`.
-  - [ ] Integrar librería de gráficos (Vico/YCharts).
-  - [ ] Diseñar pantalla "Reportes y Estadísticas".
+- [x] **Issue 1: Dashboard de Reportes y Estadísticas (CU10)**
+  - [x] Crear `EstadisticasViewModel` (ReportesViewModel).
+  - [x] Integrar librería de gráficos (YCharts).
+  - [x] Diseñar pantalla "Reportes y Estadísticas" (ReportesRendimientoScreen).
 - [ ] **Issue 2: Exportación de Reportes a Archivos (CU11)**
   - [ ] Implementar `Storage Access Framework` (SAF).
   - [ ] Escribir utilidad CSV/Excel o PDF.

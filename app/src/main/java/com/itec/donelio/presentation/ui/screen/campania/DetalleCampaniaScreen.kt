@@ -53,7 +53,7 @@ fun DetalleCampaniaScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(state.campaign?.nombre ?: "Detalle", fontWeight = FontWeight.Bold) },
+            title = { Text(state.campania?.nombre ?: "Detalle", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriVerde, titleContentColor = Color.White, navigationIconContentColor = Color.White),
             actions = {
@@ -74,8 +74,9 @@ fun DetalleCampaniaScreen(
                 }
             }
         } else {
-            state.campaign?.let { campaign ->
-                HeaderCampania(campaign = campaign)
+            val campania = state.campania
+            if (campania != null) {
+                HeaderCampania(campania = campania)
 
                 TabRow(
                     selectedTabIndex = selectedTab,
@@ -92,13 +93,13 @@ fun DetalleCampaniaScreen(
                 }
 
                 when (selectedTab) {
-                    0 -> TabInfo(campaign = campaign, onEditar = { onGoToEditar(campaign.id) })
-                    1 -> TabTareas(campaniaId = campaign.id, onGoToTareas = { onGoToTareas(campaign.id) })
-                    2 -> TabInsumos(campaniaId = campaign.id, onGoToInsumos = { onGoToInsumos(campaign.id) })
-                    3 -> TabCosechas(campaniaId = campaign.id, onGoToCosechas = { onGoToCosechas(campaign.id) })
+                    0 -> TabInfo(campania = campania, onEditar = { onGoToEditar(campania.id) })
+                    1 -> TabTareas(campaniaId = campania.id, onGoToTareas = { onGoToTareas(campania.id) })
+                    2 -> TabInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) })
+                    3 -> TabCosechas(campaniaId = campania.id, onGoToCosechas = { onGoToCosechas(campania.id) })
                     4 -> TabObservaciones(
-                        campaniaId = campaign.id,
-                        onGoToObservaciones = { onGoToObservaciones(campaign.id) }
+                        campaniaId = campania.id,
+                        onGoToObservaciones = { onGoToObservaciones(campania.id) }
                     )
                 }
             }
@@ -107,7 +108,7 @@ fun DetalleCampaniaScreen(
 }
 
 @Composable
-private fun HeaderCampania(campaign: com.itec.donelio.domain.model.Campania) {
+private fun HeaderCampania(campania: com.itec.donelio.domain.model.Campania) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -115,12 +116,12 @@ private fun HeaderCampania(campaign: com.itec.donelio.domain.model.Campania) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Default.Eco, contentDescription = null, tint = AgriVerde, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(8.dp))
-            Text(campaign.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
+            Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            InfoChip(label = "Cultivo", value = campaign.cultivo.ifBlank { "—" })
-            InfoChip(label = "Inicio", value = formatFecha(campaign.fechaInicio))
-            InfoChip(label = "Estado", value = if (campaign.estaActiva) "Activa" else "Inactiva")
+            InfoChip(label = "Cultivo", value = campania.cultivo.ifBlank { "—" })
+            InfoChip(label = "Inicio", value = formatFecha(campania.fechaInicio))
+            InfoChip(label = "Estado", value = if (campania.estaActiva) "Activa" else "Inactiva")
         }
     }
 }
@@ -134,15 +135,15 @@ private fun InfoChip(label: String, value: String) {
 }
 
 @Composable
-private fun TabInfo(campaign: com.itec.donelio.domain.model.Campania, onEditar: () -> Unit) {
+private fun TabInfo(campania: com.itec.donelio.domain.model.Campania, onEditar: () -> Unit) {
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4))) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    DetalleFila(label = "Nombre", value = campaign.nombre)
-                    DetalleFila(label = "Cultivo", value = campaign.cultivo.ifBlank { "Sin especificar" })
-                    DetalleFila(label = "Fecha de inicio", value = formatFecha(campaign.fechaInicio))
-                    DetalleFila(label = "Estado", value = if (campaign.estaActiva) "Activa" else "Inactiva")
+                    DetalleFila(label = "Nombre", value = campania.nombre)
+                    DetalleFila(label = "Cultivo", value = campania.cultivo.ifBlank { "Sin especificar" })
+                    DetalleFila(label = "Fecha de inicio", value = formatFecha(campania.fechaInicio))
+                    DetalleFila(label = "Estado", value = if (campania.estaActiva) "Activa" else "Inactiva")
                 }
             }
         }

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.itec.donelio"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -84,5 +84,8 @@ dependencies {
 
     // Corrutinas (Asincronía y flujos de datos)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Gráficos
+    implementation(libs.ycharts)
 }
 

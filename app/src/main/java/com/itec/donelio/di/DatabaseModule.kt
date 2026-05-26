@@ -32,7 +32,9 @@ object DatabaseModule {
             context,
             DonElioDatabase::class.java,
             "don_elio_db" // Este es el nombre del archivo físico SQLite en el teléfono
-        ).build()
+        )
+        .fallbackToDestructiveMigration() // Agregado para desarrollo: borra y recrea las tablas si cambia la version
+        .build()
     }
 
     // 2. Provee los DAOs individuales

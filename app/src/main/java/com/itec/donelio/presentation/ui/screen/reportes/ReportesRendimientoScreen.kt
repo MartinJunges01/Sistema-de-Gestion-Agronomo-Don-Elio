@@ -21,16 +21,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import co.yml.charts.ui.piechart.charts.PieChart
+import co.yml.charts.ui.piechart.models.PieChartConfig
 import com.itec.donelio.presentation.ui.components.CardMetricaComparativa
 import com.itec.donelio.presentation.ui.theme.AgriAzul
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
+import com.itec.donelio.presentation.viewmodel.reportes.ReportesViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReportesRendimientoScreen(onBack: () -> Unit) {
+fun ReportesRendimientoScreen(
+    onBack: () -> Unit,
+    viewModel: ReportesViewModel = hiltViewModel()
+) {
+    val pieChartData by viewModel.pieChartData.collectAsState()
     val campanas = listOf("Campaña Soja 2026", "Campaña Maíz 2026", "Campaña Trigo 2025")
     var campania1Expandido by remember { mutableStateOf(false) }
     var campania2Expandido by remember { mutableStateOf(false) }
@@ -212,39 +221,27 @@ fun ReportesRendimientoScreen(onBack: () -> Unit) {
             }
 
             item {
-                Text("Evolución Mensual de Insumos", fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                Text("Distribución de Gastos por Insumo", fontWeight = FontWeight.Bold, color = TextoPrincipal)
                 Spacer(modifier = Modifier.height(8.dp))
-                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(220.dp)) {
-                    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                        Canvas(modifier = Modifier.fillMaxSize().padding(top = 16.dp, bottom = 24.dp, start = 8.dp, end = 8.dp)) {
-                            val meses = listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun")
-                            val valores1 = listOf(400f, 650f, 500f, 800f, 600f, 750f)
-                            val valores2 = listOf(300f, 550f, 700f, 450f, 650f, 500f)
-                            val maxVal = 900f
-                            val stepX = size.width / (meses.size - 1)
-
-                            for (i in 0 until meses.size - 1) {
-                                val x1 = i * stepX
-                                val y1 = size.height - (valores1[i] / maxVal * size.height)
-                                val x2 = (i + 1) * stepX
-                                val y2 = size.height - (valores1[i + 1] / maxVal * size.height)
-                                drawLine(color = AgriAzul, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
-                                drawCircle(color = AgriAzul, radius = 8f, center = Offset(x1, y1))
-                                if (i == meses.size - 2) drawCircle(color = AgriAzul, radius = 8f, center = Offset(x2, y2))
-                            }
-
-                            for (i in 0 until meses.size - 1) {
-                                val x1 = i * stepX
-                                val y1 = size.height - (valores2[i] / maxVal * size.height)
-                                val x2 = (i + 1) * stepX
-                                val y2 = size.height - (valores2[i + 1] / maxVal * size.height)
-                                drawLine(color = TextoSecundario, start = Offset(x1, y1), end = Offset(x2, y2), strokeWidth = 6f, cap = StrokeCap.Round)
-                                drawCircle(color = TextoSecundario, radius = 8f, center = Offset(x1, y1))
-                                if (i == meses.size - 2) drawCircle(color = TextoSecundario, radius = 8f, center = Offset(x2, y2))
-                            }
-                        }
-                        Row(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            listOf("Ene", "Feb", "Mar", "Abr", "May", "Jun").forEach { Text(it, fontSize = 11.sp, color = TextoSecundario) }
+                Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth().height(320.dp)) {
+                    Box(modifier = Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
+                        if (pieChartData != null) {
+                            val pieChartConfig = PieChartConfig(
+                                isAnimationEnable = true,
+                                showSliceLabels = true,
+                                sliceLabelTextColor = Color.White,
+                                activeSliceAlpha = 0.9f,
+                                isEllipsizeEnabled = true,
+                                sliceLabelTextSize = 12.sp,
+                                labelVisible = true
+                            )
+                            PieChart(
+                                modifier = Modifier.fillMaxSize().padding(24.dp),
+                                pieChartData = pieChartData!!,
+                                pieChartConfig = pieChartConfig
+                            )
+                        } else {
+                            Text("No hay datos suficientes para el gráfico", color = TextoSecundario)
                         }
                     }
                 }

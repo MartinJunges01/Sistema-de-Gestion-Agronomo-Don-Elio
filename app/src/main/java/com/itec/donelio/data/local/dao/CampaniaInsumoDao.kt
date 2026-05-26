@@ -16,13 +16,17 @@ interface CampaniaInsumoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumoEntity): Long
 
-    @Delete
-    suspend fun desvincularInsumo(campaniaInsumo: CampaniaInsumoEntity): Int
+    @Query("UPDATE campania_insumo SET activo = 0 WHERE id_campania_insumo = :id")
+    suspend fun desvincularInsumo(id: Int)
 
     // @Transaction es clave aquí porque Room hará dos consultas por debajo:
     // 1. Buscar en campania_insumo
     // 2. Buscar los datos del insumo base en InsumoEntity
     @Transaction
-    @Query("SELECT * FROM campania_insumo WHERE id_campania = :campaniaId")
+    @Query("SELECT * FROM campania_insumo WHERE id_campania = :campaniaId AND activo = 1")
     fun getInsumosUtilizadosEnCampania(campaniaId: Int): Flow<List<InsumoUtilizadoRelacion>>
+
+    @Transaction
+    @Query("SELECT * FROM campania_insumo")
+    fun getAllInsumosUtilizados(): Flow<List<InsumoUtilizadoRelacion>>
 }

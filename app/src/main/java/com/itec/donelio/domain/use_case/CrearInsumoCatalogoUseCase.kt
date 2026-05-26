@@ -14,7 +14,8 @@ class CrearInsumoCatalogoUseCase @Inject constructor(
     suspend operator fun invoke(
         nombre: String,
         categoria: String,
-        unidad: String
+        unidad: String,
+        icono: String? = null
     ) {
         if (nombre.isBlank()) {
             throw IllegalArgumentException("El nombre del insumo no puede estar vacío")
@@ -23,7 +24,8 @@ class CrearInsumoCatalogoUseCase @Inject constructor(
             id = 0,
             nombre = nombre.trim(),
             categoria = categoria.trim(),
-            unidad = unidad.trim()
+            unidad = unidad.trim(),
+            icono = icono
         )
         insumoRepository.insertInsumo(insumo)
     }

@@ -4,7 +4,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items as gridItems
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -55,7 +62,13 @@ fun CatalogoInsumosScreen(
                         ListItem(
                             headlineContent = { Text(insumo.nombre, fontWeight = FontWeight.Bold) },
                             supportingContent = { Text("${insumo.categoria} | ${insumo.unidad}") },
-                            leadingContent = { Icon(Icons.Default.Inventory, contentDescription = null, tint = Emerald600) },
+                            leadingContent = { 
+                                if (insumo.icono != null) {
+                                    Text(insumo.icono, fontSize = 24.sp)
+                                } else {
+                                    Icon(Icons.Default.Inventory, contentDescription = null, tint = Emerald600)
+                                }
+                            },
                             trailingContent = {
                                 Row {
                                     IconButton(onClick = { insumoAEditar = insumo }) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = Stone900) }
@@ -103,6 +116,8 @@ private fun DialogEditarInsumo(
     var nombre by remember { mutableStateOf(insumo.nombre) }
     var categoria by remember { mutableStateOf(insumo.categoria) }
     var unidad by remember { mutableStateOf(insumo.unidad) }
+    var icono by remember { mutableStateOf(insumo.icono) }
+    val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -130,12 +145,38 @@ private fun DialogEditarInsumo(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+                Text("Icono", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth().height(100.dp)
+                ) {
+                    gridItems(iconosDisponibles) { i ->
+                        val isSelected = icono == i
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) Emerald600.copy(alpha = 0.2f) else Color.Transparent)
+                                .border(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) Emerald600 else Color.LightGray,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clickable { icono = i },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = i, fontSize = 20.sp)
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             Button(
                 onClick = {
-                    onGuardar(insumo.copy(nombre = nombre.trim(), categoria = categoria.trim(), unidad = unidad.trim()))
+                    onGuardar(insumo.copy(nombre = nombre.trim(), categoria = categoria.trim(), unidad = unidad.trim(), icono = icono))
                 },
                 enabled = nombre.isNotBlank()
             ) { Text("Guardar") }

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.CosechaNoAlmacenada
-import com.itec.donelio.presentation.ui.components.CampanaSeleccionadaCard
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -38,6 +38,9 @@ fun CosechasScreen(
 ) {
     val cosechas by viewModel.cosechas.collectAsState()
     val noAlmacenadasDetalle by viewModel.noAlmacenadasDetalle.collectAsState()
+    val campanias by viewModel.campanias.collectAsState()
+    val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
+
     val almacenadas = cosechas.filter { it.almacen.isNotBlank() }
     val noAlmacenadas = cosechas.filter { it.almacen.isBlank() }
 
@@ -52,8 +55,12 @@ fun CosechasScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                CampanaSeleccionadaCard(onClick = onGoToCampaniaDetalle)
-                Spacer(modifier = Modifier.height(8.dp))
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = campaniaIdSeleccionada,
+                    onCampaniaSelected = { viewModel.seleccionarCampania(it) },
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             if (almacenadas.isNotEmpty()) {
