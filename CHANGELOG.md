@@ -1,5 +1,29 @@
 # Changelog
 
+**[2026-05-25] - Actualización de Roadmap y Botón Invitado**
+- Actualización de `.context/RoadmapOP.md` con issues finalizados de fase 8, 10 y 11.
+- Añadido botón "Invitado" para debug en la pantalla de login (F8/Issue 1.8).
+
+**[2026-05-25] - Finalización de requerimientos fase 2**
+- Implementado swipe semanal para gestión visual de Tareas.
+- Implementado catálogo de Insumos con íconos e integración a base de datos.
+- Integrado YCharts para gráficos de pie en Dashboard de Reportes.
+- Añadido soporte de Soft-Delete (activo) en vinculación de Insumos.
+- Forzada versión de Room DB a 2 con migración destructiva (entorno dev).
+- Añadida DataSeed con iconos e items eliminados para pruebas de UI.
+- Solucionados errores WorkerDaemon configurando gradle.user.home en entorno local.
+- Actualizados Roadmap y documentación de Arquitectura.
+
+**[2026-05-20] - Integración de 20 issues de auditoría en RoadmapOP.md**
+- Fusionados los 20 issues detectados en auditoría de código dentro del `RoadmapOP.md` como Fases 8-12, organizados por criticidad.
+- Agregadas notas de referencia cruzada y de dependencia entre issues.
+- Eliminado `.context/IssuesPendientes.md` (contenido migrado a RoadmapOP.md).
+
+**[2026-05-19] - Implementar autenticación, refactor Clean Arch y conectar Use Cases muertos**
+- **Issue 1 (Login completo):** Creación de `UsuarioDao`, modelo de dominio `Usuario`, mappers, `LoginUseCase` (SHA-256), `RegistroUseCase` y `LoginViewModel`. Conexión de `LoginScreen` y `RegistroScreen`.
+- **Issue 12 (Refactor Clean Arch):** Creación de 6 UseCases contenedores para queries reactivas. Refactorización de 6 ViewModels para inyectar UseCases en lugar de repositorios (`CampaniaFormViewModel`, `CampaniaDetailViewModel`, `TareaViewModel`, `CosechaViewModel`, `InsumoVinculacionViewModel` y `ObservacionViewModel`).
+- **Issue 13 (Use Cases muertos):** Conexión de `EditarTareaUseCase`, `EliminarTareaUseCase`, `EditarInsumoCatalogoUseCase` y creación de `EliminarInsumoCatalogoUseCase`. Diálogo de edición inline en `CatalogoInsumosScreen`.
+
 **[2026-05-18] - Refactor de Gestión de Campañas (F4/Issue9)**
 - Creación de `GestionCampaniasViewModel` con carga reactiva de campañas desde `ObtenerCampaniasUseCase`.
 - Creación de `GestionCampaniasScreen` reemplazando `GestionParcelasScreen` (mock) con lista real desde BD.
