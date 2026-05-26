@@ -86,5 +86,15 @@ fun LoginScreen(
         TextButton(onClick = onGoToRegister) {
             Text("¿No tienes cuenta? Regístrate aquí", color = Emerald600, fontWeight = FontWeight.SemiBold)
         }
+        if (com.itec.donelio.BuildConfig.DEBUG) {
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = onLoginSuccess,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Entrar como Invitado (Debug)", fontSize = 16.sp)
+            }
+        }
     }
 }
