@@ -12,7 +12,7 @@ interface TareaRepository {
 
     suspend fun getTareaById(id: Int): Tarea?
 
-    suspend fun insertTarea(tarea: Tarea)
+    suspend fun insertTarea(tarea: Tarea): Long
 
     suspend fun updateTarea(tarea: Tarea)
 

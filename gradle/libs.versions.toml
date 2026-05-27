@@ -14,6 +14,8 @@ navigationCompose = "2.7.7"
 coroutines = "1.7.3"
 ksp = "2.0.21-1.0.28"
 ycharts = "2.1.0"
+coil = "2.6.0"
+androidx-work = "2.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +53,8 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 # Gráficos (YCharts)
 ycharts = { group = "co.yml", name = "ycharts", version.ref = "ycharts" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

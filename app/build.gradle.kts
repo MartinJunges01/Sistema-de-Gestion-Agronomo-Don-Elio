@@ -87,5 +87,11 @@ dependencies {
 
     // Gráficos
     implementation(libs.ycharts)
+
+    // Imágenes (Coil)
+    implementation(libs.coil.compose)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 }
 

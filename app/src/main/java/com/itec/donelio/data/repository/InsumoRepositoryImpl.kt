@@ -47,6 +47,6 @@ class InsumoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteInsumo(insumo: Insumo) {
-        insumoDao.deleteInsumo(insumo.toEntity())
+        insumoDao.softDeleteInsumo(insumo.id)
     }
 }

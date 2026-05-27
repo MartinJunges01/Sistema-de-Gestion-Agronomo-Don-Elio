@@ -1,5 +1,30 @@
 # Changelog
 
+**[2026-05-26] - Sistema de Recordatorios de Tareas (F5/Issue4)**
+- Implementación de recordatorios de tareas en segundo plano usando `WorkManager`.
+- Creado `TareaReminderWorker` y `WorkManagerTaskReminderScheduler` para encolar notificaciones.
+- Añadido Notification Channel `"tareas_channel"` en `DonElioApplication`.
+- Modificada la base de datos (`TareaDao` y `TareaRepository`) para retornar el ID de inserción.
+- Actualizados `CrearTareaUseCase`, `EditarTareaUseCase`, `ConfirmarTareaUseCase` y `EliminarTareaUseCase` para orquestar la creación y cancelación de notificaciones programadas.
+
+**[2026-05-26] - Configuración de Permisos de Notificaciones (F5/Issue3)**
+- Se añadió el permiso `<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />` al `AndroidManifest.xml` (necesario para Android 13+).
+- Implementada la solicitud nativa en tiempo de ejecución en `DashboardOperacionesScreen` a través de `rememberLauncherForActivityResult` de Compose. 
+
+**[2026-05-26] - Implementación de Imágenes en Observaciones (F5/Issue2)**
+- Añadida librería Coil para carga asíncrona de imágenes (`AsyncImage`).
+- Configurado `FileProvider` y agregado permisos de cámara en `AndroidManifest.xml`.
+- Modificada `ObservacionesScreen` con botones "Cámara" y "Galería" utilizando `rememberLauncherForActivityResult`.
+- Modificado `FormularioObservacionViewModel` para copiar la imagen seleccionada al almacenamiento interno de la app antes de guardar la URI en la BD, previniendo la rotura de enlaces si el usuario borra la foto de la galería original.
+- Actualizadas las tarjetas de la lista de observaciones para renderizar la foto en miniatura.
+
+**[2026-05-26] - Corrección de Soft-Delete en Catálogo de Insumos**
+- Añadido campo `activo` a la tabla `insumos` (`InsumoEntity`) y al modelo de dominio `Insumo`.
+- Refactorizado `InsumoDao` para usar soft-delete (`UPDATE insumos SET activo = 0`) al eliminar del catálogo.
+- Modificada la query `getCatalogoInsumos` para filtrar por `activo = 1`.
+- Incrementada la versión de Room DB a 3 para aplicar los cambios en el esquema.
+- Solucionado el bug crítico donde eliminar un insumo del catálogo borraba en cascada el historial de las campañas pasadas.
+
 **[2026-05-25] - Actualización de Roadmap y Botón Invitado**
 - Actualización de `.context/RoadmapOP.md` con issues finalizados de fase 8, 10 y 11.
 - Añadido botón "Invitado" para debug en la pantalla de login (F8/Issue 1.8).

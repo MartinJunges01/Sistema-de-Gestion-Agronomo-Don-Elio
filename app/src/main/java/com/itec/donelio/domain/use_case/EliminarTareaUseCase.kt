@@ -2,6 +2,7 @@ package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.model.Tarea
+import com.itec.donelio.core.alarm.TaskReminderScheduler
 import com.itec.donelio.domain.repository.TareaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -13,12 +14,14 @@ import javax.inject.Inject
  * Caso de uso para eliminar una tarea existente.
  */
 class EliminarTareaUseCase @Inject constructor(
-    private val tareaRepository: TareaRepository
+    private val tareaRepository: TareaRepository,
+    private val taskReminderScheduler: TaskReminderScheduler
 ) {
     operator fun invoke(tarea: Tarea): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
         try {
             tareaRepository.deleteTarea(tarea)
+            taskReminderScheduler.cancel(tarea.id)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Error desconocido", e))

@@ -139,20 +139,20 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Añadir permisos en `AndroidManifest.xml`.
   - [ ] Implementar gestor de permisos en Compose.
   - [ ] Crear `FileProvider`.
-- [ ] **Issue 2: Módulo de Observaciones con Imágenes (CU8)**
-  - [ ] Crear `ObservacionViewModel`.
-  - [ ] Diseñar pantalla "Nueva Observación".
-  - [ ] Implementar botones de cámara/galería.
-  - [ ] Implementar Coil para vista previa.
-  - [ ] Lógica de guardado de URI.
-- [ ] **Issue 3: Configuración de Permisos de Notificaciones y Alarmas**
-  - [ ] Añadir permisos (`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`).
-  - [ ] Implementar solicitud de permiso en Compose.
-- [ ] **Issue 4: Sistema de Recordatorios de Tareas (CU5)**
-  - [ ] Crear Notification Channel.
-  - [ ] Implementar `BroadcastReceiver`.
-  - [ ] Modificar `CrearTareaUseCase` y `EditarTareaUseCase` para usar `AlarmManager`/`WorkManager`.
-  - [ ] Crear caso de uso para cancelar alarma.
+- [x] **Issue 2: Módulo de Observaciones con Imágenes (CU8)**
+  - [x] Crear `ObservacionViewModel`.
+  - [x] Diseñar pantalla "Nueva Observación".
+  - [x] Implementar botones de cámara/galería.
+  - [x] Implementar Coil para vista previa.
+  - [x] Lógica de guardado de URI.
+- [x] **Issue 3: Configuración de Permisos de Notificaciones y Alarmas**
+  - [x] Añadir permisos (`POST_NOTIFICATIONS`).
+  - [x] Implementar solicitud de permiso en Compose al entrar al Dashboard.
+- [x] **Issue 4: Sistema de Recordatorios de Tareas (CU5)**
+  - [x] Crear Notification Channel.
+  - [x] Implementar motor de notificaciones (WorkManager).
+  - [x] Modificar `CrearTareaUseCase` y `EditarTareaUseCase` para encolar notificaciones múltiples (2 días antes y día de la tarea).
+  - [x] Crear caso de uso/lógica de cancelación al completar o eliminar tarea.
 
 ## Fase 6: Análisis de Datos y Respaldos
 - [x] **Issue 1: Dashboard de Reportes y Estadísticas (CU10)**

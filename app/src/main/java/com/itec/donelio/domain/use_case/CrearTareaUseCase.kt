@@ -2,6 +2,7 @@ package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.model.Tarea
+import com.itec.donelio.core.alarm.TaskReminderScheduler
 import com.itec.donelio.domain.repository.TareaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,8 @@ import javax.inject.Inject
  * Valida que el nombre no esté vacío antes de persistir.
  */
 class CrearTareaUseCase @Inject constructor(
-    private val tareaRepository: TareaRepository
+    private val tareaRepository: TareaRepository,
+    private val taskReminderScheduler: TaskReminderScheduler
 ) {
     operator fun invoke(
         nombre: String,
@@ -37,7 +39,11 @@ class CrearTareaUseCase @Inject constructor(
                 confirmar = false,
                 idCampania = idCampania
             )
-            tareaRepository.insertTarea(tarea)
+            val newId = tareaRepository.insertTarea(tarea)
+            val insertedTarea = tarea.copy(id = newId.toInt())
+            if (insertedTarea.notificar) {
+                taskReminderScheduler.schedule(insertedTarea)
+            }
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "Error desconocido", e))
