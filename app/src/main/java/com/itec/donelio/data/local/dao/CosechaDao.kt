@@ -10,7 +10,7 @@ import com.itec.donelio.data.local.entity.CosechaEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CosechaDao {
+interface   CosechaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCosecha(cosecha: CosechaEntity): Long
 
