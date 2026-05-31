@@ -1,5 +1,11 @@
 # Changelog
 
+**[2026-05-31] - Implementación de Backup y Corrección de Regresión**
+- Implementadas funcionalidades de exportación e importación de base de datos (CU12, CU13) en `ConfiguracionDBScreen`.
+- Creados Casos de Uso `CrearBackupUseCase` y `RestaurarBackupUseCase`.
+- **Hotfix:** Revertida sobreescritura accidental del archivo `screens.kt` que había eliminado la navegación moderna con `NavHost`.
+- Restaurados `CosechaDao.kt`, `gradle.properties` y `.idea/misc.xml` para eliminar cambios locales subidos por error en la PR.
+
 **[2026-05-26] - Sistema de Recordatorios de Tareas (F5/Issue4)**
 - Implementación de recordatorios de tareas en segundo plano usando `WorkManager`.
 - Creado `TareaReminderWorker` y `WorkManagerTaskReminderScheduler` para encolar notificaciones.
