@@ -1,5 +1,12 @@
 # Changelog
 
+**[2026-05-31] - Implementación de Backup y Corrección de Regresión**
+- Implementadas funcionalidades de exportación e importación de base de datos (CU12, CU13) en `ConfiguracionDBScreen`.
+- Creados Casos de Uso `CrearBackupUseCase` y `RestaurarBackupUseCase`.
+- **Hotfix:** Revertida sobreescritura accidental del archivo `screens.kt` que había eliminado la navegación moderna con `NavHost`.
+- Restaurados `CosechaDao.kt`, `gradle.properties` y `.idea/misc.xml` para eliminar cambios locales subidos por error en la PR.
+
+
 **[2026-05-25] - Actualización de Roadmap y Botón Invitado**
 - Actualización de `.context/RoadmapOP.md` con issues finalizados de fase 8, 10 y 11.
 - Añadido botón "Invitado" para debug en la pantalla de login (F8/Issue 1.8).
