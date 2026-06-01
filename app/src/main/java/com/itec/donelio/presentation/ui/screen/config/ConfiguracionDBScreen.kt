@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.presentation.viewmodel.BackupUiState
 import com.itec.donelio.presentation.viewmodel.BackupViewModel
+import com.itec.donelio.BuildConfig
 import com.itec.donelio.presentation.viewmodel.config.ConfiguracionDBViewModel
 import com.itec.donelio.presentation.viewmodel.config.SeedState
 import com.itec.donelio.presentation.ui.theme.AgriFondo
@@ -136,6 +138,25 @@ fun ConfiguracionDBScreen(
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                if (BuildConfig.DEBUG) {
+                    Button(
+                        onClick = { configViewModel.cargarDatosPrueba() },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                        enabled = seedState !is SeedState.Cargando
+                    ) {
+                        if (seedState is SeedState.Cargando) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Icon(Icons.Default.PlayArrow, contentDescription = null)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Cargar datos de prueba")
+                    }
+                }
                 Button(
                     onClick = { createBackupLauncher.launch("don_elio_backup.db") },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
