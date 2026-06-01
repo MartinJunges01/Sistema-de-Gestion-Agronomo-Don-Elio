@@ -18,4 +18,6 @@ interface InsumoRepository {
     suspend fun updateInsumo(insumo: Insumo)
 
     suspend fun deleteInsumo(insumo: Insumo)
+
+
 }
