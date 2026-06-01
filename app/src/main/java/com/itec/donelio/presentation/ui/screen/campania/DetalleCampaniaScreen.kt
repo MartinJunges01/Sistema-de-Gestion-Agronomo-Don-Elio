@@ -182,7 +182,11 @@ private fun TabTareas(campaniaId: Int, onGoToTareas: () -> Unit) {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Resumen de Tareas", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
-                    Text("$pendientes tareas pendientes${if (completadas.isNotEmpty()) ", ${completadas.size} completadas" else ""}", color = TextoSecundario, fontSize = 14.sp)
+                    Text(
+                        text = "${pendientes.size} tareas pendientes${if (completadas.isNotEmpty()) ", ${completadas.size} completadas" else ""}",
+                        color = TextoSecundario,
+                        fontSize = 14.sp
+                    )
                 }
             }
         }

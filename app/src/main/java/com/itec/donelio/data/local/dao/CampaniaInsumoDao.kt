@@ -17,7 +17,8 @@ interface CampaniaInsumoDao {
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumoEntity): Long
 
     @Query("UPDATE campania_insumo SET activo = 0 WHERE id_campania_insumo = :id")
-    suspend fun desvincularInsumo(id: Int)
+    @Delete
+    suspend fun desvincularInsumo(entity: CampaniaInsumoEntity)
 
     // @Transaction es clave aquí porque Room hará dos consultas por debajo:
     // 1. Buscar en campania_insumo
