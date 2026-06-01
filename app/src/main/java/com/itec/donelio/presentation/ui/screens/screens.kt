@@ -130,7 +130,6 @@ fun DonElioApp() {
                     TareasScreen(
                         campaniaId = campaniaId,
                         onGoToNuevaTarea = { navController.navigate(NavRoute.NuevaTarea.createRoute(campaniaId)) },
-                        onGoToDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) },
                         onBack = { navController.popBackStack() }
                     )
                 }

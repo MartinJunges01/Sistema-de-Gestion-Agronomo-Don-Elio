@@ -40,7 +40,6 @@ fun TareasScreen(
     campaniaId: Int = -1,
     viewModel: TareaViewModel = hiltViewModel(),
     onGoToNuevaTarea: () -> Unit,
-    onGoToDetalle: () -> Unit,
     onBack: () -> Unit
 ) {
     val tareas by viewModel.tareas.collectAsState()
