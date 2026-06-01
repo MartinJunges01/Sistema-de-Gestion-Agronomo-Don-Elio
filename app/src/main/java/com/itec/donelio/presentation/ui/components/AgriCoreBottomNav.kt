@@ -17,37 +17,38 @@ import com.itec.donelio.presentation.ui.theme.AgriVerde
 @Composable
 fun AgriCoreBottomNav(currentRoute: String?, onNavigate: (String) -> Unit) {
     NavigationBar(containerColor = Color.White, tonalElevation = 8.dp) {
+
         NavigationBarItem(
-            selected = currentRoute == NavRoute.Home.route,
-            onClick = { onNavigate(NavRoute.Home.route) },
+            selected = currentRoute?.startsWith(NavRoute.Home.route) == true,
+            onClick = { onNavigate(NavRoute.Home.createRoute()) },
             icon = { Icon(Icons.Default.Dashboard, contentDescription = "Inicio") },
             label = { Text("Inicio") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(
-            selected = currentRoute == NavRoute.Campanias.route,
-            onClick = { onNavigate(NavRoute.Campanias.route) },
+            selected = currentRoute?.startsWith(NavRoute.Campanias.route.substringBefore("?")) == true,
+            onClick = { onNavigate(NavRoute.Campanias.createRoute(null)) },
             icon = { Icon(Icons.Default.Map, contentDescription = "Campañas") },
             label = { Text("Campañas") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(
-            selected = currentRoute == NavRoute.Tareas.route,
-            onClick = { onNavigate(NavRoute.Tareas.route) },
+            selected = currentRoute?.startsWith(NavRoute.Tareas.route.substringBefore("?")) == true,
+            onClick = { onNavigate(NavRoute.Tareas.createRoute(null)) },
             icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Tareas") },
             label = { Text("Tareas") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(
-            selected = currentRoute == NavRoute.Insumos.route,
-            onClick = { onNavigate(NavRoute.Insumos.route) },
+            selected = currentRoute?.startsWith(NavRoute.Insumos.route.substringBefore("?")) == true,
+            onClick = { onNavigate(NavRoute.Insumos.createRoute(null)) },
             icon = { Icon(Icons.Default.Inventory, contentDescription = "Insumos") },
             label = { Text("Insumos") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
         )
         NavigationBarItem(
-            selected = currentRoute == NavRoute.Reportes.route,
-            onClick = { onNavigate(NavRoute.Reportes.route) },
+            selected = currentRoute?.startsWith(NavRoute.Reportes.route) == true,
+            onClick = { onNavigate(NavRoute.Reportes.createRoute()) },
             icon = { Icon(Icons.Default.BarChart, contentDescription = "Reportes") },
             label = { Text("Reportes") },
             colors = NavigationBarItemDefaults.colors(selectedIconColor = AgriVerde, indicatorColor = AgriFondo)
