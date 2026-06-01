@@ -90,7 +90,8 @@ fun InsumoEntity.toDomain(): Insumo {
         nombre = nombre,
         categoria = categoria,
         unidad = unidad,
-        icono = icono
+        icono = icono,
+        activo = activo
     )
 }
 
@@ -100,7 +101,8 @@ fun Insumo.toEntity(): InsumoEntity {
         nombre = nombre,
         categoria = categoria,
         unidad = unidad,
-        icono = icono
+        icono = icono,
+        activo = activo
     )
 }
 

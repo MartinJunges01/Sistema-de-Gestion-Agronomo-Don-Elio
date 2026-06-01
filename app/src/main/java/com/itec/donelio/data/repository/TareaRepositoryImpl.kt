@@ -35,8 +35,8 @@ class TareaRepositoryImpl @Inject constructor(
         return tareaDao.getTareaById(id)?.toDomain()
     }
 
-    override suspend fun insertTarea(tarea: Tarea) {
-        tareaDao.insertTarea(tarea.toEntity())
+    override suspend fun insertTarea(tarea: Tarea): Long {
+        return tareaDao.insertTarea(tarea.toEntity())
     }
 
     override suspend fun updateTarea(tarea: Tarea) {

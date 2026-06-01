@@ -18,10 +18,10 @@ interface InsumoDao {
     @Update
     suspend fun updateInsumo(insumo: InsumoEntity): Int
 
-    @Delete
-    suspend fun deleteInsumo(insumo: InsumoEntity): Int
+    @Query("UPDATE insumos SET activo = 0 WHERE id_insumo = :id")
+    suspend fun softDeleteInsumo(id: Int)
 
-    @Query("SELECT * FROM insumos ORDER BY nombre ASC")
+    @Query("SELECT * FROM insumos WHERE activo = 1 ORDER BY nombre ASC")
     fun getCatalogoInsumos(): Flow<List<InsumoEntity>>
 
     @Query("SELECT * FROM insumos WHERE id_insumo = :id")
