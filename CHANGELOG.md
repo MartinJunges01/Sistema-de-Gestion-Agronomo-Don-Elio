@@ -2,7 +2,6 @@
 
 **[2026-06-01] - Optimizaciones de Entorno y Datos de Prueba**
 - Migradas rutas locales del JDK (`org.gradle.java.home`) y caché (`gradle.user.home`) desde `gradle.properties` hacia `local.properties` para prevenir sobreescrituras en repositorio compartido.
-- Creado documento `CONTRIBUTING.md` formalizando reglas de rama `main` protegida, GitHub Flow y vinculación de Issues.
 - Restaurado botón condicional de "Cargar datos de prueba" (`BuildConfig.DEBUG`) en `ConfiguracionDBScreen` manteniendo compatibilidad con el nuevo soft-delete (`activo`) de Insumos en el `DataSeederImpl`.
 **[2026-05-31] - Implementación de Backup y Corrección de Regresión**
 - Implementadas funcionalidades de exportación e importación de base de datos (CU12, CU13) en `ConfiguracionDBScreen`.
