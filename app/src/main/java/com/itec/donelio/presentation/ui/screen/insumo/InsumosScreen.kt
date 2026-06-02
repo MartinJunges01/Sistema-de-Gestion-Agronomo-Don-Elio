@@ -53,7 +53,7 @@ fun InsumosScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Vincular Insumos (CU9)", fontWeight = FontWeight.Bold) },
+            title = { Text("Vincular Insumos", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {

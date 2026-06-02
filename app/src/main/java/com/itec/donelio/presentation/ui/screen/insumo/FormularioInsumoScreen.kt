@@ -39,7 +39,7 @@ fun FormularioInsumoScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Registrar Insumo (CU9.5)", fontWeight = FontWeight.Bold) },
+            title = { Text("Registrar Insumo", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )

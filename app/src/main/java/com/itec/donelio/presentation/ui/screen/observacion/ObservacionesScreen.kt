@@ -119,7 +119,6 @@ fun ObservacionesScreen(
                             supportingText = formState.errorTexto?.let { { Text(it, color = MaterialTheme.colorScheme.error) } }
                         )
 
-                        // Vista previa de la imagen seleccionada
                         formState.imagenUri?.let { uri ->
                             Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
                                 AsyncImage(
@@ -137,7 +136,6 @@ fun ObservacionesScreen(
                             }
                         }
 
-                        // Fila de botones para adjuntar imagen
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             OutlinedButton(
                                 onClick = {

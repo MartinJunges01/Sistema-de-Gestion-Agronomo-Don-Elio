@@ -126,7 +126,7 @@ fun ConfiguracionDBScreen(
             modifier = Modifier.fillMaxSize().padding(padding)
         ) {
             TopAppBar(
-                title = { Text("Base de Datos (CU12/CU13)", fontWeight = FontWeight.Bold) },
+                title = { Text("Base de Datos", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
