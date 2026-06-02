@@ -16,6 +16,7 @@ interface CampaniaInsumoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumoEntity): Long
 
+
     @Query("DELETE FROM campania_insumo WHERE id_campania_insumo = :id")
     suspend fun desvincularInsumo(id: Int)
 
