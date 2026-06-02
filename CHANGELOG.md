@@ -1,5 +1,12 @@
 # Changelog
 
+**[2026-06-01] - Fase 9: Refactorización de Arquitectura DB y Documentación de Bugs**
+- **Base de Datos:** Eliminado el soporte de borrado lógico (soft-delete) de la tabla intermedia `CampaniaInsumoEntity`, aplicando borrado físico estricto (`DELETE`) en `CampaniaInsumoDao` para mantener la integridad referencial limpia.
+- **KSP Fix:** Solucionados conflictos de compilación de Room (KSP) causados por colisión de anotaciones `@Delete` y `@Query`.
+- **Limpieza de Código:** Removida la propiedad `activo` del dominio, mappers y datos semilla de insumos. Se incrementó la base de datos a la versión 4 forzando `fallbackToDestructiveMigration()`.
+- **Limpieza de Repositorio:** Añadidos archivos de configuración locales de Android Studio (`.idea/misc.xml`, `.idea/deploymentTargetSelector.xml`) al `.gitignore` y eliminados del rastreo de git.
+- **Documentación:** Creado el archivo `docs/bugs_identificados.md` documentando 4 problemas conocidos listos para la próxima iteración.
+
 **[2026-06-01] - Optimizaciones de Entorno y Datos de Prueba**
 - Migradas rutas locales del JDK (`org.gradle.java.home`) y caché (`gradle.user.home`) desde `gradle.properties` hacia `local.properties` para prevenir sobreescrituras en repositorio compartido.
 - Restaurado botón condicional de "Cargar datos de prueba" (`BuildConfig.DEBUG`) en `ConfiguracionDBScreen` manteniendo compatibilidad con el nuevo soft-delete (`activo`) de Insumos en el `DataSeederImpl`.
