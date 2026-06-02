@@ -22,7 +22,7 @@ import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
 
 @Composable
-fun CampanaSeleccionadaCard(onClick: () -> Unit) {
+fun CampaniaSeleccionadaCard(onClick: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth().height(110.dp).clickable { onClick() }, colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)) {
         Row(modifier = Modifier.fillMaxSize().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.clip(RoundedCornerShape(12.dp)).background(AgriVerde.copy(alpha = 0.1f)).padding(12.dp), contentAlignment = Alignment.Center) { Icon(imageVector = Icons.Default.Eco, contentDescription = null, tint = AgriVerde, modifier = Modifier.size(28.dp)) }
