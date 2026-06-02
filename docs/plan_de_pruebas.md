@@ -3,7 +3,8 @@
 Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
 
 ## 1. Stack Tecnológico de Testing
-*   **Unit Testing (Casos de Uso, ViewModels, Mappers):** `JUnit 4`, `MockK` (Mocks nativos Kotlin) y `Turbine` (Pruebas de flujos/Flows).
+*   **Unit Testing (Casos de Uso, ViewModels, Mappers):** `JUnit 4`, `MockK` (Mocks nativos Kotlin) y `Turbine` (Pruebas de flujos/Flows). 
+    *   *Importante:* Para validar excepciones dentro de corrutinas (`runTest`), no se debe usar `assertThrows` de JUnit (ya que pierde el contexto suspendido), sino bloques nativos `try-catch` o `runCatching`.
 *   **Pruebas de Integración/Base de Datos (DAOs):** `AndroidX Test`, `Room Testing` (con `inMemoryDatabaseBuilder`) ejecutado en Emulador (Pruebas Instrumentadas).
 *   **Pruebas de Interfaz de Usuario (UI):** `Compose Test Rule` nativo.
 
@@ -39,7 +40,7 @@ No toda la app es Casos de Uso. Existen componentes de bajo nivel y de infraestr
 *   **Mappers (Data <-> Domain):** 
     Pruebas unitarias para validar que al pasar de Entity a Domain Model no se pierda información y viceversa.
 *   **ViewModels (Presentation):** 
-    Validar la emisión correcta de los estados (`Loading`, `Success`, `Error`) hacia Jetpack Compose cuando reciben datos de los Use Cases.
+    Validar la emisión correcta de los estados (`Loading`, `Success`, `Error`) hacia Jetpack Compose usando `Turbine` (ej: `LoginViewModelTest` verifica la transición a `isLoading = true` y luego `loginExitoso = true` o la asignación de mensajes de error).
 
 ---
 
@@ -124,9 +125,11 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 ---
 
 ## 5. Casos de Borde (Edge Cases) a Testear
-*   **Campañas:** Intentar editar una campaña pasándole un ID que ya fue eliminado (Debería fallar amablemente).
-*   **Insumos:** Intentar vincular una cantidad negativa de insumos a una campaña (Debería lanzar `IllegalArgumentException`).
+*   **Campañas:** Intentar crear una campaña con nombre vacío (Debería fallar con `Resource.Error`).
+*   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaña (Lanza `IllegalArgumentException`).
 *   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no debería encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
+*   **Observaciones:** Intentar guardar una observación con el campo de texto vacío (Lanza `IllegalArgumentException`).
+*   **Autenticación:** Iniciar sesión con un usuario inexistente o con credenciales vacías (El ViewModel debe capturar la excepción o el `null` y emitir el estado de `error` correspondiente).
 
 ---
 
@@ -144,13 +147,23 @@ Para garantizar que nuestros tests efectivamente cubren la lógica de negocio, i
 
 ### B. Medición de Cobertura (Code Coverage)
 Utilizaremos **KoverX** (o JaCoCo configurado para Kotlin) para generar reportes HTML visuales sobre qué porcentaje de nuestro código está siendo probado.
+*   **Comando de Cobertura (Android):** `./gradlew koverHtmlReportDebug` (Es fundamental usar la variante `Debug` para que Kover analice correctamente las clases instrumentadas de Android).
 *   **Meta de Cobertura:**
     *   `domain` (Reglas de negocio y Use Cases): **Mínimo 80%**. Esta capa es crítica.
     *   `data` (DAOs y Repositorios): **Mínimo 70%**.
     *   `presentation` (UI): No requerirá cobertura estricta en la fase inicial para priorizar velocidad.
 
-### C. Automatización (CI/CD) - Opcional
-En un futuro, se puede configurar **GitHub Actions** o **GitLab CI** para que ejecute automáticamente `./gradlew testDebugUnitTest` cada vez que se haga un *Push* o *Pull Request* hacia la rama principal, bloqueando código que rompa las reglas de negocio descritas en este documento.
+### C. Automatización Continua (CI/CD) con GitHub Actions
+Para asegurar que no se introduzcan regresiones al proyecto, hemos configurado un flujo de trabajo (Workflow) en GitHub Actions (`.github/workflows/pr_tests.yml`). 
+
+**¿Qué hace automáticamente?**
+Cada vez que un desarrollador hace un *Push* o crea un *Pull Request* hacia las ramas `main` o `develop`:
+1. El servidor de GitHub arranca un entorno virtual Linux con Java 17.
+2. Ejecuta `./gradlew testDebugUnitTest` para validar todas nuestras pruebas de Use Cases y ViewModels.
+3. Genera y sube el reporte de cobertura HTML (`koverHtmlReportDebug`) como un artefacto descargable.
+
+**Nota sobre Tests Instrumentados:**
+Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluidos de momento en el flujo básico para evitar tiempos muertos en la validación rápida del PR, pero deben ejecutarse localmente antes de solicitar el PR.
 
 ---
 *(Este documento se mantendrá sincronizado con el código. Cualquier bug detectado en producción en el futuro se traducirá en un nuevo escenario "Given-When-Then" aquí antes de escribir el parche).*
