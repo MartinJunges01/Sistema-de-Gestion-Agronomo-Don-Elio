@@ -46,6 +46,7 @@ fun TareasScreen(
     val campanias by viewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
     val fechaSeleccionada by viewModel.fechaSeleccionada.collectAsState()
+    val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
 
     val pendientes = tareas.filter { !it.confirmar }
     val completadas = tareas.filter { it.confirmar }
@@ -106,7 +107,8 @@ fun TareasScreen(
                 Button(
                     onClick = onGoToNuevaTarea,
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AgriVerde)
+                    colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
+                    enabled = isCampaniaValid
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
