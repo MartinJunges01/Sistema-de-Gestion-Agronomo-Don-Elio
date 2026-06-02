@@ -66,11 +66,11 @@ class DataSeederImpl @Inject constructor(
         cosechaDao.insertCosecha(CosechaEntity(cantidad = 3200.0, fecha = fecha(2026, Calendar.APRIL, 10), unidad = "kg", almacen = "Silo 2", id_campania = idCampaniaSoja.toInt()))
         cosechaDao.insertCosecha(CosechaEntity(cantidad = 1500.0, fecha = fecha(2026, Calendar.MARCH, 1), unidad = "kg", almacen = "Venta directa", id_campania = idCampaniaGirasol.toInt()))
 
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idUrea.toInt(), cantidad = 200.0, precio = 45.0, activo = true))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idAtrazina.toInt(), cantidad = 15.0, precio = 120.0, activo = true))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idSemillaSoja.toInt(), cantidad = 10.0, precio = 350.0, activo = true))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = id24D.toInt(), cantidad = 8.0, precio = 90.0, activo = true))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaGirasol.toInt(), idInsumo = idCoadyuvante.toInt(), cantidad = 5.0, precio = 60.0, activo = false)) // Asignado como false para probar el soft-delete
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idUrea.toInt(), cantidad = 200.0, precio = 45.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idAtrazina.toInt(), cantidad = 15.0, precio = 120.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idSemillaSoja.toInt(), cantidad = 10.0, precio = 350.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = id24D.toInt(), cantidad = 8.0, precio = 90.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaGirasol.toInt(), idInsumo = idCoadyuvante.toInt(), cantidad = 5.0, precio = 60.0))
 
         observacionDao.insertObservacion(ObservacionEntity(texto = "Maíz tardío con buena germinación, se espera rinde alto.", imagenUri = null, id_campania = idCampaniaMaiz.toInt()))
         observacionDao.insertObservacion(ObservacionEntity(texto = "Soja presenta manchas foliares leves. Monitorear.", imagenUri = null, id_campania = idCampaniaSoja.toInt()))
