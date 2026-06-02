@@ -174,12 +174,12 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] Implementar lógica de sobrescritura de `.db`.
 
 ## Fase 7: Calidad, Testing y Producción
-- [ ] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
+- [x] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
   *(Requiere F11/Issue 12 — refactor ViewModels a Use Cases — antes de testear ViewModels)*
   - [x] Redactar Plan Estratégico de Pruebas y Casos de Uso (BDD) en `docs/plan_de_pruebas.md`.
-  - [ ] Pruebas unitarias para Casos de Uso.
-  - [ ] Pruebas unitarias para ViewModels.
-  - [ ] Pruebas instrumentadas para DAOs.
+  - [x] Pruebas unitarias para Casos de Uso.
+  - [x] Pruebas unitarias para ViewModels.
+  - [x] Pruebas instrumentadas para DAOs.
 - [ ] **Issue 2: Refinamiento de Usabilidad y UI/UX**
   - [ ] Revisar navegación.
   - [ ] Implementar Feedback Visual (Snackbar).
