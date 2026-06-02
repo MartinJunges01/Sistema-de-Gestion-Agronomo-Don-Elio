@@ -187,7 +187,7 @@
 
 **[2026-05-12] - Refactor de navegación global, módulo de insumos y reportes**
 - BottomNav: añadido acceso directo a `Destino.Insumos`; renombrado "Agenda" → "Tareas" y "Parcelas" → "Campañas".
-- Home: `CampanaSeleccionadaCard` ahora navega a `DetalleCampania`; botón + navega a `FormularioCampania`.
+- Home: `CampaniaSeleccionadaCard` ahora navega a `DetalleCampania`; botón + navega a `FormularioCampania`.
 - InsumosScreen: reemplazado formulario inline por `ModalBottomSheet` con buscador, selector cantidad/precio y botón "Agregar al catálogo".
 - FormularioInsumoScreen: simplificado a solo campos Nombre, Categoría y Unidad.
 - ReportesRendimientoScreen: añadidas tarjetas de métricas comparativas (Rendimiento, Ganancias, Costos, Insumos); selector dropdown para comparar dos campañas; gráficos Canvas de evolución mensual (Costos/Insumos) con leyenda bicolor.
