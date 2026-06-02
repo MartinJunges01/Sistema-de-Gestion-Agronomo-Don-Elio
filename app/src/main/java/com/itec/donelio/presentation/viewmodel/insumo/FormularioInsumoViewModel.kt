@@ -1,8 +1,12 @@
 package com.itec.donelio.presentation.viewmodel.insumo
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.use_case.CrearInsumoCatalogoUseCase
+import com.itec.donelio.domain.use_case.EditarInsumoCatalogoUseCase
+import com.itec.donelio.domain.use_case.ObtenerInsumoPorIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,11 +27,36 @@ data class FormularioInsumoState(
 
 @HiltViewModel
 class FormularioInsumoViewModel @Inject constructor(
-    private val crearInsumoCatalogoUseCase: CrearInsumoCatalogoUseCase
+    private val crearInsumoCatalogoUseCase: CrearInsumoCatalogoUseCase,
+    private val editarInsumoCatalogoUseCase: EditarInsumoCatalogoUseCase,
+    private val obtenerInsumoPorIdUseCase: ObtenerInsumoPorIdUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val insumoId: Int? = savedStateHandle.get<Int>("insumoId")
 
     private val _state = MutableStateFlow(FormularioInsumoState())
     val state: StateFlow<FormularioInsumoState> = _state.asStateFlow()
+
+    init {
+        insumoId?.let { cargarInsumo(it) }
+    }
+
+    private fun cargarInsumo(id: Int) {
+        viewModelScope.launch {
+            val insumo = obtenerInsumoPorIdUseCase(id)
+            insumo?.let {
+                _state.update { state ->
+                    state.copy(
+                        nombre = it.nombre,
+                        categoria = it.categoria,
+                        unidad = it.unidad,
+                        icono = it.icono
+                    )
+                }
+            }
+        }
+    }
 
     fun onNombreChange(value: String) {
         _state.update { it.copy(nombre = value, errorNombre = null) }
@@ -54,12 +83,24 @@ class FormularioInsumoViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                crearInsumoCatalogoUseCase(
-                    nombre = current.nombre.trim(),
-                    categoria = current.categoria.trim(),
-                    unidad = current.unidad.trim(),
-                    icono = current.icono
-                )
+                if (insumoId != null) {
+                    editarInsumoCatalogoUseCase(
+                        Insumo(
+                            id = insumoId,
+                            nombre = current.nombre.trim(),
+                            categoria = current.categoria.trim(),
+                            unidad = current.unidad.trim(),
+                            icono = current.icono
+                        )
+                    )
+                } else {
+                    crearInsumoCatalogoUseCase(
+                        nombre = current.nombre.trim(),
+                        categoria = current.categoria.trim(),
+                        unidad = current.unidad.trim(),
+                        icono = current.icono
+                    )
+                }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, errorNombre = e.message) }

@@ -41,6 +41,7 @@ fun InsumosScreen(
     val catalogo by viewModel.catalogo.collectAsState()
     val campanias by viewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
+    val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
     val catalogoMap = remember(catalogo) { catalogo.associateBy { it.id } }
 
     var mostrarBottomSheet by remember { mutableStateOf(false) }
@@ -78,7 +79,8 @@ fun InsumosScreen(
                     onClick = { mostrarBottomSheet = true },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = isCampaniaValid
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -200,7 +202,7 @@ fun InsumosScreen(
                         modifier = Modifier.weight(1f).height(48.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                         shape = RoundedCornerShape(12.dp),
-                        enabled = insumoSeleccionado != null && cantidad.isNotBlank()
+                        enabled = isCampaniaValid && insumoSeleccionado != null && cantidad.isNotBlank()
                     ) { Text("Vincular a Campaña") }
 
                     OutlinedButton(

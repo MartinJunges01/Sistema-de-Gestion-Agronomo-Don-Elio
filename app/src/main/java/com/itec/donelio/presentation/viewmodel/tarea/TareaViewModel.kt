@@ -5,22 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Tarea
-import com.itec.donelio.domain.use_case.ConfirmarTareaUseCase
-import com.itec.donelio.domain.use_case.EditarTareaUseCase
-import com.itec.donelio.domain.use_case.EliminarTareaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
-import com.itec.donelio.domain.use_case.ObtenerTareasDelDiaUseCase
-import com.itec.donelio.domain.use_case.ObtenerTareasPorCampaniaUseCase
+import com.itec.donelio.domain.use_case.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -39,6 +27,13 @@ class TareaViewModel @Inject constructor(
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+    val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
+        .map { it != null && it != -1 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     private val _fechaSeleccionada = MutableStateFlow<Long>(System.currentTimeMillis())
     val fechaSeleccionada = _fechaSeleccionada.asStateFlow()
 
@@ -49,13 +44,11 @@ class TareaViewModel @Inject constructor(
     val tareas: StateFlow<List<Tarea>> = combine(_campaniaIdSeleccionada, _fechaSeleccionada) { id, fecha ->
         id to fecha
     }.flatMapLatest { (id, fecha) ->
-        if (id != null) {
+        if (id != null && id != -1) {
             val cal = Calendar.getInstance().apply {
                 timeInMillis = fecha
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
+                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
             }
             obtenerTareasDelDiaUseCase(id, cal.timeInMillis)
         } else {
@@ -63,29 +56,31 @@ class TareaViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) {
-        _campaniaIdSeleccionada.value = id
-    }
-
-    fun seleccionarFecha(fecha: Long) {
-        _fechaSeleccionada.value = fecha
-    }
+    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun seleccionarFecha(fecha: Long) { _fechaSeleccionada.value = fecha }
+    fun clearError() { _errorMessage.value = null }
 
     fun toggleCompletada(tarea: Tarea) {
         viewModelScope.launch {
-            confirmarTareaUseCase(tarea.id, !tarea.confirmar).collect { }
+            confirmarTareaUseCase(tarea.id, !tarea.confirmar)
+                .catch { _errorMessage.value = "Error al actualizar estado de tarea" }
+                .collect()
         }
     }
 
     fun editarTarea(tarea: Tarea) {
         viewModelScope.launch {
-            editarTareaUseCase(tarea).collect { }
+            editarTareaUseCase(tarea)
+                .catch { _errorMessage.value = "Error al editar tarea" }
+                .collect()
         }
     }
 
     fun eliminarTarea(tarea: Tarea) {
         viewModelScope.launch {
-            eliminarTareaUseCase(tarea).collect { }
+            eliminarTareaUseCase(tarea)
+                .catch { _errorMessage.value = "Error al eliminar tarea" }
+                .collect()
         }
     }
 }

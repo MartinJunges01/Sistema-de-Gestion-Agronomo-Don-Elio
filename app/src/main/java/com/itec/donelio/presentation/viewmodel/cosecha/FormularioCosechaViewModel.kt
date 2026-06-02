@@ -23,6 +23,7 @@ data class FormularioCosechaState(
     val precio: String = "",
     val isLoading: Boolean = false,
     val errorCantidad: String? = null,
+    val errorPrecio: String? = null,
     val guardadoExitoso: Boolean = false
 )
 
@@ -34,75 +35,42 @@ class FormularioCosechaViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val campaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
-
     private val _state = MutableStateFlow(FormularioCosechaState())
     val state: StateFlow<FormularioCosechaState> = _state.asStateFlow()
 
-    fun onAlmacenadoChange(value: Boolean) {
-        _state.update { it.copy(almacenado = value) }
-    }
-
+    fun onAlmacenadoChange(value: Boolean) { _state.update { it.copy(almacenado = value) } }
     fun onCantidadChange(value: String) {
-        _state.update { it.copy(cantidad = value, errorCantidad = null) }
+        val error = if (value.isNotBlank() && (value.toDoubleOrNull() == null || value.toDouble() <= 0)) 
+            "Cantidad inválida" else null
+        _state.update { it.copy(cantidad = value, errorCantidad = error) }
     }
-
-    fun onUnidadChange(value: String) {
-        _state.update { it.copy(unidad = value) }
-    }
-
-    fun onFechaChange(timestamp: Long) {
-        _state.update { it.copy(fecha = timestamp) }
-    }
-
-    fun onAlmacenChange(value: String) {
-        _state.update { it.copy(almacen = value) }
-    }
-
-    fun onTipoChange(value: String) {
-        _state.update { it.copy(tipo = value) }
-    }
-
+    fun onUnidadChange(value: String) { _state.update { it.copy(unidad = value) } }
+    fun onFechaChange(timestamp: Long) { _state.update { it.copy(fecha = timestamp) } }
+    fun onAlmacenChange(value: String) { _state.update { it.copy(almacen = value) } }
+    fun onTipoChange(value: String) { _state.update { it.copy(tipo = value) } }
     fun onPrecioChange(value: String) {
-        _state.update { it.copy(precio = value) }
+        val error = if (value.isNotBlank() && value.toDoubleOrNull() == null) "Precio inválido" else null
+        _state.update { it.copy(precio = value, errorPrecio = error) }
     }
 
     fun guardar() {
         val current = _state.value
-        val cantidad = current.cantidad.toDoubleOrNull()
-        if (cantidad == null || cantidad <= 0) {
-            _state.update { it.copy(errorCantidad = "Ingrese una cantidad válida mayor a cero") }
-            return
-        }
+        if (current.errorCantidad != null || current.errorPrecio != null || current.cantidad.isBlank()) return
+
+        val cantidad = current.cantidad.toDouble()
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
                 if (current.almacenado) {
-                    registrarCosechaUseCase(
-                        cantidad = cantidad,
-                        fecha = current.fecha,
-                        unidad = current.unidad.trim().ifBlank { "Kg" },
-                        almacen = current.almacen.trim(),
-                        idCampania = campaniaId
-                    )
+                    registrarCosechaUseCase(cantidad, current.fecha, current.unidad.trim().ifBlank { "Kg" }, current.almacen.trim(), campaniaId)
                 } else {
-                    registrarConVentaUseCase(
-                        cantidad = cantidad,
-                        fecha = current.fecha,
-                        unidad = current.unidad.trim().ifBlank { "Kg" },
-                        idCampania = campaniaId,
-                        tipo = current.tipo.trim(),
-                        precio = current.precio.toDoubleOrNull() ?: 0.0
-                    )
+                    registrarConVentaUseCase(cantidad, current.fecha, current.unidad.trim().ifBlank { "Kg" }, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorCantidad = e.localizedMessage ?: "Error al guardar") }
+                _state.update { it.copy(isLoading = false, errorCantidad = e.message ?: "Error al guardar") }
             }
         }
-    }
-
-    fun resetGuardadoExitoso() {
-        _state.update { it.copy(guardadoExitoso = false) }
     }
 }
