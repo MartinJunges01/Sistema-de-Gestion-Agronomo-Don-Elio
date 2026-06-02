@@ -1,0 +1,38 @@
+name: Android CI - Testing
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+  push:
+    branches: [ "main", "develop" ]
+
+jobs:
+  test:
+    name: Run Unit Tests & Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Generate Kover Coverage Report
+        run: ./gradlew koverHtmlReportDebug
+
+      - name: Upload Kover Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: kover-html-report
+          path: app/build/reports/kover/htmlDebug/

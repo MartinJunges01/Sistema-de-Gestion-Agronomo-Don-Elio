@@ -1,5 +1,12 @@
 # Changelog
 
+**[2026-06-02] - Fase 7: Implementación de Testing y CI/CD (Issue 1 Completo)**
+- **Testing Unitario (Dominio):** Refactor de aserciones para corrutinas (cambio de `assertThrows` por `try-catch`) para arreglar fallos silenciosos. Ampliada la cobertura añadiendo pruebas a Casos de Uso faltantes (`RegistroUseCaseTest`, `EditarCampaniaUseCaseTest`, `EditarTareaUseCaseTest`, `ObtenerCampaniasUseCaseTest`), subiendo la cobertura del paquete de 26% a 36.2%.
+- **Testing Unitario (Presentación):** Implementado `LoginViewModelTest` usando Turbine para testear la emisión asíncrona de `StateFlow`.
+- **Testing Instrumentado (Datos):** Creados tests en memoria para los DAOs (`UsuarioDaoTest`, `CampaniaDaoTest`, `CampaniaInsumoDaoTest`) simulando un entorno de base de datos Android real con SQLite.
+- **Cobertura y CI/CD:** Corregida la tarea de GitHub Actions (`pr_tests.yml`) para invocar la variante correcta de Android (`koverHtmlReportDebug`), permitiendo la correcta lectura de reportes de cobertura en PRs.
+- **Documentación:** Actualizado `plan_de_pruebas.md` documentando el correcto uso de excepciones en corrutinas y el comando específico de Kover.
+
 **[2026-06-02] - Fase 7: Planificación de Estrategia de Testing (Issue 1)**
 - **Testing:** Definición del stack tecnológico (MockK, Turbine, Kover, AndroidX Test, Compose Rule).
 - **Documentación Viva:** Creación del documento `docs/plan_de_pruebas.md` que incluye:
