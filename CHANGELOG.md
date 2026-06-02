@@ -1,5 +1,13 @@
 # Changelog
 
+**[2026-06-02] - Fase 7: Planificación de Estrategia de Testing (Issue 1)**
+- **Testing:** Definición del stack tecnológico (MockK, Turbine, Kover, AndroidX Test, Compose Rule).
+- **Documentación Viva:** Creación del documento `docs/plan_de_pruebas.md` que incluye:
+  - Análisis detallado de discrepancias entre el diseño original (2025) y la arquitectura final implementada.
+  - Escenarios BDD (Behavior-Driven Development) `Given-When-Then` para todos los módulos de la aplicación (Campañas, Insumos, Tareas, Cosechas, Observaciones, Auth y Backup).
+  - Integración exhaustiva de Edge Cases (Casos de Borde).
+  - Estrategias de comandos de ejecución local y metas de cobertura estricta (Kover 80% en domain, 70% en data).
+- **Roadmap:** Actualizado `.context/RoadmapOP.md` con el progreso en el Issue 1 de la Fase 7.
 **[2026-06-01] - Fase 9: Refactorización de Arquitectura DB y Documentación de Bugs**
 - **Base de Datos:** Eliminado el soporte de borrado lógico (soft-delete) de la tabla intermedia `CampaniaInsumoEntity`, aplicando borrado físico estricto (`DELETE`) en `CampaniaInsumoDao` para mantener la integridad referencial limpia.
 - **KSP Fix:** Solucionados conflictos de compilación de Room (KSP) causados por colisión de anotaciones `@Delete` y `@Query`.
