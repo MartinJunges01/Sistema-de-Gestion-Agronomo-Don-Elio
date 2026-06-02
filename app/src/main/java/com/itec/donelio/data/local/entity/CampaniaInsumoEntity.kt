@@ -47,8 +47,5 @@ data class CampaniaInsumoEntity(
     val cantidad: Double,
 
     @ColumnInfo(name = "precio")
-    val precio: Double,
-
-    @ColumnInfo(name = "activo")
-    val activo: Boolean = true
+    val precio: Double
 )

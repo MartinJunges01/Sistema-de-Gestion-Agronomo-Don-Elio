@@ -24,6 +24,6 @@ class CampaniaInsumoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun desvincularInsumo(campaniaInsumo: CampaniaInsumo) {
-        campaniaInsumoDao.desvincularInsumo(campaniaInsumo.toEntity())
+        campaniaInsumoDao.desvincularInsumo(campaniaInsumo.id)
     }
 }

@@ -18,7 +18,7 @@ import com.itec.donelio.data.local.entity.*
         CampaniaInsumoEntity::class,
         UsuarioEntity::class
     ],
-    version = 3, // Subimos a 3 porque agregamos activo en InsumoEntity
+    version = 4, // Subimos a 4 para eliminar el soft-delete de CampaniaInsumoEntity
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
 // Aquí conectamos el Issue 3

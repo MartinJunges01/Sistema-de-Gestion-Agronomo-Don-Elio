@@ -130,8 +130,7 @@ fun CampaniaInsumoEntity.toDomain(): CampaniaInsumo {
         idCampania = idCampania,
         idInsumo = idInsumo,
         cantidad = cantidad,
-        precio = precio,
-        activo = activo
+        precio = precio
     )
 }
 
@@ -141,8 +140,7 @@ fun CampaniaInsumo.toEntity(): CampaniaInsumoEntity {
         idCampania = idCampania,
         idInsumo = idInsumo,
         cantidad = cantidad,
-        precio = precio,
-        activo = activo
+        precio = precio
     )
 }
 
