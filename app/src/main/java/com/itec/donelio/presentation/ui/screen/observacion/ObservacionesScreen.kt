@@ -32,6 +32,8 @@ import coil.compose.AsyncImage
 import java.io.File
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.presentation.ui.components.SelectorCampania
+import com.itec.donelio.presentation.ui.components.CampaniaSeleccionadaCard
+import androidx.compose.runtime.remember
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -52,6 +54,9 @@ fun ObservacionesScreen(
     val observaciones by listViewModel.observaciones.collectAsState()
     val campanias by listViewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by listViewModel.campaniaIdSeleccionada.collectAsState()
+    val campaniaActiva = remember(campanias, campaniaIdSeleccionada) {
+        campanias.find { it.id == campaniaIdSeleccionada }
+    }
     val isCampaniaValid by listViewModel.isCampaniaValid.collectAsState()
 
     LaunchedEffect(formState.guardadoExitoso) {
@@ -102,6 +107,12 @@ fun ObservacionesScreen(
                     selectedCampaniaId = campaniaIdSeleccionada,
                     onCampaniaSelected = { listViewModel.seleccionarCampania(it) },
                     modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            item {
+                CampaniaSeleccionadaCard(
+                    campania = campaniaActiva,
+                    onClick = onGoToCampaniaDetalle
                 )
             }
 
