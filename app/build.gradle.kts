@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -46,6 +47,15 @@ android {
 kotlin {
     jvmToolchain(11)
 }
+
+koverReport {
+    filters {
+        excludes {
+            packages("com.itec.donelio.ui.*", "com.itec.donelio.di.*")
+            classes("com.itec.donelio.DonElioApplication", "com.itec.donelio.MainActivity")
+        }
+    }
+}
 dependencies {
     // Mantenemos tus dependencias intactas por ahora
     implementation(libs.androidx.core.ktx)
@@ -58,10 +68,16 @@ dependencies {
     implementation(libs.androidx.compose.material3)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
