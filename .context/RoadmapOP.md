@@ -218,17 +218,17 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [ ] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
 
 ## Fase 9: Bugs Funcionales (L2 — Prioridad Media)
-- [ ] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
-  - [ ] **4.1** Cambiar `"$pendientes"` por `"${pendientes.size}"` en la línea 184
-  - [ ] **4.2** Verificar que no haya otros casos similares en el mismo archivo
-- [ ] **Issue 5: Parámetro `onGoToDetalle` No Utilizado en TareasScreen**
-  - [ ] Eliminar el parámetro `onGoToDetalle` de la firma de `TareasScreen`
-  - [ ] Actualizar la llamada a `TareasScreen` en `screens.kt`
-- [ ] **Issue 6: Validación de Campaña Activa en Operaciones**
-  - [ ] **6.1** Agregar estado `campaniaIdValido` en ViewModels de insumo, tarea, cosecha y observación
-  - [ ] **6.2** Deshabilitar botones de acción cuando `campaniaIdValido = false`
-  - [ ] **6.3** Agregar estado `errorPrecio` en `FormularioCosechaViewModel`
-  - [ ] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
+- [x] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
+  - [x] **4.1** Cambiar `"$pendientes"` por `"${pendientes.size}"` en la línea 184
+  - [x] **4.2** Verificar que no haya otros casos similares en el mismo archivo
+- [x] **Issue 5: Parámetro `onGoToDetalle` No Utilizado en TareasScreen**
+  - [x] Eliminar el parámetro `onGoToDetalle` de la firma de `TareasScreen`
+  - [x] Actualizar la llamada a `TareasScreen` en `screens.kt`
+- [x] **Issue 6: Validación de Campaña Activa en Operaciones**
+  - [x] **6.1** Agregar estado `campaniaIdValido` en ViewModels de insumo, tarea, cosecha y observación
+  - [x] **6.2** Deshabilitar botones de acción cuando `campaniaIdValido = false`
+  - [x] **6.3** Agregar estado `errorPrecio` en `FormularioCosechaViewModel`
+  - [x] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
 
 ## Fase 10: Mejoras Post-Testing (L3 — Prioridad Media)
 - [ ] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
@@ -269,20 +269,20 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] **12.4** Refactorizar `InsumoVinculacionViewModel`
   - [x] **12.5** Refactorizar `CosechaViewModel`
   - [x] **12.6** Refactorizar `ObservacionViewModel`
-- [x] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
-  - [x] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
-  - [x] Conectar o eliminar `EditarTareaUseCase`
-  - [x] Conectar o eliminar `EliminarTareaUseCase`
+- [ ] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
+  - [ ] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
+  - [ ] Conectar o eliminar `EditarTareaUseCase`
+  - [ ] Conectar o eliminar `EliminarTareaUseCase`
 
 ## Fase 12: Deuda Técnica y Limpieza (L5 — Prioridad Baja)
-- [ ] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
-  - [ ] Eliminar `components/TarjetaTarea.kt` (no usado)
-  - [ ] Eliminar `components/ModuleCard.kt` (no usado)
-  - [ ] Eliminar componentes no usados en `components/SharedComponent.kt`
-  - [ ] Eliminar `data/local/Converters.kt` (TypeConverters no usados)
-  - [ ] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
-  - [ ] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
-  - [ ] Mover tests al package correcto `com.itec.donelio`
+- [x] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
+  - [x] Eliminar `components/TarjetaTarea.kt` (no usado)
+  - [x] Eliminar `components/ModuleCard.kt` (no usado)
+  - [x] Eliminar componentes no usados en `components/SharedComponent.kt`
+  - [x] Eliminar `data/local/Converters.kt` (TypeConverters no usados)
+  - [x] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
+  - [x] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
+  - [x] Mover tests al package correcto `com.itec.donelio`
 - [ ] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
   - [ ] Limpiar "CU9" de `InsumosScreen`
   - [ ] Limpiar "CU9.5" de `FormularioInsumoScreen`
