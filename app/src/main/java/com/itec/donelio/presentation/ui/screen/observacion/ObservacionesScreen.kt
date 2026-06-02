@@ -52,6 +52,7 @@ fun ObservacionesScreen(
     val observaciones by listViewModel.observaciones.collectAsState()
     val campanias by listViewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by listViewModel.campaniaIdSeleccionada.collectAsState()
+    val isCampaniaValid by listViewModel.isCampaniaValid.collectAsState()
 
     LaunchedEffect(formState.guardadoExitoso) {
         if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
@@ -162,7 +163,7 @@ fun ObservacionesScreen(
                         Button(
                             onClick = formViewModel::guardar,
                             modifier = Modifier.fillMaxWidth().height(48.dp),
-                            enabled = !formState.isLoading,
+                            enabled = !formState.isLoading && isCampaniaValid,
                             colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                             shape = RoundedCornerShape(12.dp)
                         ) {

@@ -11,14 +11,7 @@ import com.itec.donelio.domain.use_case.ObtenerCosechasNoAlmacenadasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,17 +25,24 @@ class CosechaViewModel @Inject constructor(
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+    val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
+        .map { it != null && it != -1 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val cosechas: StateFlow<List<Cosecha>> = _campaniaIdSeleccionada.flatMapLatest { id ->
-        if (id != null) obtenerCosechasPorCampaniaUseCase(id) else flowOf(emptyList())
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+        if (id != null && id != -1) obtenerCosechasPorCampaniaUseCase(id) else flowOf(emptyList())
+    }.catch { _errorMessage.value = "Error al cargar cosechas" }
+     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) {
-        _campaniaIdSeleccionada.value = id
-    }
+    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun clearError() { _errorMessage.value = null }
 
     val almacenadas: StateFlow<List<Cosecha>> = cosechas
         .map { list -> list.filter { it.almacen.isNotBlank() } }
@@ -51,6 +51,7 @@ class CosechaViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val noAlmacenadasDetalle: StateFlow<Map<Int, CosechaNoAlmacenada>> =
         _campaniaIdSeleccionada.flatMapLatest { id ->
-            if (id != null) obtenerCosechasNoAlmacenadasUseCase(id) else flowOf(emptyMap())
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+            if (id != null && id != -1) obtenerCosechasNoAlmacenadasUseCase(id) else flowOf(emptyMap())
+        }.catch { _errorMessage.value = "Error al cargar detalle de cosechas" }
+         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
 }
