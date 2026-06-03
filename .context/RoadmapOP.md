@@ -283,27 +283,27 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
   - [x] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
   - [x] Mover tests al package correcto `com.itec.donelio`
-- [ ] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
-  - [ ] Limpiar "CU9" de `InsumosScreen`
-  - [ ] Limpiar "CU9.5" de `FormularioInsumoScreen`
-  - [ ] Limpiar "CU5.1" de `NuevaTareaScreen`
-  - [ ] Limpiar "CU12/CU13" de `ConfiguracionDBScreen`
-  - [ ] Limpiar "CU8" de `ObservacionesScreen`
-- [ ] **Issue 16: Inconsistencias de Nombrado**
-  - [ ] Renombrar `CampanaSeleccionadaCard` → `CampaniaSeleccionadaCard`
-  - [ ] Renombrar `campaign` → `campania` en `CampaniaDetailViewModel`
-- [ ] **Issue 17: CampanaSeleccionadaCard — Datos Dinámicos**
-  - [ ] Aceptar objeto `Campania` como parámetro
-  - [ ] Mostrar nombre, cultivo y fecha reales
-  - [ ] Estado vacío si no hay campaña
-- [ ] **Issue 18: HeaderSectionAgriCore — Nombre de Usuario Dinámico**
+- [x] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
+  - [x] Limpiar "CU9" de `InsumosScreen`
+  - [x] Limpiar "CU9.5" de `FormularioInsumoScreen`
+  - [x] Limpiar "CU5.1" de `NuevaTareaScreen`
+  - [x] Limpiar "CU12/CU13" de `ConfiguracionDBScreen`
+  - [x] Limpiar "CU8" de `ObservacionesScreen`
+- [x] **Issue 16: Inconsistencias de Nombrado**
+  - [x] Renombrar `CampanaSeleccionadaCard` → `CampaniaSeleccionadaCard`
+  - [x] Renombrar `campaign` → `campania` en `CampaniaDetailViewModel`
+- [x] **Issue 17: CampanaSeleccionadaCard — Datos Dinámicos**
+  - [x] Aceptar objeto `Campania` como parámetro
+  - [x] Mostrar nombre, cultivo y fecha reales
+  - [x] Estado vacío si no hay campaña
+- [x] **Issue 18: HeaderSectionAgriCore — Nombre de Usuario Dinámico**
   *(Depende de F8/Issue 1 — Login)*
-  - [ ] Mostrar "Hola, [nombre del usuario]" después del login
-  - [ ] Para invitado: "Hola, Invitado"
-- [ ] **Issue 19: BottomNav — Navegación sin Historial**
-  - [ ] **19.1** Cambiar flags de navegación: `popUpTo(0)` en vez de `saveState/restoreState`
-  - [ ] **19.2** Verificar que no se pierdan datos al cambiar de tab
-- [ ] **Issue 20: Actualización Reactiva al Editar Campaña**
-  - [ ] **20.1** Cambiar `CampaniaDetailViewModel` para exponer un `Flow<Campania?>` reactivo
-  - [ ] **20.2** Usar `ObtenerCampaniasUseCase` + `find` en vez de recarga manual
-  - [ ] **20.3** Verificar que `FormularioCampaniaScreen` notifica el cambio al volver
+  - [x] Mostrar "Hola, [nombre del usuario]" después del login
+  - [x] Para invitado: "Hola, Invitado"
+- [x] **Issue 19: BottomNav — Navegación sin Historial**
+  - [x] **19.1** Cambiar flags de navegación: `popUpTo(0)` en vez de `saveState/restoreState`
+  - [x] **19.2** Verificar que no se pierdan datos al cambiar de tab
+- [x] **Issue 20: Actualización Reactiva al Editar Campaña**
+  - [x] **20.1** Cambiar `CampaniaDetailViewModel` para exponer un `Flow<Campania?>` reactivo
+  - [x] **20.2** Usar `ObtenerCampaniasUseCase` + `find` en vez de recarga manual
+  - [x] **20.3** Verificar que `FormularioCampaniaScreen` notifica el cambio al volver
