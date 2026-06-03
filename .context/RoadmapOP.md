@@ -159,10 +159,10 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Crear `EstadisticasViewModel` (ReportesViewModel).
   - [x] Integrar librería de gráficos (YCharts).
   - [x] Diseñar pantalla "Reportes y Estadísticas" (ReportesRendimientoScreen).
-- [ ] **Issue 2: Exportación de Reportes a Archivos (CU11)**
-  - [ ] Implementar `Storage Access Framework` (SAF).
-  - [ ] Escribir utilidad CSV/Excel o PDF.
-  - [ ] Conectar botón "Exportar Reporte".
+- [x] **Issue 2: Exportación de Reportes a Archivos (CU11)**
+  - [x] Implementar `Storage Access Framework` (SAF).
+  - [x] Escribir utilidad CSV/Excel o PDF.
+  - [x] Conectar botón "Exportar Reporte".
 - [ ] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
   *(Ver también F8/Issue 3.4 — conectar botón "Exportar BD" en ConfiguracionDBScreen)*
   - [ ] Crear `BackupViewModel`.
