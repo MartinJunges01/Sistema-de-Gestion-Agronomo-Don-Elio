@@ -31,6 +31,10 @@ import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
 import com.itec.donelio.presentation.viewmodel.reportes.ReportesViewModel
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +44,24 @@ fun ReportesRendimientoScreen(
     viewModel: ReportesViewModel = hiltViewModel()
 ) {
     val pieChartData by viewModel.pieChartData.collectAsState()
+    val exportStatus by viewModel.exportStatus.collectAsState()
+    val context = LocalContext.current
+    
+    LaunchedEffect(exportStatus) {
+        exportStatus?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearExportStatus()
+        }
+    }
+
+    val csvLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+        uri?.let { viewModel.exportarReporteCsv(it, context) }
+    }
+    
+    val pdfLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri ->
+        uri?.let { viewModel.exportarReportePdf(it, context) }
+    }
+
     val campanas = listOf("Campaña Soja 2026", "Campaña Maíz 2026", "Campaña Trigo 2025")
     var campania1Expandido by remember { mutableStateOf(false) }
     var campania2Expandido by remember { mutableStateOf(false) }
@@ -63,12 +85,18 @@ fun ReportesRendimientoScreen(
                     ) {
                         DropdownMenuItem(
                             text = { Text("Exportar a Excel") },
-                            onClick = { mostrarMenuExportar = false },
+                            onClick = { 
+                                mostrarMenuExportar = false 
+                                csvLauncher.launch("Reporte_Insumos_Don_Elio.csv")
+                            },
                             leadingIcon = { Icon(Icons.Default.TableChart, contentDescription = null) }
                         )
                         DropdownMenuItem(
                             text = { Text("Exportar a PDF") },
-                            onClick = { mostrarMenuExportar = false },
+                            onClick = { 
+                                mostrarMenuExportar = false
+                                pdfLauncher.launch("Reporte_Don_Elio.pdf")
+                            },
                             leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) }
                         )
                     }
