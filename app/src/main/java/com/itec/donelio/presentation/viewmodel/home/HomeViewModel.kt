@@ -6,6 +6,7 @@ import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerTareasPendientesUseCase
+import com.itec.donelio.core.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +16,12 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
-    private val obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase
+    private val obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase,
+    sessionManager: SessionManager
 ) : ViewModel() {
+
+    val userName: StateFlow<String> = sessionManager.userName
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "Invitado")
 
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(
