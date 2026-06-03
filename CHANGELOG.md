@@ -15,6 +15,13 @@
   - Integración exhaustiva de Edge Cases (Casos de Borde).
   - Estrategias de comandos de ejecución local y metas de cobertura estricta (Kover 80% en domain, 70% en data).
 - **Roadmap:** Actualizado `.context/RoadmapOP.md` con el progreso en el Issue 1 de la Fase 7.
+
+**[2026-06-02] - Fase 6: Exportación de Reportes a Archivos (Issue 2)**
+- **Dominio:** Creado modelo `InsumoResumen` para abstraer la información exportable.
+- **Utilidad:** Creada clase `ReportExporter` que utiliza SAF y el ContentResolver para escribir los archivos.
+- **Exportación CSV:** Implementada conversión de datos de gastos por insumo en formato CSV.
+- **Exportación PDF:** Implementada generación de documento PDF usando la API nativa de Android `PdfDocument`, dibujando tablas en `Canvas`.
+- **UI & ViewModel:** Integrados los launchers `ActivityResultContracts.CreateDocument` en `ReportesRendimientoScreen` y conectados a `ReportesViewModel`.
 **[2026-06-01] - Fase 9: Refactorización de Arquitectura DB y Documentación de Bugs**
 - **Base de Datos:** Eliminado el soporte de borrado lógico (soft-delete) de la tabla intermedia `CampaniaInsumoEntity`, aplicando borrado físico estricto (`DELETE`) en `CampaniaInsumoDao` para mantener la integridad referencial limpia.
 - **KSP Fix:** Solucionados conflictos de compilación de Room (KSP) causados por colisión de anotaciones `@Delete` y `@Query`.
