@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-06-04] - Hotfix: Corrección de compilación y rebase de PR**
+- **Fix:** Corregido error de compilación en `ReportesViewModel.kt` causado por una importación faltante de la función de extensión `map` de `StateFlow`.
+- **Git:** Desecho un commit de merge local y rebasada la rama `feature/171` sobre `main` resolviendo los conflictos en `CHANGELOG.md` para permitir un "Rebase and merge" limpio en GitHub.
+
 **[2026-06-02] - Fase 7: Implementación de Testing y CI/CD (Issue 1 Completo)**
 - **Testing Unitario (Dominio):** Refactor de aserciones para corrutinas (cambio de `assertThrows` por `try-catch`) para arreglar fallos silenciosos. Ampliada la cobertura añadiendo pruebas a Casos de Uso faltantes (`RegistroUseCaseTest`, `EditarCampaniaUseCaseTest`, `EditarTareaUseCaseTest`, `ObtenerCampaniasUseCaseTest`), subiendo la cobertura del paquete de 26% a 36.2%.
 - **Testing Unitario (Presentación):** Implementado `LoginViewModelTest` usando Turbine para testear la emisión asíncrona de `StateFlow`.
