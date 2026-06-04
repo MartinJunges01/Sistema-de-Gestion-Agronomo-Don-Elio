@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -94,4 +95,4 @@ class ReportesViewModel @Inject constructor(
 }
 
 private fun <T, R> StateFlow<T>.mapState(transform: (T) -> R): kotlinx.coroutines.flow.Flow<R> =
-    kotlinx.coroutines.flow.map { transform(it) }
+    this.map { transform(it) }
