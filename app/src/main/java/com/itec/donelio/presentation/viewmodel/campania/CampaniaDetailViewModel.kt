@@ -6,12 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.EliminarCampaniaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +26,7 @@ data class CampaniaDetailState(
 class CampaniaDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val eliminarCampaniaUseCase: EliminarCampaniaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
@@ -46,15 +45,13 @@ class CampaniaDetailViewModel @Inject constructor(
     private fun cargarCampania() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            obtenerCampaniasUseCase()
-                .map { lista -> lista.find { it.id == campaniaId } }
-                .collect { campania ->
-                    if (campania != null) {
-                        _state.update { it.copy(campania = campania, isLoading = false, error = null) }
-                    } else {
-                        _state.update { it.copy(isLoading = false, error = "Campaña no encontrada") }
-                    }
+            obtenerCampaniaPorIdUseCase(campaniaId).collect { campania ->
+                if (campania != null) {
+                    _state.update { it.copy(campania = campania, isLoading = false, error = null) }
+                } else {
+                    _state.update { it.copy(isLoading = false, error = "Campaña no encontrada") }
                 }
+            }
         }
     }
 
