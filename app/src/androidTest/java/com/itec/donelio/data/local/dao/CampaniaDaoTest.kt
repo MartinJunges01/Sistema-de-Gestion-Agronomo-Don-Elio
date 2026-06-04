@@ -74,7 +74,7 @@ class CampaniaDaoTest {
         campaniaDao.insertCampania(CampaniaEntity(nombre = "C1", cultivo = "A", fecha = 1000L))
         campaniaDao.insertCampania(CampaniaEntity(nombre = "C2", cultivo = "B", fecha = 1000L))
 
-        val lista = campaniaDao.getAllCampanias().first()
+        val lista = campaniaDao.getCampanias().first()
         assertEquals(2, lista.size)
     }
 }

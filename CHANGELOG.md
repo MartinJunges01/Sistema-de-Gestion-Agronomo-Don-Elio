@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-06-04] - Fase 12: Sincronización, Tests y Refactor (Issue 12.2)**
+- **Roadmap:** Sincronizados y marcados como completos los Issues silentes de permisos, exportación/importación de base de datos, BottomNav y Use Cases.
+- **Tests Instrumentados:** Diagnosticados y programados para solución los errores de compilación de DAOs (`CampaniaDaoTest` y `CampaniaInsumoDaoTest`) que fallaban por nomenclaturas antiguas.
+- **Refactor:** Añadida la tarea para limpiar las importaciones comodín (`*`) a lo largo del proyecto para apegarse a las mejores prácticas de Kotlin.
+
 **[2026-06-04] - Hotfix: Corrección de compilación y rebase de PR**
 - **Fix:** Corregido error de compilación en `ReportesViewModel.kt` causado por una importación faltante de la función de extensión `map` de `StateFlow`.
 - **Git:** Desecho un commit de merge local y rebasada la rama `feature/171` sobre `main` resolviendo los conflictos en `CHANGELOG.md` para permitir un "Rebase and merge" limpio en GitHub.

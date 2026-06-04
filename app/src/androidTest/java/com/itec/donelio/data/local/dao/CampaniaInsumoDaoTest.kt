@@ -65,9 +65,9 @@ class CampaniaInsumoDaoTest {
         val resultados = campaniaInsumoDao.getInsumosUtilizadosEnCampania(campaniaId).first()
         assertEquals(1, resultados.size)
         val relacion = resultados[0]
-        assertEquals(5.0, relacion.campaniaInsumo.cantidad, 0.0)
-        assertNotNull(relacion.insumo)
-        assertEquals("Glifosato", relacion.insumo?.nombre)
+        assertEquals(5.0, relacion.asignacion.cantidad, 0.0)
+        assertNotNull(relacion.insumoBase)
+        assertEquals("Glifosato", relacion.insumoBase.nombre)
     }
 
     @Test

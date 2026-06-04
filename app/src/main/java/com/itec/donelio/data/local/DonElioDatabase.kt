@@ -2,8 +2,22 @@ package com.itec.donelio.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.itec.donelio.data.local.dao.*
-import com.itec.donelio.data.local.entity.*
+import com.itec.donelio.data.local.dao.CampaniaDao
+import com.itec.donelio.data.local.dao.CampaniaInsumoDao
+import com.itec.donelio.data.local.dao.CosechaDao
+import com.itec.donelio.data.local.dao.CosechaNoAlmacenadaDao
+import com.itec.donelio.data.local.dao.InsumoDao
+import com.itec.donelio.data.local.dao.ObservacionDao
+import com.itec.donelio.data.local.dao.TareaDao
+import com.itec.donelio.data.local.dao.UsuarioDao
+import com.itec.donelio.data.local.entity.CampaniaEntity
+import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
+import com.itec.donelio.data.local.entity.CosechaEntity
+import com.itec.donelio.data.local.entity.CosechaNoAlmacenadaEntity
+import com.itec.donelio.data.local.entity.InsumoEntity
+import com.itec.donelio.data.local.entity.ObservacionEntity
+import com.itec.donelio.data.local.entity.TareaEntity
+import com.itec.donelio.data.local.entity.UsuarioEntity
 
 // Aquí listamos TODAS las tablas (entities) que creaste en los Issues 1 y 2
 @Database(

@@ -135,10 +135,10 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Agregar botón "Cargar datos de prueba" en ConfiguracionDB visible solo en debug.
 
 ## Fase 5: Integración con Hardware (Cámara y Notificaciones)
-- [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
-  - [ ] Añadir permisos en `AndroidManifest.xml`.
-  - [ ] Implementar gestor de permisos en Compose.
-  - [ ] Crear `FileProvider`.
+- [x] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
+  - [x] Añadir permisos en `AndroidManifest.xml`.
+  - [x] Implementar gestor de permisos en Compose.
+  - [x] Crear `FileProvider`.
 - [x] **Issue 2: Módulo de Observaciones con Imágenes (CU8)**
   - [x] Crear `ObservacionViewModel`.
   - [x] Diseñar pantalla "Nueva Observación".
@@ -163,15 +163,15 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Implementar `Storage Access Framework` (SAF).
   - [x] Escribir utilidad CSV/Excel o PDF.
   - [x] Conectar botón "Exportar Reporte".
-- [ ] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
+- [x] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
   *(Ver también F8/Issue 3.4 — conectar botón "Exportar BD" en ConfiguracionDBScreen)*
-  - [ ] Crear `BackupViewModel`.
-  - [ ] Obtener ruta de `.db` y usar SAF para guardar.
-- [ ] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
+  - [x] Crear `BackupViewModel`.
+  - [x] Obtener ruta de `.db` y usar SAF para guardar.
+- [x] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
   *(Ver también F8/Issue 3.5 — conectar botón "Importar BD" en ConfiguracionDBScreen)*
-  - [ ] Utilizar SAF (`OpenDocument`).
-  - [ ] Mostrar cuadro de advertencia.
-  - [ ] Implementar lógica de sobrescritura de `.db`.
+  - [x] Utilizar SAF (`OpenDocument`).
+  - [x] Mostrar cuadro de advertencia.
+  - [x] Implementar lógica de sobrescritura de `.db`.
 
 ## Fase 7: Calidad, Testing y Producción
 - [x] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
@@ -205,17 +205,17 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] **1.6** Conectar `LoginScreen` al `LoginViewModel`
   - [x] **1.7** Conectar `RegistroScreen` al `RegistroUseCase`
   - [x] **1.8** Agregar botón "Invitado" para debug (oculto en release)
-- [ ] **Issue 2: Navegación BottomNav — Rutas Inválidas**
-  - [ ] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
-  - [ ] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
-  - [ ] **2.3** Verificar que `NavRoute.Tareas.createRoute()` y `NavRoute.Insumos.createRoute()` también generan rutas limpias
-  - [ ] **2.4** Confirmar que los `composable` registrados en `screens.kt` matchean correctamente las rutas generadas
-- [ ] **Issue 3: Botones con onClick Vacío (Funcionalidad Faltante)**
-  - [ ] **3.1** Conectar "Desvincular" a `AsignarInsumoACampaniaUseCase.desvincularInsumo()`
-  - [ ] **3.2** Conectar "Editar" en catálogo a `EditarInsumoCatalogoUseCase` con navegación a `FormularioInsumo` con datos precargados
-  - [ ] **3.3** Crear `EliminarInsumoCatalogoUseCase` y conectar botón "Eliminar"
-  - [ ] **3.4** Implementar exportación de DB con SAF *(ver también F6/Issue 3 — unificar implementación)*
-  - [ ] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
+- [x] **Issue 2: Navegación BottomNav — Rutas Inválidas**
+  - [x] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
+  - [x] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
+  - [x] **2.3** Verificar que `NavRoute.Tareas.createRoute()` y `NavRoute.Insumos.createRoute()` también generan rutas limpias
+  - [x] **2.4** Confirmar que los `composable` registrados en `screens.kt` matchean correctamente las rutas generadas
+- [x] **Issue 3: Botones con onClick Vacío (Funcionalidad Faltante)**
+  - [x] **3.1** Conectar "Desvincular" a `AsignarInsumoACampaniaUseCase.desvincularInsumo()`
+  - [x] **3.2** Conectar "Editar" en catálogo a `EditarInsumoCatalogoUseCase` con navegación a `FormularioInsumo` con datos precargados
+  - [x] **3.3** Crear `EliminarInsumoCatalogoUseCase` y conectar botón "Eliminar"
+  - [x] **3.4** Implementar exportación de DB con SAF *(ver también F6/Issue 3 — unificar implementación)*
+  - [x] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
 
 ## Fase 9: Bugs Funcionales (L2 — Prioridad Media)
 - [x] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
@@ -269,10 +269,10 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] **12.4** Refactorizar `InsumoVinculacionViewModel`
   - [x] **12.5** Refactorizar `CosechaViewModel`
   - [x] **12.6** Refactorizar `ObservacionViewModel`
-- [ ] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
-  - [ ] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
-  - [ ] Conectar o eliminar `EditarTareaUseCase`
-  - [ ] Conectar o eliminar `EliminarTareaUseCase`
+- [x] **Issue 13: Use Cases Muertos — Conectar o Eliminar**
+  - [x] Conectar `EditarInsumoCatalogoUseCase` al botón "Editar" en catálogo
+  - [x] Conectar o eliminar `EditarTareaUseCase`
+  - [x] Conectar o eliminar `EliminarTareaUseCase`
 
 ## Fase 12: Deuda Técnica y Limpieza (L5 — Prioridad Baja)
 - [x] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
