@@ -62,3 +62,22 @@ Al borrar un Insumo del Catálogo (Soft-Delete seteando `activo = false`), si es
 **Sub-issues / Tareas Técnicas**
 - [ ] Revisar la consulta SQL en el DAO encargada de obtener los `InsumosVinculados` para asegurar que el `JOIN` incluya a los `InsumoEntity` independientemente de su estado `activo`.
 - [ ] O alternativamente, revisar la UI/ViewModel en `CampaniaInsumoScreen` para ver por qué el nombre falla y cae en el fallback "Insumo #ID".
+
+---
+
+## Issue 5: Datos Mockeados Residuales en UI (Dashboard y Reportes)
+
+**Descripción**
+Aunque gran parte del sistema ya se ha conectado a la base de datos real, aún persisten componentes en la interfaz que renderizan datos "mockeados" (duros).
+- En `DashboardOperacionesScreen`: Las tarjetas de "Clima" y "Salud Lotes" contienen texto estático.
+- En `ReportesRendimientoScreen`: El componente comparativo de campañas tiene la lista de campañas hardcodeada (`listOf("Campaña Soja 2026", ...)`), así como los valores de rendimiento, ganancias, costos, insumos totales y los datos del gráfico de evolución mensual (`Canvas`). El único dato real es el del gráfico de dona (`PieChart`).
+
+**Acceptance Criteria (Criterios de Aceptación)**
+- El Dashboard debe alimentar las tarjetas de Clima y Salud de Lotes con datos dinámicos (o bien ocultarlas/reemplazarlas si no se planea integrar una API de clima por el momento).
+- La pantalla de Reportes debe alimentar el selector de campañas con la lista real de la base de datos.
+- Las métricas comparativas y el gráfico de evolución en Reportes deben calcularse utilizando datos reales de cosechas e insumos.
+
+**Sub-issues / Tareas Técnicas**
+- [ ] En `DashboardOperacionesScreen`: Extraer los valores estáticos hacia el ViewModel o esconder los componentes.
+- [ ] En `ReportesRendimientoScreen`: Integrar el dropdown con campañas reales.
+- [ ] En `ReportesViewModel`: Crear lógica para calcular costos y ganancias de campañas para alimentar las tarjetas comparativas y el Canvas.

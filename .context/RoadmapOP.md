@@ -231,11 +231,11 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
 
 ## Fase 10: Mejoras Post-Testing (L3 — Prioridad Media)
-- [ ] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
-  - [ ] **7.1** Agregar query `getProximaTarea(fecha: Long)` en `TareaDao`
-  - [ ] **7.2** Crear `ObtenerProximaTareaUseCase`
-  - [ ] **7.3** Modificar `HomeViewModel` para exponer próxima tarea
-  - [ ] **7.4** Modificar `DashboardOperacionesScreen` para mostrar card con datos reales
+- [x] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
+  - [x] **7.1** Obtener tareas pendientes globales (Se implementó `getTareasPendientesGlobales` en lugar de `getProximaTarea`)
+  - [x] **7.2** Usar `ObtenerTareasPendientesUseCase` en lugar de crear un UseCase redundante
+  - [x] **7.3** Modificar `HomeViewModel` para exponer listado de próximas tareas reales
+  - [x] **7.4** Modificar `DashboardOperacionesScreen` para mostrar lista de tareas conectadas a DB *(Nota: tarjetas de clima y métricas estáticas registradas en bugs_identificados.md)*
 - [x] **Issue 8: Selector de Campaña en Pantallas de Tareas, Insumos, Cosechas y Observaciones**
   - [x] **8.1** Crear componente reutilizable `SelectorCampania` (ExposedDropdownMenu)
   - [x] **8.2** Agregar `campaniaSeleccionada` state compartido
