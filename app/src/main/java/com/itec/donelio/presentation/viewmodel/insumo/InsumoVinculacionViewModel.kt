@@ -6,20 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Insumo
-import com.itec.donelio.domain.use_case.AsignarInsumoACampaniaUseCase
-import com.itec.donelio.domain.use_case.DesvincularInsumoUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
-import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
-import com.itec.donelio.domain.use_case.ObtenerInsumosVinculadosUseCase
+import com.itec.donelio.domain.use_case.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,27 +26,38 @@ class InsumoVinculacionViewModel @Inject constructor(
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+    val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
+        .map { it != null && it != -1 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val insumosVinculados: StateFlow<List<CampaniaInsumo>> = _campaniaIdSeleccionada.flatMapLatest { id ->
-        if (id != null) obtenerInsumosVinculadosUseCase(id) else flowOf(emptyList())
+        if (id != null && id != -1) obtenerInsumosVinculadosUseCase(id) else flowOf(emptyList())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val catalogo: StateFlow<List<Insumo>> = obtenerCatalogoInsumosUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun seleccionarCampania(id: Int) {
         _campaniaIdSeleccionada.value = id
     }
 
-    val catalogo: StateFlow<List<Insumo>> = obtenerCatalogoInsumosUseCase()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    fun clearError() { _errorMessage.value = null }
 
     fun asignarInsumo(idInsumo: Int, cantidad: Double, precio: Double) {
+        val campaniaId = _campaniaIdSeleccionada.value ?: return
         viewModelScope.launch {
-            val campaniaId = _campaniaIdSeleccionada.value ?: return@launch
             try {
                 asignarInsumoACampaniaUseCase(campaniaId, idInsumo, cantidad, precio)
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al vincular insumo: ${e.message}"
+            }
         }
     }
 
@@ -64,7 +65,9 @@ class InsumoVinculacionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 desvincularInsumoUseCase(campaniaInsumo)
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al desvincular insumo: ${e.message}"
+            }
         }
     }
 }

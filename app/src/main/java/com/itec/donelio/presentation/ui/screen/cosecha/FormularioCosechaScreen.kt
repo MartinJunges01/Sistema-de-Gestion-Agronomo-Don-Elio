@@ -132,6 +132,9 @@ fun FormularioCosechaScreen(
                     label = { Text("Precio (Opcional)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
+                   //error visual
+                    isError = state.errorPrecio != null,
+                    supportingText = state.errorPrecio?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                     leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
                 )
             }
@@ -141,7 +144,7 @@ fun FormularioCosechaScreen(
             Button(
                 onClick = viewModel::guardar,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !state.isLoading,
+                enabled = !state.isLoading && state.errorPrecio == null && state.errorCantidad == null,
                 colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -151,9 +154,9 @@ fun FormularioCosechaScreen(
                     Text("Guardar Registro", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
+            }
         }
     }
-}
 
 private fun formatFecha(timestamp: Long): String {
     if (timestamp <= 0) return ""

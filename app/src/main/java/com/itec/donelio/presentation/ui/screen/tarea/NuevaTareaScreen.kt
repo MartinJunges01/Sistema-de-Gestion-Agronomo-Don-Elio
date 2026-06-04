@@ -42,7 +42,7 @@ fun NuevaTareaScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Nueva Tarea (CU5.1)", fontWeight = FontWeight.Bold) },
+            title = { Text("Nueva Tarea", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,9 +55,9 @@ fun DonElioApp() {
                         val destinoNuevo = when(currentRoute) {
                             NavRoute.Home.route -> NavRoute.FormularioCampania.createRoute()
                             NavRoute.Campanias.route -> NavRoute.FormularioCampania.createRoute()
-                            NavRoute.CatalogoInsumos.route -> NavRoute.FormularioInsumo.route
+                            NavRoute.CatalogoInsumos.route -> NavRoute.FormularioInsumo.createRoute()
                             NavRoute.Cosechas.route -> NavRoute.FormularioCosecha.createRoute()
-                            else -> NavRoute.NuevaTarea.route
+                            else -> NavRoute.NuevaTarea.createRoute()
                         }
                         navController.navigate(destinoNuevo)
                     },
@@ -72,9 +73,10 @@ fun DonElioApp() {
             if (currentRoute !in listOf(NavRoute.Login.route, NavRoute.Registro.route)) {
                 AgriCoreBottomNav(currentRoute) { route ->
                     navController.navigate(route) {
-                        popUpTo(NavRoute.Home.route) { saveState = true }
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = false
+                        }
                         launchSingleTop = true
-                        restoreState = true
                     }
                 }
             }
@@ -99,7 +101,7 @@ fun DonElioApp() {
                 }
                 composable(NavRoute.Home.route) {
                     DashboardOperacionesScreen(
-                        onGoToConfig = { navController.navigate(NavRoute.ConfiguracionDB.route) },
+                        onGoToConfig = { navController.navigate(NavRoute.ConfiguracionDB.createRoute()) },
                         onGoToDetalle = { campaniaId ->
                             navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId))
                         }
@@ -111,7 +113,7 @@ fun DonElioApp() {
                         type = NavType.IntType
                         defaultValue = -1
                     })
-                ) { backStackEntry ->
+                ) { _ ->
                     GestionCampaniasScreen(
                         onGoToDetail = { campaniaIdActual ->
                             navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaIdActual))
@@ -199,7 +201,7 @@ fun DonElioApp() {
                     val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
                     InsumosScreen(
                         campaniaId = campaniaId,
-                        onGoToCatalogo = { navController.navigate(NavRoute.CatalogoInsumos.route) },
+                        onGoToCatalogo = { navController.navigate(NavRoute.CatalogoInsumos.createRoute()) },
                         onGoToCampaniaDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) },
                         onBack = { navController.popBackStack() }
                     )
@@ -207,11 +209,19 @@ fun DonElioApp() {
                 composable(NavRoute.CatalogoInsumos.route) {
                     CatalogoInsumosScreen(
                         onBack = { navController.popBackStack() },
-                        onGoToFormulario = { navController.navigate(NavRoute.FormularioInsumo.route) }
+                        onGoToFormulario = { navController.navigate(NavRoute.FormularioInsumo.createRoute()) }
                     )
                 }
-                composable(NavRoute.FormularioInsumo.route) {
-                    FormularioInsumoScreen(onBack = { navController.popBackStack() })
+                composable(
+                    route = NavRoute.FormularioInsumo.route,
+                    arguments = listOf(navArgument("insumoId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    })
+                ) {
+                    FormularioInsumoScreen(
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable(NavRoute.Reportes.route) {
                     ReportesRendimientoScreen(onBack = { navController.popBackStack() })
@@ -248,13 +258,5 @@ fun DonElioApp() {
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, device = "id:pixel_7")
-@Composable
-fun AgriCorePreview() {
-    MaterialTheme {
-        DonElioApp()
     }
 }

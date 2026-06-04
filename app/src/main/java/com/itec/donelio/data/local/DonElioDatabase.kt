@@ -2,9 +2,22 @@ package com.itec.donelio.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import com.itec.donelio.data.local.dao.*
-import com.itec.donelio.data.local.entity.*
+import com.itec.donelio.data.local.dao.CampaniaDao
+import com.itec.donelio.data.local.dao.CampaniaInsumoDao
+import com.itec.donelio.data.local.dao.CosechaDao
+import com.itec.donelio.data.local.dao.CosechaNoAlmacenadaDao
+import com.itec.donelio.data.local.dao.InsumoDao
+import com.itec.donelio.data.local.dao.ObservacionDao
+import com.itec.donelio.data.local.dao.TareaDao
+import com.itec.donelio.data.local.dao.UsuarioDao
+import com.itec.donelio.data.local.entity.CampaniaEntity
+import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
+import com.itec.donelio.data.local.entity.CosechaEntity
+import com.itec.donelio.data.local.entity.CosechaNoAlmacenadaEntity
+import com.itec.donelio.data.local.entity.InsumoEntity
+import com.itec.donelio.data.local.entity.ObservacionEntity
+import com.itec.donelio.data.local.entity.TareaEntity
+import com.itec.donelio.data.local.entity.UsuarioEntity
 
 // Aquí listamos TODAS las tablas (entities) que creaste en los Issues 1 y 2
 @Database(
@@ -21,8 +34,6 @@ import com.itec.donelio.data.local.entity.*
     version = 4, // Subimos a 4 para eliminar el soft-delete de CampaniaInsumoEntity
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
-// Aquí conectamos el Issue 3
-@TypeConverters(Converters::class)
 abstract class DonElioDatabase : RoomDatabase() {
 
     // Aquí conectamos el Issue 4: Le decimos a Room qué DAOs existen

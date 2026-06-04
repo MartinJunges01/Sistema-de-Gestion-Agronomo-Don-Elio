@@ -9,13 +9,7 @@ import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerObservacionesPorCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,15 +22,21 @@ class ObservacionViewModel @Inject constructor(
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+    val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
+        .map { it != null && it != -1 }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val observaciones: StateFlow<List<Observacion>> = _campaniaIdSeleccionada.flatMapLatest { id ->
-        if (id != null) obtenerObservacionesPorCampaniaUseCase(id) else flowOf(emptyList())
+        if (id != null && id != -1) obtenerObservacionesPorCampaniaUseCase(id) else flowOf(emptyList())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) {
-        _campaniaIdSeleccionada.value = id
-    }
+    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun clearError() { _errorMessage.value = null }
 }

@@ -47,7 +47,7 @@ class CampaniaDetailViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             obtenerCampaniaPorIdUseCase(campaniaId).collect { campania ->
                 if (campania != null) {
-                    _state.update { it.copy(campania = campania, isLoading = false) }
+                    _state.update { it.copy(campania = campania, isLoading = false, error = null) }
                 } else {
                     _state.update { it.copy(isLoading = false, error = "Campaña no encontrada") }
                 }

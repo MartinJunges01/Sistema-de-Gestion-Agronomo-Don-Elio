@@ -32,6 +32,8 @@ import coil.compose.AsyncImage
 import java.io.File
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.presentation.ui.components.SelectorCampania
+
+import androidx.compose.runtime.remember
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -52,6 +54,10 @@ fun ObservacionesScreen(
     val observaciones by listViewModel.observaciones.collectAsState()
     val campanias by listViewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by listViewModel.campaniaIdSeleccionada.collectAsState()
+    val campaniaActiva = remember(campanias, campaniaIdSeleccionada) {
+        campanias.find { it.id == campaniaIdSeleccionada }
+    }
+    val isCampaniaValid by listViewModel.isCampaniaValid.collectAsState()
 
     LaunchedEffect(formState.guardadoExitoso) {
         if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
@@ -118,7 +124,6 @@ fun ObservacionesScreen(
                             supportingText = formState.errorTexto?.let { { Text(it, color = MaterialTheme.colorScheme.error) } }
                         )
 
-                        // Vista previa de la imagen seleccionada
                         formState.imagenUri?.let { uri ->
                             Box(modifier = Modifier.fillMaxWidth().height(200.dp)) {
                                 AsyncImage(
@@ -136,7 +141,6 @@ fun ObservacionesScreen(
                             }
                         }
 
-                        // Fila de botones para adjuntar imagen
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                             OutlinedButton(
                                 onClick = {
@@ -162,7 +166,7 @@ fun ObservacionesScreen(
                         Button(
                             onClick = formViewModel::guardar,
                             modifier = Modifier.fillMaxWidth().height(48.dp),
-                            enabled = !formState.isLoading,
+                            enabled = !formState.isLoading && isCampaniaValid,
                             colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                             shape = RoundedCornerShape(12.dp)
                         ) {

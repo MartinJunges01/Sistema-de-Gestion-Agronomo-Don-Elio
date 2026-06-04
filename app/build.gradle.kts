@@ -42,6 +42,14 @@ android {
             java.srcDir("src/debug/java")
         }
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+        }
+    }
 }
 
 kotlin {
@@ -109,5 +117,7 @@ dependencies {
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
 }
 

@@ -135,10 +135,10 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Agregar botón "Cargar datos de prueba" en ConfiguracionDB visible solo en debug.
 
 ## Fase 5: Integración con Hardware (Cámara y Notificaciones)
-- [ ] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
-  - [ ] Añadir permisos en `AndroidManifest.xml`.
-  - [ ] Implementar gestor de permisos en Compose.
-  - [ ] Crear `FileProvider`.
+- [x] **Issue 1: Configuración de Permisos (Cámara y Almacenamiento)**
+  - [x] Añadir permisos en `AndroidManifest.xml`.
+  - [x] Implementar gestor de permisos en Compose.
+  - [x] Crear `FileProvider`.
 - [x] **Issue 2: Módulo de Observaciones con Imágenes (CU8)**
   - [x] Crear `ObservacionViewModel`.
   - [x] Diseñar pantalla "Nueva Observación".
@@ -163,15 +163,15 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Implementar `Storage Access Framework` (SAF).
   - [x] Escribir utilidad CSV/Excel o PDF.
   - [x] Conectar botón "Exportar Reporte".
-- [ ] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
+- [x] **Issue 3: Exportar Base de Datos (Backup) (CU13)**
   *(Ver también F8/Issue 3.4 — conectar botón "Exportar BD" en ConfiguracionDBScreen)*
-  - [ ] Crear `BackupViewModel`.
-  - [ ] Obtener ruta de `.db` y usar SAF para guardar.
-- [ ] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
+  - [x] Crear `BackupViewModel`.
+  - [x] Obtener ruta de `.db` y usar SAF para guardar.
+- [x] **Issue 4: Importar Base de Datos (Restauración) (CU12)**
   *(Ver también F8/Issue 3.5 — conectar botón "Importar BD" en ConfiguracionDBScreen)*
-  - [ ] Utilizar SAF (`OpenDocument`).
-  - [ ] Mostrar cuadro de advertencia.
-  - [ ] Implementar lógica de sobrescritura de `.db`.
+  - [x] Utilizar SAF (`OpenDocument`).
+  - [x] Mostrar cuadro de advertencia.
+  - [x] Implementar lógica de sobrescritura de `.db`.
 
 ## Fase 7: Calidad, Testing y Producción
 - [x] **Issue 1: Pruebas Unitarias de Lógica y Base de Datos (Testing)**
@@ -205,37 +205,37 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] **1.6** Conectar `LoginScreen` al `LoginViewModel`
   - [x] **1.7** Conectar `RegistroScreen` al `RegistroUseCase`
   - [x] **1.8** Agregar botón "Invitado" para debug (oculto en release)
-- [ ] **Issue 2: Navegación BottomNav — Rutas Inválidas**
-  - [ ] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
-  - [ ] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
-  - [ ] **2.3** Verificar que `NavRoute.Tareas.createRoute()` y `NavRoute.Insumos.createRoute()` también generan rutas limpias
-  - [ ] **2.4** Confirmar que los `composable` registrados en `screens.kt` matchean correctamente las rutas generadas
-- [ ] **Issue 3: Botones con onClick Vacío (Funcionalidad Faltante)**
-  - [ ] **3.1** Conectar "Desvincular" a `AsignarInsumoACampaniaUseCase.desvincularInsumo()`
-  - [ ] **3.2** Conectar "Editar" en catálogo a `EditarInsumoCatalogoUseCase` con navegación a `FormularioInsumo` con datos precargados
-  - [ ] **3.3** Crear `EliminarInsumoCatalogoUseCase` y conectar botón "Eliminar"
-  - [ ] **3.4** Implementar exportación de DB con SAF *(ver también F6/Issue 3 — unificar implementación)*
-  - [ ] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
+- [x] **Issue 2: Navegación BottomNav — Rutas Inválidas**
+  - [x] **2.1** Cambiar `AgriCoreBottomNav` para usar `NavRoute.X.createRoute()` en vez de `NavRoute.X.route`
+  - [x] **2.2** Verificar que `NavRoute.Campanias.createRoute()` sin parámetros genera `"campanias"` (sin query string)
+  - [x] **2.3** Verificar que `NavRoute.Tareas.createRoute()` y `NavRoute.Insumos.createRoute()` también generan rutas limpias
+  - [x] **2.4** Confirmar que los `composable` registrados en `screens.kt` matchean correctamente las rutas generadas
+- [x] **Issue 3: Botones con onClick Vacío (Funcionalidad Faltante)**
+  - [x] **3.1** Conectar "Desvincular" a `AsignarInsumoACampaniaUseCase.desvincularInsumo()`
+  - [x] **3.2** Conectar "Editar" en catálogo a `EditarInsumoCatalogoUseCase` con navegación a `FormularioInsumo` con datos precargados
+  - [x] **3.3** Crear `EliminarInsumoCatalogoUseCase` y conectar botón "Eliminar"
+  - [x] **3.4** Implementar exportación de DB con SAF *(ver también F6/Issue 3 — unificar implementación)*
+  - [x] **3.5** Implementar importación de DB con SAF + diálogo de advertencia *(ver también F6/Issue 4 — unificar implementación)*
 
 ## Fase 9: Bugs Funcionales (L2 — Prioridad Media)
-- [ ] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
-  - [ ] **4.1** Cambiar `"$pendientes"` por `"${pendientes.size}"` en la línea 184
-  - [ ] **4.2** Verificar que no haya otros casos similares en el mismo archivo
-- [ ] **Issue 5: Parámetro `onGoToDetalle` No Utilizado en TareasScreen**
-  - [ ] Eliminar el parámetro `onGoToDetalle` de la firma de `TareasScreen`
-  - [ ] Actualizar la llamada a `TareasScreen` en `screens.kt`
-- [ ] **Issue 6: Validación de Campaña Activa en Operaciones**
-  - [ ] **6.1** Agregar estado `campaniaIdValido` en ViewModels de insumo, tarea, cosecha y observación
-  - [ ] **6.2** Deshabilitar botones de acción cuando `campaniaIdValido = false`
-  - [ ] **6.3** Agregar estado `errorPrecio` en `FormularioCosechaViewModel`
-  - [ ] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
+- [x] **Issue 4: String Bug en TabTareas — $pendientes muestra objeto List**
+  - [x] **4.1** Cambiar `"$pendientes"` por `"${pendientes.size}"` en la línea 184
+  - [x] **4.2** Verificar que no haya otros casos similares en el mismo archivo
+- [x] **Issue 5: Parámetro `onGoToDetalle` No Utilizado en TareasScreen**
+  - [x] Eliminar el parámetro `onGoToDetalle` de la firma de `TareasScreen`
+  - [x] Actualizar la llamada a `TareasScreen` en `screens.kt`
+- [x] **Issue 6: Validación de Campaña Activa en Operaciones**
+  - [x] **6.1** Agregar estado `campaniaIdValido` en ViewModels de insumo, tarea, cosecha y observación
+  - [x] **6.2** Deshabilitar botones de acción cuando `campaniaIdValido = false`
+  - [x] **6.3** Agregar estado `errorPrecio` en `FormularioCosechaViewModel`
+  - [x] **6.4** Mostrar `supportingText` de error en campo precio + deshabilitar botón "Guardar"
 
 ## Fase 10: Mejoras Post-Testing (L3 — Prioridad Media)
-- [ ] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
-  - [ ] **7.1** Agregar query `getProximaTarea(fecha: Long)` en `TareaDao`
-  - [ ] **7.2** Crear `ObtenerProximaTareaUseCase`
-  - [ ] **7.3** Modificar `HomeViewModel` para exponer próxima tarea
-  - [ ] **7.4** Modificar `DashboardOperacionesScreen` para mostrar card con datos reales
+- [x] **Issue 7: Dashboard — Reemplazar Cards Mock por Datos Reales**
+  - [x] **7.1** Obtener tareas pendientes globales (Se implementó `getTareasPendientesGlobales` en lugar de `getProximaTarea`)
+  - [x] **7.2** Usar `ObtenerTareasPendientesUseCase` en lugar de crear un UseCase redundante
+  - [x] **7.3** Modificar `HomeViewModel` para exponer listado de próximas tareas reales
+  - [x] **7.4** Modificar `DashboardOperacionesScreen` para mostrar lista de tareas conectadas a DB *(Nota: tarjetas de clima y métricas estáticas registradas en bugs_identificados.md)*
 - [x] **Issue 8: Selector de Campaña en Pantallas de Tareas, Insumos, Cosechas y Observaciones**
   - [x] **8.1** Crear componente reutilizable `SelectorCampania` (ExposedDropdownMenu)
   - [x] **8.2** Agregar `campaniaSeleccionada` state compartido
@@ -275,35 +275,35 @@ Este archivo refleja el progreso del proyecto "Don Elio".
   - [x] Conectar o eliminar `EliminarTareaUseCase`
 
 ## Fase 12: Deuda Técnica y Limpieza (L5 — Prioridad Baja)
-- [ ] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
-  - [ ] Eliminar `components/TarjetaTarea.kt` (no usado)
-  - [ ] Eliminar `components/ModuleCard.kt` (no usado)
-  - [ ] Eliminar componentes no usados en `components/SharedComponent.kt`
-  - [ ] Eliminar `data/local/Converters.kt` (TypeConverters no usados)
-  - [ ] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
-  - [ ] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
-  - [ ] Mover tests al package correcto `com.itec.donelio`
-- [ ] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
-  - [ ] Limpiar "CU9" de `InsumosScreen`
-  - [ ] Limpiar "CU9.5" de `FormularioInsumoScreen`
-  - [ ] Limpiar "CU5.1" de `NuevaTareaScreen`
-  - [ ] Limpiar "CU12/CU13" de `ConfiguracionDBScreen`
-  - [ ] Limpiar "CU8" de `ObservacionesScreen`
-- [ ] **Issue 16: Inconsistencias de Nombrado**
-  - [ ] Renombrar `CampanaSeleccionadaCard` → `CampaniaSeleccionadaCard`
-  - [ ] Renombrar `campaign` → `campania` en `CampaniaDetailViewModel`
-- [ ] **Issue 17: CampanaSeleccionadaCard — Datos Dinámicos**
-  - [ ] Aceptar objeto `Campania` como parámetro
-  - [ ] Mostrar nombre, cultivo y fecha reales
-  - [ ] Estado vacío si no hay campaña
-- [ ] **Issue 18: HeaderSectionAgriCore — Nombre de Usuario Dinámico**
+- [x] **Issue 14: Dead Code — Componentes y Archivos No Utilizados**
+  - [x] Eliminar `components/TarjetaTarea.kt` (no usado)
+  - [x] Eliminar `components/ModuleCard.kt` (no usado)
+  - [x] Eliminar componentes no usados en `components/SharedComponent.kt`
+  - [x] Eliminar `data/local/Converters.kt` (TypeConverters no usados)
+  - [x] Eliminar `DonElioExtendedTheme` y `DonElioThemeColors` no referenciados en `theme/Theme.kt`
+  - [x] Eliminar extensiones `onSuccess()`, `isSuccess()` no usadas en `domain/model/Resource.kt`
+  - [x] Mover tests al package correcto `com.itec.donelio`
+- [x] **Issue 15: Títulos con Códigos de Caso de Uso Visibles al Usuario**
+  - [x] Limpiar "CU9" de `InsumosScreen`
+  - [x] Limpiar "CU9.5" de `FormularioInsumoScreen`
+  - [x] Limpiar "CU5.1" de `NuevaTareaScreen`
+  - [x] Limpiar "CU12/CU13" de `ConfiguracionDBScreen`
+  - [x] Limpiar "CU8" de `ObservacionesScreen`
+- [x] **Issue 16: Inconsistencias de Nombrado**
+  - [x] Renombrar `CampanaSeleccionadaCard` → `CampaniaSeleccionadaCard`
+  - [x] Renombrar `campaign` → `campania` en `CampaniaDetailViewModel`
+- [x] **Issue 17: CampanaSeleccionadaCard — Datos Dinámicos**
+  - [x] Aceptar objeto `Campania` como parámetro
+  - [x] Mostrar nombre, cultivo y fecha reales
+  - [x] Estado vacío si no hay campaña
+- [x] **Issue 18: HeaderSectionAgriCore — Nombre de Usuario Dinámico**
   *(Depende de F8/Issue 1 — Login)*
-  - [ ] Mostrar "Hola, [nombre del usuario]" después del login
-  - [ ] Para invitado: "Hola, Invitado"
-- [ ] **Issue 19: BottomNav — Navegación sin Historial**
-  - [ ] **19.1** Cambiar flags de navegación: `popUpTo(0)` en vez de `saveState/restoreState`
-  - [ ] **19.2** Verificar que no se pierdan datos al cambiar de tab
-- [ ] **Issue 20: Actualización Reactiva al Editar Campaña**
-  - [ ] **20.1** Cambiar `CampaniaDetailViewModel` para exponer un `Flow<Campania?>` reactivo
-  - [ ] **20.2** Usar `ObtenerCampaniasUseCase` + `find` en vez de recarga manual
-  - [ ] **20.3** Verificar que `FormularioCampaniaScreen` notifica el cambio al volver
+  - [x] Mostrar "Hola, [nombre del usuario]" después del login
+  - [x] Para invitado: "Hola, Invitado"
+- [x] **Issue 19: BottomNav — Navegación sin Historial**
+  - [x] **19.1** Cambiar flags de navegación: `popUpTo(0)` en vez de `saveState/restoreState`
+  - [x] **19.2** Verificar que no se pierdan datos al cambiar de tab
+- [x] **Issue 20: Actualización Reactiva al Editar Campaña**
+  - [x] **20.1** Cambiar `CampaniaDetailViewModel` para exponer un `Flow<Campania?>` reactivo
+  - [x] **20.2** Usar `ObtenerCampaniasUseCase` + `find` en vez de recarga manual
+  - [x] **20.3** Verificar que `FormularioCampaniaScreen` notifica el cambio al volver

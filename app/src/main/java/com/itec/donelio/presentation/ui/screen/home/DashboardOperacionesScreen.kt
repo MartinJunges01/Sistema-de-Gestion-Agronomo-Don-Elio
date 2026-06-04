@@ -43,6 +43,7 @@ fun DashboardOperacionesScreen(
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
+    val userName by viewModel.userName.collectAsState()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionLauncher = rememberLauncherForActivityResult(
@@ -59,7 +60,7 @@ fun DashboardOperacionesScreen(
         contentPadding = PaddingValues(bottom = 80.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        item { HeaderSectionAgriCore(onGoToConfig) }
+        item { HeaderSectionAgriCore(userName = userName, onGoToConfig = onGoToConfig) }
 
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {

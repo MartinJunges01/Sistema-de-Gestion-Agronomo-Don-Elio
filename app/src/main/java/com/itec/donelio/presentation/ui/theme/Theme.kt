@@ -10,7 +10,6 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -102,44 +101,6 @@ private val DarkColorScheme = darkColorScheme(
     scrim = Color(0xFF000000).copy(alpha = 0.32f)
 )
 
-object DonElioThemeColors {
-    val success: Color
-        @Composable
-        get() = Emerald600
-
-    val successContainer: Color
-        @Composable
-        get() = if (isSystemInDarkTheme()) Emerald700 else Emerald100
-
-    val warning: Color
-        @Composable
-        get() = Amber600
-
-    val warningContainer: Color
-        @Composable
-        get() = if (isSystemInDarkTheme()) Amber900 else Amber50
-
-    val danger: Color
-        @Composable
-        get() = Red600
-
-    val dangerContainer: Color
-        @Composable
-        get() = if (isSystemInDarkTheme()) Red700 else Red50
-}
-
-@Immutable
-data class DonElioExtendedTheme(
-    val colorScheme: ColorScheme,
-    val isDark: Boolean
-) {
-    val success: Color get() = if (isDark) Emerald400 else Emerald600
-    val successContainer: Color get() = if (isDark) Emerald700 else Emerald100
-    val warning: Color get() = Amber600
-    val warningContainer: Color get() = if (isDark) Amber900 else Amber50
-    val danger: Color get() = Red600
-    val dangerContainer: Color get() = if (isDark) Red700 else Red50
-}
 
 @Composable
 fun DonElioTheme(
