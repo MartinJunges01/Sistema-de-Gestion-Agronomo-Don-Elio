@@ -19,7 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.CosechaNoAlmacenada
 import com.itec.donelio.presentation.ui.components.SelectorCampania
-import com.itec.donelio.presentation.ui.components.CampaniaSeleccionadaCard
+
 import androidx.compose.runtime.remember
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
@@ -65,12 +65,6 @@ fun CosechasScreen(
                     selectedCampaniaId = campaniaIdSeleccionada,
                     onCampaniaSelected = { viewModel.seleccionarCampania(it) },
                     modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            item {
-                CampaniaSeleccionadaCard(
-                    campania = campaniaActiva,
-                    onClick = onGoToCampaniaDetalle
                 )
             }
 
