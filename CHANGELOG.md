@@ -1,5 +1,13 @@
 # Changelog
 
+**[2026-06-09] - Sesión de Pruebas Manuales APK Debug — Documentación de 23 Issues**
+- Reescritura completa de `docs/bugs_identificados.md` con 23 issues organizados por severidad (L1-L5).
+- **L1 (Crashes):** Crash por permisos de cámara no solicitados (Issue 6), crash por FK constraint al registrar cosecha sin campaniaId (Issue 7).
+- **L2 (Bugs Funcionales):** Saludo siempre muestra "Invitado" (Issue 3 actualizado), catálogo de insumos sin validación completa (Issue 8), campañas permiten fechas pasadas (Issue 9), campo hora de tareas sin restricciones (Issue 10), tabs tareas/insumos no se actualizan al cambiar de campaña (Issue 11), validación faltante en formulario cosechas (Issue 12).
+- **L3 (Features Faltantes):** Edición/eliminación de observaciones (Issue 13) y cosechas (Issue 14), separación campañas activas/inactivas (Issue 15), navegación lateral entre campañas (Issue 16), campo hectáreas en cosecha (Issue 17).
+- **L4 (Reportes):** Selector de campaña en gráfico de insumos (Issue 18), gráfico desglose cosechas (Issue 19), comparación real entre campañas (Issue 20).
+- **L5 (UX):** Bloquear modo oscuro (Issue 21), teclado cubre campos al escribir (Issue 22), tarjetas mock del dashboard (Issue 23).
+
 **[2026-06-09] - Generación de APK de Debug para Pruebas**
 - Se generó el archivo APK en versión de depuración (debug) mediante Gradle para facilitar las pruebas manuales en dispositivos físicos.
 
