@@ -1,5 +1,8 @@
 # Changelog
 
+**[2026-06-09] - Generación de APK de Debug para Pruebas**
+- Se generó el archivo APK en versión de depuración (debug) mediante Gradle para facilitar las pruebas manuales en dispositivos físicos.
+
 **[2026-06-04] - Fase 12: Sincronización, Tests y Refactor (Issue 12.2)**
 - **Roadmap:** Sincronizados y marcados como completos los Issues silentes de permisos, exportación/importación de base de datos, BottomNav y Use Cases.
 - **Tests Instrumentados:** Diagnosticados y programados para solución los errores de compilación de DAOs (`CampaniaDaoTest` y `CampaniaInsumoDaoTest`) que fallaban por nomenclaturas antiguas.
