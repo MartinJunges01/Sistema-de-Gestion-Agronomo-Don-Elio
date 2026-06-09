@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-06-09] - Planificación y División de Iteración 2**
+- Actualización de `docs/bugs_identificados.md` refinando Issues 8, 15, 18, 19, 20 en relación al rediseño lineal, validación de insumos con Flow y unificación a Toneladas.
+- Creación de `.context/iteracion_2.md` con el roadmap maestro priorizado de L1 a L5.
+- Creación de `docs/roadmap_desarrolladores.md` organizando las tareas para ejecución en paralelo por 3 desarrolladores, con un desglose granular de ramas Git y orden de ejecución.
+
 **[2026-06-09] - Sesión de Pruebas Manuales APK Debug — Documentación de 23 Issues**
 - Reescritura completa de `docs/bugs_identificados.md` con 23 issues organizados por severidad (L1-L5).
 - **L1 (Crashes):** Crash por permisos de cámara no solicitados (Issue 6), crash por FK constraint al registrar cosecha sin campaniaId (Issue 7).
