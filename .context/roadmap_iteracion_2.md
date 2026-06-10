@@ -824,20 +824,22 @@ val id_campania: Int
 **Acceptance Criteria**
 
 - Agregar campo `hectareas: Double` a `CosechaEntity` y `Cosecha` (modelo de dominio).
+- Eliminar el campo `unidad` de la DB y del modelo de dominio, asumiendo por convención que la cantidad SIEMPRE se expresa en Toneladas (Tn).
 - El formulario de cosecha debe incluir un campo numérico "Superficie cosechada (ha)" con validación (> 0).
-- El campo es **obligatorio** para poder calcular rendimiento/ha en reportes.
+- El campo "Unidad" en la UI debe quedar fijo en "Tn" (no editable por el usuario) para evitar conversiones.
+- El campo Hectáreas es **obligatorio** para poder calcular rendimiento/ha en reportes.
 - Los reportes deben poder calcular `rendimiento/ha = cantidad / hectareas` por cada cosecha.
 - Incrementar la versión de la base de datos (DB v5) con `fallbackToDestructiveMigration()`.
 
 **Sub-issues / Tareas Técnicas**
 
-- Agregar `val hectareas: Double` a `CosechaEntity`.
-- Agregar `val hectareas: Double` a `Cosecha` (modelo de dominio).
+- Agregar `val hectareas: Double` a `CosechaEntity` y eliminar `val unidad: String`.
+- Agregar `val hectareas: Double` a `Cosecha` (modelo de dominio) y eliminar `val unidad: String`.
 - Actualizar mappers `toDomain()` / `toEntity()` para `Cosecha`.
 - Incrementar la versión de la DB en `DonElioDatabase.kt` (v4 → v5).
-- En `FormularioCosechaScreen.kt`: Agregar `OutlinedTextField` para hectáreas con `keyboardType = KeyboardType.Decimal`.
-- En `FormularioCosechaViewModel.kt`: Agregar campo `hectareas` al estado, validar > 0 en `guardar()`.
-- Actualizar `RegistrarCosechaUseCase` y `RegistrarCosechaConVentaUseCase` para aceptar hectáreas.
+- En `FormularioCosechaScreen.kt`: Agregar `OutlinedTextField` para hectáreas. Modificar la UI de unidad para que sea un texto fijo "Tn".
+- En `FormularioCosechaViewModel.kt`: Agregar campo `hectareas` al estado, validar > 0 en `guardar()`. Eliminar cualquier estado de `unidad`.
+- Actualizar UseCases (`RegistrarCosechaUseCase`, etc.) para propagar estos cambios.
 
 ---
 
