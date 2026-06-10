@@ -34,7 +34,9 @@ Antes de tomar cualquier acción, tu primera responsabilidad es entender el esta
 **Objetivo:** Documentar y seguir el rastro de la deuda técnica.
 **Acción:** 
 1. Antes de iniciar una tarea, revisa la lista actual en `.context/roadmap_iteracion_2.md`.
-2. Si descubres nuevos bugs en tu sesión que no abordarás de inmediato, regístralos detalladamente en `docs/bugs_identificados.md` para futuras iteraciones.
+2. Si descubres nuevos bugs en tu sesión que no abordarás de inmediato, regístralos en `docs/bugs_identificados.md` usando la plantilla predefinida.
+3. Una vez registrados localmente, debes crear los issues en GitHub (via `gh cli` o manualmente) para obtener su ID oficial. 
+4. A partir de ese momento, el bug debe referenciarse usando su ID oficial (ej. `[#305] Crash en login`) en todos lados (Roadmap, Commits, PRs).
 
 ### Skill: `MantenerTesting (don-elio-testing)`
 **Objetivo:** Asegurar la cobertura de código y mantener `plan_de_pruebas.md` sincronizado con la realidad del proyecto.
