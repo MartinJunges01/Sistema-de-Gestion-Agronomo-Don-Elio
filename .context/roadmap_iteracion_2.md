@@ -734,6 +734,7 @@ Actualmente todas las campañas (activas e inactivas) se muestran en una única 
 - Alternativamente, implementar un `FilterChip` o `Tab` para alternar entre "Activas" e "Historial".
 - Las campañas finalizadas deben mostrarse con estilo atenuado.
 - Reemplazar el actual botón de "Eliminar" en el TopAppBar de detalle (que ejecuta un *hard delete*) por un botón "Finalizar Campaña" (*soft delete* cambiando `estaActiva = false`).
+- Para las campañas que ya se encuentran en el "Historial", habilitar una opción de "Eliminar definitivamente" (*hard delete* real) en caso de que el usuario necesite borrar una campaña permanentemente.
 - En el Dashboard, filtrar estrictamente para aceptar solo campañas donde `estaActiva = 1` (true).
 
 **Sub-issues / Tareas Técnicas**
