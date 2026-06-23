@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-06-23] - Documentación de Entrega y Casos de Uso**
+- Actualización de `docs/FLOW.md` incorporando diagramas de flujo interactivos Mermaid para cada una de las 8 ramas principales del sistema.
+- Creación de `docs/diferencias_casos_de_uso_2025_2026.md` contrastando la propuesta teórica original (2025) con la implementación final en Clean Architecture (2026), aplicando el formato tabular de casos de uso requerido en la cursada.
+
 **[2026-06-09] - Planificación y División de Iteración 2**
 - Actualización de `docs/bugs_identificados.md` refinando Issues 8, 15, 18, 19, 20 en relación al rediseño lineal, validación de insumos con Flow y unificación a Toneladas.
 - Creación de `.context/iteracion_2.md` con el roadmap maestro priorizado de L1 a L5.
