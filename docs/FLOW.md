@@ -57,12 +57,12 @@ graph TD
 | CU5.1 a CU5.4 | Crear, Editar, Eliminar y Confirmar Tarea | ✅ Implementado (Con DatePicker y Checkbox persistente) |
 | CU6 y CU7 | Registrar Cosecha (Almacenada/No Almacenada) | ✅ Implementado (ViewModel y DAO) |
 | CU8 | Observaciones | ✅ Implementado (A nivel de datos e UI) |
-| CU8.1 | Observaciones con Imágenes (Cámara) | 🟡 Parcial (F5 pendiente) |
+| CU8.1 | Observaciones con Imágenes (Cámara) | ✅ Implementado (Guardado URI local) |
 | CU9 | Gestión de Insumos (Catálogo y Asignación) | ✅ Implementado (Vinculación y edición inline de catálogo) |
 | CU10 | Dashboard de Reportes y Estadísticas | ✅ Implementado (YCharts y datos reales) |
-| CU11 | Exportación de Reportes (Excel/PDF) | 🟡 UI con botones mock (SAF Pendiente) |
-| CU12 | Importar Base de Datos (Restauración) | 🔴 Pendiente (SAF) |
-| CU13 | Exportar Base de Datos (Backup) | 🔴 Pendiente (SAF) |
+| CU11 | Exportación de Reportes (Excel/PDF) | 🟡 Parcial (Generación pendiente) |
+| CU12 | Importar Base de Datos (Restauración) | ✅ Implementado (RestaurarBackupUseCase con SAF) |
+| CU13 | Exportar Base de Datos (Backup) | ✅ Implementado (CrearBackupUseCase con SAF) |
 
 ## Arquitectura Modular (Refactor Finalizado)
 
@@ -111,3 +111,101 @@ Todas las rutas que requieren contexto de campaña aceptan el parámetro `campan
 | `Cosechas` | `?campaniaId=` | Opcional (query) |
 | `Observaciones` | `?campaniaId=` | Opcional (query) |
 | `Campanias` | `?campaniaId=` | Opcional (query) |
+
+## Ramas de Flujos (Para Capturas de Pantalla)
+
+A continuación se dividen las ramas de flujo de la aplicación. Esta estructura se utiliza en el documento de primera entrega para organizar las capturas de pantalla de cada módulo:
+
+### Rama 1: Autenticación y Acceso
+* **Login / Registro** (CU0 / F8.1)
+
+```mermaid
+graph TD
+    Start((Inicio)) --> Login[Pantalla de Login]
+    Login -->|Registrarse| Registro[Pantalla de Registro]
+    Registro -->|Crear Cuenta| Login
+    Login -->|Ingresar| Home[Home / Dashboard]
+```
+
+### Rama 2: Navegación Principal y Dashboard
+* **Home / Dashboard** (CU10)
+
+```mermaid
+graph TD
+    Home[Pantalla de Home] -->|Nav| Campanias[Campañas]
+    Home -->|Nav| Tareas[Tareas]
+    Home -->|Nav| Insumos[Insumos]
+    Home -->|Nav| Reportes[Reportes]
+```
+
+### Rama 3: Gestión de Campañas
+* **Campañas** (CU1 a CU4)
+
+```mermaid
+graph TD
+    Campanias[Lista de Campañas] -->|FAB +| FormCampania[Formulario Crear Campaña]
+    Campanias -->|Click item| DetalleCampania[Detalle de Campaña]
+    DetalleCampania -->|Tab Info| Resumen[Resumen Campaña]
+    DetalleCampania -->|Botón Editar| FormEditCampania[Formulario Editar Campaña]
+    FormCampania -->|Guardar| Campanias
+    FormEditCampania -->|Guardar| DetalleCampania
+```
+
+### Rama 4: Gestión de Tareas
+* **Tareas** (CU5)
+
+```mermaid
+graph TD
+    Tareas[Lista de Tareas / Agenda] -->|FAB +| FormTarea[Formulario Nueva Tarea]
+    FormTarea -->|Guardar| Tareas
+    Tareas -->|Checkbox| ConfirmarTarea[Confirmar Tarea]
+```
+
+### Rama 5: Gestión de Cosechas
+* **Cosechas** (CU6 y CU7)
+
+```mermaid
+graph TD
+    Cosechas[Lista de Cosechas] -->|FAB +| FormCosecha[Formulario Cosecha]
+    FormCosecha -->|Destino: Silo| CosechaSilo[Guardar Cosecha Almacenada]
+    FormCosecha -->|Destino: Venta/Reserva| CosechaVenta[Guardar Cosecha No Almacenada]
+    CosechaSilo -->|Actualizar| Cosechas
+    CosechaVenta -->|Actualizar| Cosechas
+```
+
+### Rama 6: Gestión de Insumos
+* **Insumos** (CU9)
+
+```mermaid
+graph TD
+    Insumos[Lista de Insumos Vinculados] -->|Asignar Insumo| Catalogo[Catálogo Global de Insumos]
+    Catalogo -->|FAB +| FormInsumo[Formulario Nuevo Insumo]
+    Catalogo -->|Click item| FormEditInsumo[Editar Insumo Existente]
+    FormInsumo -->|Guardar| Catalogo
+    FormEditInsumo -->|Guardar| Catalogo
+    Catalogo -->|Seleccionar y Vincular| Insumos
+```
+
+### Rama 7: Observaciones
+* **Observaciones** (CU8)
+
+```mermaid
+graph TD
+    Observaciones[Lista y Bloc de Notas] -->|Adjuntar Imagen| OpcionesFoto[Seleccionar Cámara / Galería]
+    OpcionesFoto -->|Cámara| Camara[Tomar Foto]
+    OpcionesFoto -->|Galería| Galeria[Elegir Imagen]
+    Camara -->|Guardar URI| Observaciones
+    Galeria -->|Guardar URI| Observaciones
+```
+
+### Rama 8: Reportes y Configuración
+* **Reportes y Config** (CU11, CU12, CU13)
+
+```mermaid
+graph TD
+    Reportes[Pantalla de Reportes y Gráficos] -->|Exportar| ExportarPDF[Exportar a PDF]
+    Reportes -->|Exportar| ExportarExcel[Exportar a Excel]
+    
+    ConfigDB[Pantalla de Configuración DB] -->|Backup| CrearBackup[Crear Backup SAF]
+    ConfigDB -->|Restaurar| RestaurarBackup[Restaurar Backup SAF]
+```
