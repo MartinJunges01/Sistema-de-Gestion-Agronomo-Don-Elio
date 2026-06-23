@@ -733,7 +733,7 @@ Actualmente todas las campañas (activas e inactivas) se muestran en una única 
 - La pantalla de gestión debe tener dos secciones claramente diferenciadas: **"Campañas Activas"** (arriba) y **"Historial"** o "Campañas Finalizadas" (abajo, colapsable).
 - Alternativamente, implementar un `FilterChip` o `Tab` para alternar entre "Activas" e "Historial".
 - Las campañas finalizadas deben mostrarse con estilo atenuado.
-- Agregar un botón "Finalizar Campaña" en el detalle para cambiar `estaActiva = false`.
+- Reemplazar el actual botón de "Eliminar" en el TopAppBar de detalle (que ejecuta un *hard delete*) por un botón "Finalizar Campaña" (*soft delete* cambiando `estaActiva = false`).
 - En el Dashboard, filtrar estrictamente para aceptar solo campañas donde `estaActiva = 1` (true).
 
 **Sub-issues / Tareas Técnicas**
