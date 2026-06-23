@@ -19,10 +19,11 @@ A lo largo del desarrollo, las necesidades operativas dictaron mejoras sobre los
 * **2026:** El sistema es ahora totalmente autónomo mediante la implementación de `WorkManagerTaskReminderScheduler`. Cuando una tarea se crea (`CrearTareaUseCase`) con el recordatorio activo, el sistema programa alarmas nativas. Al confirmar una tarea (`ConfirmarTareaUseCase`), el sistema cancela inteligentemente el recordatorio para evitar "alertas fantasma".
 
 ### Registro de Cosechas (CU6 y CU7)
-* **2025:** El registro de cosecha a silo (CU6) y el destino no almacenado (venta/reserva animal - CU7) carecían de una separación estricta en el diseño lógico.
-* **2026:** Se introdujo una bifurcación clara a nivel de Clean Architecture. 
-  * `RegistrarCosechaUseCase`: Maneja el flujo de almacenamiento en silos tradicionales o silobolsas.
-  * `RegistrarCosechaConVentaUseCase`: Maneja la inserción base en la tabla de cosechas y automáticamente genera el registro hijo en `CosechaNoAlmacenadaEntity` con los datos de venta y precio.
+* **2025:** El registro de cosecha a silo (CU6) y el destino no almacenado (venta/reserva animal - CU7) carecían de una separación estricta en el diseño lógico. No se contemplaba la superficie recolectada ni la unificación de métricas.
+* **2026:** Se introdujeron cambios estructurales clave:
+  * **Bifurcación:** `RegistrarCosechaUseCase` maneja el flujo de silo, mientras que `RegistrarCosechaConVentaUseCase` inserta la cosecha base y un registro hijo automático (`CosechaNoAlmacenadaEntity`) con ventas y precio.
+  * **Hectáreas y Rendimiento:** Se añadió el campo "Hectáreas" obligatorio para posibilitar el cálculo del rendimiento real por área (Tn/ha).
+  * **Unificación a Toneladas:** Se eliminó la multiplicidad de unidades de medida (Kg, gr, etc.). El sistema ahora estandariza toda la cosecha a Toneladas (Tn).
 
 ### Gestión de Insumos (CU9)
 * **2025:** Los insumos eran simples registros atados directamente a la campaña donde se creaban.
@@ -39,7 +40,7 @@ A lo largo del desarrollo, las necesidades operativas dictaron mejoras sobre los
 
 * **Autenticación (CU0 / F8.1):** Acceso local seguro (`LoginUseCase` y `RegistroUseCase`) con encriptación **hash SHA-256**.
 * **Copias de Seguridad (CU12 y CU13):** Importación/Exportación usando **Storage Access Framework (SAF)**.
-* **Dashboard Analítico (CU10):** Integración de **YCharts** para reportes visuales en Home.
+* **Dashboard Analítico y Reportes (CU10 / CU11):** Integración de **YCharts** para cuadros visuales interactivos. Ahora los gráficos incluyen **selectores de campaña específicos**, PieCharts de gastos por insumos y desgloses de cosecha total (Almacenada vs Vendida), reemplazando los antiguos mockups por inteligencia de negocio real.
 
 ---
 
@@ -91,16 +92,16 @@ A continuación se presenta la tabla formal de los Casos de Uso que han evolucio
 
 ### CU6 / CU7 - Cosechas y Ventas (Refactorizado)
 
-| CU6 / CU7 | Registro Bifurcado de Cosechas | | |
+| CU6 / CU7 | Registro Bifurcado de Cosechas (Hectáreas y Toneladas) | | |
 | --- | --- | --- | --- |
-| **Descripción** | Separación limpia de la lógica de almacenamiento (silo) vs ventas (no almacenado) bajo el paradigma Clean Architecture. | | |
+| **Descripción** | Separación limpia de la lógica de almacenamiento vs ventas bajo Clean Architecture. Incorpora toma obligatoria de Hectáreas para cálculos de rendimiento, asumiendo Toneladas (Tn) por defecto. | | |
 | **Actores** | Propietario. | | |
 | **Pre condiciones** | Campaña Activa. | | |
-| **Post condiciones** | Registros consistentes de ingresos o almacenamiento atados a la campaña. | | |
+| **Post condiciones** | Registros de cosecha en Tn mapeados a hectáreas para reportes. | | |
 | **Secuencia Normal** | **#** | **Acción (actor)** | **Reacción (sistema)** |
-| | 1 | Carga kilos y define destino de la cosecha | Sistema evalúa si es silo o venta |
+| | 1 | Carga cantidad (Tn), Hectáreas y destino | Sistema evalúa si es silo o venta |
 | | 2 | Confirma operación | Si es silo, `RegistrarCosechaUseCase` inserta entidad |
-| | 3 | | Si es venta, `RegistrarCosechaConVentaUseCase` inserta cosecha y luego registro de Venta/Precio |
+| | 3 | | Si es venta, `RegistrarCosechaConVentaUseCase` inserta cosecha y registro de Venta/Precio |
 
 ### CU9 - Catálogo de Insumos (Refactorizado)
 
