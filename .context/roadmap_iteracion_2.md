@@ -3,7 +3,7 @@
 Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de problemas y mejoras a implementar durante la Iteración 2, organizados por nivel de severidad.
 
 ## 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
-- [ ] **[#283] Issue 6:** Crash al Abrir la Cámara en Observaciones (Permiso no Solicitado)
+- [x] **[#283] Issue 6:** Crash al Abrir la Cámara en Observaciones (Permiso no Solicitado)
 - [ ] **[#284] Issue 7:** Crash por Foreign Key al Registrar Cosecha (campaniaId = -1)
 
 ## 🟠 NIVEL L2 — BUGS FUNCIONALES
