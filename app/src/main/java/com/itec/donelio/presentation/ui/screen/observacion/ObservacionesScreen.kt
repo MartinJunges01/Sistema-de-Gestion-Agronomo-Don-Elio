@@ -32,12 +32,13 @@ import coil.compose.AsyncImage
 import java.io.File
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.presentation.ui.components.SelectorCampania
-
-import androidx.compose.runtime.remember
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
+import com.itec.donelio.presentation.util.DialogoRazonPermisoCamara
+import com.itec.donelio.presentation.util.abrirAjustesPermiso
+import com.itec.donelio.presentation.util.recordarPermisoCamara
 import com.itec.donelio.presentation.viewmodel.observacion.FormularioObservacionViewModel
 import com.itec.donelio.presentation.viewmodel.observacion.ObservacionViewModel
 
@@ -50,34 +51,39 @@ fun ObservacionesScreen(
     formViewModel: FormularioObservacionViewModel = hiltViewModel(),
     listViewModel: ObservacionViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val formState by formViewModel.state.collectAsState()
     val observaciones by listViewModel.observaciones.collectAsState()
     val campanias by listViewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by listViewModel.campaniaIdSeleccionada.collectAsState()
-    val campaniaActiva = remember(campanias, campaniaIdSeleccionada) {
-        campanias.find { it.id == campaniaIdSeleccionada }
-    }
     val isCampaniaValid by listViewModel.isCampaniaValid.collectAsState()
 
-    LaunchedEffect(formState.guardadoExitoso) {
-        if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
-    }
+    // ── Gestión del permiso de cámara (CameraUtils) ──────────────────────────
+    val controlPermiso = recordarPermisoCamara()
+    val snackbarHostState = remember { SnackbarHostState() }
+    // Acción pendiente: se ejecuta tan pronto el permiso sea concedido
+    var accionPendiente by remember { mutableStateOf<(() -> Unit)?>(null) }
+    // Controla la visibilidad del diálogo de rationale
+    var mostrarDialogoRazon by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
+    // URI temporal para la foto de cámara
     var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
 
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
+    // Launcher de la cámara
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { exito ->
+        if (exito) {
             formViewModel.onImagenSeleccionada(tempCameraUri)
         }
     }
 
+    // Launcher de galería (no requiere permiso peligroso)
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             formViewModel.onImagenSeleccionada(uri)
         }
     }
 
+    /** Crea una URI temporal en caché para que la cámara escriba la foto. */
     fun createTempUri(): Uri {
         val tempFile = File.createTempFile("temp_img", ".jpg", context.cacheDir).apply {
             createNewFile()
@@ -90,7 +96,56 @@ fun ObservacionesScreen(
         )
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    // Cuando el permiso sea concedido, ejecutar la acción pendiente (abrir cámara)
+    LaunchedEffect(controlPermiso.permisoConcedido) {
+        if (controlPermiso.permisoConcedido) {
+            accionPendiente?.invoke()
+            accionPendiente = null
+        }
+    }
+
+    // Activar el diálogo de rationale cuando el sistema lo indique
+    LaunchedEffect(controlPermiso.mostrarRazon) {
+        if (controlPermiso.mostrarRazon) mostrarDialogoRazon = true
+    }
+
+    // Si el permiso fue denegado permanentemente, mostrar Snackbar con acceso a Ajustes
+    LaunchedEffect(controlPermiso.denegadoPermanente) {
+        if (controlPermiso.denegadoPermanente) {
+            val resultado = snackbarHostState.showSnackbar(
+                message = "Permiso de cámara denegado permanentemente. Actívalo en Ajustes.",
+                actionLabel = "Abrir Ajustes",
+                duration = SnackbarDuration.Long
+            )
+            if (resultado == SnackbarResult.ActionPerformed) {
+                abrirAjustesPermiso(context)
+            }
+            controlPermiso.restaurar()
+        }
+    }
+
+    // Resetear el guardado exitoso del formulario
+    LaunchedEffect(formState.guardadoExitoso) {
+        if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
+    }
+
+    // Diálogo de rationale: se muestra cuando el usuario negó el permiso una vez
+    if (mostrarDialogoRazon) {
+        DialogoRazonPermisoCamara(
+            enConfirmar = {
+                mostrarDialogoRazon = false
+                controlPermiso.restaurar()
+                controlPermiso.solicitar()
+            },
+            enDescartar = {
+                mostrarDialogoRazon = false
+                controlPermiso.restaurar()
+            }
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Observaciones", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
@@ -142,10 +197,19 @@ fun ObservacionesScreen(
                         }
 
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                            // ── Botón Cámara con verificación de permiso ──────────────
                             OutlinedButton(
                                 onClick = {
-                                    tempCameraUri = createTempUri()
-                                    tempCameraUri?.let { cameraLauncher.launch(it) }
+                                    val uri = createTempUri()
+                                    tempCameraUri = uri
+                                    if (controlPermiso.permisoConcedido) {
+                                        // Permiso ya concedido → lanzar cámara directamente
+                                        cameraLauncher.launch(uri)
+                                    } else {
+                                        // Permiso aún no concedido → guardar acción y solicitar
+                                        accionPendiente = { cameraLauncher.launch(uri) }
+                                        controlPermiso.solicitar()
+                                    }
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
@@ -153,6 +217,7 @@ fun ObservacionesScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Cámara")
                             }
+                            // ── Botón Galería (no requiere permiso peligroso) ─────────
                             OutlinedButton(
                                 onClick = { galleryLauncher.launch("image/*") },
                                 modifier = Modifier.weight(1f)
@@ -195,7 +260,18 @@ fun ObservacionesScreen(
                 }
             }
         }
-    }
+        } // Cierre del Column
+
+        // ── Snackbar anclado al fondo para feedback de permisos ──────────────────
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) { data ->
+            Snackbar {
+                Text(data.visuals.message)
+            }
+        }
+    } // Cierre del Box
 }
 
 @Composable

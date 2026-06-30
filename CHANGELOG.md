@@ -1,5 +1,16 @@
 # Changelog
 
+**[2026-06-30] - [#283] fix: Crash al Abrir la Cámara — Permiso CAMERA no Solicitado**
+- **Causa raíz resuelta:** La app lanzaba `cameraLauncher.launch(uri)` directamente sin verificar ni solicitar el permiso `CAMERA` en runtime, causando un `SecurityException` en Android 6.0+ (API 23).
+- **Nuevo módulo creado:** `presentation/util/CameraUtils.kt` con tres responsabilidades separadas:
+  - `EstadoPermisoCamara`: State holder observable con `mutableStateOf` para `permisoConcedido`, `mostrarRazon` y `denegadoPermanente`.
+  - `recordarPermisoCamara()`: Composable que gestiona el ciclo completo del permiso usando `ActivityResultContracts.RequestPermission()` y `ActivityCompat.shouldShowRequestPermissionRationale()` para distinguir denegación temporal vs. permanente.
+  - `DialogoRazonPermisoCamara()`: `AlertDialog` de rationale que se muestra en primera denegación.
+  - `abrirAjustesPermiso()`: Helper que lanza `Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)` cuando el permiso es denegado permanentemente.
+- **`ObservacionesScreen.kt` actualizado:** Botón "Tomar foto" ahora verifica `controlPermiso.permisoConcedido` antes de lanzar la cámara. Si no está concedido, guarda la acción pendiente y llama a `controlPermiso.solicitar()`. `SnackbarHost` añadido al `Box` para feedback visual.
+- **Flujos cubiertos:** Permiso ya concedido (directo a cámara) · Primera denegación (muestra rationale) · Denegación permanente (Snackbar con botón "Abrir Ajustes").
+- **Rama:** `fix/permiso-camara-observaciones`
+
 **[2026-06-23] - Documentación de Entrega y Casos de Uso**
 - Actualización de `docs/FLOW.md` incorporando diagramas de flujo interactivos Mermaid para cada una de las 8 ramas principales del sistema.
 - Creación de `docs/diferencias_casos_de_uso_2025_2026.md` contrastando la propuesta teórica original (2025) con la implementación final en Clean Architecture (2026), aplicando el formato tabular de casos de uso requerido en la cursada.
