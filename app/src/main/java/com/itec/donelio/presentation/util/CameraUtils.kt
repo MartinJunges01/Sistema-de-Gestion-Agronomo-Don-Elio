@@ -21,10 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-// ---------------------------------------------------------------------------
-// Estado del permiso de cámara
-// ---------------------------------------------------------------------------
-
 /**
  * State holder que encapsula el estado mutable del permiso de cámara y las
  * acciones para solicitarlo o reiniciarlo. Diseñado para ser consumido desde
@@ -40,41 +36,19 @@ import androidx.core.content.ContextCompat
  */
 @Stable
 class EstadoPermisoCamara {
-
-    /** `true` si el permiso CAMERA fue concedido. */
     var permisoConcedido by mutableStateOf(false)
-
-    /** `true` si se debe mostrar el diálogo de rationale al usuario. */
     var mostrarRazon by mutableStateOf(false)
-
-    /** `true` si el permiso fue denegado permanentemente. */
     var denegadoPermanente by mutableStateOf(false)
 
-    /**
-     * Referencia mutable a la lambda que lanza la solicitud real del permiso.
-     * Es inyectada por [recordarPermisoCamara] después de inicializar el launcher.
-     */
     internal var onSolicitarPermiso: () -> Unit = {}
 
-    /**
-     * Lanza la solicitud del permiso de cámara al sistema operativo.
-     * Debe ser invocada desde un manejador de eventos (onClick, etc.).
-     */
     fun solicitar() = onSolicitarPermiso()
 
-    /**
-     * Restablece los estados intermedios ([mostrarRazon], [denegadoPermanente])
-     * luego de que el usuario interactuó con el diálogo de rationale o el Snackbar.
-     */
     fun restaurar() {
         mostrarRazon = false
         denegadoPermanente = false
     }
 }
-
-// ---------------------------------------------------------------------------
-// Composable principal: recordarPermisoCamara
-// ---------------------------------------------------------------------------
 
 /**
  * Composable que recuerda y gestiona el ciclo de vida completo del permiso de
@@ -111,60 +85,41 @@ class EstadoPermisoCamara {
 @Composable
 fun recordarPermisoCamara(): EstadoPermisoCamara {
     val context = LocalContext.current
-
-    // Objeto de estado único y mutable que persiste durante la recomposición
     val estado = remember { EstadoPermisoCamara() }
 
-    // Leemos el estado real del permiso en cada recomposición.
-    // Esto garantiza que si el usuario vuelve desde Ajustes habiendo concedido
-    // el permiso manualmente, la UI se actualice sin reiniciar la pantalla.
     val estaYaConcedido = ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.CAMERA
     ) == PackageManager.PERMISSION_GRANTED
 
-    // Solo actualizamos a 'true' desde aquí; el launcher maneja la actualización
-    // dinámica tras la solicitud en tiempo de ejecución.
     if (estaYaConcedido) {
         estado.permisoConcedido = true
     }
 
-    // El launcher que interactúa con el sistema para solicitar el permiso
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { esConcedido ->
         if (esConcedido) {
-            // Permiso aceptado por el usuario
             estado.permisoConcedido = true
             estado.mostrarRazon = false
             estado.denegadoPermanente = false
         } else {
-            // Permiso denegado: distinguir entre "primera vez" y "permanente"
-            // ActivityCompat.shouldShowRequestPermissionRationale es el helper
-            // recomendado que funciona correctamente con ComponentActivity de Compose.
             val debeJustificar = ActivityCompat.shouldShowRequestPermissionRationale(
                 context as androidx.activity.ComponentActivity,
                 Manifest.permission.CAMERA
             )
             if (debeJustificar) {
-                // Primera denegación: mostrar rationale y dar otra oportunidad
                 estado.mostrarRazon = true
             } else {
-                // Segunda denegación o "No volver a preguntar": denegado permanente
                 estado.denegadoPermanente = true
             }
         }
     }
 
-    // Inyectamos el callback real del launcher en el estado (actualizado en cada composición)
     estado.onSolicitarPermiso = { launcher.launch(Manifest.permission.CAMERA) }
 
     return estado
 }
-
-// ---------------------------------------------------------------------------
-// Diálogo de rationale (justificación)
-// ---------------------------------------------------------------------------
 
 /**
  * Diálogo informativo que explica al usuario por qué la aplicación necesita
@@ -204,10 +159,6 @@ fun DialogoRazonPermisoCamara(
         }
     )
 }
-
-// ---------------------------------------------------------------------------
-// Helper: abrir ajustes del sistema
-// ---------------------------------------------------------------------------
 
 /**
  * Abre la pantalla de configuración de la aplicación en los Ajustes del sistema.
