@@ -74,6 +74,34 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 
 ### Módulo de Tareas (CU5 - CU5.4)
 
+#### TareaViewModel — sincronizarCampania() [#292]
+
+**Test VM-T1: sincronizarCampania actualiza el id cuando difiere del actual**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` en el `SavedStateHandle` (estado inicial `null`).
+*   **When:** Se llama a `sincronizarCampania(5)`.
+*   **Then:** El StateFlow `campaniaIdSeleccionada` debe emitir el valor `5`.
+
+**Test VM-T2: sincronizarCampania no emite si el id es igual al actual**
+*   **Given:** El `TareaViewModel` ya tiene `campaniaIdSeleccionada = 5`.
+*   **When:** Se llama a `sincronizarCampania(5)` con el mismo valor.
+*   **Then:** El StateFlow **no** debe emitir un nuevo evento (idempotencia garantizada).
+
+**Test VM-T3: tareas emite lista vacía si no hay campaniaId válido**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` válido.
+*   **When:** Se observa el StateFlow `tareas`.
+*   **Then:** Debe emitir inmediatamente una lista vacía, sin llamar al repositorio.
+
+**Test VM-T4: isCampaniaValid emite false cuando campaniaId es nulo**
+*   **Given:** `campaniaIdSeleccionada` es `null`.
+*   **When:** Se observa `isCampaniaValid`.
+*   **Then:** Debe emitir `false`.
+
+**Test VM-T5: isCampaniaValid emite true tras sincronizarCampania con id válido**
+*   **Given:** El ViewModel inicia con `campaniaId = null`.
+*   **When:** Se llama a `sincronizarCampania(3)`.
+*   **Then:** `isCampaniaValid` debe emitir `true`.
+
+
 **Test 5: Agendar tarea con recordatorio activado**
 *   **Given:** Una nueva tarea "Revisar fertilizante" con el switch `notificar = true`.
 *   **When:** Invoco `CrearTareaUseCase`.

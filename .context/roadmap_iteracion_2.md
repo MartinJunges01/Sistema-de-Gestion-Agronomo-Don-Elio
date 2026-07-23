@@ -14,7 +14,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#289] Issue 8:** Catálogo de Insumos — No Guarda Nuevos Insumos / Validación de Formulario Faltante
 - [ ] **[#290] Issue 9:** Campañas Permiten Fechas de Inicio en el Pasado
 - [ ] **[#291] Issue 10:** Campo "Hora" en Nueva Tarea Acepta Cualquier Carácter
-- [ ] **[#292] Issue 11:** Pestaña Tareas en Detalle de Campaña No Se Actualiza al Cambiar de Campaña
+- [x] **[#292] Issue 11:** Pestaña Tareas en Detalle de Campaña No Se Actualiza al Cambiar de Campaña
 - [ ] **[#293] Issue 12:** Formulario de Cosechas — Validación y Mensajes de Error Faltantes
 
 ## 🟡 NIVEL L3 — MEJORAS FUNCIONALES

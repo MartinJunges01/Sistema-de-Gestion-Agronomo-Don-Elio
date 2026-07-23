@@ -1,5 +1,17 @@
 # Changelog
 
+**[2026-07-22] - [#292] fix(campania): Pesta\u00f1a Tareas no actualiza datos al cambiar de campa\u00f1a**
+- **Causa raíz doble resuelta:**
+  - `TabTareas` usaba `hiltViewModel(key = "tab_tareas")` con key estática, haciendo que Hilt reutilizara la misma instancia del `TareaViewModel` sin importar la campaña activa.
+  - El `campaniaId` recibido como parámetro en `TabTareas` nunca se propagaba al ViewModel (que iniciaba con `null` desde `SavedStateHandle`).
+- **`TareaViewModel.kt` modificado:** Se agrega el método público `sincronizarCampania(id: Int)` que actualiza `_campaniaIdSeleccionada` solo si el valor difiere del actual (idempotente, evita emisiones innecesarias en el StateFlow).
+- **`DetalleCampaniaScreen.kt` modificado:**
+  - `TabTareas`: key cambiada a `"tab_tareas_$campaniaId"` + `LaunchedEffect(campaniaId)` que invoca `sincronizarCampania()` como segunda línea de defensa.
+  - `TabInsumos`: key corregida de `"tab_insumos"` a `"tab_insumos_$campaniaId"` (mismo patrón de bug identificado).
+- **Tests creados:** `TareaViewModelTest.kt` con 5 casos Given-When-Then (JUnit 4 + MockK + Turbine).
+- **`docs/plan_de_pruebas.md` actualizado** con subsección `TareaViewModel — sincronizarCampania() [#292]`.
+- **Rama:** `fix/tab-tareas-no-actualiza` (stacked sobre `fix/permiso-camara-observaciones`)
+
 **[2026-06-30] - [#283] fix: Crash al Abrir la Cámara — Permiso CAMERA no Solicitado**
 - **Causa raíz resuelta:** La app lanzaba `cameraLauncher.launch(uri)` directamente sin verificar ni solicitar el permiso `CAMERA` en runtime, causando un `SecurityException` en Android 6.0+ (API 23).
 - **Nuevo módulo creado:** `presentation/util/CameraUtils.kt` con tres responsabilidades separadas:
