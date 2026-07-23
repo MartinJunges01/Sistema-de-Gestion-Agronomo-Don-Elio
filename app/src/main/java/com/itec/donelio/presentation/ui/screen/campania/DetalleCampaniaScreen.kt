@@ -172,10 +172,16 @@ private fun DetalleFila(label: String, value: String) {
 
 @Composable
 private fun TabTareas(campaniaId: Int, onGoToTareas: () -> Unit) {
-    val tareaViewModel: TareaViewModel = hiltViewModel(key = "tab_tareas")
+    val tareaViewModel: TareaViewModel = hiltViewModel(key = "tab_tareas_$campaniaId")
     val tareas by tareaViewModel.tareas.collectAsState()
     val pendientes = tareas.filter { !it.confirmar }
     val completadas = tareas.filter { it.confirmar }
+
+    // Segunda línea de defensa: sincronizar el campaniaId correcto cada vez que
+    // el composable se compone con una nueva campaña (ej. cambio de pestaña).
+    LaunchedEffect(campaniaId) {
+        tareaViewModel.sincronizarCampania(campaniaId)
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
@@ -220,7 +226,7 @@ private fun TabTareas(campaniaId: Int, onGoToTareas: () -> Unit) {
 
 @Composable
 private fun TabInsumos(campaniaId: Int, onGoToInsumos: () -> Unit) {
-    val vm: InsumoVinculacionViewModel = hiltViewModel(key = "tab_insumos")
+    val vm: InsumoVinculacionViewModel = hiltViewModel(key = "tab_insumos_$campaniaId")
     val vinculados by vm.insumosVinculados.collectAsState()
     val total = vinculados.sumOf { it.cantidad * it.precio }
 

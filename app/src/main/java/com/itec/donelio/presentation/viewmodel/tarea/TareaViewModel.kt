@@ -60,6 +60,20 @@ class TareaViewModel @Inject constructor(
     fun seleccionarFecha(fecha: Long) { _fechaSeleccionada.value = fecha }
     fun clearError() { _errorMessage.value = null }
 
+    /**
+     * Sincroniza el [campaniaId] externo con el estado interno del ViewModel.
+     * Se utiliza cuando el ViewModel es reutilizado desde distintas pestañas de Detalle de Campaña
+     * para evitar que queden datos cacheados de la campaña anterior.
+     * Solo emite si el valor difiere del actual, evitando actualizaciones innecesarias del StateFlow.
+     *
+     * @param id Identificador de la campaña actualmente visible en pantalla.
+     */
+    fun sincronizarCampania(id: Int) {
+        if (_campaniaIdSeleccionada.value != id) {
+            _campaniaIdSeleccionada.value = id
+        }
+    }
+
     fun toggleCompletada(tarea: Tarea) {
         viewModelScope.launch {
             confirmarTareaUseCase(tarea.id, !tarea.confirmar)
