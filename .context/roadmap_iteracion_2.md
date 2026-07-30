@@ -25,7 +25,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#298] Issue 17:** Agregar Campo "Hectáreas" a la Entidad Cosecha
 
 ## 🔵 NIVEL L4 — MEJORAS DE REPORTES
-- [ ] **[#299] Issue 5:** Datos Mockeados Residuales en Dashboard y Reportes
+- [x] **[#299] Issue 5:** Datos Mockeados Residuales en Dashboard y Reportes
 - [ ] **[#300] Issue 18:** Reportes — Mejorar Reporte de Insumos con Selector de Campaña
 - [ ] **[#301] Issue 19:** Reportes — Gráfico de Desglose de Cosechas (Almacenada vs Vendida)
 - [ ] **[#302] Issue 20:** Reportes — Implementar Comparación Real entre Campañas

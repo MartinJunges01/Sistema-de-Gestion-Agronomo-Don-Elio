@@ -69,40 +69,6 @@ fun DashboardOperacionesScreen(
             }
         }
 
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                Card(
-                    modifier = Modifier.weight(1f).height(100.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.WbSunny, contentDescription = null, tint = Color(0xFFE9C46A))
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Clima", fontWeight = FontWeight.Bold, color = TextoPrincipal)
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text("24°C | Humedad 60%", fontSize = 14.sp, color = TextoSecundario)
-                    }
-                }
-                Card(
-                    modifier = Modifier.weight(1f).height(100.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Eco, contentDescription = null, tint = AgriVerde)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Salud Lotes", fontWeight = FontWeight.Bold, color = TextoPrincipal)
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text("90% Óptimo", fontSize = 14.sp, color = AgriVerde, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-        }
 
         if (tareas.isNotEmpty()) {
             item {

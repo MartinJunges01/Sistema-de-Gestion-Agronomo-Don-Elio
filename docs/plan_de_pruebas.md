@@ -195,3 +195,34 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 
 ---
 *(Este documento se mantendrá sincronizado con el código. Cualquier bug detectado en producción en el futuro se traducirá en un nuevo escenario "Given-When-Then" aquí antes de escribir el parche).*
+
+---
+
+## Módulo de Reportes
+
+#### ReportesViewModel — StateFlows contextuales [#299]
+
+**Test VM-R1: campanias emite lista vacía cuando la BD está vacía**
+*   **Given:** El `ReportesViewModel` inicia con BD sin campañas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir una lista vacía.
+
+**Test VM-R2: campanias emite la lista real cuando la BD tiene registros**
+*   **Given:** La BD tiene 2 campañas registradas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir exactamente esas 2 campañas.
+
+**Test VM-R3: seleccionarCampaniaIndividual actualiza campaniaIndividual**
+*   **Given:** El ViewModel está inicializado sin selección (campaniaIndividual = null).
+*   **When:** Se llama a `seleccionarCampaniaIndividual(campania)`.
+*   **Then:** `campaniaIndividual` debe emitir la campaña elegida.
+
+**Test VM-R4: insumosIndividual emite lista vacía cuando no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada.
+*   **When:** Se observa `insumosIndividual`.
+*   **Then:** Debe emitir lista vacía sin consultar la BD.
+
+**Test VM-R5: pieChartData emite null cuando no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada (insumosIndividual vacío).
+*   **When:** Se observa `pieChartData`.
+*   **Then:** Debe emitir `null` (el gráfico no debe mostrarse).

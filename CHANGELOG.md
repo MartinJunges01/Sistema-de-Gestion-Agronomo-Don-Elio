@@ -1,6 +1,18 @@
 # Changelog
 
-**[2026-07-22] - [#292] fix(campania): Pesta\u00f1a Tareas no actualiza datos al cambiar de campa\u00f1a**
+**[2026-07-29] - [#299] fix(reportes): Eliminar datos mockeados en Dashboard y reestructurar pantalla Reportes**
+- **Dashboard (`DashboardOperacionesScreen.kt`):** Eliminadas las tarjetas hardcodeadas "Clima 24°C" y "Salud Lotes 90% Óptimo". El contenido restante sube automáticamente.
+- **`ReportesViewModel.kt` reescrito:** Se reemplaza `ObtenerTodosLosInsumosVinculadosUseCase` por `ObtenerInsumosVinculadosUseCase(campaniaId)` contextual. Se inyectan `ObtenerCampaniasUseCase` y `ObtenerCosechasPorCampaniaUseCase`. Nuevos StateFlows: `campanias`, `campaniaIndividual`, `insumosIndividual`, `cosechasIndividual`, `campaniaA/B`, `insumosA/B`. `pieChartData` y `exportableData` ahora son contextuales a la campaña seleccionada.
+- **`ReportesRendimientoScreen.kt` reestructurada en dos secciones:**
+  - *Sección 1 — Estadísticas individuales:* Dropdown con campañas reales de BD, tarjetas de costo de insumos y total cosechado, PieChart contextual (por campaña seleccionada).
+  - *Sección 2 — Comparador:* Dos dropdowns con campañas reales, `CardMetricaComparativa` con costo real de insumos A vs B, placeholder para gráfico de evolución (scope #302).
+- **Exportación CSV/PDF:** Ahora exporta los insumos de la campaña seleccionada en Sección 1 (en lugar de todos los insumos globales).
+- **Tests creados:** `ReportesViewModelTest.kt` con 5 casos Given-When-Then (JUnit 4 + MockK + Turbine).
+- **`docs/plan_de_pruebas.md` actualizado** con subsección `ReportesViewModel — StateFlows contextuales [#299]`.
+- **Nota de scope:** La lógica de `campaniaA/B` e `insumosA/B` es un paso preparatorio del Issue #302. Documentado en la PR con `Partial-scope: #302`.
+- **Rama:** `fix/datos-mock-dashboard-reportes` (stacked sobre `fix/tab-tareas-no-actualiza`)
+
+**[2026-07-22] - [#292] fix(campania): Pestaña Tareas no actualiza datos al cambiar de campaña**
 - **Causa raíz doble resuelta:**
   - `TabTareas` usaba `hiltViewModel(key = "tab_tareas")` con key estática, haciendo que Hilt reutilizara la misma instancia del `TareaViewModel` sin importar la campaña activa.
   - El `campaniaId` recibido como parámetro en `TabTareas` nunca se propagaba al ViewModel (que iniciaba con `null` desde `SavedStateHandle`).
