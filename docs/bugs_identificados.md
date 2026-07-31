@@ -122,6 +122,9 @@ El bloque finaliza la página pero no crea una nueva, por lo que los ítems rest
 
 **Origen:** Detectado durante fix del Issue [#299] — 2026-07-29
 
+---
+
+## Convención de Registro
 Cada vez que identifiques un bug, usa la siguiente plantilla. Luego súbelo a GitHub para obtener su ID oficial y reemplaza `[#ID]` con el número correspondiente. Evita usar numeraciones locales arbitrarias (como "Issue 1", "Issue 2").
 
 ---
