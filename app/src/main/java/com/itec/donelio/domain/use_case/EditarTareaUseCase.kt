@@ -24,11 +24,21 @@ class EditarTareaUseCase @Inject constructor(
             if (tarea.nombre.isBlank()) {
                 throw IllegalArgumentException("El nombre de la tarea no puede estar vacío")
             }
-            tareaRepository.updateTarea(tarea)
-            if (tarea.notificar) {
-                taskReminderScheduler.schedule(tarea)
+            val fechaNormalizada = java.util.Calendar.getInstance().apply {
+                timeInMillis = tarea.fecha
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
+            val tareaNormalizada = tarea.copy(fecha = fechaNormalizada)
+
+            tareaRepository.updateTarea(tareaNormalizada)
+            if (tareaNormalizada.notificar) {
+                taskReminderScheduler.schedule(tareaNormalizada)
             } else {
-                taskReminderScheduler.cancel(tarea.id)
+                taskReminderScheduler.cancel(tareaNormalizada.id)
             }
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
