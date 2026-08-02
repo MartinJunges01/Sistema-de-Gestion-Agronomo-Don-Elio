@@ -31,7 +31,16 @@ class EditarTareaUseCaseTest {
 
     @Test
     fun `invoke with valid data updates and schedules if notify is true`() = runTest {
-        val tarea = Tarea(id = 1, nombre = "Regar", fecha = 1L, hora = "10:00", notificar = true, confirmar = false, idCampania = 1)
+        val fechaOriginal = 1680012345678L
+        val fechaNormalizadaEsperada = java.util.Calendar.getInstance().apply {
+            timeInMillis = fechaOriginal
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val tarea = Tarea(id = 1, nombre = "Regar", fecha = fechaOriginal, hora = "10:00", notificar = true, confirmar = false, idCampania = 1)
+        val tareaEsperada = tarea.copy(fecha = fechaNormalizadaEsperada)
         
         coEvery { tareaRepository.updateTarea(any()) } returns Unit
 
@@ -41,13 +50,22 @@ class EditarTareaUseCaseTest {
             awaitComplete()
         }
 
-        coVerify(exactly = 1) { tareaRepository.updateTarea(tarea) }
-        verify(exactly = 1) { taskReminderScheduler.schedule(tarea) }
+        coVerify(exactly = 1) { tareaRepository.updateTarea(tareaEsperada) }
+        verify(exactly = 1) { taskReminderScheduler.schedule(tareaEsperada) }
     }
 
     @Test
     fun `invoke with valid data updates and cancels if notify is false`() = runTest {
-        val tarea = Tarea(id = 1, nombre = "Regar", fecha = 1L, hora = "10:00", notificar = false, confirmar = false, idCampania = 1)
+        val fechaOriginal = 1680012345678L
+        val fechaNormalizadaEsperada = java.util.Calendar.getInstance().apply {
+            timeInMillis = fechaOriginal
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
+        val tarea = Tarea(id = 1, nombre = "Regar", fecha = fechaOriginal, hora = "10:00", notificar = false, confirmar = false, idCampania = 1)
+        val tareaEsperada = tarea.copy(fecha = fechaNormalizadaEsperada)
         
         coEvery { tareaRepository.updateTarea(any()) } returns Unit
 
@@ -57,8 +75,8 @@ class EditarTareaUseCaseTest {
             awaitComplete()
         }
 
-        coVerify(exactly = 1) { tareaRepository.updateTarea(tarea) }
-        verify(exactly = 1) { taskReminderScheduler.cancel(tarea.id) }
+        coVerify(exactly = 1) { tareaRepository.updateTarea(tareaEsperada) }
+        verify(exactly = 1) { taskReminderScheduler.cancel(tareaEsperada.id) }
     }
 
     @Test

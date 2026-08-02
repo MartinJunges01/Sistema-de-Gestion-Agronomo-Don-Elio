@@ -30,10 +30,18 @@ class CrearTareaUseCase @Inject constructor(
             if (nombre.isBlank()) {
                 throw IllegalArgumentException("El nombre de la tarea no puede estar vacío")
             }
+            val fechaNormalizada = java.util.Calendar.getInstance().apply {
+                timeInMillis = fecha
+                set(java.util.Calendar.HOUR_OF_DAY, 0)
+                set(java.util.Calendar.MINUTE, 0)
+                set(java.util.Calendar.SECOND, 0)
+                set(java.util.Calendar.MILLISECOND, 0)
+            }.timeInMillis
+
             val tarea = Tarea(
                 id = 0,
                 nombre = nombre.trim(),
-                fecha = fecha,
+                fecha = fechaNormalizada,
                 hora = hora,
                 notificar = notificar,
                 confirmar = false,

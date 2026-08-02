@@ -33,7 +33,14 @@ class CrearTareaUseCaseTest {
     fun `invoke with valid data inserts tarea and schedules reminder if notificar is true`() = runTest {
         // Given
         val nombre = "Fumigar campo"
-        val fecha = 1680000000000L
+        val fechaOriginal = 1680012345678L // Fecha con horas, minutos y milisegundos
+        val fechaNormalizadaEsperada = java.util.Calendar.getInstance().apply {
+            timeInMillis = fechaOriginal
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.timeInMillis
         val hora = "08:00"
         val notificar = true
         val idCampania = 1
@@ -42,7 +49,7 @@ class CrearTareaUseCaseTest {
         coEvery { tareaRepository.insertTarea(any()) } returns expectedId
 
         // When
-        crearTareaUseCase(nombre, fecha, hora, notificar, idCampania).test {
+        crearTareaUseCase(nombre, fechaOriginal, hora, notificar, idCampania).test {
             // Then
             val loading = awaitItem()
             assertTrue(loading is Resource.Loading)
@@ -56,7 +63,7 @@ class CrearTareaUseCaseTest {
         coVerify(exactly = 1) { 
             tareaRepository.insertTarea(withArg {
                 assertEquals(nombre, it.nombre)
-                assertEquals(fecha, it.fecha)
+                assertEquals(fechaNormalizadaEsperada, it.fecha)
                 assertEquals(hora, it.hora)
                 assertTrue(it.notificar)
                 assertEquals(idCampania, it.idCampania)
