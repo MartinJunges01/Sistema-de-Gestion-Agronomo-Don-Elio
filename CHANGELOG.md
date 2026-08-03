@@ -1,6 +1,10 @@
 # Changelog
 
-**[2026-08-02] - [#301] feat(reportes): Gráfico de Desglose de Cosechas (Almacenada vs Vendida)**
+**[2026-08-02] - [#302] feat(reportes): Implementar Comparación Real entre Campañas**
+- **Dominio:** `ReportesViewModel` ahora expone `cosechasA` y `cosechasB` asociadas a las campañas seleccionadas en el comparador.
+- **UI:** En `ReportesRendimientoScreen`, la sección de "Métricas Comparativas" ahora muestra los verdaderos totales de Costo de Insumos y Rendimiento (Cosechas) para la Campaña A y la Campaña B.
+- **UI:** Se reemplazó el `GraficoEvolucionPlaceholder` por un `DoubleBarIndicator`, que consiste en barras de progreso compuestas (Jetpack Compose) para representar visual y proporcionalmente la diferencia de Costos y Rendimiento entre ambas campañas seleccionadas.
+- **Rama:** `feat/comparacion-campanias` (stacked sobre `feat/grafico-desglose-cosechas`)
 - **Dominio y UI:** Agregado el estado `desgloseCosechasData` al `ReportesViewModel` que filtra y agrupa dinámicamente el listado de cosechas en base a su destino (Almacenada vs Vendida/Reservada).
 - **UI:** Añadido un nuevo gráfico `PieChart` en `ReportesRendimientoScreen` para visualizar visualmente las proporciones del destino de las cosechas de la campaña activa.
 - **Tests:** Creado caso de prueba en `ReportesViewModelTest` para asegurar la correcta agrupación matemática de las cosechas.
