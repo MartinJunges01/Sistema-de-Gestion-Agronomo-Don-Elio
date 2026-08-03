@@ -124,6 +124,62 @@ El bloque finaliza la página pero no crea una nueva, por lo que los ítems rest
 
 ---
 
+---
+
+## [PENDIENTE-ID] DoubleBarIndicator no tiene tests unitarios
+
+**Severidad:** ⚪ UX / Deuda Técnica
+**Módulo:** Reportes / Comparador
+**Archivo afectado:** `presentation/ui/screen/reportes/ReportesRendimientoScreen.kt`
+
+**Descripción**
+El componente `DoubleBarIndicator` (añadido en #302) no tiene ninguna prueba unitaria ni instrumentada que valide su comportamiento. Los casos de borde más críticos son: `maxA = 0f` (división por cero, actualmente cubierta por el guard `if (maxA > 0f)`) y el caso donde `valueA > valueB`.
+
+**Criterios de Aceptación**
+- Crear una prueba instrumentada o test de Compose que valide que el `DoubleBarIndicator` no crashea cuando `maxA = 0f` o `maxB = 0f`.
+- Verificar que las barras tienen la proporción correcta (la de mayor valor llega al 100%).
+
+**Origen:** Detectado durante auditoría de implementación del Issue [#302] — 2026-08-02
+
+---
+
+## [PENDIENTE-ID] ReportesViewModel no valida que campaña A ≠ campaña B
+
+**Severidad:** ⚪ UX / Deuda Técnica
+**Módulo:** Reportes / Comparador
+**Archivo afectado:** `presentation/viewmodel/reportes/ReportesViewModel.kt`
+
+**Descripción**
+Según el plan de implementación del Issue #302, se debía agregar una validación `campaniaA?.id != campaniaB?.id` que emitiera un estado `comparacionInvalida: Boolean`. Esta validación **no fue implementada**. El usuario puede seleccionar la misma campaña en A y en B, obteniendo una comparación carente de valor (una campaña contra sí misma). Esta deuda estaba también registrada como "PEND-3" antes de la sesión pero no se resolvió.
+
+**Criterios de Aceptación**
+- El dropdown de Campaña B debe excluir de su lista la campaña ya seleccionada en A (y viceversa). **O bien:**
+- Agregar un `val comparacionInvalida: StateFlow<Boolean>` al ViewModel que emita `true` cuando `_campaniaA.value?.id == _campaniaB.value?.id && ambas != null`.
+- En la UI, mostrar un `Card` de advertencia (en lugar de las métricas) cuando `comparacionInvalida = true`.
+- Agregar test VM-R12 al plan de pruebas.
+
+**Origen:** Detectado durante auditoría de implementación del Issue [#302] — 2026-08-02
+
+---
+
+## [PENDIENTE-ID] Tests VM-R8 y VM-R9 (guardia de exportación #300) no tienen implementación
+
+**Severidad:** ⚪ Cobertura / Deuda Técnica
+**Módulo:** Reportes / Exportación
+**Archivo afectado:** `test/.../ReportesViewModelTest.kt`
+
+**Descripción**
+Los casos de prueba VM-R8 y VM-R9 (guardia de exportación sin campaña seleccionada) están documentados en `plan_de_pruebas.md` pero **no tienen su implementación correspondiente** en `ReportesViewModelTest.kt`. La lógica de guardia sí está implementada en producción, pero no tiene cobertura automatizada.
+
+**Criterios de Aceptación**
+- Implementar `exportarReporteCsv emite error si no hay campania seleccionada()` en `ReportesViewModelTest`.
+- Implementar `exportarReportePdf emite error si no hay campania seleccionada()` en `ReportesViewModelTest`.
+- Ambos tests deben verificar que `exportStatus` emite el mensaje correcto.
+
+**Origen:** Detectado durante auditoría de implementación del Issue [#300] — 2026-08-02
+
+---
+
 ## Convención de Registro
 Cada vez que identifiques un bug, usa la siguiente plantilla. Luego súbelo a GitHub para obtener su ID oficial y reemplaza `[#ID]` con el número correspondiente. Evita usar numeraciones locales arbitrarias (como "Issue 1", "Issue 2").
 

@@ -226,3 +226,41 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **Given:** No hay campaña seleccionada (insumosIndividual vacío).
 *   **When:** Se observa `pieChartData`.
 *   **Then:** Debe emitir `null` (el gráfico no debe mostrarse).
+
+#### ReportesViewModel — desglose cosechas por destino [#301]
+
+**Test VM-R6: desgloseCosechasData agrupa por almacén y venta correctamente**
+*   **Given:** Una campaña con cosechas mixtas (algunas con `almacen` no vacío, otras con `almacen` en blanco).
+*   **When:** Se selecciona esa campaña con `seleccionarCampaniaIndividual()`.
+*   **Then:** `desgloseCosechasData` debe emitir un `PieChartData` con 2 slices:
+    - Slice "Almacenada": suma de cantidades con `almacen.isNotBlank()`.
+    - Slice "Vendida": suma de cantidades con `almacen.isBlank()`.
+
+**Test VM-R7: desgloseCosechasData emite null cuando no hay cosechas**
+*   **Given:** Una campaña seleccionada pero sin cosechas en la BD.
+*   **When:** Se observa `desgloseCosechasData`.
+*   **Then:** Debe emitir `null` (sin gráfico).
+
+#### ReportesViewModel — guardia de exportación [#300]
+
+**Test VM-R8: exportarReporteCsv emite error si no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada (`campaniaIndividual = null`).
+*   **When:** Se llama a `exportarReporteCsv(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaña para exportar"` y no debe invocarse `ReportExporter`.
+
+**Test VM-R9: exportarReportePdf emite error si no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada.
+*   **When:** Se llama a `exportarReportePdf(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaña para exportar"`.
+
+#### ReportesViewModel — comparación real entre campañas [#302]
+
+**Test VM-R10: cosechasA emite la lista de cosechas de la campaña A seleccionada**
+*   **Given:** La BD tiene cosechas asociadas a la campaña con `id = 1`.
+*   **When:** Se llama a `seleccionarCampaniaA(campaniaSoja)` donde `campaniaSoja.id = 1`.
+*   **Then:** `cosechasA` debe emitir la lista real de cosechas de esa campaña.
+
+**Test VM-R11: cosechasA emite lista vacía cuando no hay campaña A seleccionada**
+*   **Given:** No hay campaña seleccionada en el comparador (campaniaA = null).
+*   **When:** Se observa `cosechasA`.
+*   **Then:** Debe emitir una lista vacía.

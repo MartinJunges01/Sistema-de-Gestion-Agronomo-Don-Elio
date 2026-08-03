@@ -35,14 +35,12 @@ import javax.inject.Inject
  *
  * Expone dos secciones diferenciadas:
  * - **Sección 1 — Estadísticas individuales:** el usuario selecciona una campaña y ve
- *   sus métricas reales (insumos, cosechas, PieChart de distribución).
+ *   sus métricas reales (insumos, cosechas, PieChart de distribución por insumo y
+ *   PieChart de destino de cosechas).
  * - **Sección 2 — Comparador:** el usuario selecciona dos campañas (A y B) y compara
- *   el costo total de insumos entre ellas.
+ *   el costo total de insumos y el rendimiento total de cosechas entre ellas.
  *
  * La exportación (CSV/PDF) usa los datos de la campaña seleccionada en Sección 1.
- *
- * Nota de scope: la lógica de comparación de [campaniaA]/[campaniaB] es un paso
- * preparatorio del Issue #302 (Comparación Real entre Campañas).
  */
 @HiltViewModel
 class ReportesViewModel @Inject constructor(
@@ -122,6 +120,11 @@ class ReportesViewModel @Inject constructor(
             .filter { it.costoTotal > 0 }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /**
+     * Datos del PieChart de distribución de gastos por insumo.
+     * Contextual a la campaña seleccionada en Sección 1.
+     * Emite null cuando no hay campaña seleccionada o no hay insumos.
+     */
     val pieChartData: StateFlow<PieChartData?> = exportableData
         .map { insumosResumen ->
             if (insumosResumen.isEmpty()) return@map null
@@ -156,8 +159,7 @@ class ReportesViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     // ──────────────────────────────────────────────
-    // Sección 2 — Comparador de campañas
-    // Nota: paso preparatorio del Issue #302
+    // Sección 2 — Comparador de campañas [#302]
     // ──────────────────────────────────────────────
 
     private val _campaniaA = MutableStateFlow<Campania?>(null)

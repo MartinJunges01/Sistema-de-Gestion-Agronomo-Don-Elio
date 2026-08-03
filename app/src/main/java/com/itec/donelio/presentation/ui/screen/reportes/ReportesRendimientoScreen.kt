@@ -260,8 +260,7 @@ fun ReportesRendimientoScreen(
             }
 
             // ──────────────────────────────────────────────
-            // SECCIÓN 2: Comparador de campañas
-            // Nota: paso preparatorio del Issue #302
+            // SECCIÓN 2: Comparador de campañas [#302]
             // ──────────────────────────────────────────────
 
             item {
@@ -457,7 +456,7 @@ private fun DoubleBarIndicator(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(labelA, modifier = Modifier.weight(0.3f), fontSize = 12.sp, color = TextoSecundario)
             LinearProgressIndicator(
-                progress = if (maxA > 0f) valueA / maxA else 0f,
+                progress = { if (maxA > 0f) valueA / maxA else 0f },
                 color = colorA,
                 trackColor = colorA.copy(alpha = 0.2f),
                 modifier = Modifier.weight(0.5f).height(12.dp)
@@ -474,7 +473,7 @@ private fun DoubleBarIndicator(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(labelB, modifier = Modifier.weight(0.3f), fontSize = 12.sp, color = TextoSecundario)
             LinearProgressIndicator(
-                progress = if (maxB > 0f) valueB / maxB else 0f,
+                progress = { if (maxB > 0f) valueB / maxB else 0f },
                 color = colorB,
                 trackColor = colorB.copy(alpha = 0.2f),
                 modifier = Modifier.weight(0.5f).height(12.dp)
