@@ -1,5 +1,11 @@
 # Changelog
 
+**[2026-08-02] - [#298] feat(db): Refactor Insumos/Cosechas a Unidad Única**
+- **Base de Datos:** Migración a versión 5 (`MIGRATION_4_5`) usando copias de tabla temporales para eliminar la columna `unidad` de Insumos y Cosechas (limitación de SQLite).
+- **Dominio y UI:** Eliminación del campo `unidad` explícito en todo el código; se asume Kg/L de manera implícita para simplificar el modelo y la UI.
+- **Tests actualizados** para no requerir o asertar por el campo `unidad`.
+- **Rama:** `feat/migracion-db-insumos` (stacked sobre `feat/campanas-historial`)
+
 **[2026-07-29] - [#299] fix(reportes): Eliminar datos mockeados en Dashboard y reestructurar pantalla Reportes**
 - **Dashboard (`DashboardOperacionesScreen.kt`):** Eliminadas las tarjetas hardcodeadas "Clima 24°C" y "Salud Lotes 90% Óptimo". El contenido restante sube automáticamente.
 - **`ReportesViewModel.kt` reescrito:** Se reemplaza `ObtenerTodosLosInsumosVinculadosUseCase` por `ObtenerInsumosVinculadosUseCase(campaniaId)` contextual. Se inyectan `ObtenerCampaniasUseCase` y `ObtenerCosechasPorCampaniaUseCase`. Nuevos StateFlows: `campanias`, `campaniaIndividual`, `insumosIndividual`, `cosechasIndividual`, `campaniaA/B`, `insumosA/B`. `pieChartData` y `exportableData` ahora son contextuales a la campaña seleccionada.
