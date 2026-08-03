@@ -2,18 +2,18 @@
 
 ```mermaid
 graph TD
-    Login[Login / Registro<br/>F8/Issue 1 - Acceso] --> Home[Home / Dashboard<br/>CU10 - Operaciones y Resumen]
+    Login[Login / Registro<br/>CU0 / F8.1] --> Home[Home / Dashboard<br/>CU10 - Operaciones y Resumen]
 
     Home -->|BottomNav: Campañas| Campanias[Lista de Campañas<br/>Vista General]
-    Home -->|BottomNav: Tareas| Tareas[Agenda y Tareas<br/>CU5 - Gestión de Tareas]
-    Home -->|BottomNav: Insumos| Insumos[Vincular Insumos<br/>CU9 - Gestión de Insumos]
-    Home -->|BottomNav: Reportes| Reportes[Reportes y Análisis<br/>CU10/CU11 - Gráficos y Exportación]
-    Home -->|Card Campaña Activa| DetalleCampania
+    Home -->|BottomNav: Tareas| Tareas[Agenda y Tareas<br/>CU5]
+    Home -->|BottomNav: Insumos| Insumos[Vincular Insumos<br/>CU9.1]
+    Home -->|BottomNav: Reportes| Reportes[Reportes y Análisis<br/>CU10/CU11]
+    Home -->|Header DB| ConfigDB[Configuración DB<br/>CU12/CU13]
 
-    Campanias -->|FAB +| FormCampania[Formulario Campaña<br/>CU1 - Crear/Editar]
-    Campanias -->|Click item| DetalleCampania
+    Campanias -->|FAB +| FormCampania[Formulario Campaña<br/>CU1]
+    Campanias -->|Click item| DetalleCampania[Detalle Campaña<br/>CU1-CU8]
 
-    DetalleCampania[Detalle Campaña<br/>CU1-CU8] -->|Tab Info| InfoCampania[Resumen Campaña]
+    DetalleCampania -->|Tab Info| InfoCampania[Resumen Campaña]
     DetalleCampania -->|Tab Tareas| Tareas
     DetalleCampania -->|Tab Insumos| Insumos
     DetalleCampania -->|Tab Cosechas| Cosechas[Gestión de Cosechas<br/>CU6/CU7]
@@ -21,30 +21,99 @@ graph TD
     DetalleCampania -->|Botón Editar| FormCampania
 
     Tareas -->|Checkbox| ConfTarea[Confirmar Tarea<br/>CU5.4]
-    Tareas -->|Botón + / FAB| NvaTarea[Nueva Tarea<br/>CU5.1 - Crear con recordatorio]
+    Tareas -->|Botón + / FAB| NvaTarea[Nueva Tarea<br/>CU5.1]
+    Tareas -->|Editar/Eliminar| EditTarea[Edición de Tarea<br/>CU5.2/CU5.3]
 
-    Cosechas -->|FAB +| FormCosecha[Formulario Cosecha]
+    Cosechas -->|FAB + / Edit| FormCosecha[Formulario Cosecha]
     FormCosecha -->|Almacenada| DB_Almacen[Registro Cosecha Base<br/>CU6]
     FormCosecha -->|No Almacenada| DB_Venta[Registro + Venta/Reserva<br/>CU7]
 
-    Insumos -->|Catálogo| Catalogo[Catálogo de Insumos<br/>CU9.4 - Maestro]
-    Insumos -->|ModalBottomSheet| Vincular[Vincular Insumo a Campaña<br/>CU9.1]
+    Insumos -->|Catálogo| Catalogo[Catálogo de Insumos<br/>CU9.4]
     
     Catalogo -->|FAB +| FormInsumo[Formulario Insumo<br/>CU9.5]
     Catalogo -->|Inline| EditDelInsumo[Editar/Eliminar Insumo<br/>CU9.6/CU9.7]
 
     Observaciones -->|Adjuntar Foto| Camara[Integración Cámara<br/>CU8.1]
+    Observaciones -->|Editar / Eliminar| ABMObservacion[Edición Observación]
+
+    ConfigDB --> DataSeed[Data Seed<br/>Cargar Datos de Prueba Debug]
 
     Reportes -->|Exportar| ExportarExcel[Exportar a Excel<br/>CU11]
     Reportes -->|Exportar| ExportarPDF[Exportar a PDF<br/>CU11]
+```
 
-    subgraph Configuracion
-        ConfigDB[Configuración DB<br/>CU12/CU13 - Importar/Exportar DB]
-        DataSeed[Data Seed<br/>Cargar Datos de Prueba Debug]
-    end
+## Flujos Modulares y Capturas de Pantalla
 
-    Home -->|Header DB| ConfigDB
-    ConfigDB --> DataSeed
+A continuación, el flujo se divide en módulos lógicos para asociarlo con las capturas de pantalla que se entregarán al profesor.
+
+### 1. Flujo de Acceso y Dashboard
+
+*Ref. Capturas:* `[1-Login]`, `[2-Dashboard]`
+
+```mermaid
+graph TD
+    %% Módulo 1: Acceso y Dashboard
+    Login[Login / Registro<br/>CU0 / F8.1] --> Home[Home / Dashboard<br/>CU10 - Operaciones y Resumen]
+    
+    %% Navegación Principal desde Home
+    Home -->|BottomNav: Campañas| Campanias[Lista de Campañas<br/>Vista General]
+    Home -->|BottomNav: Tareas| Tareas[Agenda y Tareas<br/>CU5]
+    Home -->|BottomNav: Insumos| Insumos[Vincular Insumos<br/>CU9.1]
+    Home -->|BottomNav: Reportes| Reportes[Reportes y Análisis<br/>CU10/CU11]
+    Home -->|Header DB| ConfigDB[Configuración DB<br/>CU12/CU13]
+```
+
+## 2. Flujo de Campañas, Cosechas y Observaciones
+*Ref. Capturas:* `[12-Campañas]`, `[13-Crear/Editar Campaña]`, `[14-Resumen Campaña]`, `[15-Cosechas]`, `[16-Formulario Cosecha]`, `[17-Observaciones]`, `[18-Adjuntar Foto]`
+
+```mermaid
+graph TD
+    Campanias[Lista de Campañas] -->|FAB +| FormCampania[Formulario Campaña<br/>CU1]
+    Campanias -->|Click item| DetalleCampania[Detalle Campaña<br/>CU1-CU8]
+    
+    DetalleCampania -->|Tab Info| InfoCampania[Resumen Campaña]
+    DetalleCampania -->|Tab Cosechas| Cosechas[Gestión de Cosechas<br/>CU6/CU7]
+    DetalleCampania -->|Tab Observaciones| Observaciones[Observaciones<br/>CU8]
+    DetalleCampania -->|Botón Editar| FormCampania
+    
+    Cosechas -->|FAB + / Edit| FormCosecha[Formulario Cosecha]
+    FormCosecha -->|Almacenada| DB_Almacen[Registro Cosecha Base<br/>CU6]
+    FormCosecha -->|No Almacenada| DB_Venta[Registro + Venta/Reserva<br/>CU7]
+    
+    Observaciones -->|Adjuntar Foto| Camara[Integración Cámara<br/>CU8.1]
+    Observaciones -->|Editar / Eliminar| ABMObservacion[Edición Observación]
+```
+
+## 3. Flujo de Tareas
+*Ref. Capturas:* `[6-Tareas]`, `[7-Nueva Tarea]`, `[8-Editar/Eliminar Tareas]`
+
+```mermaid
+graph TD
+    Tareas[Agenda y Tareas] -->|Checkbox| ConfTarea[Confirmar Tarea<br/>CU5.4]
+    Tareas -->|Botón + / FAB| NvaTarea[Nueva Tarea<br/>CU5.1]
+    Tareas -->|Editar/Eliminar| EditTarea[Edición de Tarea<br/>CU5.2/CU5.3]
+```
+
+## 4. Flujo de Insumos
+*Ref. Capturas:* `[9-Insumos]`, `[10-Catálogo]`, `[11-Formulario Catálogo]`
+
+```mermaid
+graph TD
+    Insumos[Vincular Insumos] -->|Catálogo| Catalogo[Catálogo de Insumos<br/>CU9.4]
+    
+    Catalogo -->|FAB +| FormInsumo[Formulario Insumo<br/>CU9.5]
+    Catalogo -->|Inline| EditDelInsumo[Editar/Eliminar Insumo<br/>CU9.6/CU9.7]
+```
+
+## 5. Flujo de Configuración y Reportes
+*Ref. Capturas:* `[3-Configuración DB]`, `[4-Reportes]`, `[5-Exportación]`
+
+```mermaid
+graph TD
+    ConfigDB[Configuración DB] --> DataSeed[Data Seed<br/>Cargar Datos de Prueba Debug]
+    
+    Reportes[Reportes y Análisis] -->|Exportar| ExportarExcel[Exportar a Excel<br/>CU11]
+    Reportes -->|Exportar| ExportarPDF[Exportar a PDF<br/>CU11]
 ```
 
 ## Leyenda de Casos de Uso (CU)

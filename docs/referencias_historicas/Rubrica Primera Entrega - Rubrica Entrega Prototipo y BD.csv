@@ -1,0 +1,23 @@
+Criterio,Peso (%),Excelente,Bueno,Regular,Insuficiente,Puntaje Obtenido (1-4),Puntaje Ponderado,Observaciones
+Coherencia General del Proyecto,30,"Trazabilidad completa entre requerimientos, prototipo y BD","Pequeñas inconsistencias
+","Varias inconsistencias
+","Entregables contradictorios
+",4,30,
+Prototipo Navegable y Flujo de Usuario,25,"Flujo completo y claro
+","Flujo principal correcto
+","Navegación parcial
+","Pantallas inconexas
+",4,25,
+"Modelo de Datos (DER y Modelo Físico)
+",20,Modelo consistente y normalizado,"Modelo correcto con mejoras
+","Problemas de diseño
+",Errores estructurales,4,20,
+"Adecuación al Alcance y Requerimientos
+",15,"Cobertura completa y alcance realista
+","Pocas omisiones
+","Alcance confuso
+",No responde a requerimientos,4,15,
+Documentación y Calidad de Presentación,10,Documentación profesional,Documentación adecuada,Documentación incompleta,Documentación insuficiente,4,10,
+,,,,,,,,
+,,,,,TOTAL (%),,100,
+,,,,,NOTA FINAL (1-10),,10,

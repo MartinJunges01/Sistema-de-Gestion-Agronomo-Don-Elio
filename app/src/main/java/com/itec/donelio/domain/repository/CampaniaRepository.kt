@@ -5,6 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface CampaniaRepository {
     fun getCampanias(): Flow<List<Campania>>
+    
+    fun getCampaniasActivas(): Flow<List<Campania>>
+    
+    fun getCampaniasInactivas(): Flow<List<Campania>>
 
     suspend fun getCampaniaById(id: Int): Campania?
 

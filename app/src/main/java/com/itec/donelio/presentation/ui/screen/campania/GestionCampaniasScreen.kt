@@ -31,14 +31,23 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.foundation.ExperimentalFoundationApi
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun GestionCampaniasScreen(
     viewModel: GestionCampaniasViewModel = hiltViewModel(),
     onGoToDetail: (campaniaId: Int) -> Unit,
     onBack: () -> Unit
 ) {
-    val campanias by viewModel.campanias.collectAsState()
+    val campaniasActivas by viewModel.campaniasActivas.collectAsState()
+    val campaniasInactivas by viewModel.campaniasInactivas.collectAsState()
+    var showHistorial by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -51,7 +60,7 @@ fun GestionCampaniasScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (campanias.isEmpty()) {
+            if (campaniasActivas.isEmpty() && campaniasInactivas.isEmpty()) {
                 item {
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(48.dp),
@@ -63,11 +72,41 @@ fun GestionCampaniasScreen(
                     }
                 }
             } else {
-                items(campanias, key = { it.id }) { campania ->
-                    CampaniaCard(
-                        campania = campania,
-                        onClick = { onGoToDetail(campania.id) }
-                    )
+                if (campaniasActivas.isNotEmpty()) {
+                    item {
+                        Text("Activas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal, modifier = Modifier.padding(bottom = 4.dp))
+                    }
+                    items(campaniasActivas, key = { it.id }) { campania ->
+                        CampaniaCard(
+                            campania = campania,
+                            onClick = { onGoToDetail(campania.id) }
+                        )
+                    }
+                }
+
+                if (campaniasInactivas.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showHistorial = !showHistorial }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text("Historial (${campaniasInactivas.size})", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoSecundario)
+                            Icon(if (showHistorial) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null, tint = TextoSecundario)
+                        }
+                    }
+                    if (showHistorial) {
+                        items(campaniasInactivas, key = { it.id }) { campania ->
+                            CampaniaCard(
+                                campania = campania,
+                                onClick = { onGoToDetail(campania.id) }
+                            )
+                        }
+                    }
                 }
             }
         }
