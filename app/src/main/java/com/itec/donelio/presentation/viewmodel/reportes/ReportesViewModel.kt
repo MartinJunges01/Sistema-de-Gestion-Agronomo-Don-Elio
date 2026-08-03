@@ -181,17 +181,27 @@ class ReportesViewModel @Inject constructor(
     // ──────────────────────────────────────────────
 
     fun exportarReporteCsv(uri: Uri, context: Context) {
+        val campania = campaniaIndividual.value
+        if (campania == null) {
+            _exportStatus.value = "Seleccione una campaña para exportar"
+            return
+        }
         viewModelScope.launch {
             val data = exportableData.value
-            val success = ReportExporter.exportToCsv(uri, context, data)
+            val success = ReportExporter.exportToCsv(uri, context, data, campania.nombre)
             _exportStatus.value = if (success) "Reporte CSV exportado exitosamente" else "Error al exportar reporte CSV"
         }
     }
 
     fun exportarReportePdf(uri: Uri, context: Context) {
+        val campania = campaniaIndividual.value
+        if (campania == null) {
+            _exportStatus.value = "Seleccione una campaña para exportar"
+            return
+        }
         viewModelScope.launch {
             val data = exportableData.value
-            val success = ReportExporter.exportToPdf(uri, context, data)
+            val success = ReportExporter.exportToPdf(uri, context, data, campania.nombre)
             _exportStatus.value = if (success) "Reporte PDF exportado exitosamente" else "Error al exportar reporte PDF"
         }
     }

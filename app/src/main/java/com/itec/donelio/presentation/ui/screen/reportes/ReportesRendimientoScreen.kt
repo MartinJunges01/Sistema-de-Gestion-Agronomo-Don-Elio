@@ -89,7 +89,11 @@ fun ReportesRendimientoScreen(
                             text = { Text("Exportar a Excel") },
                             onClick = {
                                 mostrarMenuExportar = false
-                                csvLauncher.launch("Reporte_Insumos_Don_Elio.csv")
+                                if (campaniaIndividual == null) {
+                                    Toast.makeText(context, "Seleccione una campaña para exportar", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    csvLauncher.launch("Reporte_Insumos_${campaniaIndividual!!.nombre}.csv")
+                                }
                             },
                             leadingIcon = { Icon(Icons.Default.TableChart, contentDescription = null) }
                         )
@@ -97,7 +101,11 @@ fun ReportesRendimientoScreen(
                             text = { Text("Exportar a PDF") },
                             onClick = {
                                 mostrarMenuExportar = false
-                                pdfLauncher.launch("Reporte_Don_Elio.pdf")
+                                if (campaniaIndividual == null) {
+                                    Toast.makeText(context, "Seleccione una campaña para exportar", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    pdfLauncher.launch("Reporte_Insumos_${campaniaIndividual!!.nombre}.pdf")
+                                }
                             },
                             leadingIcon = { Icon(Icons.Default.PictureAsPdf, contentDescription = null) }
                         )

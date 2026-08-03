@@ -1,6 +1,9 @@
 # Changelog
 
-**[2026-08-02] - [#298] feat(db): Refactor Insumos/Cosechas a Unidad Única**
+**[2026-08-02] - [#300] feat(reportes): Mejorar Reporte de Insumos con Selector de Campaña**
+- **Exportación:** El exportador (`ReportExporter`) ahora recibe y pinta el nombre de la campaña en los archivos CSV y PDF generados. El nombre del archivo sugerido en el `FilePicker` ahora incluye el nombre de la campaña.
+- **Validación UI:** Se agregó una guardia en `ReportesRendimientoScreen` que verifica si hay una campaña seleccionada antes de abrir el `FilePicker`, mostrando un `Toast` si es `null`.
+- **Rama:** `feat/reporte-insumos-mejorado` (stacked sobre `feat/migracion-db-insumos`)
 - **Base de Datos:** Migración a versión 5 (`MIGRATION_4_5`) usando copias de tabla temporales para eliminar la columna `unidad` de Insumos y Cosechas (limitación de SQLite).
 - **Dominio y UI:** Eliminación del campo `unidad` explícito en todo el código; se asume Kg/L de manera implícita para simplificar el modelo y la UI.
 - **Tests actualizados** para no requerir o asertar por el campo `unidad`.

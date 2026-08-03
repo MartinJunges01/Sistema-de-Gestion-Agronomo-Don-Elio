@@ -15,11 +15,11 @@ import kotlinx.coroutines.withContext
  */
 object ReportExporter {
 
-    suspend fun exportToCsv(uri: Uri, context: Context, data: List<InsumoResumen>): Boolean {
+    suspend fun exportToCsv(uri: Uri, context: Context, data: List<InsumoResumen>, campaniaNombre: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    val csvHeader = "Insumo,Cantidad,Total ($)\n"
+                    val csvHeader = "Campaña: $campaniaNombre\nInsumo,Cantidad,Total ($)\n"
                     outputStream.write(csvHeader.toByteArray())
                     
                     data.forEach { insumo ->
@@ -35,7 +35,7 @@ object ReportExporter {
         }
     }
 
-    suspend fun exportToPdf(uri: Uri, context: Context, data: List<InsumoResumen>): Boolean {
+    suspend fun exportToPdf(uri: Uri, context: Context, data: List<InsumoResumen>, campaniaNombre: String): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val pdfDocument = PdfDocument()
@@ -57,10 +57,14 @@ object ReportExporter {
                 paint.isFakeBoldText = false
                 canvas.drawText("Sistema de Gestión Agrónomo - Don Elio", 50f, 110f, paint)
 
+                // Nombre de Campaña
+                paint.isFakeBoldText = true
+                canvas.drawText("Campaña: $campaniaNombre", 50f, 135f, paint)
+
                 // Encabezados de tabla
                 paint.textSize = 16f
                 paint.isFakeBoldText = true
-                var yPosition = 160f
+                var yPosition = 180f
                 canvas.drawText("Insumo", 50f, yPosition, paint)
                 canvas.drawText("Cantidad", 300f, yPosition, paint)
                 canvas.drawText("Total ($)", 450f, yPosition, paint)
