@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
-import com.itec.donelio.domain.use_case.EliminarCampaniaUseCase
+import com.itec.donelio.domain.use_case.FinalizarCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,13 +19,13 @@ data class CampaniaDetailState(
     val campania: Campania? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
-    val deleteSuccess: Boolean = false
+    val finishSuccess: Boolean = false
 )
 
 @HiltViewModel
 class CampaniaDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val eliminarCampaniaUseCase: EliminarCampaniaUseCase,
+    private val finalizarCampaniaUseCase: FinalizarCampaniaUseCase,
     private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
 ) : ViewModel() {
 
@@ -55,13 +55,13 @@ class CampaniaDetailViewModel @Inject constructor(
         }
     }
 
-    fun eliminarCampania() {
+    fun finalizarCampania() {
         val campania = _state.value.campania ?: return
         viewModelScope.launch {
-            eliminarCampaniaUseCase(campania).collect { resource ->
+            finalizarCampaniaUseCase(campania).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _state.update { it.copy(isLoading = false, deleteSuccess = true) }
+                    is Resource.Success -> _state.update { it.copy(isLoading = false, finishSuccess = true) }
                     is Resource.Error -> _state.update { it.copy(isLoading = false, error = resource.message) }
                 }
             }

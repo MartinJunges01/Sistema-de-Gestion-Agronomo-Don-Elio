@@ -19,6 +19,18 @@ class CampaniaRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getCampaniasActivas(): Flow<List<Campania>> {
+        return campaniaDao.getCampaniasActivas().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getCampaniasInactivas(): Flow<List<Campania>> {
+        return campaniaDao.getCampaniasInactivas().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override suspend fun getCampaniaById(id: Int): Campania? {
         return campaniaDao.getCampaniaById(id)?.toDomain()
     }

@@ -47,8 +47,8 @@ fun DetalleCampaniaScreen(
     val tabTitles = listOf("Info", "Tareas", "Insumos", "Cosechas", "Observaciones")
     var selectedTab by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(state.deleteSuccess) {
-        if (state.deleteSuccess) onBack()
+    LaunchedEffect(state.finishSuccess) {
+        if (state.finishSuccess) onBack()
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -57,7 +57,11 @@ fun DetalleCampaniaScreen(
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriVerde, titleContentColor = Color.White, navigationIconContentColor = Color.White),
             actions = {
-                IconButton(onClick = { viewModel.eliminarCampania() }) { Icon(Icons.Default.Delete, contentDescription = "Eliminar Campaña", tint = Color.White) }
+                if (state.campania?.estaActiva == true) {
+                    IconButton(onClick = { viewModel.finalizarCampania() }) { 
+                        Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White) 
+                    }
+                }
             }
         )
 

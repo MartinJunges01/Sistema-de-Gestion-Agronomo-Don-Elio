@@ -24,6 +24,12 @@ interface CampaniaDao {
     @Query("SELECT * FROM campanias ORDER BY fecha DESC")
     fun getCampanias(): Flow<List<CampaniaEntity>>
 
+    @Query("SELECT * FROM campanias WHERE estaActiva = 1 ORDER BY fecha DESC")
+    fun getCampaniasActivas(): Flow<List<CampaniaEntity>>
+
+    @Query("SELECT * FROM campanias WHERE estaActiva = 0 ORDER BY fecha DESC")
+    fun getCampaniasInactivas(): Flow<List<CampaniaEntity>>
+
     @Query("SELECT * FROM campanias WHERE id_campania = :id")
     suspend fun getCampaniaById(id: Int): CampaniaEntity?
 }
