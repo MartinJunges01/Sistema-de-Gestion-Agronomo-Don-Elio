@@ -67,7 +67,6 @@ fun CosechaEntity.toDomain(): Cosecha {
         id = id_cosecha,
         cantidad = cantidad,
         fecha = fecha,
-        unidad = unidad,
         almacen = almacen,
         idCampania = id_campania
     )
@@ -78,7 +77,6 @@ fun Cosecha.toEntity(): CosechaEntity {
         id_cosecha = id,
         cantidad = cantidad,
         fecha = fecha,
-        unidad = unidad,
         almacen = almacen,
         id_campania = idCampania
     )
@@ -89,7 +87,6 @@ fun InsumoEntity.toDomain(): Insumo {
         id = id_insumo,
         nombre = nombre,
         categoria = categoria,
-        unidad = unidad,
         icono = icono,
         activo = activo
     )
@@ -100,7 +97,6 @@ fun Insumo.toEntity(): InsumoEntity {
         id_insumo = id,
         nombre = nombre,
         categoria = categoria,
-        unidad = unidad,
         icono = icono,
         activo = activo
     )

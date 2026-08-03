@@ -4,7 +4,6 @@ data class Insumo(
     val id: Int,
     val nombre: String,
     val categoria: String,
-    val unidad: String,
     val icono: String? = null,
     val activo: Boolean = true
 )

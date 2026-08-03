@@ -63,13 +63,7 @@ fun FormularioInsumoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            OutlinedTextField(
-                value = state.unidad,
-                onValueChange = viewModel::onUnidadChange,
-                label = { Text("Unidad de medida (Kg, Lts, bolsas)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+
 
             Text("Seleccionar Ícono", fontWeight = FontWeight.Bold)
             LazyVerticalGrid(

@@ -31,14 +31,14 @@ class DataSeederImpl @Inject constructor(
         Calendar.getInstance().apply { set(year, month, day, 12, 0, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis
 
     override suspend fun seedData() {
-        val idUrea = insumoDao.insertInsumo(InsumoEntity(nombre = "Urea", categoria = "Fertilizante", unidad = "kg", icono = "🧪"))
-        val idGlifosato = insumoDao.insertInsumo(InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", unidad = "lt", icono = "💧"))
-        val idSemillaMaiz = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Maíz", categoria = "Semilla", unidad = "bolsa", icono = "🌾"))
-        val idAtrazina = insumoDao.insertInsumo(InsumoEntity(nombre = "Atrazina", categoria = "Herbicida", unidad = "lt", icono = "💧"))
-        val idNPK = insumoDao.insertInsumo(InsumoEntity(nombre = "Fertilizante NPK", categoria = "Fertilizante", unidad = "kg", icono = "🧪"))
-        val idSemillaSoja = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Soja", categoria = "Semilla", unidad = "bolsa", icono = "🌱"))
-        val id24D = insumoDao.insertInsumo(InsumoEntity(nombre = "2,4-D Amína", categoria = "Herbicida", unidad = "lt", icono = "💧"))
-        val idCoadyuvante = insumoDao.insertInsumo(InsumoEntity(nombre = "Coadyuvante", categoria = "Adyuvante", unidad = "lt", icono = "💧"))
+        val idUrea = insumoDao.insertInsumo(InsumoEntity(nombre = "Urea", categoria = "Fertilizante", icono = "🧪"))
+        val idGlifosato = insumoDao.insertInsumo(InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", icono = "💧"))
+        val idSemillaMaiz = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Maíz", categoria = "Semilla", icono = "🌾"))
+        val idAtrazina = insumoDao.insertInsumo(InsumoEntity(nombre = "Atrazina", categoria = "Herbicida", icono = "💧"))
+        val idNPK = insumoDao.insertInsumo(InsumoEntity(nombre = "Fertilizante NPK", categoria = "Fertilizante", icono = "🧪"))
+        val idSemillaSoja = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Soja", categoria = "Semilla", icono = "🌱"))
+        val id24D = insumoDao.insertInsumo(InsumoEntity(nombre = "2,4-D Amína", categoria = "Herbicida", icono = "💧"))
+        val idCoadyuvante = insumoDao.insertInsumo(InsumoEntity(nombre = "Coadyuvante", categoria = "Adyuvante", icono = "💧"))
 
         val idCampaniaMaiz = campaniaDao.insertCampania(
             CampaniaEntity(nombre = "Maíz tardío", fecha = fecha(2025, Calendar.NOVEMBER, 15), cultivo = "Maíz", estaActiva = true)
@@ -62,9 +62,9 @@ class DataSeederImpl @Inject constructor(
         tareaDao.insertTarea(TareaEntity(nombre = "Riego Girasol", fecha = fecha(2026, Calendar.JANUARY, 5), hora = "07:00", notificar = true, confirmar = false, id_campania = idCampaniaGirasol.toInt()))
         tareaDao.insertTarea(TareaEntity(nombre = "Aplicar Coadyuvante", fecha = fecha(2026, Calendar.JANUARY, 10), hora = "11:00", notificar = true, confirmar = false, id_campania = idCampaniaGirasol.toInt()))
 
-        val idCosechaMaiz = cosechaDao.insertCosecha(CosechaEntity(cantidad = 8500.0, fecha = fecha(2026, Calendar.MARCH, 15), unidad = "kg", almacen = "Silo 1", id_campania = idCampaniaMaiz.toInt()))
-        cosechaDao.insertCosecha(CosechaEntity(cantidad = 3200.0, fecha = fecha(2026, Calendar.APRIL, 10), unidad = "kg", almacen = "Silo 2", id_campania = idCampaniaSoja.toInt()))
-        cosechaDao.insertCosecha(CosechaEntity(cantidad = 1500.0, fecha = fecha(2026, Calendar.MARCH, 1), unidad = "kg", almacen = "Venta directa", id_campania = idCampaniaGirasol.toInt()))
+        val idCosechaMaiz = cosechaDao.insertCosecha(CosechaEntity(cantidad = 8500.0, fecha = fecha(2026, Calendar.MARCH, 15), almacen = "Silo 1", id_campania = idCampaniaMaiz.toInt()))
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 3200.0, fecha = fecha(2026, Calendar.APRIL, 10), almacen = "Silo 2", id_campania = idCampaniaSoja.toInt()))
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 1500.0, fecha = fecha(2026, Calendar.MARCH, 1), almacen = "Venta directa", id_campania = idCampaniaGirasol.toInt()))
 
         campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idUrea.toInt(), cantidad = 200.0, precio = 45.0))
         campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idAtrazina.toInt(), cantidad = 15.0, precio = 120.0))

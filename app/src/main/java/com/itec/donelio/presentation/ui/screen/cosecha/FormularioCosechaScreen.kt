@@ -46,25 +46,15 @@ fun FormularioCosechaScreen(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 OutlinedTextField(
                     value = state.cantidad,
                     onValueChange = viewModel::onCantidadChange,
-                    label = { Text("Cantidad") },
-                    modifier = Modifier.weight(1f),
+                    label = { Text("Cantidad (Kg/L)") },
+                    modifier = Modifier.fillMaxWidth(),
                     isError = state.errorCantidad != null,
                     supportingText = state.errorCantidad?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                     singleLine = true
                 )
-                OutlinedTextField(
-                    value = state.unidad,
-                    onValueChange = viewModel::onUnidadChange,
-                    label = { Text("Unidad") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    placeholder = { Text("Kg, Tn") }
-                )
-            }
 
             var showDatePicker by remember { mutableStateOf(false) }
             val datePickerState = rememberDatePickerState(

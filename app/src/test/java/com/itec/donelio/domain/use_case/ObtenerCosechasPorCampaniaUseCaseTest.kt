@@ -28,8 +28,8 @@ class ObtenerCosechasPorCampaniaUseCaseTest {
         // Given
         val campaniaId = 1
         val cosechas = listOf(
-            Cosecha(1, 100.0, 1680000000000L, "kg", "Silo A", campaniaId),
-            Cosecha(2, 50.0, 1680000000000L, "kg", "Silo B", campaniaId)
+            Cosecha(1, 100.0, 1680000000000L, "Silo A", campaniaId),
+            Cosecha(2, 50.0, 1680000000000L, "Silo B", campaniaId)
         )
         every { cosechaRepository.getCosechasByCampania(campaniaId) } returns flowOf(cosechas)
 

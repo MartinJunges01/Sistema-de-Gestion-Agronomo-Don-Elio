@@ -18,7 +18,6 @@ import javax.inject.Inject
 data class FormularioInsumoState(
     val nombre: String = "",
     val categoria: String = "",
-    val unidad: String = "",
     val icono: String? = null,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
@@ -50,7 +49,6 @@ class FormularioInsumoViewModel @Inject constructor(
                     state.copy(
                         nombre = it.nombre,
                         categoria = it.categoria,
-                        unidad = it.unidad,
                         icono = it.icono
                     )
                 }
@@ -64,10 +62,6 @@ class FormularioInsumoViewModel @Inject constructor(
 
     fun onCategoriaChange(value: String) {
         _state.update { it.copy(categoria = value) }
-    }
-
-    fun onUnidadChange(value: String) {
-        _state.update { it.copy(unidad = value) }
     }
 
     fun onIconoChange(value: String?) {
@@ -89,7 +83,6 @@ class FormularioInsumoViewModel @Inject constructor(
                             id = insumoId,
                             nombre = current.nombre.trim(),
                             categoria = current.categoria.trim(),
-                            unidad = current.unidad.trim(),
                             icono = current.icono
                         )
                     )
@@ -97,7 +90,6 @@ class FormularioInsumoViewModel @Inject constructor(
                     crearInsumoCatalogoUseCase(
                         nombre = current.nombre.trim(),
                         categoria = current.categoria.trim(),
-                        unidad = current.unidad.trim(),
                         icono = current.icono
                     )
                 }

@@ -48,7 +48,7 @@ class CampaniaInsumoDaoTest {
         ).toInt()
 
         val insumoId = insumoDao.insertInsumo(
-            InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", unidad = "L", activo = true)
+            InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", activo = true)
         ).toInt()
 
         // 2. Asignar
@@ -78,7 +78,7 @@ class CampaniaInsumoDaoTest {
         ).toInt()
 
         val insumoId = insumoDao.insertInsumo(
-            InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", unidad = "L", activo = true)
+            InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", activo = true)
         ).toInt()
 
         // 2. Asignar
