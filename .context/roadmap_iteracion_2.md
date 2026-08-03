@@ -22,7 +22,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#295] Issue 14:** Incorporar Edición y Eliminación de Cosechas
 - [ ] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
 - [ ] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)
-- [ ] **[#298] Issue 17:** Agregar Campo "Hectáreas" a la Entidad Cosecha
+- [x] **[#298] Issue 17: Refactor Unidad Unica**
 
 ## 🔵 NIVEL L4 — MEJORAS DE REPORTES
 - [x] **[#299] Issue 5:** Datos Mockeados Residuales en Dashboard y Reportes
