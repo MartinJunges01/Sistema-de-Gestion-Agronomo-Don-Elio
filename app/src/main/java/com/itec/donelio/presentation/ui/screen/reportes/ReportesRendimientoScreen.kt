@@ -54,6 +54,8 @@ fun ReportesRendimientoScreen(
     val campaniaB by viewModel.campaniaB.collectAsState()
     val insumosA by viewModel.insumosA.collectAsState()
     val insumosB by viewModel.insumosB.collectAsState()
+    val cosechasA by viewModel.cosechasA.collectAsState()
+    val cosechasB by viewModel.cosechasB.collectAsState()
     val exportStatus by viewModel.exportStatus.collectAsState()
 
     LaunchedEffect(exportStatus) {
@@ -299,6 +301,9 @@ fun ReportesRendimientoScreen(
                 item {
                     val costoA = insumosA.sumOf { it.cantidad * it.precio }
                     val costoB = insumosB.sumOf { it.cantidad * it.precio }
+                    val rendimientoA = cosechasA.sumOf { it.cantidad }
+                    val rendimientoB = cosechasB.sumOf { it.cantidad }
+                    
                     val nombreA = campaniaA?.nombre ?: "Campaña A"
                     val nombreB = campaniaB?.nombre ?: "Campaña B"
 
@@ -314,22 +319,47 @@ fun ReportesRendimientoScreen(
                         )
                         CardMetricaComparativa(
                             titulo = "Rendimiento",
-                            valor1 = "— ($nombreA)",
-                            valor2 = "— ($nombreB)",
+                            valor1 = "%.2f".format(rendimientoA),
+                            valor2 = "%.2f".format(rendimientoB),
                             color = AgriAzul,
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Rendimiento disponible con Issue #298 (Hectáreas/Tn).",
-                        fontSize = 11.sp,
-                        color = TextoSecundario
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 item {
-                    GraficoEvolucionPlaceholder()
+                    val costoA = insumosA.sumOf { it.cantidad * it.precio }.toFloat()
+                    val costoB = insumosB.sumOf { it.cantidad * it.precio }.toFloat()
+                    val rendimientoA = cosechasA.sumOf { it.cantidad }.toFloat()
+                    val rendimientoB = cosechasB.sumOf { it.cantidad }.toFloat()
+                    val maxCosto = maxOf(costoA, costoB, 1f)
+                    val maxRendimiento = maxOf(rendimientoA, rendimientoB, 1f)
+                    
+                    val nombreA = campaniaA?.nombre ?: "Campaña A"
+                    val nombreB = campaniaB?.nombre ?: "Campaña B"
+
+                    Text("Gráfico de Comparación", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // Comparacion de Costos
+                            Text("Costos", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DoubleBarIndicator(nombreA, costoA, maxCosto, AgriVerde, nombreB, costoB, maxCosto, AgriVerde.copy(alpha = 0.5f))
+                            
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Comparacion de Rendimiento
+                            Text("Rendimiento", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DoubleBarIndicator(nombreA, rendimientoA, maxRendimiento, AgriAzul, nombreB, rendimientoB, maxRendimiento, AgriAzul.copy(alpha = 0.5f))
+                        }
+                    }
                 }
             }
         }
@@ -418,6 +448,48 @@ private fun TarjetaMetrica(
     }
 }
 
+@Composable
+private fun DoubleBarIndicator(
+    labelA: String, valueA: Float, maxA: Float, colorA: Color,
+    labelB: String, valueB: Float, maxB: Float, colorB: Color
+) {
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(labelA, modifier = Modifier.weight(0.3f), fontSize = 12.sp, color = TextoSecundario)
+            LinearProgressIndicator(
+                progress = if (maxA > 0f) valueA / maxA else 0f,
+                color = colorA,
+                trackColor = colorA.copy(alpha = 0.2f),
+                modifier = Modifier.weight(0.5f).height(12.dp)
+            )
+            Text(
+                "%.2f".format(valueA),
+                modifier = Modifier.weight(0.2f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.End
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(labelB, modifier = Modifier.weight(0.3f), fontSize = 12.sp, color = TextoSecundario)
+            LinearProgressIndicator(
+                progress = if (maxB > 0f) valueB / maxB else 0f,
+                color = colorB,
+                trackColor = colorB.copy(alpha = 0.2f),
+                modifier = Modifier.weight(0.5f).height(12.dp)
+            )
+            Text(
+                "%.2f".format(valueB),
+                modifier = Modifier.weight(0.2f),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.End
+            )
+        }
+    }
+}
+
 /**
  * Placeholder para las secciones que requieren selección previa de campaña.
  */
@@ -445,25 +517,3 @@ private fun PlaceholderSeleccion(mensaje: String) {
     }
 }
 
-/**
- * Placeholder para el gráfico de evolución mensual.
- * Scope completo disponible en Issue #302.
- */
-@Composable
-private fun GraficoEvolucionPlaceholder() {
-    Text("Evolución Mensual de Costos", fontWeight = FontWeight.Bold, color = TextoPrincipal)
-    Spacer(modifier = Modifier.height(8.dp))
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
-        modifier = Modifier.fillMaxWidth().height(180.dp)
-    ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Icon(Icons.Default.BarChart, contentDescription = null, tint = TextoSecundario, modifier = Modifier.size(40.dp))
-                Text("Gráfico disponible próximamente", fontWeight = FontWeight.Medium, color = TextoPrincipal)
-                Text("Seleccioná ambas campañas para activarlo", fontSize = 12.sp, color = TextoSecundario)
-            }
-        }
-    }
-}

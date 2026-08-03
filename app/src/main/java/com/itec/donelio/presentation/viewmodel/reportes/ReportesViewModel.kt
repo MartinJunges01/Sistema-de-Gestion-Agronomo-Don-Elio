@@ -188,6 +188,22 @@ class ReportesViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val cosechasA: StateFlow<List<Cosecha>> = _campaniaA
+        .flatMapLatest { campania ->
+            if (campania != null) obtenerCosechasPorCampaniaUseCase(campania.id)
+            else flowOf(emptyList())
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val cosechasB: StateFlow<List<Cosecha>> = _campaniaB
+        .flatMapLatest { campania ->
+            if (campania != null) obtenerCosechasPorCampaniaUseCase(campania.id)
+            else flowOf(emptyList())
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     // ──────────────────────────────────────────────
     // Exportación (por campaña seleccionada en Sección 1)
     // ──────────────────────────────────────────────
