@@ -14,7 +14,6 @@ class RegistrarCosechaUseCase @Inject constructor(
     suspend operator fun invoke(
         cantidad: Double,
         fecha: Long,
-        unidad: String,
         almacen: String,
         idCampania: Int
     ) {
@@ -25,7 +24,6 @@ class RegistrarCosechaUseCase @Inject constructor(
             id = 0,
             cantidad = cantidad,
             fecha = fecha,
-            unidad = unidad.trim(),
             almacen = almacen.trim(),
             idCampania = idCampania
         )

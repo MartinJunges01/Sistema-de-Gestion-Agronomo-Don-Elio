@@ -22,7 +22,6 @@ data class CosechaEntity(
     val id_cosecha: Int = 0,
     val cantidad: Double,
     val fecha: Long,
-    val unidad: String,
     val almacen: String,
     val id_campania: Int
 )

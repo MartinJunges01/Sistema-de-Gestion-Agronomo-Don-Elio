@@ -29,7 +29,6 @@ class RegistrarCosechaConVentaUseCaseTest {
         // Given
         val cantidad = 100.0
         val fecha = 1680000000000L
-        val unidad = "kg"
         val idCampania = 1
         val tipo = "Venta"
         val precio = 50.0
@@ -38,15 +37,13 @@ class RegistrarCosechaConVentaUseCaseTest {
         coEvery { cosechaRepository.insertCosecha(any()) } returns idCosechaGenerado
         coEvery { noAlmacenadaRepository.insert(any()) } returns Unit
 
-        // When
-        registrarCosechaConVentaUseCase(cantidad, fecha, unidad, idCampania, tipo, precio)
+        registrarCosechaConVentaUseCase(cantidad, fecha, idCampania, tipo, precio)
 
         // Then
         coVerify(exactly = 1) { 
             cosechaRepository.insertCosecha(withArg {
                 assertEquals(cantidad, it.cantidad, 0.0)
                 assertEquals(fecha, it.fecha)
-                assertEquals(unidad, it.unidad)
                 assertEquals("", it.almacen)
                 assertEquals(idCampania, it.idCampania)
             }) 
@@ -66,14 +63,13 @@ class RegistrarCosechaConVentaUseCaseTest {
         // Given
         val cantidad = 0.0
         val fecha = 1680000000000L
-        val unidad = "kg"
         val idCampania = 1
         val tipo = "Venta"
         val precio = 50.0
 
         // When / Then
         try {
-            registrarCosechaConVentaUseCase(cantidad, fecha, unidad, idCampania, tipo, precio)
+            registrarCosechaConVentaUseCase(cantidad, fecha, idCampania, tipo, precio)
             org.junit.Assert.fail("Expected IllegalArgumentException")
         } catch (e: IllegalArgumentException) {
             assertEquals("La cantidad debe ser mayor a cero", e.message)

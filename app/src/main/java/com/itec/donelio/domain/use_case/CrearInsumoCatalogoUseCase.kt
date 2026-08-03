@@ -14,7 +14,6 @@ class CrearInsumoCatalogoUseCase @Inject constructor(
     suspend operator fun invoke(
         nombre: String,
         categoria: String,
-        unidad: String,
         icono: String? = null
     ) {
         if (nombre.isBlank()) {
@@ -24,7 +23,6 @@ class CrearInsumoCatalogoUseCase @Inject constructor(
             id = 0,
             nombre = nombre.trim(),
             categoria = categoria.trim(),
-            unidad = unidad.trim(),
             icono = icono
         )
         insumoRepository.insertInsumo(insumo)

@@ -31,7 +31,7 @@ import com.itec.donelio.data.local.entity.UsuarioEntity
         CampaniaInsumoEntity::class,
         UsuarioEntity::class
     ],
-    version = 4, // Subimos a 4 para eliminar el soft-delete de CampaniaInsumoEntity
+    version = 5, // Subimos a 5 para eliminar la columna "unidad" de insumos y cosechas
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
 abstract class DonElioDatabase : RoomDatabase() {

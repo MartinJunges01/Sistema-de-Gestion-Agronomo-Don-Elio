@@ -26,8 +26,7 @@ class EliminarInsumoCatalogoUseCaseTest {
         val insumo = Insumo(
             id = 1,
             nombre = "Glifosato",
-            categoria = "Herbicida",
-            unidad = "L"
+            categoria = "Herbicida"
         )
         
         coEvery { insumoRepository.deleteInsumo(any()) } returns Unit

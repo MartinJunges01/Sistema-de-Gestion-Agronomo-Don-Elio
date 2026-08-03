@@ -142,7 +142,7 @@ fun ReportesRendimientoScreen(
                 item {
                     val costoTotalInsumos = insumosIndividual.sumOf { it.cantidad * it.precio }
                     val totalCosechado = cosechasIndividual.sumOf { it.cantidad }
-                    val unidadCosecha = cosechasIndividual.firstOrNull()?.unidad ?: "tn"
+                    val unidadCosecha = "Kg/L"
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),

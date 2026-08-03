@@ -11,6 +11,8 @@ import com.itec.donelio.data.local.dao.InsumoDao
 import com.itec.donelio.data.local.dao.ObservacionDao
 import com.itec.donelio.data.local.dao.TareaDao
 import com.itec.donelio.data.local.dao.UsuarioDao
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,6 +23,31 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class) // Le dice a Hilt que esto vivirá mientras la app esté abierta
 object DatabaseModule {
+
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Migración para la tabla 'insumos': quitamos 'unidad'
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS `insumos_new` (`id_insumo` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre` TEXT NOT NULL, `categoria` TEXT NOT NULL, `icono` TEXT, `activo` INTEGER NOT NULL)"
+        )
+        database.execSQL(
+            "INSERT INTO `insumos_new` (`id_insumo`, `nombre`, `categoria`, `icono`, `activo`) SELECT `id_insumo`, `nombre`, `categoria`, `icono`, `activo` FROM `insumos`"
+        )
+        database.execSQL("DROP TABLE `insumos`")
+        database.execSQL("ALTER TABLE `insumos_new` RENAME TO `insumos`")
+
+        // Migración para la tabla 'cosechas': quitamos 'unidad'
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS `cosechas_new` (`id_cosecha` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `cantidad` REAL NOT NULL, `fecha` INTEGER NOT NULL, `almacen` TEXT NOT NULL, `id_campania` INTEGER NOT NULL, FOREIGN KEY(`id_campania`) REFERENCES `campanias`(`id_campania`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+        )
+        database.execSQL(
+            "INSERT INTO `cosechas_new` (`id_cosecha`, `cantidad`, `fecha`, `almacen`, `id_campania`) SELECT `id_cosecha`, `cantidad`, `fecha`, `almacen`, `id_campania` FROM `cosechas`"
+        )
+        database.execSQL("DROP TABLE `cosechas`")
+        database.execSQL("ALTER TABLE `cosechas_new` RENAME TO `cosechas`")
+        database.execSQL("CREATE INDEX IF NOT EXISTS `index_cosechas_id_campania` ON `cosechas` (`id_campania`)")
+    }
+}
 
     // 1. Provee la Base de Datos completa
     @Provides
@@ -33,6 +60,7 @@ object DatabaseModule {
             DonElioDatabase::class.java,
             "don_elio_db" // Este es el nombre del archivo físico SQLite en el teléfono
         )
+        .addMigrations(MIGRATION_4_5)
         .fallbackToDestructiveMigration() // Agregado para desarrollo: borra y recrea las tablas si cambia la version
         .build()
     }

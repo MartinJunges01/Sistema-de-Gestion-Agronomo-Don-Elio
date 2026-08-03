@@ -13,7 +13,6 @@ class RegistrarCosechaConVentaUseCase @Inject constructor(
     suspend operator fun invoke(
         cantidad: Double,
         fecha: Long,
-        unidad: String,
         idCampania: Int,
         tipo: String,
         precio: Double
@@ -25,7 +24,7 @@ class RegistrarCosechaConVentaUseCase @Inject constructor(
             throw IllegalArgumentException("El tipo de venta no puede estar vacío")
         }
         val idCosecha = cosechaRepository.insertCosecha(
-            Cosecha(0, cantidad, fecha, unidad.trim(), almacen = "", idCampania)
+            Cosecha(0, cantidad, fecha, almacen = "", idCampania = idCampania)
         )
         noAlmacenadaRepository.insert(
             CosechaNoAlmacenada(0, tipo.trim(), precio, idCosecha.toInt())

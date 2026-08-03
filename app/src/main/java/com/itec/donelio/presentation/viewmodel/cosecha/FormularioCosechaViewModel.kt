@@ -16,7 +16,6 @@ import javax.inject.Inject
 data class FormularioCosechaState(
     val almacenado: Boolean = true,
     val cantidad: String = "",
-    val unidad: String = "Kg",
     val fecha: Long = System.currentTimeMillis(),
     val almacen: String = "",
     val tipo: String = "",
@@ -44,7 +43,6 @@ class FormularioCosechaViewModel @Inject constructor(
             "Cantidad inválida" else null
         _state.update { it.copy(cantidad = value, errorCantidad = error) }
     }
-    fun onUnidadChange(value: String) { _state.update { it.copy(unidad = value) } }
     fun onFechaChange(timestamp: Long) { _state.update { it.copy(fecha = timestamp) } }
     fun onAlmacenChange(value: String) { _state.update { it.copy(almacen = value) } }
     fun onTipoChange(value: String) { _state.update { it.copy(tipo = value) } }
@@ -63,9 +61,9 @@ class FormularioCosechaViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             try {
                 if (current.almacenado) {
-                    registrarCosechaUseCase(cantidad, current.fecha, current.unidad.trim().ifBlank { "Kg" }, current.almacen.trim(), campaniaId)
+                    registrarCosechaUseCase(cantidad, current.fecha, current.almacen.trim(), campaniaId)
                 } else {
-                    registrarConVentaUseCase(cantidad, current.fecha, current.unidad.trim().ifBlank { "Kg" }, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
+                    registrarConVentaUseCase(cantidad, current.fecha, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {

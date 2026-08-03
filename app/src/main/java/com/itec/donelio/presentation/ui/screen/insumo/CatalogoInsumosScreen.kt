@@ -61,7 +61,7 @@ fun CatalogoInsumosScreen(
                     Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
                         ListItem(
                             headlineContent = { Text(insumo.nombre, fontWeight = FontWeight.Bold) },
-                            supportingContent = { Text("${insumo.categoria} | ${insumo.unidad}") },
+                            supportingContent = { Text(insumo.categoria) },
                             leadingContent = { 
                                 if (insumo.icono != null) {
                                     Text(insumo.icono, fontSize = 24.sp)
@@ -115,7 +115,6 @@ private fun DialogEditarInsumo(
 ) {
     var nombre by remember { mutableStateOf(insumo.nombre) }
     var categoria by remember { mutableStateOf(insumo.categoria) }
-    var unidad by remember { mutableStateOf(insumo.unidad) }
     var icono by remember { mutableStateOf(insumo.icono) }
     val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
 
@@ -135,13 +134,6 @@ private fun DialogEditarInsumo(
                     value = categoria,
                     onValueChange = { categoria = it },
                     label = { Text("Categoría") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                OutlinedTextField(
-                    value = unidad,
-                    onValueChange = { unidad = it },
-                    label = { Text("Unidad") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -176,7 +168,7 @@ private fun DialogEditarInsumo(
         confirmButton = {
             Button(
                 onClick = {
-                    onGuardar(insumo.copy(nombre = nombre.trim(), categoria = categoria.trim(), unidad = unidad.trim(), icono = icono))
+                    onGuardar(insumo.copy(nombre = nombre.trim(), categoria = categoria.trim(), icono = icono))
                 },
                 enabled = nombre.isNotBlank()
             ) { Text("Guardar") }
