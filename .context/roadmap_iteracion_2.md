@@ -27,7 +27,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 ## 🔵 NIVEL L4 — MEJORAS DE REPORTES
 - [x] **[#299] Issue 5:** Datos Mockeados Residuales en Dashboard y Reportes
 - [x] **[#300] Issue 18:** Reportes — Mejorar Reporte de Insumos con Selector de Campaña
-- [ ] **[#301] Issue 19:** Reportes — Gráfico de Desglose de Cosechas (Almacenada vs Vendida)
+- [x] **[#301] Issue 19:** Reportes — Gráfico de Desglose de Cosechas (Almacenada vs Vendida)
 - [ ] **[#302] Issue 20:** Reportes — Implementar Comparación Real entre Campañas
 
 ## ⚪ NIVEL L5 — CALIDAD Y UX

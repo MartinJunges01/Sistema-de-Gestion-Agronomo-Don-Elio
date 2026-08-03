@@ -1,6 +1,10 @@
 # Changelog
 
-**[2026-08-02] - [#300] feat(reportes): Mejorar Reporte de Insumos con Selector de Campaña**
+**[2026-08-02] - [#301] feat(reportes): Gráfico de Desglose de Cosechas (Almacenada vs Vendida)**
+- **Dominio y UI:** Agregado el estado `desgloseCosechasData` al `ReportesViewModel` que filtra y agrupa dinámicamente el listado de cosechas en base a su destino (Almacenada vs Vendida/Reservada).
+- **UI:** Añadido un nuevo gráfico `PieChart` en `ReportesRendimientoScreen` para visualizar visualmente las proporciones del destino de las cosechas de la campaña activa.
+- **Tests:** Creado caso de prueba en `ReportesViewModelTest` para asegurar la correcta agrupación matemática de las cosechas.
+- **Rama:** `feat/grafico-desglose-cosechas` (stacked sobre `feat/reporte-insumos-mejorado`)
 - **Exportación:** El exportador (`ReportExporter`) ahora recibe y pinta el nombre de la campaña en los archivos CSV y PDF generados. El nombre del archivo sugerido en el `FilePicker` ahora incluye el nombre de la campaña.
 - **Validación UI:** Se agregó una guardia en `ReportesRendimientoScreen` que verifica si hay una campaña seleccionada antes de abrir el `FilePicker`, mostrando un `Toast` si es `null`.
 - **Rama:** `feat/reporte-insumos-mejorado` (stacked sobre `feat/migracion-db-insumos`)
