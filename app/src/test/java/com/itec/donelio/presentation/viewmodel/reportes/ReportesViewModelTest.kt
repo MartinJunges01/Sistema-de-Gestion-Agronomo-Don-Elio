@@ -1,6 +1,5 @@
 package com.itec.donelio.presentation.viewmodel.reportes
 
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
@@ -31,10 +30,11 @@ import org.junit.Test
 /**
  * Tests unitarios para [ReportesViewModel].
  *
- * Cubre el Issue [#299]: datos mockeados eliminados, nuevos StateFlows
- * contextuales por campaña.
- *
- * Nota: la lógica de [campaniaA]/[campaniaB] es preparatoria del Issue #302.
+ * Cubre:
+ * - Issue [#299]: datos mockeados eliminados, nuevos StateFlows contextuales por campaña.
+ * - Issue [#300]: guardia de exportación si no hay campaña seleccionada.
+ * - Issue [#301]: desglose de cosechas por destino (Almacenada vs Vendida).
+ * - Issue [#302]: comparación real entre campañas (cosechasA / cosechasB).
  *
  * Paradigma: Given-When-Then (Dado que... Cuando... Entonces...)
  */
