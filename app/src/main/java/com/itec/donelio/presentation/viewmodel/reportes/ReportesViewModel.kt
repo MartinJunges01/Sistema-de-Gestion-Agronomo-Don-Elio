@@ -122,11 +122,6 @@ class ReportesViewModel @Inject constructor(
             .filter { it.costoTotal > 0 }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    /**
-     * Datos del PieChart de distribución de gastos por insumo.
-     * Contextual a la campaña seleccionada en Sección 1.
-     * Emite null cuando no hay campaña seleccionada o no hay insumos.
-     */
     val pieChartData: StateFlow<PieChartData?> = exportableData
         .map { insumosResumen ->
             if (insumosResumen.isEmpty()) return@map null
@@ -140,6 +135,23 @@ class ReportesViewModel @Inject constructor(
                 },
                 plotType = PlotType.Pie
             )
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /**
+     * Datos del PieChart de desglose de cosechas (Almacenada vs Vendida).
+     */
+    val desgloseCosechasData: StateFlow<PieChartData?> = cosechasIndividual
+        .map { cosechas ->
+            if (cosechas.isEmpty()) return@map null
+            val almacenadas = cosechas.filter { it.almacen.isNotBlank() }.sumOf { it.cantidad }
+            val ventas = cosechas.filter { it.almacen.isBlank() }.sumOf { it.cantidad }
+
+            val slices = mutableListOf<PieChartData.Slice>()
+            if (almacenadas > 0) slices.add(PieChartData.Slice("Almacenada", almacenadas.toFloat(), Color(0xFF15803d)))
+            if (ventas > 0) slices.add(PieChartData.Slice("Vendida", ventas.toFloat(), Color(0xFFd97706)))
+
+            if (slices.isEmpty()) null else PieChartData(slices = slices, plotType = PlotType.Pie)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 

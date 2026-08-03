@@ -207,4 +207,49 @@ class ReportesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    // ──────────────────────────────────────────────
+    // VM-R6: desgloseCosechasData agrupa por almacen y venta
+    // ──────────────────────────────────────────────
+
+    /**
+     * Dado que hay cosechas almacenadas y vendidas (almacen en blanco),
+     * Cuando se selecciona una campaña,
+     * Entonces [desgloseCosechasData] debe agrupar correctamente las cantidades en 2 slices.
+     */
+    @Test
+    fun `desgloseCosechasData agrupa por almacen y venta correctamente`() = runTest {
+        // Given
+        val cosechaAlmacenada1 = Cosecha(id = 1, cantidad = 100.0, fecha = 0L, almacen = "Silo 1", idCampania = 1)
+        val cosechaVenta1 = Cosecha(id = 2, cantidad = 50.0, fecha = 0L, almacen = "", idCampania = 1)
+        val cosechaAlmacenada2 = Cosecha(id = 3, cantidad = 200.0, fecha = 0L, almacen = "Silo 2", idCampania = 1)
+        
+        every { obtenerCosechasPorCampaniaUseCase(1) } returns flowOf(listOf(cosechaAlmacenada1, cosechaVenta1, cosechaAlmacenada2))
+        viewModel = crearViewModel()
+
+        viewModel.desgloseCosechasData.test {
+            val inicial = awaitItem()
+            assertNull("Dado que no hay selección, debe ser null", inicial)
+            
+            // When
+            viewModel.seleccionarCampaniaIndividual(campaniaSoja)
+            advanceUntilIdle()
+
+            // Then
+            val chartData = awaitItem()
+            assertNotNull("El grafico debe tener datos", chartData)
+            assertEquals("Debe tener 2 slices (Almacenada, Vendida)", 2, chartData!!.slices.size)
+            
+            val sliceAlmacenada = chartData.slices.find { it.label == "Almacenada" }
+            val sliceVendida = chartData.slices.find { it.label == "Vendida" }
+            
+            assertNotNull("Debe existir slice Almacenada", sliceAlmacenada)
+            assertEquals(300.0f, sliceAlmacenada!!.value, 0.01f)
+            
+            assertNotNull("Debe existir slice Vendida", sliceVendida)
+            assertEquals(50.0f, sliceVendida!!.value, 0.01f)
+            
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

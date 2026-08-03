@@ -49,6 +49,7 @@ fun ReportesRendimientoScreen(
     val insumosIndividual by viewModel.insumosIndividual.collectAsState()
     val cosechasIndividual by viewModel.cosechasIndividual.collectAsState()
     val pieChartData by viewModel.pieChartData.collectAsState()
+    val desgloseCosechasData by viewModel.desgloseCosechasData.collectAsState()
     val campaniaA by viewModel.campaniaA.collectAsState()
     val campaniaB by viewModel.campaniaB.collectAsState()
     val insumosA by viewModel.insumosA.collectAsState()
@@ -206,6 +207,45 @@ fun ReportesRendimientoScreen(
                                 )
                             } else {
                                 PlaceholderSeleccion(mensaje = "Sin insumos registrados en esta campaña")
+                            }
+                        }
+                    }
+                }
+
+                // PieChart de desglose de cosechas
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "Distribución de Destino de Cosecha",
+                        fontWeight = FontWeight.Bold,
+                        color = TextoPrincipal
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
+                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (desgloseCosechasData != null) {
+                                PieChart(
+                                    modifier = Modifier.fillMaxSize().padding(24.dp),
+                                    pieChartData = desgloseCosechasData!!,
+                                    pieChartConfig = PieChartConfig(
+                                        isAnimationEnable = true,
+                                        showSliceLabels = true,
+                                        sliceLabelTextColor = Color.White,
+                                        activeSliceAlpha = 0.9f,
+                                        isEllipsizeEnabled = true,
+                                        sliceLabelTextSize = 12.sp,
+                                        labelVisible = true
+                                    )
+                                )
+                            } else {
+                                PlaceholderSeleccion(mensaje = "Sin cosechas registradas en esta campaña")
                             }
                         }
                     }
