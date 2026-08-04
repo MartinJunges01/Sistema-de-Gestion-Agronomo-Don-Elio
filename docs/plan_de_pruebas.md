@@ -124,6 +124,31 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **When:** Invoco `ObtenerCosechasPorCampaniaUseCase` y `ObtenerCosechasNoAlmacenadasUseCase`.
 *   **Then:** El repositorio debe devolver dos flujos distintos. El ViewModel debe ser capaz de fusionarlos para mostrar qué fracción de la cosecha total fue vendida.
 
+**Test 8.1: Formulario de Cosecha - Sin Campaña Seleccionada (Issue 7)**
+*   **Given:** Un `FormularioCosechaViewModel` creado sin `campaniaId` en el `SavedStateHandle` (acceso vía navegación global).
+*   **When:** El usuario ingresa una cantidad válida y presiona "Guardar Registro".
+*   **Then:** Se setea `errorCampania = "Debe seleccionar una campaña"` y no se llama a ningún use case de registro.
+
+**Test 8.2: Formulario de Cosecha - Cantidad Obligatoria (Issue 12)**
+*   **Given:** Una campaña seleccionada y el campo `cantidad` vacío.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorCantidad = "La cantidad es obligatoria"` y no se llama a ningún use case de registro.
+
+**Test 8.3: Formulario de Cosecha - Precio Inválido**
+*   **Given:** Una campaña y una `cantidad` válidas, con `almacenado = false`, `tipo = "Venta"` y un precio no numérico (ej. "abc").
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorPrecio = "Precio inválido"` y no se llama a ningún use case de registro.
+
+**Test 8.4: Formulario de Cosecha - Registro Exitoso (Almacenado)**
+*   **Given:** Una campaña, `cantidad = 100`, y `almacen = "Silo 1"` válidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaUseCase` con los parámetros correctos y se emite `guardadoExitoso = true`.
+
+**Test 8.5: Formulario de Cosecha - Registro Exitoso (Venta)**
+*   **Given:** Una campaña, `cantidad = 100`, `almacenado = false`, `tipo = "Venta"` y `precio = 500` válidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaConVentaUseCase` con los parámetros correctos y se emite `guardadoExitoso = true`.
+
 ### Módulo de Observaciones (CU8)
 
 **Test 9: Guardar Observación con Imagen Adjunta**
@@ -157,6 +182,7 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaña (Lanza `IllegalArgumentException`).
 *   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no debería encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
 *   **Observaciones:** Intentar guardar una observación con el campo de texto vacío (Lanza `IllegalArgumentException`).
+*   **Cosechas (Formulario):** Guardar sin campaña seleccionada (Issue 7) — Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacías (Issue 12) — Debe emitir el error visual correspondiente y deshabilitar el botón "Guardar".
 *   **Autenticación:** Iniciar sesión con un usuario inexistente o con credenciales vacías (El ViewModel debe capturar la excepción o el `null` y emitir el estado de `error` correspondiente).
 
 ---

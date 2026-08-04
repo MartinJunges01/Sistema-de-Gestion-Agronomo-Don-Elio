@@ -4,7 +4,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 
 ## 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
 - [x] **[#283] Issue 6:** Crash al Abrir la Cámara en Observaciones (Permiso no Solicitado)
-- [ ] **[#284] Issue 7:** Crash por Foreign Key al Registrar Cosecha (campaniaId = -1)
+- [x] **[#284] Issue 7:** Crash por Foreign Key al Registrar Cosecha (campaniaId = -1)
 
 ## 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#285] Issue 1:** Tareas del Dashboard — Interacción, Filtrado y Tratamiento Visual
@@ -15,7 +15,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#290] Issue 9:** Campañas Permiten Fechas de Inicio en el Pasado
 - [ ] **[#291] Issue 10:** Campo "Hora" en Nueva Tarea Acepta Cualquier Carácter
 - [x] **[#292] Issue 11:** Pestaña Tareas en Detalle de Campaña No Se Actualiza al Cambiar de Campaña
-- [ ] **[#293] Issue 12:** Formulario de Cosechas — Validación y Mensajes de Error Faltantes
+- [x] **[#293] Issue 12:** Formulario de Cosechas — Validación y Mensajes de Error Faltantes
 
 ## 🟡 NIVEL L3 — MEJORAS FUNCIONALES
 - [ ] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
