@@ -27,54 +27,78 @@ class DataSeederImpl @Inject constructor(
     private val observacionDao: ObservacionDao
 ) : DataSeeder {
 
-    private fun fecha(year: Int, month: Int, day: Int): Long =
-        Calendar.getInstance().apply { set(year, month, day, 12, 0, 0); set(Calendar.MILLISECOND, 0) }.timeInMillis
+    private fun fechaRelativa(diasOffset: Int, horaOffset: Int = 12): Long =
+        Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, diasOffset)
+            set(Calendar.HOUR_OF_DAY, horaOffset)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
 
     override suspend fun seedData() {
-        val idUrea = insumoDao.insertInsumo(InsumoEntity(nombre = "Urea", categoria = "Fertilizante", icono = "🧪"))
-        val idGlifosato = insumoDao.insertInsumo(InsumoEntity(nombre = "Glifosato", categoria = "Herbicida", icono = "💧"))
-        val idSemillaMaiz = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Maíz", categoria = "Semilla", icono = "🌾"))
-        val idAtrazina = insumoDao.insertInsumo(InsumoEntity(nombre = "Atrazina", categoria = "Herbicida", icono = "💧"))
-        val idNPK = insumoDao.insertInsumo(InsumoEntity(nombre = "Fertilizante NPK", categoria = "Fertilizante", icono = "🧪"))
-        val idSemillaSoja = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Soja", categoria = "Semilla", icono = "🌱"))
-        val id24D = insumoDao.insertInsumo(InsumoEntity(nombre = "2,4-D Amína", categoria = "Herbicida", icono = "💧"))
-        val idCoadyuvante = insumoDao.insertInsumo(InsumoEntity(nombre = "Coadyuvante", categoria = "Adyuvante", icono = "💧"))
+        // 1. Catálogo de Insumos (ampliado y realista)
+        val idUrea = insumoDao.insertInsumo(InsumoEntity(nombre = "Urea 46%", categoria = "Fertilizante", icono = "🧪"))
+        val idGlifosato = insumoDao.insertInsumo(InsumoEntity(nombre = "Glifosato 74%", categoria = "Herbicida", icono = "💧"))
+        val idSemillaMaiz = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Maíz DK72-10", categoria = "Semilla", icono = "🌾"))
+        val idAtrazina = insumoDao.insertInsumo(InsumoEntity(nombre = "Atrazina 90", categoria = "Herbicida", icono = "💧"))
+        val idFosfato = insumoDao.insertInsumo(InsumoEntity(nombre = "Fosfato Monoamónico (MAP)", categoria = "Fertilizante", icono = "🧪"))
+        val idSemillaSoja = insumoDao.insertInsumo(InsumoEntity(nombre = "Semilla Soja Asgrow", categoria = "Semilla", icono = "🌱"))
+        val id24D = insumoDao.insertInsumo(InsumoEntity(nombre = "2,4-D Sal Amina", categoria = "Herbicida", icono = "💧"))
+        val idAceite = insumoDao.insertInsumo(InsumoEntity(nombre = "Aceite Vegetal Coadyuvante", categoria = "Adyuvante", icono = "💧"))
 
+        // 2. Campañas (Diferentes estados y fechas)
         val idCampaniaMaiz = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Maíz tardío", fecha = fecha(2025, Calendar.NOVEMBER, 15), cultivo = "Maíz", estaActiva = true)
+            CampaniaEntity(nombre = "Maíz tardío Lote Sur", fecha = fechaRelativa(-150), cultivo = "Maíz", estaActiva = true)
         )
         val idCampaniaSoja = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Soja 1ra", fecha = fecha(2025, Calendar.DECEMBER, 1), cultivo = "Soja", estaActiva = true)
+            CampaniaEntity(nombre = "Soja 1ra Lote Norte", fecha = fechaRelativa(-90), cultivo = "Soja", estaActiva = true)
         )
         val idCampaniaTrigo = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Trigo", fecha = fecha(2025, Calendar.JUNE, 20), cultivo = "Trigo", estaActiva = false)
+            CampaniaEntity(nombre = "Trigo Invierno (Finalizada)", fecha = fechaRelativa(-300), cultivo = "Trigo", estaActiva = false)
         )
         val idCampaniaGirasol = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Girasol", fecha = fecha(2025, Calendar.OCTOBER, 1), cultivo = "Girasol", estaActiva = true)
+            CampaniaEntity(nombre = "Girasol Lote Este", fecha = fechaRelativa(-30), cultivo = "Girasol", estaActiva = true)
         )
 
-        tareaDao.insertTarea(TareaEntity(nombre = "Aplicar Urea", fecha = fecha(2025, Calendar.DECEMBER, 10), hora = "08:00", notificar = true, confirmar = false, id_campania = idCampaniaMaiz.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Control de malezas", fecha = fecha(2025, Calendar.DECEMBER, 5), hora = "09:30", notificar = true, confirmar = false, id_campania = idCampaniaMaiz.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Siembra Soja", fecha = fecha(2025, Calendar.DECEMBER, 2), hora = "07:00", notificar = true, confirmar = true, id_campania = idCampaniaSoja.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Aplicar 2,4-D", fecha = fecha(2025, Calendar.DECEMBER, 15), hora = "10:00", notificar = false, confirmar = false, id_campania = idCampaniaSoja.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Cosechar Trigo", fecha = fecha(2025, Calendar.DECEMBER, 20), hora = "06:00", notificar = true, confirmar = true, id_campania = idCampaniaTrigo.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Fertilizar post-cosecha", fecha = fecha(2025, Calendar.DECEMBER, 28), hora = "08:30", notificar = false, confirmar = true, id_campania = idCampaniaTrigo.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Riego Girasol", fecha = fecha(2026, Calendar.JANUARY, 5), hora = "07:00", notificar = true, confirmar = false, id_campania = idCampaniaGirasol.toInt()))
-        tareaDao.insertTarea(TareaEntity(nombre = "Aplicar Coadyuvante", fecha = fecha(2026, Calendar.JANUARY, 10), hora = "11:00", notificar = true, confirmar = false, id_campania = idCampaniaGirasol.toInt()))
+        // 3. Tareas (Para probar el Dashboard: atrasadas, de hoy, futuras)
+        // Atrasadas (Dashboard Issue 1)
+        tareaDao.insertTarea(TareaEntity(nombre = "Comprar Urea", fecha = fechaRelativa(-5), hora = "08:00", notificar = true, confirmar = false, id_campania = idCampaniaMaiz.toInt()))
+        tareaDao.insertTarea(TareaEntity(nombre = "Control de malezas", fecha = fechaRelativa(-2), hora = "09:30", notificar = true, confirmar = false, id_campania = idCampaniaMaiz.toInt()))
+        // Completadas
+        tareaDao.insertTarea(TareaEntity(nombre = "Siembra Soja", fecha = fechaRelativa(-90), hora = "07:00", notificar = false, confirmar = true, id_campania = idCampaniaSoja.toInt()))
+        // Para hoy y futuro cercano (Dashboard)
+        tareaDao.insertTarea(TareaEntity(nombre = "Aplicar 2,4-D", fecha = fechaRelativa(0), hora = "10:00", notificar = false, confirmar = false, id_campania = idCampaniaSoja.toInt()))
+        tareaDao.insertTarea(TareaEntity(nombre = "Revisar trampas insectos", fecha = fechaRelativa(1), hora = "06:00", notificar = true, confirmar = false, id_campania = idCampaniaGirasol.toInt()))
+        tareaDao.insertTarea(TareaEntity(nombre = "Fertilizar post-emergencia", fecha = fechaRelativa(3), hora = "08:30", notificar = true, confirmar = false, id_campania = idCampaniaMaiz.toInt()))
+        tareaDao.insertTarea(TareaEntity(nombre = "Pulverización Fungicida", fecha = fechaRelativa(10), hora = "11:00", notificar = true, confirmar = false, id_campania = idCampaniaSoja.toInt()))
 
-        val idCosechaMaiz = cosechaDao.insertCosecha(CosechaEntity(cantidad = 8500.0, fecha = fecha(2026, Calendar.MARCH, 15), almacen = "Silo 1", id_campania = idCampaniaMaiz.toInt()))
-        cosechaDao.insertCosecha(CosechaEntity(cantidad = 3200.0, fecha = fecha(2026, Calendar.APRIL, 10), almacen = "Silo 2", id_campania = idCampaniaSoja.toInt()))
-        cosechaDao.insertCosecha(CosechaEntity(cantidad = 1500.0, fecha = fecha(2026, Calendar.MARCH, 1), almacen = "Venta directa", id_campania = idCampaniaGirasol.toInt()))
+        // 4. Cosechas (Con y sin almacén para testear gráfico #301, y con hectáreas preparatorias para #17)
+        // Maiz: Todo a silo
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 8500.0, fecha = fechaRelativa(-10), almacen = "Silo 1", id_campania = idCampaniaMaiz.toInt()))
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 4500.0, fecha = fechaRelativa(-8), almacen = "Silo 2", id_campania = idCampaniaMaiz.toInt()))
+        // Soja: Mixto (Almacenada vs Vendida)
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 3200.0, fecha = fechaRelativa(-20), almacen = "Silo B", id_campania = idCampaniaSoja.toInt()))
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 6000.0, fecha = fechaRelativa(-15), almacen = "", id_campania = idCampaniaSoja.toInt())) // Vendida directa
+        // Trigo: Todo vendido
+        cosechaDao.insertCosecha(CosechaEntity(cantidad = 12500.0, fecha = fechaRelativa(-180), almacen = "", id_campania = idCampaniaTrigo.toInt()))
+        
+        // 5. Asignación de Insumos (Para probar comparador y reportes #302)
+        // Maiz (Mucha Urea y semilla)
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idUrea.toInt(), cantidad = 2000.0, precio = 550.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idSemillaMaiz.toInt(), cantidad = 150.0, precio = 18000.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idAtrazina.toInt(), cantidad = 150.0, precio = 850.0))
+        // Soja (MAP y Glifosato)
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idSemillaSoja.toInt(), cantidad = 120.0, precio = 15000.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idFosfato.toInt(), cantidad = 800.0, precio = 700.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idGlifosato.toInt(), cantidad = 200.0, precio = 450.0))
+        // Trigo y Girasol (Costos menores)
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaTrigo.toInt(), idInsumo = idUrea.toInt(), cantidad = 1000.0, precio = 500.0))
+        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaGirasol.toInt(), idInsumo = idAceite.toInt(), cantidad = 50.0, precio = 120.0))
 
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idUrea.toInt(), cantidad = 200.0, precio = 45.0))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaMaiz.toInt(), idInsumo = idAtrazina.toInt(), cantidad = 15.0, precio = 120.0))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = idSemillaSoja.toInt(), cantidad = 10.0, precio = 350.0))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaSoja.toInt(), idInsumo = id24D.toInt(), cantidad = 8.0, precio = 90.0))
-        campaniaInsumoDao.asignarInsumo(CampaniaInsumoEntity(idCampania = idCampaniaGirasol.toInt(), idInsumo = idCoadyuvante.toInt(), cantidad = 5.0, precio = 60.0))
-
-        observacionDao.insertObservacion(ObservacionEntity(texto = "Maíz tardío con buena germinación, se espera rinde alto.", imagenUri = null, id_campania = idCampaniaMaiz.toInt()))
-        observacionDao.insertObservacion(ObservacionEntity(texto = "Soja presenta manchas foliares leves. Monitorear.", imagenUri = null, id_campania = idCampaniaSoja.toInt()))
-        observacionDao.insertObservacion(ObservacionEntity(texto = "Trigo cosechado con humedad dentro de parámetros.", imagenUri = null, id_campania = idCampaniaTrigo.toInt()))
-        observacionDao.insertObservacion(ObservacionEntity(texto = "Girasol en etapa de floración. Buen estado general.", imagenUri = null, id_campania = idCampaniaGirasol.toInt()))
+        // 6. Observaciones
+        observacionDao.insertObservacion(ObservacionEntity(texto = "Emergencia pareja. Se detecta algo de oruga cogollera en borduras.", imagenUri = null, id_campania = idCampaniaMaiz.toInt()))
+        observacionDao.insertObservacion(ObservacionEntity(texto = "Lote muy enmalezado. Se aplicó doble dosis de glifo.", imagenUri = null, id_campania = idCampaniaSoja.toInt()))
+        observacionDao.insertObservacion(ObservacionEntity(texto = "Rinde promedio histórico superado. Buena calidad de grano.", imagenUri = null, id_campania = idCampaniaTrigo.toInt()))
     }
 }
