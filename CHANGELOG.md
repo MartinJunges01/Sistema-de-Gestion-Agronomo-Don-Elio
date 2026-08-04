@@ -52,6 +52,15 @@
 - **Flujos cubiertos:** Permiso ya concedido (directo a cámara) · Primera denegación (muestra rationale) · Denegación permanente (Snackbar con botón "Abrir Ajustes").
 - **Rama:** `fix/permiso-camara-observaciones`
 
+**[2026-06-10] - Cosechas: Fix Crash FK [#284] y Validación del Formulario [#293]**
+- **Issue 7 (#284):** Eliminado el crash `FOREIGN KEY constraint failed` al guardar una cosecha con `campaniaId = -1`. `FormularioCosechaViewModel` ahora inicializa `campaniaId` como `null` cuando `SavedStateHandle` no recibe un id válido (`takeIf { it != -1 }`), inyecta `ObtenerCampaniasUseCase` para exponer `campanias` y `onCampaniaChange()`, y `guardar()` valida `campaniaId == null` emitiendo `errorCampania = "Debe seleccionar una campaña"` antes de intentar la inserción.
+- **Issue 7 (UI):** `FormularioCosechaScreen` ahora muestra el componente `SelectorCampania` (etiqueta "Campaña vinculada") con texto de error debajo cuando falta seleccionar campaña. El botón "Guardar" queda deshabilitado mientras `campaniaId == null`.
+- **Issue 12 (#293):** `guardar()` ya no hace retorno silencioso con campos vacíos: setea `errorCantidad = "La cantidad es obligatoria"`. Adaptado a migración DB v5 (campo `unidad` eliminado del modelo).
+- **Issue 12 (UI):** Botón "Guardar" deshabilitado si hay errores o campos obligatorios vacíos (`cantidad`, `campaniaId`).
+- **Testing:** Creado `FormularioCosechaViewModelTest` con 5 casos (MockK + coroutines-test): sin campaña, cantidad vacía, almacenado válido y venta válida.
+- **Documentación:** Marcados como completos Issues #284 y #293 en `.context/roadmap_iteracion_2.md`; agregados escenarios Given-When-Then en `docs/plan_de_pruebas.md`.
+- **Rama:** `fix-cosechas-estabilizacion`
+
 **[2026-06-23] - Documentación de Entrega y Casos de Uso**
 - Actualización de `docs/FLOW.md` incorporando diagramas de flujo interactivos Mermaid para cada una de las 8 ramas principales del sistema.
 - Creación de `docs/diferencias_casos_de_uso_2025_2026.md` contrastando la propuesta teórica original (2025) con la implementación final en Clean Architecture (2026), aplicando el formato tabular de casos de uso requerido en la cursada.

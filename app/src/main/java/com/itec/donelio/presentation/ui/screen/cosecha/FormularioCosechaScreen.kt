@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
@@ -31,6 +32,7 @@ fun FormularioCosechaScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val campanias by viewModel.campanias.collectAsState()
 
     LaunchedEffect(state.guardadoExitoso) {
         if (state.guardadoExitoso) onBack()
@@ -46,15 +48,33 @@ fun FormularioCosechaScreen(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-                OutlinedTextField(
-                    value = state.cantidad,
-                    onValueChange = viewModel::onCantidadChange,
-                    label = { Text("Cantidad (Tn)") },
-                    modifier = Modifier.fillMaxWidth(),
-                    isError = state.errorCantidad != null,
-                    supportingText = state.errorCantidad?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
-                    singleLine = true
+            Column {
+                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                SelectorCampania(
+                    campanias = campanias,
+                    selectedCampaniaId = state.campaniaId,
+                    onCampaniaSelected = viewModel::onCampaniaChange,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 0.dp, vertical = 0.dp)
                 )
+                if (state.errorCampania != null) {
+                    Text(
+                        text = state.errorCampania!!,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                value = state.cantidad,
+                onValueChange = viewModel::onCantidadChange,
+                label = { Text("Cantidad (Tn)") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errorCantidad != null,
+                supportingText = state.errorCantidad?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
+                singleLine = true
+            )
 
             var showDatePicker by remember { mutableStateOf(false) }
             val datePickerState = rememberDatePickerState(
@@ -122,7 +142,6 @@ fun FormularioCosechaScreen(
                     label = { Text("Precio (Opcional)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                   //error visual
                     isError = state.errorPrecio != null,
                     supportingText = state.errorPrecio?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                     leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
@@ -134,7 +153,11 @@ fun FormularioCosechaScreen(
             Button(
                 onClick = viewModel::guardar,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !state.isLoading && state.errorPrecio == null && state.errorCantidad == null,
+                enabled = !state.isLoading &&
+                    state.errorCantidad == null &&
+                    state.errorPrecio == null &&
+                    state.campaniaId != null &&
+                    state.cantidad.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                 shape = RoundedCornerShape(12.dp)
             ) {
