@@ -111,7 +111,7 @@ private fun CosechaCard(cosecha: Cosecha, esAlmacenada: Boolean, detalle: Cosech
         modifier = Modifier.fillMaxWidth()
     ) {
         ListItem(
-            headlineContent = { Text("${formatCantidad(cosecha.cantidad)} Kg/L", fontWeight = FontWeight.Bold, color = cantidadColor) },
+            headlineContent = { Text("${formatCantidad(cosecha.cantidad)} Tn", fontWeight = FontWeight.Bold, color = cantidadColor) },
             supportingContent = {
                 if (esAlmacenada) {
                     Text(cosecha.almacen, color = TextoSecundario)

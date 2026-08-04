@@ -49,7 +49,7 @@ fun FormularioCosechaScreen(
                 OutlinedTextField(
                     value = state.cantidad,
                     onValueChange = viewModel::onCantidadChange,
-                    label = { Text("Cantidad (Kg/L)") },
+                    label = { Text("Cantidad (Tn)") },
                     modifier = Modifier.fillMaxWidth(),
                     isError = state.errorCantidad != null,
                     supportingText = state.errorCantidad?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
