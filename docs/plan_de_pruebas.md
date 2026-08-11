@@ -60,6 +60,26 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **When:** Invoco `CrearCampaniaUseCase`.
 *   **Then:** El sistema debe emitir `Resource.Error` con mensaje "El nombre no puede estar vacío" y NO llamar al repositorio.
 
+**Test UC-V1: ValidarDatosCampaniaUseCase — Nombre vacío**
+*   **Given:** nombre = "", cultivo = "Soja", fechaInicio = <fecha futura>, isEditMode = false
+*   **When:** invoke(nombre, cultivo, fechaInicio, isEditMode)
+*   **Then:** esValido = false, errorNombre = "El nombre es obligatorio"
+
+**Test UC-V2: ValidarDatosCampaniaUseCase — Fecha pasada en creación**
+*   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = false, errorFecha = "La fecha no puede ser anterior a hoy"
+
+**Test UC-V3: ValidarDatosCampaniaUseCase — Fecha pasada permitida en edición**
+*   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = true
+*   **When:** invoke(...)
+*   **Then:** esValido = true, errorFecha = null
+
+**Test UC-V4: ValidarDatosCampaniaUseCase — Todos los campos válidos**
+*   **Given:** Todos los campos correctos, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = true, todos los errores = null
+
 ### Módulo de Insumos (CU9 - CU9.4)
 
 **Test 3: Eliminación Lógica (Soft-Delete) de Insumo del Catálogo**
@@ -71,6 +91,16 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **Given:** El "Glifosato" (activo en el catálogo) y la campaña "Trigo de Invierno".
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test UC-V5: ValidarInsumoUseCase — Categoría vacía**
+*   **Given:** nombre = "Herbicida", categoria = ""
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = false, errorCategoria = "La categoría es obligatoria"
+
+**Test UC-V6: ValidarInsumoUseCase — Ambos campos válidos**
+*   **Given:** nombre = "Herbicida", categoria = "Químico"
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = true, errorNombre = null, errorCategoria = null
 
 ### Módulo de Tareas (CU5 - CU5.4)
 

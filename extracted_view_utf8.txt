@@ -1,0 +1,73 @@
+Created At: 2026-06-09T23:03:20Z
+Completed At: 2026-06-09T23:03:20Z
+File Path: `file:///C:/Sistema_de_gestion_agronomo_don_elio/docs/bugs_identificados.md`
+Total Lines: 819
+Total Bytes: 47849
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Bugs Conocidos e Identificados (Iteración Actual)
+2: 
+3: Este documento registra los bugs y mejoras identificados en el sistema, organizados por severidad.Cada Issue está redactado como especificación lista para ser incorporada al backlog de desarrollo.
+4: 
+5: >
+6: > **Fuente:** Sesión de pruebas manuales sobre APK Debug — 2026-06-09.
+7: >
+8: 
+9: ---
+10: 
+11: ---
+12: 
+13: # 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
+14: 
+15: Estos issues provocan cierres inesperados de la aplicación o corrupción de datos. Deben resolverse antes de cualquier release.
+16: 
+17: ---
+18: 
+19: ## Issue 6: Crash al Abrir la Cámara en Observaciones (Permiso no Solicitado)
+20: 
+21: **Severidad:** 🔴 CRASH**Módulo:** Observaciones / Hardware**Archivo afectado:** `presentation/ui/screen/observacion/ObservacionesScreen.kt` (línea ~148)
+22: 
+23: **Descripción**Al presionar el botón "Tomar Foto" en la pantalla de Observaciones, la aplicación crashea con un `SecurityException`. La causa raíz es que el código lanza directamente `cameraLauncher.launch(uri)` **sin solicitar el permiso `CAMERA` en tiempo de ejecución**. Aunque el permiso `android.permission.CAMERA` está declarado en el `AndroidManifest.xml`, a partir de Android 6.0 (API 23) este es un permiso "peligroso" que requiere aprobación explícita del usuario en runtime.
+24: 
+25: La galería (`GetContent`) funciona correctamente porque no requiere permisos peligrosos.
+26: 
+27: **Causa Raíz (Código)**
+28: 
+29: ```kotlin
+30: // ObservacionesScreen.kt — línea 148            
+31: // 
+<truncated 45282 bytes>
+ui/theme/Theme.kt`
+746: - `presentation/MainActivity.kt`
+747: 
+748: **Descripción**La app define un `DarkColorScheme` completo en `Theme.kt` y respeta el setting del sistema (`isSystemInDarkTheme()`). Sin embargo, las pantallas usan colores hardcodeados de `AgriCoreColors.kt` (`AgriVerde`, `AgriFondo`, `TextoPrincipal`, `Color.White`, etc.) en lugar de tokens de Material Theme (`MaterialTheme.colorScheme.*`). Esto significa que en modo oscuro el esquema de colores cambia parcialmente (fondo, surfaces) pero todos los textos y acentos hardcodeados se rompen visualmente (texto oscuro sobre fondo oscuro, Cards blancas sobre superficie oscura, etc.).
+749: 
+750: **Decisión:** Bloquear modo oscuro completamente. La app siempre se verá en modo claro.
+751: 
+752: **Acceptance Criteria**
+753: 
+754: - La app debe renderizarse siempre en modo claro, independientemente del setting del sistema operativo.
+755: - No debe haber cambios visuales al activar/desactivar modo oscuro en el dispositivo.
+756: 
+757: **Sub-issues / Tareas Técnicas**
+758: 
+759: - **Opción A (Rápida — Recomendada):** En `DonElioTheme()` en `Theme.kt`, forzar `darkTheme = false` ignorando el parámetro:		@Composable  
+760:   fun DonElioTheme(  
+761:   darkTheme: Boolean = false, // ← Siempre false  
+762:   dynamicColor: Boolean = false,  
+763:   content: @Composable () -> Unit  
+764:   ) {  
+765:   val colorScheme = LightColorScheme // ← Siempre light  
+766:   ...  
+767:   }
+768: - **Opción B (Alternativa):** En `MainActivity.kt`, pasar `darkTheme = false` explícitamente:		DonElioTheme(darkTheme = false) { DonElioApp() }
+769: - Verificar que `isAppearanceLightStatusBars` quede siempre en `true`.
+770: 
+771: ---
+772: 
+773: ## Issue 22: La Pantalla No Se Desplaza al Escribir (Teclado Cubre los Campos)
+774: 
+775: **Severidad:** ⚪ UX / Calidad**Módulo:** Global / 
+<truncated 2120 bytes>
+
+NOTE: The output was truncated because it was too long. Use a more targeted query or a smaller range to get the information you need.

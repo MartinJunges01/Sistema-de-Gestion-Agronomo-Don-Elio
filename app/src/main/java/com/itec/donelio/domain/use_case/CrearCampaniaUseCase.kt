@@ -22,17 +22,6 @@ class CrearCampaniaUseCase @Inject constructor(
             if (nombre.isBlank()) {
                 throw IllegalArgumentException("El nombre de la campaña no puede estar vacío")
             }
-            
-            val hoyMedianoche = java.util.Calendar.getInstance().apply {
-                set(java.util.Calendar.HOUR_OF_DAY, 0)
-                set(java.util.Calendar.MINUTE, 0)
-                set(java.util.Calendar.SECOND, 0)
-                set(java.util.Calendar.MILLISECOND, 0)
-            }.timeInMillis
-
-            if (fechaInicio < hoyMedianoche) {
-                throw IllegalArgumentException("La fecha de la campaña no puede ser anterior a hoy")
-            }
 
             val campania = Campania(
                 id = 0,
