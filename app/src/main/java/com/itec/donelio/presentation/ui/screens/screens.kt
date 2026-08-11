@@ -104,7 +104,8 @@ fun DonElioApp() {
                         onGoToConfig = { navController.navigate(NavRoute.ConfiguracionDB.createRoute()) },
                         onGoToDetalle = { campaniaId ->
                             navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId))
-                        }
+                        },
+                        onGoToTareas = { navController.navigate(NavRoute.Tareas.route.replace("?campaniaId={campaniaId}", "")) }
                     )
                 }
                 composable(

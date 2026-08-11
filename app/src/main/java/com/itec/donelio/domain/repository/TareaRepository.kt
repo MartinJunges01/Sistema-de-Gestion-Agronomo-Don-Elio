@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface TareaRepository {
     fun getTareasByCampania(idCampania: Int): Flow<List<Tarea>>
 
-    fun getTareasPendientesGlobales(limite: Int): Flow<List<Tarea>>
+    fun getTareasPendientesGlobales(limite: Int, fechaLimite: Long): Flow<List<Tarea>>
 
     fun getTareasByCampaniaAndFecha(idCampania: Int, fecha: Long): Flow<List<Tarea>>
 

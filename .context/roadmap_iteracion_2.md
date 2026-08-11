@@ -7,7 +7,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [x] **[#284] Issue 7:** Crash por Foreign Key al Registrar Cosecha (campaniaId = -1)
 
 ## 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#285] Issue 1:** Tareas del Dashboard — Interacción, Filtrado y Tratamiento Visual
+- [x] **[#285] Issue 1:** Tareas del Dashboard — Interacción, Filtrado y Tratamiento Visual
 - [ ] **[#286] Issue 2:** Tareas Nuevas No Aparecen en la Pestaña Tareas (Desincronización de Timestamps)
 - [x] **[#287] Issue 3:** Mensaje de Saludo No Funciona Correctamente
 - [ ] **[#288] Issue 4:** Visualización Genérica de Insumos Vinculados tras Soft-Delete en Catálogo

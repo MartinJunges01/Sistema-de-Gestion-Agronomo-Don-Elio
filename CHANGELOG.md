@@ -1,5 +1,13 @@
 # Changelog
 
+**[2026-08-11] - [#285] fix(dashboard): Tareas interactivas y filtradas por vencimiento**
+- **DAO/Dominio:** Actualizada la consulta `getTareasPendientesGlobales` para recibir `fechaLimite` y omitir tareas vencidas hace más de 7 días.
+- **ViewModels:** `HomeViewModel` ahora calcula dinámicamente la `fechaLimite` y la pasa al `ObtenerTareasPendientesUseCase`.
+- **UI:** Las tarjetas de "Tareas Próximas" ahora son clickeables (navegan al detalle de la campaña asociada).
+- **UI:** Tratamiento visual condicional: tareas recientes vencidas se muestran con color rojo tenue.
+- **UI:** Se agregó el botón "Ver todas" que redirige a la lista completa de tareas de la app.
+- **Rama:** `fix/issue-285-dashboard-tareas`
+
 **[2026-08-11] - [#287] fix(login): Saludo muestra nombre de usuario en vez de Invitado**
 - **ViewModels:** `LoginViewModel` inyecta ahora `SessionManager` y luego del inicio de sesión persistirá en DataStore el nombre real del usuario recibido del backend.
 - **Rama:** `fix/issue-287-saludo-usuario`

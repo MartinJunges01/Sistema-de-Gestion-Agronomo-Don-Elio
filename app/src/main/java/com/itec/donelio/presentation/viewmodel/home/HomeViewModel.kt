@@ -30,7 +30,18 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    val tareasPendientes: StateFlow<List<Tarea>> = obtenerTareasPendientesUseCase(limite = 3)
+    // Filtro: hoy - 7 días a medianoche
+    private val fechaLimite: Long get() {
+        val cal = java.util.Calendar.getInstance()
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        cal.set(java.util.Calendar.MINUTE, 0)
+        cal.set(java.util.Calendar.SECOND, 0)
+        cal.set(java.util.Calendar.MILLISECOND, 0)
+        cal.add(java.util.Calendar.DAY_OF_YEAR, -7)
+        return cal.timeInMillis
+    }
+
+    val tareasPendientes: StateFlow<List<Tarea>> = obtenerTareasPendientesUseCase(limite = 5, fechaLimite = fechaLimite)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

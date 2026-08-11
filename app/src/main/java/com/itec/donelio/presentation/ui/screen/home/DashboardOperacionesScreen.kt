@@ -27,6 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.presentation.ui.components.HeaderSectionAgriCore
+import com.itec.donelio.presentation.ui.theme.AgriRojoFondo
+import com.itec.donelio.presentation.ui.theme.AgriRojoUrgencia
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
@@ -39,7 +41,8 @@ import java.util.Locale
 fun DashboardOperacionesScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onGoToConfig: () -> Unit,
-    onGoToDetalle: (campaniaId: Int) -> Unit
+    onGoToDetalle: (campaniaId: Int) -> Unit,
+    onGoToTareas: () -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
@@ -76,20 +79,35 @@ fun DashboardOperacionesScreen(
                     Text("Tareas Próximas", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 }
             }
+            val hoy = System.currentTimeMillis()
             items(tareas, key = { "t_${it.id}" }) { tarea ->
+                val isVencida = tarea.fecha < hoy
+                val containerColor = if (isVencida) AgriRojoFondo else Color.White
+                val iconColor = if (isVencida) AgriRojoUrgencia else AgriVerde
+                
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .clickable { onGoToDetalle(tarea.idCampania) },
+                    colors = CardDefaults.cardColors(containerColor = containerColor),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.TaskAlt, contentDescription = null, tint = AgriVerde, modifier = Modifier.size(28.dp))
+                        Icon(Icons.Default.TaskAlt, contentDescription = null, tint = iconColor, modifier = Modifier.size(28.dp))
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(tarea.nombre, fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 16.sp)
                             Text("${formatFecha(tarea.fecha)} - ${tarea.hora}", fontSize = 14.sp, color = TextoSecundario)
                         }
+                    }
+                }
+            }
+            item {
+                Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), contentAlignment = Alignment.CenterEnd) {
+                    TextButton(onClick = onGoToTareas) {
+                        Text("Ver todas →", color = AgriVerde, fontWeight = FontWeight.Bold)
                     }
                 }
             }
