@@ -21,7 +21,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [x] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
 - [x] **[#295] Issue 14:** Cosechas no Tienen Edición ni Eliminación de Cosechas
 - [ ] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
-- [ ] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)
+- [x] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)
 - [x] **[#298] Issue 17: Refactor Unidad Unica**
 
 ## 🔵 NIVEL L4 — MEJORAS DE REPORTES
