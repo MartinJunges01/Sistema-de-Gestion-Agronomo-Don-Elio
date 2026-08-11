@@ -10,7 +10,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#285] Issue 1:** Tareas del Dashboard — Interacción, Filtrado y Tratamiento Visual
 - [ ] **[#286] Issue 2:** Tareas Nuevas No Aparecen en la Pestaña Tareas (Desincronización de Timestamps)
 - [ ] **[#287] Issue 3:** Mensaje de Saludo No Funciona Correctamente
-- [ ] **[#288] Issue 4:** Visualización Genérica de Insumos Vinculados tras Soft-Delete en Catálogo
+- [x] **[#288] Issue 4:** Visualización Genérica de Insumos Vinculados tras Soft-Delete en Catálogo
 - [x] **[#289] Issue 8:** Catálogo de Insumos — No Guarda Nuevos Insumos / Validación de Formulario Faltante
 - [x] **[#290] Issue 9:** Campañas Permiten Fechas de Inicio en el Pasado
 - [ ] **[#291] Issue 10:** Campo "Hora" en Nueva Tarea Acepta Cualquier Carácter
