@@ -21,6 +21,7 @@ import com.itec.donelio.presentation.viewmodel.campania.CampaniaFormViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +71,18 @@ fun FormularioCampaniaScreen(
 
             var showDatePicker by remember { mutableStateOf(false) }
             val datePickerState = rememberDatePickerState(
-                initialSelectedDateMillis = state.fechaInicio
+                initialSelectedDateMillis = state.fechaInicio,
+                selectableDates = object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        val hoy = Calendar.getInstance().apply {
+                            set(Calendar.HOUR_OF_DAY, 0)
+                            set(Calendar.MINUTE, 0)
+                            set(Calendar.SECOND, 0)
+                            set(Calendar.MILLISECOND, 0)
+                        }.timeInMillis
+                        return utcTimeMillis >= hoy
+                    }
+                }
             )
 
             OutlinedTextField(
