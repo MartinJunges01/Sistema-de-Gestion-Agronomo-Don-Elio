@@ -1,5 +1,12 @@
 # Changelog
 
+**[2026-08-11] - [#294] feat(observaciones): Edición y eliminación de observaciones**
+- **Dominio:** Se crearon `EditarObservacionUseCase` y `EliminarObservacionUseCase`.
+- **ViewModels:** Se inyectaron los nuevos casos de uso en `ObservacionViewModel` para gestionar las acciones y los errores, exponiéndolos como estado.
+- **UI:** Se agregaron íconos de editar y eliminar a cada `ObservacionCard` en `ObservacionesScreen`.
+- **UI:** Se implementaron diálogos modales (AlertDialog) para confirmar la eliminación y para editar el texto de la observación in-place.
+- **Rama:** `feat/issue-294-edicion-observaciones`
+
 **[2026-08-11] - [#291] fix(tareas): Selector de hora usa TimeInput en vez de texto libre**
 - **ViewModels:** `NuevaTareaViewModel` ahora valida que la hora no esté vacía y que cumpla el formato regex (HH:mm), exponiendo `errorHora`.
 - **UI:** En `NuevaTareaScreen` se reemplazó el `OutlinedTextField` genérico por un `TimeInput` nativo de Material 3 contenido dentro de un `AlertDialog`, previniendo el ingreso de texto arbitrario.

@@ -17,8 +17,8 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [x] **[#292] Issue 11:** Pestaña Tareas en Detalle de Campaña No Se Actualiza al Cambiar de Campaña
 - [x] **[#293] Issue 12:** Formulario de Cosechas — Validación y Mensajes de Error Faltantes
 
-## 🟡 NIVEL L3 — MEJORAS FUNCIONALES
-- [ ] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
+## 🟢 NIVEL L3 — NUEVAS FEATURES (MEJORAS)
+- [x] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
 - [ ] **[#295] Issue 14:** Incorporar Edición y Eliminación de Cosechas
 - [ ] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
 - [ ] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)

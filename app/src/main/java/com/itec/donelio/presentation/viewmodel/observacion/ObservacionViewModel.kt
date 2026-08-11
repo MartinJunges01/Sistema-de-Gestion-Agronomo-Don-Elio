@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Observacion
+import com.itec.donelio.domain.use_case.EditarObservacionUseCase
+import com.itec.donelio.domain.use_case.EliminarObservacionUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerObservacionesPorCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +18,9 @@ import javax.inject.Inject
 class ObservacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val editarObservacionUseCase: EditarObservacionUseCase,
+    private val eliminarObservacionUseCase: EliminarObservacionUseCase
 ) : ViewModel() {
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
@@ -39,4 +43,30 @@ class ObservacionViewModel @Inject constructor(
 
     fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
     fun clearError() { _errorMessage.value = null }
+
+    fun editarObservacion(observacion: Observacion) {
+        viewModelScope.launch {
+            editarObservacionUseCase(observacion).collect { resource ->
+                when (resource) {
+                    is com.itec.donelio.domain.model.Resource.Error -> {
+                        _errorMessage.value = resource.message
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    fun eliminarObservacion(observacion: Observacion) {
+        viewModelScope.launch {
+            eliminarObservacionUseCase(observacion).collect { resource ->
+                when (resource) {
+                    is com.itec.donelio.domain.model.Resource.Error -> {
+                        _errorMessage.value = resource.message
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
 }
