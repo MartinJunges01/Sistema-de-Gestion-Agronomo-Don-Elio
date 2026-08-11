@@ -114,15 +114,57 @@ fun NuevaTareaScreen(
                     }
                 }
 
+                var showTimePicker by remember { mutableStateOf(false) }
+                val initialHour = if (state.hora.isNotBlank() && state.hora.contains(":")) state.hora.split(":")[0].toIntOrNull() ?: 12 else 12
+                val initialMinute = if (state.hora.isNotBlank() && state.hora.contains(":")) state.hora.split(":")[1].toIntOrNull() ?: 0 else 0
+                val timePickerState = rememberTimePickerState(
+                    initialHour = initialHour,
+                    initialMinute = initialMinute,
+                    is24Hour = true
+                )
+
                 OutlinedTextField(
                     value = state.hora,
-                    onValueChange = viewModel::onHoraChange,
+                    onValueChange = {},
                     label = { Text("Hora") },
                     modifier = Modifier.weight(1f),
-                    singleLine = true,
+                    readOnly = true,
                     placeholder = { Text("HH:mm") },
-                    trailingIcon = { Icon(Icons.Default.Schedule, contentDescription = null) }
+                    trailingIcon = {
+                        IconButton(onClick = { showTimePicker = true }) {
+                            Icon(Icons.Default.Schedule, contentDescription = null)
+                        }
+                    },
+                    isError = state.errorHora != null,
+                    supportingText = state.errorHora?.let { { Text(it, color = MaterialTheme.colorScheme.error) } }
                 )
+
+                if (showTimePicker) {
+                    AlertDialog(
+                        onDismissRequest = { showTimePicker = false },
+                        title = { Text("Seleccionar Hora", fontWeight = FontWeight.Bold) },
+                        text = {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                TimeInput(state = timePickerState)
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val horaStr = timePickerState.hour.toString().padStart(2, '0')
+                                val minStr = timePickerState.minute.toString().padStart(2, '0')
+                                viewModel.onHoraChange("$horaStr:$minStr")
+                                showTimePicker = false
+                            }) { Text("Aceptar", color = AgriVerde) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showTimePicker = false }) { Text("Cancelar", color = TextoSecundario) }
+                        }
+                    )
+                }
+
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {

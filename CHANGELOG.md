@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-11] - [#291] fix(tareas): Selector de hora usa TimeInput en vez de texto libre**
+- **ViewModels:** `NuevaTareaViewModel` ahora valida que la hora no esté vacía y que cumpla el formato regex (HH:mm), exponiendo `errorHora`.
+- **UI:** En `NuevaTareaScreen` se reemplazó el `OutlinedTextField` genérico por un `TimeInput` nativo de Material 3 contenido dentro de un `AlertDialog`, previniendo el ingreso de texto arbitrario.
+- **Rama:** `fix/issue-291-timepicker-hora`
+
 **[2026-08-11] - [#285] fix(dashboard): Tareas interactivas y filtradas por vencimiento**
 - **DAO/Dominio:** Actualizada la consulta `getTareasPendientesGlobales` para recibir `fechaLimite` y omitir tareas vencidas hace más de 7 días.
 - **ViewModels:** `HomeViewModel` ahora calcula dinámicamente la `fechaLimite` y la pasa al `ObtenerTareasPendientesUseCase`.

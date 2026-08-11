@@ -25,6 +25,7 @@ data class NuevaTareaFormState(
     val campaniaId: Int? = null,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
+    val errorHora: String? = null,
     val errorCampania: String? = null,
     val guardadoExitoso: Boolean = false
 )
@@ -69,6 +70,17 @@ class NuevaTareaViewModel @Inject constructor(
 
         if (current.nombre.isBlank()) {
             _state.update { it.copy(errorNombre = "El nombre es obligatorio") }
+            return
+        }
+
+        if (current.hora.isBlank()) {
+            _state.update { it.copy(errorHora = "La hora es obligatoria") }
+            return
+        }
+
+        val regex = Regex("^([01]\\d|2[0-3]):[0-5]\\d$")
+        if (!regex.matches(current.hora)) {
+            _state.update { it.copy(errorHora = "Formato inválido (HH:mm)") }
             return
         }
 
