@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.itec.donelio.domain.use_case.ValidarInsumoUseCase
 
 data class FormularioInsumoState(
     val nombre: String = "",
@@ -21,6 +22,8 @@ data class FormularioInsumoState(
     val icono: String? = null,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
+    val errorCategoria: String? = null,
+    val isGuardarHabilitado: Boolean = false,
     val guardadoExitoso: Boolean = false
 )
 
@@ -29,6 +32,7 @@ class FormularioInsumoViewModel @Inject constructor(
     private val crearInsumoCatalogoUseCase: CrearInsumoCatalogoUseCase,
     private val editarInsumoCatalogoUseCase: EditarInsumoCatalogoUseCase,
     private val obtenerInsumoPorIdUseCase: ObtenerInsumoPorIdUseCase,
+    private val validarInsumoUseCase: ValidarInsumoUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -56,12 +60,23 @@ class FormularioInsumoViewModel @Inject constructor(
         }
     }
 
+    private fun evaluarValidaciones(nombre: String, categoria: String) {
+        val resultado = validarInsumoUseCase(nombre, categoria)
+        _state.update { it.copy(
+            errorNombre = resultado.errorNombre,
+            errorCategoria = resultado.errorCategoria,
+            isGuardarHabilitado = resultado.esValido
+        )}
+    }
+
     fun onNombreChange(value: String) {
-        _state.update { it.copy(nombre = value, errorNombre = null) }
+        _state.update { it.copy(nombre = value) }
+        evaluarValidaciones(value, _state.value.categoria)
     }
 
     fun onCategoriaChange(value: String) {
         _state.update { it.copy(categoria = value) }
+        evaluarValidaciones(_state.value.nombre, value)
     }
 
     fun onIconoChange(value: String?) {
@@ -70,10 +85,7 @@ class FormularioInsumoViewModel @Inject constructor(
 
     fun guardar() {
         val current = _state.value
-        if (current.nombre.isBlank()) {
-            _state.update { it.copy(errorNombre = "El nombre es obligatorio") }
-            return
-        }
+        if (!current.isGuardarHabilitado) return
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {

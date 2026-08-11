@@ -1,5 +1,15 @@
 # Changelog
 
+**[2026-08-11] - [#289] fix(insumos): Validación de Formulario y Delegación a Dominio**
+- **Dominio:** Creado `ValidarInsumoUseCase` para evaluar la obligatoriedad de `nombre` y `categoría`. Nota: El campo `unidad` no fue incluido en la validación porque no existe en la arquitectura actual del proyecto.
+- **ViewModels:** 
+  - `FormularioInsumoViewModel` modificado para consumir el caso de uso y exponer un estado único `isGuardarHabilitado`.
+  - `InsumoCatalogoViewModel` modificado para inyectar el caso de uso y exponer una función de delegación de validación.
+- **UI:** 
+  - `FormularioInsumoScreen` muestra mensajes de error en los campos basándose enteramente en el estado unificado, eliminando lógica de negocio visual.
+  - `CatalogoInsumosScreen` refactorizado para el diálogo inline y agregado un `SnackbarHost` para observar errores del ViewModel.
+- **Rama:** `fix/insumos-validacion-formulario`
+
 **[2026-08-02] - [#302] feat(reportes): Implementar Comparación Real entre Campañas**
 - **Dominio:** `ReportesViewModel` ahora expone `cosechasA` y `cosechasB` asociadas a las campañas seleccionadas en el comparador.
 - **UI:** En `ReportesRendimientoScreen`, la sección de "Métricas Comparativas" ahora muestra los verdaderos totales de Costo de Insumos y Rendimiento (Cosechas) para la Campaña A y la Campaña B.
