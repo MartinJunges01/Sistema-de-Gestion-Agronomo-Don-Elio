@@ -12,7 +12,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [ ] **[#287] Issue 3:** Mensaje de Saludo No Funciona Correctamente
 - [ ] **[#288] Issue 4:** Visualización Genérica de Insumos Vinculados tras Soft-Delete en Catálogo
 - [x] **[#289] Issue 8:** Catálogo de Insumos — No Guarda Nuevos Insumos / Validación de Formulario Faltante
-- [ ] **[#290] Issue 9:** Campañas Permiten Fechas de Inicio en el Pasado
+- [x] **[#290] Issue 9:** Campañas Permiten Fechas de Inicio en el Pasado
 - [ ] **[#291] Issue 10:** Campo "Hora" en Nueva Tarea Acepta Cualquier Carácter
 - [x] **[#292] Issue 11:** Pestaña Tareas en Detalle de Campaña No Se Actualiza al Cambiar de Campaña
 - [x] **[#293] Issue 12:** Formulario de Cosechas — Validación y Mensajes de Error Faltantes

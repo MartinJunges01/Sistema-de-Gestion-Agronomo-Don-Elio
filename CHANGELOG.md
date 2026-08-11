@@ -1,5 +1,13 @@
 # Changelog
 
+**[2026-08-11] - [#290] fix(campanias): Validación estricta de fechas pasadas en creación**
+- **Dominio:** 
+  - Creado `ValidarDatosCampaniaUseCase` para concentrar la lógica de validación (nombre, cultivo y control estricto de no permitir fechas anteriores a hoy, ignorando la regla en modo edición).
+  - Añadida capa extra de defensa en `CrearCampaniaUseCase` para lanzar excepción si la fecha es menor a hoy (medianoche).
+- **ViewModels:** `CampaniaFormViewModel` limpiado completamente. Toda su lógica condicional fue delegada al nuevo caso de uso, dedicándose exclusivamente a actualizar la UI.
+- **UI:** En `FormularioCampaniaScreen`, se configuró `selectableDates` en el `rememberDatePickerState` para deshabilitar visualmente fechas anteriores a hoy, mejorando sustancialmente la UX.
+- **Rama:** `fix/campanias-validacion-fechas`
+
 **[2026-08-11] - [#289] fix(insumos): Validación de Formulario y Delegación a Dominio**
 - **Dominio:** Creado `ValidarInsumoUseCase` para evaluar la obligatoriedad de `nombre` y `categoría`. Nota: El campo `unidad` no fue incluido en la validación porque no existe en la arquitectura actual del proyecto.
 - **ViewModels:** 

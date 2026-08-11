@@ -8,6 +8,7 @@ import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.CrearCampaniaUseCase
 import com.itec.donelio.domain.use_case.EditarCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
+import com.itec.donelio.domain.use_case.ValidarDatosCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,7 +36,8 @@ class CampaniaFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val crearCampaniaUseCase: CrearCampaniaUseCase,
     private val editarCampaniaUseCase: EditarCampaniaUseCase,
-    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
+    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase,
+    private val validarDatosCampaniaUseCase: ValidarDatosCampaniaUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int? = savedStateHandle.get<Int>("campaniaId")
@@ -84,22 +86,22 @@ class CampaniaFormViewModel @Inject constructor(
 
     fun guardar() {
         val current = _state.value
-        var hasError = false
+        
+        val resultadoValidacion = validarDatosCampaniaUseCase(
+            nombre = current.nombre,
+            cultivo = current.cultivo,
+            fechaInicio = current.fechaInicio,
+            isEditMode = current.isEditMode
+        )
 
-        if (current.nombre.isBlank()) {
-            _state.update { it.copy(errorNombre = "El nombre es obligatorio") }
-            hasError = true
+        if (!resultadoValidacion.esValido) {
+            _state.update { it.copy(
+                errorNombre = resultadoValidacion.errorNombre,
+                errorCultivo = resultadoValidacion.errorCultivo,
+                errorFecha = resultadoValidacion.errorFecha
+            ) }
+            return
         }
-        if (current.cultivo.isBlank()) {
-            _state.update { it.copy(errorCultivo = "El cultivo es obligatorio") }
-            hasError = true
-        }
-        if (current.fechaInicio <= 0) {
-            _state.update { it.copy(errorFecha = "Seleccione una fecha") }
-            hasError = true
-        }
-
-        if (hasError) return
 
         viewModelScope.launch {
             if (current.isEditMode && current.campaniaId != null) {
