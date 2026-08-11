@@ -10,7 +10,18 @@ data class ResultadoValidacionCampania(
     val errorFecha: String? = null
 )
 
+/**
+ * Caso de uso para validar los datos de una campaña antes de crearla o editarla.
+ * Asegura que el nombre y cultivo no estén en blanco, y que la fecha no sea en el pasado si es creación.
+ * @return ResultadoValidacionCampania con el estado general y mensajes de error por campo si los hay.
+ */
 class ValidarDatosCampaniaUseCase @Inject constructor() {
+    /**
+     * @param nombre El nombre de la campaña.
+     * @param cultivo El tipo de cultivo.
+     * @param fechaInicio La fecha de inicio en milisegundos.
+     * @param isEditMode True si se está editando una campaña existente (permite fechas pasadas).
+     */
     operator fun invoke(
         nombre: String, 
         cultivo: String, 

@@ -56,6 +56,7 @@ class FormularioInsumoViewModel @Inject constructor(
                         icono = it.icono
                     )
                 }
+                evaluarValidaciones(it.nombre, it.categoria)
             }
         }
     }

@@ -206,3 +206,70 @@ Descripción detallada de qué sucede y por qué.
 - [ ] Tarea técnica 1 (ej. Modificar UseCase)
 - [ ] Tarea técnica 2 (ej. Actualizar ViewModel)
 ---
+## [RESUELTO] Doble Validación de Fecha en CrearCampaniaUseCase
+
+**Estado:** Resuelto en PR #321
+
+**Severidad:** 🟠 Bug Funcional (violación DRY)
+**Módulo:** Campañas / Domain
+**Archivo afectado:** `domain/use_case/CrearCampaniaUseCase.kt`
+
+**Descripción**
+La validación de fecha no puede ser anterior a hoy está duplicada en `CrearCampaniaUseCase` y en el nuevo `ValidarDatosCampaniaUseCase`. Si los mensajes divergen, el usuario verá un error diferente según el path de ejecución.
+
+**Causa Raíz (Código)**
+```kotlin
+// DUPLICADO — la misma validación también existe en ValidarDatosCampaniaUseCase
+```
+
+**Acceptance Criteria**
+- [x] Eliminar el bloque de validación de fecha de `CrearCampaniaUseCase`.
+- [x] El UseCase de creación solo debe validar que el nombre no esté en blanco (validación mínima de integridad).
+- [x] La pre-validación completa queda exclusivamente en `ValidarDatosCampaniaUseCase`.
+
+---
+
+## [RESUELTO] isGuardarHabilitado Bloqueado en Modo Edición de Insumo
+
+**Estado:** Resuelto en PR #321
+
+**Severidad:** 🟠 Bug Funcional (UX bloqueante)
+**Módulo:** Insumos / Presentation
+**Archivo afectado:** `presentation/viewmodel/insumo/FormularioInsumoViewModel.kt`
+
+**Descripción**
+Al editar un insumo existente, `cargarInsumo()` no llama a `evaluarValidaciones()` tras restaurar los campos. El estado `isGuardarHabilitado` permanece `false` y el botón "Guardar" aparece deshabilitado hasta que el usuario modifique manualmente algún campo.
+
+**Acceptance Criteria**
+- [x] `cargarInsumo()` debe invocar `evaluarValidaciones(it.nombre, it.categoria)` después de restaurar los campos.
+
+---
+
+## [RESUELTO] KDoc Faltante en ValidarDatosCampaniaUseCase y ValidarInsumoUseCase
+
+**Estado:** Resuelto en PR #321
+
+**Severidad:** ⚪ Deuda Técnica / Calidad
+**Módulo:** Domain / Use Cases
+
+**Descripción**
+El `prompt_operativo.md` y la skill `don-elio-workflow` exigen KDoc en todas las funciones públicas de los UseCases. Los dos UseCases nuevos no tienen ningún bloque de documentación.
+
+**Acceptance Criteria**
+- [x] Agregar KDoc describiendo parámetros, retorno y comportamiento a ambos UseCases.
+
+---
+
+## [PENDIENTE-ID] UX Inconsistente de Validación entre Formulario de Insumos y Campañas
+
+**Severidad:** ⚪ UX / Deuda Técnica
+**Módulo:** Presentation / Formularios
+
+**Descripción**
+El formulario de insumos valida en tiempo real (el botón se habilita/deshabilita dinámicamente). El formulario de campañas valida solo al presionar "Guardar" (los errores aparecen a posteriori). Debería estandarizarse el comportamiento.
+
+**Acceptance Criteria**
+- [ ] Definir un estándar de UX para validación en el equipo.
+- [ ] Aplicar el mismo patrón en ambos formularios.
+
+---
