@@ -39,14 +39,28 @@ fun CatalogoInsumosScreen(
     onGoToFormulario: () -> Unit
 ) {
     val catalogo by viewModel.catalogo.collectAsState()
+    val error by viewModel.error.collectAsState()
     var insumoAEditar by remember { mutableStateOf<Insumo?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Catálogo de Insumos", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
-        )
+    LaunchedEffect(error) {
+        error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.limpiarError()
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Catálogo de Insumos", fontWeight = FontWeight.Bold) },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Stone50)
+            )
+        }
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
         if (catalogo.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -93,6 +107,7 @@ fun CatalogoInsumosScreen(
                 }
             }
         }
+        }
     }
 
     if (insumoAEditar != null) {
@@ -102,7 +117,8 @@ fun CatalogoInsumosScreen(
             onGuardar = { insumoEditado ->
                 viewModel.editarInsumo(insumoEditado)
                 insumoAEditar = null
-            }
+            },
+            onValidar = viewModel::validarEdicion
         )
     }
 }
@@ -111,7 +127,8 @@ fun CatalogoInsumosScreen(
 private fun DialogEditarInsumo(
     insumo: Insumo,
     onDismiss: () -> Unit,
-    onGuardar: (Insumo) -> Unit
+    onGuardar: (Insumo) -> Unit,
+    onValidar: (String, String) -> Boolean
 ) {
     var nombre by remember { mutableStateOf(insumo.nombre) }
     var categoria by remember { mutableStateOf(insumo.categoria) }
@@ -170,7 +187,7 @@ private fun DialogEditarInsumo(
                 onClick = {
                     onGuardar(insumo.copy(nombre = nombre.trim(), categoria = categoria.trim(), icono = icono))
                 },
-                enabled = nombre.isNotBlank()
+                enabled = onValidar(nombre, categoria)
             ) { Text("Guardar") }
         },
         dismissButton = {

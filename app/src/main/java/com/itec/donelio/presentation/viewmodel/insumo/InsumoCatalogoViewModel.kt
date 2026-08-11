@@ -6,6 +6,7 @@ import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.use_case.EditarInsumoCatalogoUseCase
 import com.itec.donelio.domain.use_case.EliminarInsumoCatalogoUseCase
 import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
+import com.itec.donelio.domain.use_case.ValidarInsumoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class InsumoCatalogoViewModel @Inject constructor(
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val editarInsumoCatalogoUseCase: EditarInsumoCatalogoUseCase,
-    private val eliminarInsumoCatalogoUseCase: EliminarInsumoCatalogoUseCase
+    private val eliminarInsumoCatalogoUseCase: EliminarInsumoCatalogoUseCase,
+    private val validarInsumoUseCase: ValidarInsumoUseCase
 ) : ViewModel() {
 
     val catalogo: StateFlow<List<Insumo>> = obtenerCatalogoInsumosUseCase()
@@ -50,5 +52,9 @@ class InsumoCatalogoViewModel @Inject constructor(
 
     fun limpiarError() {
         _error.value = null
+    }
+
+    fun validarEdicion(nombre: String, categoria: String): Boolean {
+        return validarInsumoUseCase(nombre, categoria).esValido
     }
 }

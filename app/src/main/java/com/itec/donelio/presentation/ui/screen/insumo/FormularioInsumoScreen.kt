@@ -61,6 +61,8 @@ fun FormularioInsumoScreen(
                 onValueChange = viewModel::onCategoriaChange,
                 label = { Text("Categoría (Ej: Semilla, Fertilizante)") },
                 modifier = Modifier.fillMaxWidth(),
+                isError = state.errorCategoria != null,
+                supportingText = state.errorCategoria?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                 singleLine = true
             )
 
@@ -96,7 +98,7 @@ fun FormularioInsumoScreen(
             Button(
                 onClick = viewModel::guardar,
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !state.isLoading,
+                enabled = state.isGuardarHabilitado && !state.isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                 shape = RoundedCornerShape(12.dp)
             ) {
