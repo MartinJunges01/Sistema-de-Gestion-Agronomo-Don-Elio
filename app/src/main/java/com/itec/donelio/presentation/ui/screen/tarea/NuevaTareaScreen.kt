@@ -20,6 +20,7 @@ import com.itec.donelio.presentation.ui.components.SelectorCampania
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
+import com.itec.donelio.presentation.ui.theme.TextoSecundario
 import com.itec.donelio.presentation.viewmodel.tarea.NuevaTareaViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
