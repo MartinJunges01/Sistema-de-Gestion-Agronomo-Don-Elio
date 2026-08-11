@@ -53,10 +53,28 @@ fun DetalleCampaniaScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(state.campania?.nombre ?: "Detalle", fontWeight = FontWeight.Bold) },
+            title = { 
+                Text(
+                    text = state.campania?.nombre ?: "Detalle", 
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.fillMaxWidth(0.6f)
+                ) 
+            },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriVerde, titleContentColor = Color.White, navigationIconContentColor = Color.White),
             actions = {
+                if (state.idAnterior != null) {
+                    IconButton(onClick = { viewModel.navegarA(state.idAnterior!!) }) {
+                        Icon(Icons.Default.ChevronLeft, contentDescription = "Anterior", tint = Color.White)
+                    }
+                }
+                if (state.idSiguiente != null) {
+                    IconButton(onClick = { viewModel.navegarA(state.idSiguiente!!) }) {
+                        Icon(Icons.Default.ChevronRight, contentDescription = "Siguiente", tint = Color.White)
+                    }
+                }
                 if (state.campania?.estaActiva == true) {
                     IconButton(onClick = { viewModel.finalizarCampania() }) { 
                         Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White) 
@@ -234,6 +252,10 @@ private fun TabInsumos(campaniaId: Int, onGoToInsumos: () -> Unit) {
     val vinculados by vm.insumosVinculados.collectAsState()
     val total = vinculados.sumOf { it.cantidad * it.precio }
 
+    LaunchedEffect(campaniaId) {
+        vm.seleccionarCampania(campaniaId)
+    }
+
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
@@ -261,6 +283,10 @@ private fun TabCosechas(campaniaId: Int, onGoToCosechas: () -> Unit) {
     val noAlmacenadasDetalle by vm.noAlmacenadasDetalle.collectAsState()
     val totalAlmacenado = almacenadas.sumOf { it.cantidad }
     val totalNoAlmacenado = noAlmacenadasDetalle.values.sumOf { it.precio }
+
+    LaunchedEffect(campaniaId) {
+        vm.seleccionarCampania(campaniaId)
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
@@ -295,6 +321,10 @@ private fun TabObservaciones(campaniaId: Int, onGoToObservaciones: () -> Unit) {
     val vm: ObservacionViewModel = hiltViewModel(key = "tab_observaciones_$campaniaId")
     val observaciones by vm.observaciones.collectAsState()
     val ultimas = observaciones.take(3)
+
+    LaunchedEffect(campaniaId) {
+        vm.seleccionarCampania(campaniaId)
+    }
 
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
