@@ -19,7 +19,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 
 ## 🟡 NIVEL L3 — MEJORAS FUNCIONALES
 - [ ] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
-- [ ] **[#295] Issue 14:** Incorporar Edición y Eliminación de Cosechas
+- [x] **[#295] Issue 14:** Cosechas no Tienen Edición ni Eliminación de Cosechas
 - [ ] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
 - [ ] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)
 - [x] **[#298] Issue 17: Refactor Unidad Unica**

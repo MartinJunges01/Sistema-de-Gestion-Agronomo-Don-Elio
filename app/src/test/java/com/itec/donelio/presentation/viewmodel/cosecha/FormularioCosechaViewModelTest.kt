@@ -2,6 +2,8 @@ package com.itec.donelio.presentation.viewmodel.cosecha
 
 import androidx.lifecycle.SavedStateHandle
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCosechaPorIdUseCase
+import com.itec.donelio.domain.use_case.EditarCosechaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaConVentaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaUseCase
 import io.mockk.coEvery
@@ -32,6 +34,8 @@ class FormularioCosechaViewModelTest {
     private lateinit var registrarCosechaUseCase: RegistrarCosechaUseCase
     private lateinit var registrarConVentaUseCase: RegistrarCosechaConVentaUseCase
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase
+    private lateinit var editarCosechaUseCase: EditarCosechaUseCase
     private lateinit var viewModel: FormularioCosechaViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -42,12 +46,17 @@ class FormularioCosechaViewModelTest {
         registrarCosechaUseCase = mockk()
         registrarConVentaUseCase = mockk()
         obtenerCampaniasUseCase = mockk()
+        obtenerCosechaPorIdUseCase = mockk()
+        editarCosechaUseCase = mockk()
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
+        coEvery { obtenerCosechaPorIdUseCase(any()) } returns null
         viewModel = FormularioCosechaViewModel(
             savedStateHandle = SavedStateHandle(),
             registrarCosechaUseCase = registrarCosechaUseCase,
             registrarConVentaUseCase = registrarConVentaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase
+            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
+            editarCosechaUseCase = editarCosechaUseCase
         )
     }
 
