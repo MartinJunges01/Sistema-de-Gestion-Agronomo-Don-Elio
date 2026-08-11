@@ -13,9 +13,9 @@ class EditarObservacionUseCase @Inject constructor(
     private val observacionRepository: ObservacionRepository
 ) {
     operator fun invoke(observacion: Observacion): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
-            if (observacion.texto.isBlank() && observacion.fotoUri == null) {
+            if (observacion.texto.isBlank() && observacion.imagenUri == null) {
                 emit(Resource.Error("La observación debe tener texto o una foto"))
                 return@flow
             }

@@ -13,7 +13,7 @@ class EliminarObservacionUseCase @Inject constructor(
     private val observacionRepository: ObservacionRepository
 ) {
     operator fun invoke(observacion: Observacion): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             observacionRepository.deleteObservacion(observacion)
             emit(Resource.Success(Unit))
