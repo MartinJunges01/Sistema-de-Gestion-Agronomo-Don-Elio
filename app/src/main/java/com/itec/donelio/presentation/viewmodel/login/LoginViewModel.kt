@@ -2,6 +2,7 @@ package com.itec.donelio.presentation.viewmodel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.itec.donelio.core.SessionManager
 import com.itec.donelio.domain.use_case.LoginUseCase
 import com.itec.donelio.domain.use_case.RegistroUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,8 @@ data class LoginUiState(
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val registroUseCase: RegistroUseCase
+    private val registroUseCase: RegistroUseCase,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -34,6 +36,8 @@ class LoginViewModel @Inject constructor(
             try {
                 val usuario = loginUseCase(nombreUsuario, contrasena)
                 if (usuario != null) {
+                    // Persistir el nombre del usuario en la sesion para mostrarlo en el Dashboard
+                    sessionManager.saveUserName(usuario.nombre)
                     _state.update { it.copy(isLoading = false, loginExitoso = true) }
                 } else {
                     _state.update { it.copy(isLoading = false, error = "Credenciales inválidas") }

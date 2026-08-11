@@ -1,10 +1,12 @@
 package com.itec.donelio.presentation.viewmodel.login
 
 import app.cash.turbine.test
+import com.itec.donelio.core.SessionManager
 import com.itec.donelio.domain.model.Usuario
 import com.itec.donelio.domain.use_case.LoginUseCase
 import com.itec.donelio.domain.use_case.RegistroUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +27,7 @@ class LoginViewModelTest {
 
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var registroUseCase: RegistroUseCase
+    private lateinit var sessionManager: SessionManager
     private lateinit var loginViewModel: LoginViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -34,7 +37,8 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
         loginUseCase = mockk()
         registroUseCase = mockk()
-        loginViewModel = LoginViewModel(loginUseCase, registroUseCase)
+        sessionManager = mockk(relaxed = true)
+        loginViewModel = LoginViewModel(loginUseCase, registroUseCase, sessionManager)
     }
 
     @After
@@ -71,6 +75,9 @@ class LoginViewModelTest {
             assertTrue(successState.loginExitoso)
             assertEquals(null, successState.error)
             
+            // Verify session manager was called
+            coVerify(exactly = 1) { sessionManager.saveUserName(usuario.nombre) }
+            
             // Should not receive any more items
             cancelAndIgnoreRemainingEvents()
         }
@@ -99,6 +106,9 @@ class LoginViewModelTest {
             assertFalse(errorState.loginExitoso)
             assertEquals("Credenciales inválidas", errorState.error)
             
+            // Verify session manager was not called
+            coVerify(exactly = 0) { sessionManager.saveUserName(any()) }
+            
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -125,6 +135,9 @@ class LoginViewModelTest {
             assertFalse(errorState.isLoading)
             assertFalse(errorState.loginExitoso)
             assertEquals("El nombre de usuario no puede estar vacío", errorState.error)
+            
+            // Verify session manager was not called
+            coVerify(exactly = 0) { sessionManager.saveUserName(any()) }
             
             cancelAndIgnoreRemainingEvents()
         }

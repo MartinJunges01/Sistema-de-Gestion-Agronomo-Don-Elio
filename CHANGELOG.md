@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-08-11] - [#287] fix(login): Saludo muestra nombre de usuario en vez de Invitado**
+- **ViewModels:** `LoginViewModel` inyecta ahora `SessionManager` y luego del inicio de sesión persistirá en DataStore el nombre real del usuario recibido del backend.
+- **Rama:** `fix/issue-287-saludo-usuario`
+
 **[2026-08-11] - [#290] fix(campanias): Validación estricta de fechas pasadas en creación**
 - **Dominio:** 
   - Creado `ValidarDatosCampaniaUseCase` para concentrar la lógica de validación (nombre, cultivo y control estricto de no permitir fechas anteriores a hoy, ignorando la regla en modo edición).
