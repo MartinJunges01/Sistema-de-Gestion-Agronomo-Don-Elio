@@ -7,6 +7,7 @@ import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.FinalizarCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,33 +20,62 @@ data class CampaniaDetailState(
     val campania: Campania? = null,
     val isLoading: Boolean = true,
     val error: String? = null,
-    val finishSuccess: Boolean = false
+    val finishSuccess: Boolean = false,
+    val idAnterior: Int? = null,
+    val idSiguiente: Int? = null
 )
 
 @HiltViewModel
 class CampaniaDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val finalizarCampaniaUseCase: FinalizarCampaniaUseCase,
-    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase
+    private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase,
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
 ) : ViewModel() {
 
-    private val campaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
+    private var currentCampaniaId: Int = savedStateHandle.get<Int>("campaniaId") ?: -1
+    private var allCampanias: List<Campania> = emptyList()
 
     private val _state = MutableStateFlow(CampaniaDetailState())
     val state: StateFlow<CampaniaDetailState> = _state.asStateFlow()
 
     init {
-        if (campaniaId > 0) {
+        viewModelScope.launch {
+            obtenerCampaniasUseCase().collect { campanias ->
+                allCampanias = campanias
+                actualizarNavegacion()
+            }
+        }
+        if (currentCampaniaId > 0) {
             cargarCampania()
         } else {
             _state.update { it.copy(isLoading = false, error = "ID de campaña inválido") }
         }
     }
 
+    fun navegarA(nuevoId: Int) {
+        currentCampaniaId = nuevoId
+        cargarCampania()
+        actualizarNavegacion()
+    }
+
+    private fun actualizarNavegacion() {
+        if (allCampanias.isEmpty() || currentCampaniaId <= 0) return
+        
+        val index = allCampanias.indexOfFirst { it.id == currentCampaniaId }
+        if (index != -1) {
+            val prev = if (index > 0) allCampanias[index - 1].id else null
+            val next = if (index < allCampanias.size - 1) allCampanias[index + 1].id else null
+            _state.update { it.copy(idAnterior = prev, idSiguiente = next) }
+        } else {
+            _state.update { it.copy(idAnterior = null, idSiguiente = null) }
+        }
+    }
+
     private fun cargarCampania() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            obtenerCampaniaPorIdUseCase(campaniaId).collect { campania ->
+            obtenerCampaniaPorIdUseCase(currentCampaniaId).collect { campania ->
                 if (campania != null) {
                     _state.update { it.copy(campania = campania, isLoading = false, error = null) }
                 } else {

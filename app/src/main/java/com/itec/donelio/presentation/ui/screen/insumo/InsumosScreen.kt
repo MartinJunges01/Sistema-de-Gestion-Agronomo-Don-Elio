@@ -98,14 +98,15 @@ fun InsumosScreen(
                 }
             } else {
                 items(vinculados) { vinculado ->
-                    val nombreInsumo = catalogoMap[vinculado.idInsumo]?.nombre ?: "Insumo #${vinculado.idInsumo}"
+                    val nombreBase = vinculado.nombreInsumo.ifBlank { "Insumo #${vinculado.idInsumo}" }
+                    val nombreInsumo = if (vinculado.insumoActivo) nombreBase else "$nombreBase (Eliminado)"
                     val total = vinculado.cantidad * vinculado.precio
                     Card(colors = CardDefaults.cardColors(containerColor = Color.White), border = BorderStroke(1.dp, Color(0xFFE7E5E4)), modifier = Modifier.fillMaxWidth()) {
                         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.CheckCircle, contentDescription = "Vinculado", tint = AgriVerde)
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(nombreInsumo, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                                Text(nombreInsumo, fontWeight = FontWeight.Bold, color = if (vinculado.insumoActivo) TextoPrincipal else TextoSecundario)
                                 Text(
                                     "${"%.2f".format(vinculado.cantidad)} × $ ${"%,.2f".format(vinculado.precio)} = $ ${"%,.2f".format(total)}",
                                     fontSize = 12.sp,

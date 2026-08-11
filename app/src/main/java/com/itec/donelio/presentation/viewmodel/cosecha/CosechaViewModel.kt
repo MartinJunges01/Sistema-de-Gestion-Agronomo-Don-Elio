@@ -9,9 +9,11 @@ import com.itec.donelio.domain.model.CosechaNoAlmacenada
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasNoAlmacenadasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
+import com.itec.donelio.domain.use_case.EliminarCosechaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,7 +21,8 @@ class CosechaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     private val obtenerCosechasNoAlmacenadasUseCase: ObtenerCosechasNoAlmacenadasUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val eliminarCosechaUseCase: EliminarCosechaUseCase
 ) : ViewModel() {
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
@@ -27,6 +30,9 @@ class CosechaViewModel @Inject constructor(
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
+
+    private val _cosechaAEliminar = MutableStateFlow<Cosecha?>(null)
+    val cosechaAEliminar = _cosechaAEliminar.asStateFlow()
 
     val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
         .map { it != null && it != -1 }
@@ -43,6 +49,26 @@ class CosechaViewModel @Inject constructor(
 
     fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
     fun clearError() { _errorMessage.value = null }
+
+    fun solicitarEliminacion(cosecha: Cosecha) {
+        _cosechaAEliminar.value = cosecha
+    }
+
+    fun cancelarEliminacion() {
+        _cosechaAEliminar.value = null
+    }
+
+    fun confirmarEliminacion() {
+        val cosecha = _cosechaAEliminar.value ?: return
+        viewModelScope.launch {
+            try {
+                eliminarCosechaUseCase(cosecha)
+                _cosechaAEliminar.value = null
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al eliminar cosecha: ${e.message}"
+            }
+        }
+    }
 
     val almacenadas: StateFlow<List<Cosecha>> = cosechas
         .map { list -> list.filter { it.almacen.isNotBlank() } }

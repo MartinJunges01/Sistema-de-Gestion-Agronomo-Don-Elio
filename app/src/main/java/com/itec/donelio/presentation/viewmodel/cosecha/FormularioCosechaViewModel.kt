@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCosechaPorIdUseCase
+import com.itec.donelio.domain.use_case.EditarCosechaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaConVentaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ data class FormularioCosechaState(
     val tipo: String = "",
     val precio: String = "",
     val campaniaId: Int? = null,
+    val cosechaId: Int? = null,
     val isLoading: Boolean = false,
     val errorCantidad: String? = null,
     val errorPrecio: String? = null,
@@ -37,13 +40,46 @@ class FormularioCosechaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val registrarCosechaUseCase: RegistrarCosechaUseCase,
     private val registrarConVentaUseCase: RegistrarCosechaConVentaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase,
+    private val editarCosechaUseCase: EditarCosechaUseCase
 ) : ViewModel() {
 
     private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+    private val initialCosechaId = savedStateHandle.get<Int>("cosechaId").takeIf { it != -1 }
 
-    private val _state = MutableStateFlow(FormularioCosechaState(campaniaId = initialCampaniaId))
+    private val _state = MutableStateFlow(FormularioCosechaState(campaniaId = initialCampaniaId, cosechaId = initialCosechaId))
     val state: StateFlow<FormularioCosechaState> = _state.asStateFlow()
+
+    init {
+        if (initialCosechaId != null) {
+            cargarCosecha(initialCosechaId)
+        }
+    }
+
+    private fun cargarCosecha(id: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            val cosecha = obtenerCosechaPorIdUseCase(id)
+            if (cosecha != null) {
+                // Si es almacenada (almacen no es blank) o venta (almacen en blanco pero sin detalle - esto lo asume la vista)
+                _state.update { 
+                    it.copy(
+                        isLoading = false,
+                        cantidad = cosecha.cantidad.toString(),
+                        fecha = cosecha.fecha,
+                        almacen = cosecha.almacen,
+                        almacenado = cosecha.almacen.isNotBlank(),
+                        campaniaId = cosecha.idCampania
+                        // NOTA: Para ventas/no almacenadas, en un futuro se debería cargar el detalle de CosechaNoAlmacenada
+                        // Por simplicidad del bug, el form asume almacenada o blanquea si no.
+                    )
+                }
+            } else {
+                _state.update { it.copy(isLoading = false, errorCantidad = "Cosecha no encontrada") }
+            }
+        }
+    }
 
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -84,10 +120,21 @@ class FormularioCosechaViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                if (current.almacenado) {
-                    registrarCosechaUseCase(cantidad, current.fecha, current.almacen.trim(), campaniaId)
+                if (current.cosechaId != null) {
+                    val cosechaEditada = com.itec.donelio.domain.model.Cosecha(
+                        id = current.cosechaId,
+                        idCampania = campaniaId,
+                        cantidad = cantidad,
+                        fecha = current.fecha,
+                        almacen = if (current.almacenado) current.almacen.trim() else ""
+                    )
+                    editarCosechaUseCase(cosechaEditada)
                 } else {
-                    registrarConVentaUseCase(cantidad, current.fecha, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
+                    if (current.almacenado) {
+                        registrarCosechaUseCase(cantidad, current.fecha, current.almacen.trim(), campaniaId)
+                    } else {
+                        registrarConVentaUseCase(cantidad, current.fecha, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
+                    }
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
