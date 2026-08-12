@@ -104,7 +104,7 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun DonElioTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -122,7 +122,7 @@ fun DonElioTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = 0x00000000
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
             window.navigationBarColor = 0x00000000
         }
     }

@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-12] - [#303] fix(ux): Bloquear Modo Oscuro (Forzar Tema Claro)**
+- **UI:** En `Theme.kt`, se modificó `DonElioTheme` para que el parámetro `darkTheme` siempre sea `false` por defecto, ignorando el setting del sistema.
+- **UI:** Se forzó `isAppearanceLightStatusBars = true` para asegurar que los iconos de la barra de estado siempre sean oscuros.
+- **Rama:** `fix/bloquear-modo-oscuro`
+
 **[2026-08-11] - [#294] feat(observaciones): Edición y eliminación de observaciones**
 - **Dominio:** Se crearon `EditarObservacionUseCase` y `EliminarObservacionUseCase`.
 - **ViewModels:** Se inyectaron los nuevos casos de uso en `ObservacionViewModel` para gestionar las acciones y los errores, exponiéndolos como estado.
