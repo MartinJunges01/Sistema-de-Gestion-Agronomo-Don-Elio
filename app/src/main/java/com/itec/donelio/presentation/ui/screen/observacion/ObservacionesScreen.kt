@@ -14,6 +14,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -68,6 +70,10 @@ fun ObservacionesScreen(
 
     // URI temporal para la foto de cámara
     var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+
+    var showDeleteDialog by remember { mutableStateOf<Observacion?>(null) }
+    var showEditDialog by remember { mutableStateOf<Observacion?>(null) }
+    val errorMessage by listViewModel.errorMessage.collectAsState()
 
     // Launcher de la cámara
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { exito ->
@@ -127,6 +133,60 @@ fun ObservacionesScreen(
     // Resetear el guardado exitoso del formulario
     LaunchedEffect(formState.guardadoExitoso) {
         if (formState.guardadoExitoso) formViewModel.resetGuardadoExitoso()
+    }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { msg ->
+            snackbarHostState.showSnackbar(msg)
+            listViewModel.clearError()
+        }
+    }
+
+    if (showDeleteDialog != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = null },
+            title = { Text("Eliminar Observación", fontWeight = FontWeight.Bold) },
+            text = { Text("¿Eliminar esta observación? Esta acción no se puede deshacer.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    listViewModel.eliminarObservacion(showDeleteDialog!!)
+                    showDeleteDialog = null
+                }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = null }) { Text("Cancelar", color = TextoSecundario) }
+            }
+        )
+    }
+
+    if (showEditDialog != null) {
+        var textoEditado by remember { mutableStateOf(showEditDialog!!.texto) }
+        AlertDialog(
+            onDismissRequest = { showEditDialog = null },
+            title = { Text("Editar Observación", fontWeight = FontWeight.Bold) },
+            text = {
+                OutlinedTextField(
+                    value = textoEditado,
+                    onValueChange = { textoEditado = it },
+                    label = { Text("Texto") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
+                    maxLines = 5
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val obsEditada = showEditDialog!!.copy(texto = textoEditado.trim())
+                        listViewModel.editarObservacion(obsEditada)
+                        showEditDialog = null
+                    },
+                    enabled = textoEditado.isNotBlank() || showEditDialog!!.imagenUri != null
+                ) { Text("Guardar", color = AgriVerde) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditDialog = null }) { Text("Cancelar", color = TextoSecundario) }
+            }
+        )
     }
 
     // Diálogo de rationale: se muestra cuando el usuario negó el permiso una vez
@@ -248,7 +308,11 @@ fun ObservacionesScreen(
             if (observaciones.isNotEmpty()) {
                 item { Text("Observaciones registradas", fontWeight = FontWeight.Bold, color = TextoPrincipal) }
                 items(observaciones, key = { it.id }) { obs ->
-                    ObservacionCard(observacion = obs)
+                    ObservacionCard(
+                        observacion = obs,
+                        onEdit = { showEditDialog = obs },
+                        onDelete = { showDeleteDialog = obs }
+                    )
                 }
             } else {
                 item {
@@ -275,7 +339,7 @@ fun ObservacionesScreen(
 }
 
 @Composable
-private fun ObservacionCard(observacion: Observacion) {
+private fun ObservacionCard(observacion: Observacion, onEdit: () -> Unit, onDelete: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
@@ -283,7 +347,17 @@ private fun ObservacionCard(observacion: Observacion) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(observacion.texto, color = TextoPrincipal, fontSize = 14.sp)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
+                Text(observacion.texto, color = TextoPrincipal, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                Row {
+                    IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextoSecundario, modifier = Modifier.size(20.dp))
+                    }
+                    IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                    }
+                }
+            }
             if (observacion.imagenUri != null) {
                 Spacer(modifier = Modifier.height(8.dp))
                 AsyncImage(
