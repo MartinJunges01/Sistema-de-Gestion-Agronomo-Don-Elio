@@ -83,10 +83,23 @@ class NuevaTareaViewModelTest {
         coEvery { crearTareaUseCase(any(), any(), any(), any(), any()) } returns flowOf(Resource.Success(Unit))
 
         viewModel.onNombreChange("Tarea test")
+        
+        // Caso normal
         viewModel.onHoraChange("14:30")
         viewModel.guardar()
-
-        val state = viewModel.state.value
+        var state = viewModel.state.value
+        assertEquals(null, state.errorHora)
+        
+        // Caso límite inferior
+        viewModel.onHoraChange("00:00")
+        viewModel.guardar()
+        state = viewModel.state.value
+        assertEquals(null, state.errorHora)
+        
+        // Caso límite superior
+        viewModel.onHoraChange("23:59")
+        viewModel.guardar()
+        state = viewModel.state.value
         assertEquals(null, state.errorHora)
     }
 }

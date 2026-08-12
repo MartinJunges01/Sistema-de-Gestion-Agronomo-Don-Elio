@@ -30,4 +30,16 @@ class EliminarObservacionUseCaseTest {
         assertTrue(result[0] is Resource.Loading)
         assertTrue(result[1] is Resource.Success)
     }
+
+    @Test
+    fun `dado que el repositorio falla, cuando se elimina observacion, entonces emite Resource Error`() = runTest {
+        val observacion = Observacion(1, "Texto", null, 1)
+        coEvery { observacionRepository.deleteObservacion(any()) } throws Exception("DB Error")
+        
+        val result = useCase(observacion).toList()
+
+        assertTrue(result[0] is Resource.Loading)
+        assertTrue(result[1] is Resource.Error)
+        org.junit.Assert.assertEquals("Error al eliminar observación: DB Error", (result[1] as Resource.Error).message)
+    }
 }

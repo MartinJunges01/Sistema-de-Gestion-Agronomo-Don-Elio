@@ -42,9 +42,21 @@ class ObservacionViewModel @Inject constructor(
         if (id != null && id != -1) obtenerObservacionesPorCampaniaUseCase(id) else flowOf(emptyList())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /**
+     * Selecciona una campaña y actualiza el estado correspondiente.
+     * @param id El ID de la campaña seleccionada.
+     */
     fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+
+    /**
+     * Limpia el mensaje de error actual.
+     */
     fun clearError() { _errorMessage.value = null }
 
+    /**
+     * Edita una observación existente y actualiza el estado en caso de error.
+     * @param observacion La observación con los datos editados.
+     */
     fun editarObservacion(observacion: Observacion) {
         viewModelScope.launch {
             editarObservacionUseCase(observacion).collect { resource ->
@@ -58,6 +70,10 @@ class ObservacionViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Elimina una observación y actualiza el estado en caso de error.
+     * @param observacion La observación a eliminar.
+     */
     fun eliminarObservacion(observacion: Observacion) {
         viewModelScope.launch {
             eliminarObservacionUseCase(observacion).collect { resource ->
