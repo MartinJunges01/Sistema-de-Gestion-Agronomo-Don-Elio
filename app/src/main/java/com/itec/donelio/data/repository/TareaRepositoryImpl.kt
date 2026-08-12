@@ -19,8 +19,8 @@ class TareaRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getTareasPendientesGlobales(limite: Int): Flow<List<Tarea>> {
-        return tareaDao.getTareasPendientesGlobales(limite).map { entities ->
+    override fun getTareasPendientesGlobales(limite: Int, fechaLimite: Long): Flow<List<Tarea>> {
+        return tareaDao.getTareasPendientesGlobales(limite, fechaLimite).map { entities ->
             entities.map { it.toDomain() }
         }
     }

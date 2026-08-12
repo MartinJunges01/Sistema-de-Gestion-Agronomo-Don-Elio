@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ObtenerTareasPendientesUseCase @Inject constructor(
     private val tareaRepository: TareaRepository
 ) {
-    operator fun invoke(limite: Int = 5): Flow<List<Tarea>> {
-        return tareaRepository.getTareasPendientesGlobales(limite)
+    operator fun invoke(limite: Int = 5, fechaLimite: Long): Flow<List<Tarea>> {
+        return tareaRepository.getTareasPendientesGlobales(limite, fechaLimite)
     }
 }
