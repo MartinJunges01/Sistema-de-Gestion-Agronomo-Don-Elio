@@ -32,7 +32,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 
 ## ⚪ NIVEL L5 — CALIDAD Y UX
 - [x] **[#303] Issue 21:** Bloquear Modo Oscuro (Forzar Tema Claro)
-- [ ] **[#304] Issue 22:** La Pantalla No Se Desplaza al Escribir (Teclado Cubre los Campos)
+- [x] **[#304] Issue 22:** La Pantalla No Se Desplaza al Escribir (Teclado Cubre los Campos)
 - [ ] **Issue 23:** Datos Mock del Dashboard — Clima y Salud de Lotes
 #
 
