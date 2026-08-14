@@ -31,8 +31,8 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 - [x] **[#302] Issue 20:** Reportes — Implementar Comparación Real entre Campañas
 
 ## ⚪ NIVEL L5 — CALIDAD Y UX
-- [ ] **[#303] Issue 21:** Bloquear Modo Oscuro (Forzar Tema Claro)
-- [ ] **[#304] Issue 22:** La Pantalla No Se Desplaza al Escribir (Teclado Cubre los Campos)
+- [x] **[#303] Issue 21:** Bloquear Modo Oscuro (Forzar Tema Claro)
+- [x] **[#304] Issue 22:** La Pantalla No Se Desplaza al Escribir (Teclado Cubre los Campos)
 - [ ] **Issue 23:** Datos Mock del Dashboard — Clima y Salud de Lotes
 #
 
