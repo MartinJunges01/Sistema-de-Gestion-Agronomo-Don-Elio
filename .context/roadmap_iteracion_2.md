@@ -8,7 +8,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 
 ## 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [x] **[#285] Issue 1:** Tareas del Dashboard — Interacción, Filtrado y Tratamiento Visual
-- [ ] **[#286] Issue 2:** Tareas Nuevas No Aparecen en la Pestaña Tareas (Desincronización de Timestamps)
+- [x] **[#286] Issue 2:** Tareas Nuevas No Aparecen en la Pestaña Tareas (Desincronización de Timestamps)
 - [x] **[#287] Issue 3:** Mensaje de Saludo No Funciona Correctamente
 - [x] **[#288] Issue 4:** Visualización Genérica de Insumos Vinculados tras Soft-Delete en Catálogo
 - [x] **[#289] Issue 8:** Catálogo de Insumos — No Guarda Nuevos Insumos / Validación de Formulario Faltante
@@ -20,7 +20,7 @@ Basado en el documento de `bugs_identificados.md`, el siguiente es el listado de
 ## 🟡 NIVEL L3 — MEJORAS FUNCIONALES
 - [x] **[#294] Issue 13:** Incorporar Edición y Eliminación de Observaciones
 - [x] **[#295] Issue 14:** Cosechas no Tienen Edición ni Eliminación de Cosechas
-- [ ] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
+- [x] **[#296] Issue 15:** Separar Campañas Activas e Inactivas (Historial)
 - [x] **[#297] Issue 16:** Navegación entre Detalles de Campañas (Sin Retroceder)
 - [x] **[#298] Issue 17: Refactor Unidad Unica**
 
