@@ -7,6 +7,26 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+fun getGitCommitHash(): String {
+    return try {
+        val process = Runtime.getRuntime().exec("git rev-parse --short HEAD")
+        process.waitFor()
+        process.inputStream.bufferedReader().readText().trim()
+    } catch (e: Exception) {
+        "unknown"
+    }
+}
+
+fun getGitBranchName(): String {
+    return try {
+        val process = Runtime.getRuntime().exec("git rev-parse --abbrev-ref HEAD")
+        process.waitFor()
+        process.inputStream.bufferedReader().readText().trim()
+    } catch (e: Exception) {
+        "unknown"
+    }
+}
+
 android {
     namespace = "com.itec.donelio"
     compileSdk = 34
@@ -18,6 +38,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GIT_COMMIT", "\"${getGitCommitHash()}\"")
+        buildConfigField("String", "GIT_BRANCH", "\"${getGitBranchName()}\"")
     }
 
     buildTypes {
