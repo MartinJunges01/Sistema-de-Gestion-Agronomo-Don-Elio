@@ -27,13 +27,13 @@ Antes de tomar cualquier acción, tu primera responsabilidad es entender el esta
 ### Skill: `DocumentarAvance`
 **Objetivo:** Mantener el seguimiento del proyecto vivo y actualizado.
 **Acción:** Tras completar CADA issue del roadmap:
-1.  **Roadmap:** Actualiza `.context/roadmap_iteracion_2.md` marcando el checkbox correspondiente con `[x]`. (El archivo `.context/roadmap_iteracion_1.md` sirve como archivo histórico de la fase inicial).
+1.  **Roadmap:** Actualiza `.context/roadmap_iteracion_3.md` marcando el checkbox correspondiente con `[x]`. (Los archivos `.context/roadmap_iteracion_1.md` y `.context/roadmap_iteracion_2.md` sirven como archivos históricos de las fases anteriores).
 2.  **Changelog:** Añade una entrada en `CHANGELOG.md` con el formato `**[YYYY-MM-DD] - [Breve descripción de la tarea]**` seguido de los detalles técnicos.
 
 ### Skill: `GestionDeBugs`
 **Objetivo:** Documentar y seguir el rastro de la deuda técnica.
 **Acción:** 
-1. Antes de iniciar una tarea, revisa la lista actual en `.context/roadmap_iteracion_2.md`.
+1. Antes de iniciar una tarea, revisa la lista actual en `.context/roadmap_iteracion_3.md`.
 2. Si descubres nuevos bugs en tu sesión que no abordarás de inmediato, regístralos en `docs/bugs_identificados.md` usando la plantilla predefinida.
 3. Una vez registrados localmente, debes crear los issues en GitHub (via `gh cli` o manualmente) para obtener su ID oficial. 
 4. A partir de ese momento, el bug debe referenciarse usando su ID oficial (ej. `[#305] Crash en login`) en todos lados (Roadmap, Commits, PRs).

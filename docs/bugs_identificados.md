@@ -1,11 +1,11 @@
 # Bugs Identificados
 
-> Los issues con ID oficial se encuentran en el Roadmap (`roadmap_iteracion_2.md`).
+> Los issues con ID oficial se encuentran en el Roadmap (`roadmap_iteracion_3.md`).
 > Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo, pendiente de subir a GitHub para obtener su ID.
 
 ---
 
-## [PENDIENTE-ID] InsumoVinculacionViewModel sin método sincronizarInsumos()
+## [#354] InsumoVinculacionViewModel sin método sincronizarInsumos()
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Insumos / Detalle Campaña / Tabs
@@ -35,7 +35,7 @@ private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(
 
 ---
 
-## [PENDIENTE-ID] Exportación CSV/PDF sin identificación de campaña en el encabezado
+## [#355] Exportación CSV/PDF sin identificación de campaña en el encabezado
 
 **Severidad:** 🔵 Mejora de Reportes
 **Módulo:** Reportes / Exportación
@@ -69,7 +69,7 @@ fun exportarReporteCsv(uri: Uri, context: Context) {
 
 ---
 
-## [PENDIENTE-ID] Comparador permite seleccionar la misma campaña para A y B
+## [#356] Comparador permite seleccionar la misma campaña para A y B
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Reportes / Comparador
@@ -95,7 +95,7 @@ campanias.forEach { campania ->
 
 ---
 
-## [PENDIENTE-ID] ReportExporter no soporta PDF de múltiples páginas
+## [#357] ReportExporter no soporta PDF de múltiples páginas
 
 **Severidad:** 🔵 Mejora de Reportes
 **Módulo:** Reportes / Exportación
@@ -126,7 +126,7 @@ El bloque finaliza la página pero no crea una nueva, por lo que los ítems rest
 
 ---
 
-## [PENDIENTE-ID] DoubleBarIndicator no tiene tests unitarios
+## [#358] DoubleBarIndicator no tiene tests unitarios
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Reportes / Comparador
@@ -143,7 +143,7 @@ El componente `DoubleBarIndicator` (añadido en #302) no tiene ninguna prueba un
 
 ---
 
-## [PENDIENTE-ID] ReportesViewModel no valida que campaña A ≠ campaña B
+## [#356] ReportesViewModel no valida que campaña A ≠ campaña B
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Reportes / Comparador
@@ -162,7 +162,7 @@ Según el plan de implementación del Issue #302, se debía agregar una validaci
 
 ---
 
-## [PENDIENTE-ID] Tests VM-R8 y VM-R9 (guardia de exportación #300) no tienen implementación
+## [#359] Tests VM-R8 y VM-R9 (guardia de exportación #300) no tienen implementación
 
 **Severidad:** ⚪ Cobertura / Deuda Técnica
 **Módulo:** Reportes / Exportación
@@ -260,7 +260,7 @@ El `prompt_operativo.md` y la skill `don-elio-workflow` exigen KDoc en todas las
 
 ---
 
-## [PENDIENTE-ID] UX Inconsistente de Validación entre Formulario de Insumos y Campañas
+## [#360] UX Inconsistente de Validación entre Formulario de Insumos y Campañas
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Presentation / Formularios
