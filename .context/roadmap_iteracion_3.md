@@ -9,43 +9,43 @@
 ## Checklist de Progreso
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
-- [ ] **[#334] Issue 1:** No se añaden insumos al catálogo
-- [ ] **[#335] Issue 2:** El botón de edición de cosechas no funciona
+- [ ] **[#334] Issue 334:** No se añaden insumos al catálogo
+- [ ] **[#335] Issue 335:** El botón de edición de cosechas no funciona
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#336] Issue 3:** Validación del formulario de cosecha marca el campo incorrecto
-- [ ] **[#337] Issue 4:** El botón de edición en observaciones solo funciona para texto (no para foto)
+- [ ] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto
+- [ ] **[#337] Issue 337:** El botón de edición en observaciones solo funciona para texto (no para foto)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
-- [ ] **[#338] Issue 5:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
-- [ ] **[#339] Issue 6:** Header de columnas cortado en el panel de detalle de campaña
-- [ ] **[#340] Issue 7:** Etiquetas del gráfico de reportes desacomodadas
+- [ ] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
+- [ ] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
+- [ ] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
-- [ ] **[#341] Issue 8:** Persistencia de sesión (login una sola vez)
-- [ ] **[#342] Issue 9:** Color y botón de borrado para campañas inactivas
-- [ ] **[#343] Issue 10:** Exportación de reportes con datos de cosechas
-- [ ] **[#344] Issue 11:** Referencias y valores absolutos de gasto por insumos ordenados por costo
-- [ ] **[#345] Issue 12:** Rediseño de la Pantalla de Tareas (filtros + calendario con rango)
+- [ ] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
+- [ ] **[#342] Issue 342:** Color y botón de borrado para campañas inactivas
+- [ ] **[#343] Issue 343:** Exportación de reportes con datos de cosechas
+- [ ] **[#344] Issue 344:** Referencias y valores absolutos de gasto por insumos ordenados por costo
+- [ ] **[#345] Issue 345:** Rediseño de la Pantalla de Tareas (filtros + calendario con rango)
 
 ### 🔵 NIVEL L5 — NUEVOS DESARROLLOS (Dashboard y Reportes Avanzados)
-- [ ] **[#346] Issue 13:** Resumen Financiero Rápido en Dashboard (vistazo mensual)
-- [ ] **[#347] Issue 14:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
-- [ ] **[#348] Issue 15:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
-- [ ] **[#349] Issue 16:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
-- [ ] **[#350] Issue 17:** Costo por Hectárea ($/Ha) en reportes
-- [ ] **[#351] Issue 18:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
-- [ ] **[#352] Issue 19:** Evolución Histórica por Cultivo (gráfico de tendencia)
-- [ ] **[#353] Issue 20:** Filtros Avanzados en Reportes (rango de fechas + selector de campañas + datos financieros)
+- [ ] **[#346] Issue 346:** Resumen Financiero Rápido en Dashboard (vistazo mensual)
+- [ ] **[#347] Issue 347:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
+- [ ] **[#348] Issue 348:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
+- [ ] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
+- [ ] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes
+- [ ] **[#351] Issue 351:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
+- [ ] **[#352] Issue 352:** Evolución Histórica por Cultivo (gráfico de tendencia)
+- [ ] **[#353] Issue 353:** Filtros Avanzados en Reportes (rango de fechas + selector de campañas + datos financieros)
 
 ### 📋 NIVEL L6 — DEUDA TÉCNICA (Pendientes de Iteración 2)
-- [ ] **[#354] Issue 21:** InsumoVinculacionViewModel sin método sincronizarInsumos()
-- [ ] **[#355] Issue 22:** Exportación CSV/PDF sin identificación de campaña en el encabezado
-- [ ] **[#356] Issue 23:** Comparador permite seleccionar la misma campaña para A y B
-- [ ] **[#357] Issue 24:** ReportExporter no soporta PDF de múltiples páginas
-- [ ] **[#358] Issue 25:** DoubleBarIndicator no tiene tests unitarios
-- [ ] **[#359] Issue 26:** Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
-- [ ] **[#360] Issue 27:** UX Inconsistente de Validación entre Formulario de Insumos y Campañas
+- [ ] **[#354] Issue 354:** InsumoVinculacionViewModel sin método sincronizarInsumos()
+- [ ] **[#355] Issue 355:** Exportación CSV/PDF sin identificación de campaña en el encabezado
+- [ ] **[#356] Issue 356:** Comparador permite seleccionar la misma campaña para A y B
+- [ ] **[#357] Issue 357:** ReportExporter no soporta PDF de múltiples páginas
+- [ ] **[#358] Issue 358:** DoubleBarIndicator no tiene tests unitarios
+- [ ] **[#359] Issue 359:** Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
+- [ ] **[#360] Issue 360:** UX Inconsistente de Validación entre Formulario de Insumos y Campañas
 
 ---
 ---
@@ -56,7 +56,7 @@ Estos issues impiden el uso de funcionalidades core de la aplicación.
 
 ---
 
-## [#334] Issue 1: No se añaden insumos al catálogo
+## [#334] Issue 334: No se añaden insumos al catálogo
 
 **Severidad:** 🔴 Bug Bloqueante
 **Módulo:** Insumos / Catálogo
@@ -69,7 +69,7 @@ Estos issues impiden el uso de funcionalidades core de la aplicación.
 **Descripción**
 Al intentar agregar un nuevo insumo desde la pantalla del catálogo de insumos, el insumo no se persiste en la base de datos. La operación falla silenciosamente — el usuario no recibe ningún mensaje de error y el insumo simplemente no aparece en la lista.
 
-> **Nota:** Este issue fue reportado en la iteración 2 como parte del Issue 8 (validación de formulario), pero el flujo de inserción completo sigue sin funcionar correctamente tras la revisión manual en dispositivo.
+> **Nota:** Este issue fue reportado en la iteración 2 como parte del Issue 341 (validación de formulario), pero el flujo de inserción completo sigue sin funcionar correctamente tras la revisión manual en dispositivo.
 
 **Acceptance Criteria**
 - Al completar todos los campos obligatorios (nombre, categoría, unidad) y presionar "Guardar", el insumo debe persistirse en la base de datos.
@@ -85,7 +85,7 @@ Al intentar agregar un nuevo insumo desde la pantalla del catálogo de insumos, 
 
 ---
 
-## [#335] Issue 2: El botón de edición de cosechas no funciona
+## [#335] Issue 335: El botón de edición de cosechas no funciona
 
 **Severidad:** 🔴 Bug Bloqueante
 **Módulo:** Cosechas / Edición
@@ -95,7 +95,7 @@ Al intentar agregar un nuevo insumo desde la pantalla del catálogo de insumos, 
 - `presentation/viewmodel/cosecha/FormularioCosechaViewModel.kt`
 
 **Descripción**
-Al presionar el botón de edición (ícono lápiz) en una tarjeta de cosecha existente, no ocurre ninguna acción. El botón no navega al formulario de edición ni abre un diálogo. La funcionalidad de edición fue implementada en la iteración 2 (Issue #295 / Issue 14), pero no está funcional en el dispositivo.
+Al presionar el botón de edición (ícono lápiz) en una tarjeta de cosecha existente, no ocurre ninguna acción. El botón no navega al formulario de edición ni abre un diálogo. La funcionalidad de edición fue implementada en la iteración 2 (Issue #295 / Issue 347), pero no está funcional en el dispositivo.
 
 **Acceptance Criteria**
 - Al presionar el botón de edición en una cosecha, debe abrirse el formulario de edición pre-rellenado con los datos actuales.
@@ -117,7 +117,7 @@ Comportamiento incorrecto que no crashea la app pero produce resultados erróneo
 
 ---
 
-## [#336] Issue 3: Validación del formulario de cosecha marca el campo incorrecto
+## [#336] Issue 336: Validación del formulario de cosecha marca el campo incorrecto
 
 **Severidad:** 🟠 Bug Funcional
 **Módulo:** Cosechas / Formulario / Validación
@@ -143,7 +143,7 @@ Probable desincronización entre los nombres de los estados de error (`errorCant
 
 ---
 
-## [#337] Issue 4: El botón de edición en observaciones solo funciona para texto (no permite editar/eliminar foto)
+## [#337] Issue 337: El botón de edición en observaciones solo funciona para texto (no permite editar/eliminar foto)
 
 **Severidad:** 🟠 Bug Funcional
 **Módulo:** Observaciones / Edición
@@ -179,7 +179,7 @@ Problemas visuales y de experiencia de usuario que afectan la usabilidad.
 
 ---
 
-## [#338] Issue 5: El teclado bloquea el movimiento de la pantalla al escribir (con bloque blanco superior)
+## [#338] Issue 338: El teclado bloquea el movimiento de la pantalla al escribir (con bloque blanco superior)
 
 **Severidad:** ⚪ UX / Calidad
 **Módulo:** Global / Todos los formularios
@@ -188,7 +188,7 @@ Problemas visuales y de experiencia de usuario que afectan la usabilidad.
 - Todas las pantallas con formularios
 
 **Descripción**
-A pesar de que el Issue 22 de la iteración 2 aplicó `imePadding()` globalmente, persisten dos problemas relacionados al teclado:
+A pesar de que el Issue 355 de la iteración 2 aplicó `imePadding()` globalmente, persisten dos problemas relacionados al teclado:
 1. **Bloqueo de scroll:** En algunas pantallas, el teclado sigue bloqueando el movimiento/scroll al escribir.
 2. **Bloque blanco superior:** Al aparecer el teclado, se genera un bloque o franja blanca en la parte superior de la pantalla que reduce el área visible.
 
@@ -208,7 +208,7 @@ A pesar de que el Issue 22 de la iteración 2 aplicó `imePadding()` globalmente
 
 ---
 
-## [#339] Issue 6: Header de columnas cortado en panel de detalle de campaña
+## [#339] Issue 339: Header de columnas cortado en panel de detalle de campaña
 
 **Severidad:** ⚪ UX / Calidad
 **Módulo:** Detalle Campaña / UI
@@ -235,7 +235,7 @@ En la pantalla de detalle de campaña, al hacer click en una campaña, los encab
 
 ---
 
-## [#340] Issue 7: Etiquetas del gráfico de reportes desacomodadas
+## [#340] Issue 340: Etiquetas del gráfico de reportes desacomodadas
 
 **Severidad:** ⚪ UX / Calidad
 **Módulo:** Reportes / Gráficos
@@ -266,7 +266,7 @@ Funcionalidades nuevas identificadas durante la revisión que mejoran la experie
 
 ---
 
-## [#341] Issue 8: Persistencia de sesión (login una sola vez)
+## [#341] Issue 341: Persistencia de sesión (login una sola vez)
 
 **Severidad:** 🟡 Feature
 **Módulo:** Login / Session / Navegación
@@ -294,7 +294,7 @@ Actualmente el usuario debe iniciar sesión cada vez que abre la aplicación. No
 
 ---
 
-## [#342] Issue 9: Color y botón de borrado para campañas inactivas
+## [#342] Issue 342: Color y botón de borrado para campañas inactivas
 
 **Severidad:** 🟡 Feature / UX
 **Módulo:** Gestión de Campañas
@@ -320,7 +320,7 @@ Las campañas que están marcadas como inactivas (finalizadas) necesitan diferen
 
 ---
 
-## [#343] Issue 10: Agregar datos de cosechas a la exportación de reportes
+## [#343] Issue 343: Agregar datos de cosechas a la exportación de reportes
 
 **Severidad:** 🟡 Feature
 **Módulo:** Reportes / Exportación
@@ -341,11 +341,11 @@ Actualmente la exportación de reportes (CSV/PDF) solo incluye los datos de insu
 - En `ReportesViewModel`: Exponer `cosechasPorCampania: StateFlow<List<Cosecha>>` filtrado por la campaña seleccionada.
 - En `ReportExporter.exportToPdf()`: Agregar sección "Cosechas" con tabla y totales.
 - En `ReportExporter.exportToCsv()`: Agregar filas de cosechas con separador de sección.
-- Considerar la paginación del PDF (ver Issue 22 de deuda técnica).
+- Considerar la paginación del PDF (ver Issue 355 de deuda técnica).
 
 ---
 
-## [#344] Issue 11: Referencias y valores absolutos de gasto por insumos ordenados por costo total
+## [#344] Issue 344: Referencias y valores absolutos de gasto por insumos ordenados por costo total
 
 **Severidad:** 🟡 Feature
 **Módulo:** Reportes / Gráficos
@@ -369,7 +369,7 @@ El gráfico de insumos necesita incluir valores absolutos en pesos ($) junto a l
 
 ---
 
-## [#345] Issue 12: Rediseño de la Pantalla de Tareas (Filtros + Calendario con Rango)
+## [#345] Issue 345: Rediseño de la Pantalla de Tareas (Filtros + Calendario con Rango)
 
 **Severidad:** 🟡 Feature / Refactor
 **Módulo:** Tareas / UI
@@ -385,7 +385,7 @@ La pantalla de tareas actual no satisface las necesidades. Se requiere un redise
 2. **Filtro por campaña:** Agregar selector para filtrar por una campaña específica.
 3. **Filtro por fecha con calendario:** Agregar un calendario (similar al `DatePickerDialog` del formulario) que permita seleccionar un **rango de fechas** (desde–hasta). Con este filtro el usuario puede ver tareas antiguas (vencidas o finalizadas) que por defecto no se muestran.
 
-> **Nota:** El componente de calendario con rango de fechas es reutilizable y se usará también en el Issue 20 (Filtros Avanzados en Reportes).
+> **Nota:** El componente de calendario con rango de fechas es reutilizable y se usará también en el Issue 353 (Filtros Avanzados en Reportes).
 
 **Acceptance Criteria**
 - Al abrir la pantalla de tareas, se muestran **todas las tareas próximas/pendientes** sin filtros.
@@ -413,7 +413,7 @@ Nuevas funcionalidades de análisis financiero y productivo.
 
 ---
 
-## [#346] Issue 13: Resumen Financiero Rápido en Dashboard (Vistazo Mensual)
+## [#346] Issue 346: Resumen Financiero Rápido en Dashboard (Vistazo Mensual)
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Dashboard / Home
@@ -423,7 +423,7 @@ Nuevas funcionalidades de análisis financiero y productivo.
 - Nuevos UseCases de cálculo financiero
 
 **Descripción**
-El Dashboard debe mostrar un "vistazo" financiero rápido y simple de las operaciones del **mes actual** de todas las campañas activas. La idea es información de un solo vistazo, sin filtros complejos. Para análisis más profundo, un link "Ver detalle →" lleva a la pestaña de Reportes (Issue 20) donde sí se aplican filtros avanzados.
+El Dashboard debe mostrar un "vistazo" financiero rápido y simple de las operaciones del **mes actual** de todas las campañas activas. La idea es información de un solo vistazo, sin filtros complejos. Para análisis más profundo, un link "Ver detalle →" lleva a la pestaña de Reportes (Issue 353) donde sí se aplican filtros avanzados.
 
 Las métricas del vistazo:
 
@@ -439,7 +439,7 @@ Las métricas del vistazo:
 - Balance = Ingresos Brutos − Capital Invertido.
 - El balance se muestra en **verde** (positivo) o **rojo** (negativo).
 - Texto pequeño indicando "Este mes" debajo de las tarjetas.
-- Botón `TextButton("Ver detalle →")` que navegue a la pestaña de Reportes con los filtros financieros (Issue 20).
+- Botón `TextButton("Ver detalle →")` que navegue a la pestaña de Reportes con los filtros financieros (Issue 353).
 
 **Sub-issues / Tareas Técnicas**
 - Crear `ObtenerResumenFinancieroUseCase` en `domain/use_case/`.
@@ -450,7 +450,7 @@ Las métricas del vistazo:
 
 ---
 
-## [#347] Issue 14: Tasa de Cumplimiento de Tareas (Gráfico Circular)
+## [#347] Issue 347: Tasa de Cumplimiento de Tareas (Gráfico Circular)
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Dashboard / Home
@@ -477,7 +477,7 @@ Agregar al Dashboard un gráfico circular pequeño que muestre la tasa de cumpli
 
 ---
 
-## [#348] Issue 15: Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
+## [#348] Issue 348: Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Reportes
@@ -502,7 +502,7 @@ Una lista rápida en la pestaña de Reportes que muestre los 3 insumos en los qu
 
 ---
 
-## [#349] Issue 16: Refactorizar DB — Hectáreas en Campaña + Métrica Tn/Ha
+## [#349] Issue 349: Refactorizar DB — Hectáreas en Campaña + Métrica Tn/Ha
 
 **Severidad:** 🔵 Refactor / Feature
 **Módulo:** Data / Campañas / Cosechas / Reportes
@@ -519,7 +519,7 @@ Una lista rápida en la pestaña de Reportes que muestre los 3 insumos en los qu
 **Descripción**
 Refactorizar la base de datos para que las hectáreas se registren en la **campaña** en lugar de en la cosecha. Esto simplifica el modelo: una campaña tiene un campo fijo con el total de hectáreas trabajadas. Adicionalmente, agregar la métrica de **toneladas totales cosechadas / hectáreas del campo** a los reportes, manteniendo también el rendimiento total.
 
-> **Nota:** Esto revierte la decisión de la iteración 2 (Issue 17 / #305) donde las hectáreas se ubicaron en la cosecha. La nueva decisión se basa en que las hectáreas del campo son un dato fijo de la campaña, no variable por cosecha.
+> **Nota:** Esto revierte la decisión de la iteración 2 (Issue 350 / #305) donde las hectáreas se ubicaron en la cosecha. La nueva decisión se basa en que las hectáreas del campo son un dato fijo de la campaña, no variable por cosecha.
 
 **Acceptance Criteria**
 - Mover el campo `hectareas: Double` de `CosechaEntity` a `CampaniaEntity`.
@@ -543,7 +543,7 @@ Refactorizar la base de datos para que las hectáreas se registren en la **campa
 
 ---
 
-## [#350] Issue 17: Costo por Hectárea ($/Ha) en Reportes
+## [#350] Issue 350: Costo por Hectárea ($/Ha) en Reportes
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Reportes
@@ -554,7 +554,7 @@ Refactorizar la base de datos para que las hectáreas se registren en la **campa
 **Descripción**
 Cruzar el total gastado en insumos con el total cosechado y las hectáreas para mostrar el **Costo por Hectárea ($/Ha)**: cuánta plata se invirtió por cada hectárea trabajada. Esta es una métrica clave para evaluar la rentabilidad del campo.
 
-> **Dependencia:** Requiere Issue 16 (hectáreas en campaña).
+> **Dependencia:** Requiere Issue 349 (hectáreas en campaña).
 
 **Acceptance Criteria**
 - Nueva tarjeta/métrica en la sección individual de Reportes: "Costo por Hectárea: $X.XXX/Ha".
@@ -570,7 +570,7 @@ Cruzar el total gastado en insumos con el total cosechado y las hectáreas para 
 
 ---
 
-## [#351] Issue 18: ABM de Cultivos (Catálogo Estandarizado + Nueva Entidad DB)
+## [#351] Issue 351: ABM de Cultivos (Catálogo Estandarizado + Nueva Entidad DB)
 
 **Severidad:** 🔵 Feature Nueva / Refactor
 **Módulo:** Data / Campañas / Catálogo
@@ -587,9 +587,9 @@ Cruzar el total gastado en insumos con el total cosechado y las hectáreas para 
 - `DonElioDatabase.kt` (agregar entidad)
 
 **Descripción**
-El campo `cultivo` en las campañas es actualmente texto libre, lo que genera inconsistencias (ej: "Soja", "soja", "SOJA", "Soja 1era") que imposibilitan agrupar campañas por cultivo para gráficos de evolución (Issue 19). Se requiere estandarizar con una nueva entidad `CultivoEntity` y un ABM (Alta/Baja/Modificación) completo.
+El campo `cultivo` en las campañas es actualmente texto libre, lo que genera inconsistencias (ej: "Soja", "soja", "SOJA", "Soja 1era") que imposibilitan agrupar campañas por cultivo para gráficos de evolución (Issue 352). Se requiere estandarizar con una nueva entidad `CultivoEntity` y un ABM (Alta/Baja/Modificación) completo.
 
-> **Nota:** Este issue es **prerequisito** del Issue 19 (Evolución Histórica por Cultivo).
+> **Nota:** Este issue es **prerequisito** del Issue 352 (Evolución Histórica por Cultivo).
 
 **Acceptance Criteria**
 - Nueva entidad `CultivoEntity` con campos: `id: Int`, `nombre: String` (único), `activo: Boolean = true`.
@@ -614,7 +614,7 @@ El campo `cultivo` en las campañas es actualmente texto libre, lo que genera in
 
 ---
 
-## [#352] Issue 19: Evolución Histórica por Cultivo (Gráfico de Tendencia)
+## [#352] Issue 352: Evolución Histórica por Cultivo (Gráfico de Tendencia)
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Reportes / Gráficos
@@ -625,7 +625,7 @@ El campo `cultivo` en las campañas es actualmente texto libre, lo que genera in
 **Descripción**
 Un gráfico de líneas o barras que permita visualizar la evolución de un cultivo específico (ej: Soja) a través de los años/campañas. Por ejemplo, ver cómo evolucionó el rendimiento (Tn/Ha) de la Soja en las campañas 2023, 2024, 2025 y 2026 para analizar si el campo está perdiendo fertilidad o mejorando.
 
-> **Dependencias:** Requiere Issue 16 (hectáreas en campaña) para la métrica Tn/Ha y Issue 18 (ABM de Cultivos) para agrupar campañas por cultivo estandarizado.
+> **Dependencias:** Requiere Issue 349 (hectáreas en campaña) para la métrica Tn/Ha y Issue 351 (ABM de Cultivos) para agrupar campañas por cultivo estandarizado.
 
 **Acceptance Criteria**
 - Selector de cultivo (dropdown alimentado desde `CultivoEntity`) en la sección de Reportes.
@@ -644,17 +644,17 @@ Un gráfico de líneas o barras que permita visualizar la evolución de un culti
 
 ---
 
-## [#353] Issue 20: Filtros Avanzados en Reportes (Rango de Fechas + Selector de Campañas + Datos Financieros)
+## [#353] Issue 353: Filtros Avanzados en Reportes (Rango de Fechas + Selector de Campañas + Datos Financieros)
 
 **Severidad:** 🔵 Feature Nueva
 **Módulo:** Reportes
 **Archivos afectados:**
 - `presentation/ui/screen/reportes/ReportesRendimientoScreen.kt`
 - `presentation/viewmodel/reportes/ReportesViewModel.kt`
-- `presentation/ui/components/SelectorRangoFechas.kt` (reutilizable del Issue 12)
+- `presentation/ui/components/SelectorRangoFechas.kt` (reutilizable del Issue 345)
 
 **Descripción**
-La pestaña de Reportes necesita un sistema de filtros avanzados que permita al usuario personalizar el análisis. Esta es la pantalla destino del "Ver detalle →" del Dashboard (Issue 13). Los filtros permiten ver datos financieros (capital invertido, ingresos, balance) con mayor granularidad que el vistazo del Dashboard.
+La pestaña de Reportes necesita un sistema de filtros avanzados que permita al usuario personalizar el análisis. Esta es la pantalla destino del "Ver detalle →" del Dashboard (Issue 346). Los filtros permiten ver datos financieros (capital invertido, ingresos, balance) con mayor granularidad que el vistazo del Dashboard.
 
 **Acceptance Criteria**
 
@@ -665,7 +665,7 @@ La pestaña de Reportes necesita un sistema de filtros avanzados que permita al 
   - Múltiples campañas seleccionadas (multi-select con checkboxes, si no es muy complejo).
 
 ### Filtro de Tiempo
-- Reutilizar el componente `SelectorRangoFechas` del Issue 12 (`DateRangePicker` de Material 3).
+- Reutilizar el componente `SelectorRangoFechas` del Issue 345 (`DateRangePicker` de Material 3).
 - Opciones rápidas de acceso directo:
   - "Este mes"
   - "Último mes"
@@ -681,7 +681,7 @@ La pestaña de Reportes necesita un sistema de filtros avanzados que permita al 
 - Estos datos complementan (no reemplazan) los gráficos existentes de insumos, cosechas y comparación.
 
 **Sub-issues / Tareas Técnicas**
-- Reutilizar `SelectorRangoFechas.kt` creado en el Issue 12.
+- Reutilizar `SelectorRangoFechas.kt` creado en el Issue 345.
 - En `ReportesViewModel`: Agregar estados `filtroCampanias: StateFlow<List<Int>>` (IDs) y `filtroFechas: StateFlow<Pair<Long, Long>?>`.
 - Crear opciones rápidas de tiempo como `enum class FiltroTiempo { ESTE_MES, ULTIMO_MES, ESTE_ANIO, LO_QUE_VA, PERSONALIZADO }`.
 - Implementar selector de campaña multi-select (lista de checkboxes en un `DropdownMenu` o `BottomSheet`).
@@ -698,7 +698,7 @@ Issues identificados durante la iteración 2 que quedaron sin resolverse.
 
 ---
 
-## [#354] Issue 21: InsumoVinculacionViewModel sin método sincronizarInsumos()
+## [#354] Issue 354: InsumoVinculacionViewModel sin método sincronizarInsumos()
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Insumos / Detalle Campaña / Tabs
@@ -716,7 +716,7 @@ Issues identificados durante la iteración 2 que quedaron sin resolverse.
 
 ---
 
-## [#355] Issue 22: Exportación CSV/PDF sin identificación de campaña en el encabezado
+## [#355] Issue 355: Exportación CSV/PDF sin identificación de campaña en el encabezado
 
 **Severidad:** 🔵 Mejora de Reportes
 **Módulo:** Reportes / Exportación
@@ -734,7 +734,7 @@ El título del PDF sigue siendo "Reporte de Gastos por Insumo" sin mencionar el 
 
 ---
 
-## [#356] Issue 23: Comparador permite seleccionar la misma campaña para A y B
+## [#356] Issue 356: Comparador permite seleccionar la misma campaña para A y B
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Reportes / Comparador
@@ -752,7 +752,7 @@ El usuario puede seleccionar la misma campaña en dropdown A y B, obteniendo una
 
 ---
 
-## [#357] Issue 24: ReportExporter no soporta PDF de múltiples páginas
+## [#357] Issue 357: ReportExporter no soporta PDF de múltiples páginas
 
 **Severidad:** 🔵 Mejora de Reportes
 **Módulo:** Reportes / Exportación
@@ -770,7 +770,7 @@ El PDF tiene una sola página fija (A4). Si la lista supera ~22 ítems, el conte
 
 ---
 
-## [#358] Issue 25: DoubleBarIndicator no tiene tests unitarios
+## [#358] Issue 358: DoubleBarIndicator no tiene tests unitarios
 
 **Severidad:** ⚪ Cobertura / Deuda Técnica
 **Módulo:** Reportes / Comparador
@@ -784,7 +784,7 @@ El PDF tiene una sola página fija (A4). Si la lista supera ~22 ítems, el conte
 
 ---
 
-## [#359] Issue 26: Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
+## [#359] Issue 359: Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
 
 **Severidad:** ⚪ Cobertura / Deuda Técnica
 **Módulo:** Reportes / Exportación
@@ -799,7 +799,7 @@ El PDF tiene una sola página fija (A4). Si la lista supera ~22 ítems, el conte
 
 ---
 
-## [#360] Issue 27: UX Inconsistente de Validación entre Formulario de Insumos y Campañas
+## [#360] Issue 360: UX Inconsistente de Validación entre Formulario de Insumos y Campañas
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Presentation / Formularios
@@ -819,34 +819,34 @@ El formulario de insumos valida en tiempo real. El formulario de campañas valid
 ## 🗓️ Orden de Ejecución Sugerido
 
 ### Fase 1 — Bugs Críticos y Funcionales (Sprint 1)
-1. Issue 1: No se añaden insumos (**bloqueante**)
-2. Issue 2: Botón edición cosechas (**bloqueante**)
-3. Issue 3: Validación cosecha campo incorrecto
-4. Issue 4: Edición foto observaciones
+1. Issue 334: No se añaden insumos (**bloqueante**)
+2. Issue 335: Botón edición cosechas (**bloqueante**)
+3. Issue 336: Validación cosecha campo incorrecto
+4. Issue 337: Edición foto observaciones
 
 ### Fase 2 — Fix UI/UX (Sprint 1-2)
-5. Issue 5: Teclado bloquea scroll + bloque blanco
-6. Issue 6: Header columnas cortado
-7. Issue 7: Etiquetas gráfico desacomodadas
+5. Issue 338: Teclado bloquea scroll + bloque blanco
+6. Issue 339: Header columnas cortado
+7. Issue 340: Etiquetas gráfico desacomodadas
 
 ### Fase 3 — Features Core + Refactors de DB (Sprint 2-3)
-8. Issue 8: Persistencia de sesión
-9. Issue 16: Refactor DB hectáreas → campaña (**bloqueante para Issues 17, 19**)
-10. Issue 18: ABM de Cultivos (**bloqueante para Issue 19**)
-11. Issue 9: Color y borrado campañas inactivas
-12. Issue 12: Rediseño pantalla de tareas (crea `SelectorRangoFechas` reutilizable, **bloqueante para Issue 20**)
+8. Issue 341: Persistencia de sesión
+9. Issue 349: Refactor DB hectáreas → campaña (**bloqueante para Issues 350, 352**)
+10. Issue 351: ABM de Cultivos (**bloqueante para Issue 352**)
+11. Issue 342: Color y borrado campañas inactivas
+12. Issue 345: Rediseño pantalla de tareas (crea `SelectorRangoFechas` reutilizable, **bloqueante para Issue 353**)
 
 ### Fase 4 — Reportes Avanzados (Sprint 3-4)
-13. Issue 10: Exportación con cosechas
-14. Issue 11: Referencias y valores absolutos insumos
-15. Issue 15: Top 3 insumos mayor gasto
-16. Issue 17: Costo por Hectárea ($/Ha)
-17. Issue 19: Evolución histórica por cultivo (requiere Issues 16 + 18)
+13. Issue 343: Exportación con cosechas
+14. Issue 344: Referencias y valores absolutos insumos
+15. Issue 348: Top 3 insumos mayor gasto
+16. Issue 350: Costo por Hectárea ($/Ha)
+17. Issue 352: Evolución histórica por cultivo (requiere Issues 349 + 351)
 
 ### Fase 5 — Dashboard Financiero + Filtros Reportes (Sprint 4-5)
-18. Issue 20: Filtros avanzados en Reportes (requiere `SelectorRangoFechas` del Issue 12)
-19. Issue 13: Resumen financiero Dashboard (vistazo mensual + link a Issue 20)
-20. Issue 14: Tasa cumplimiento tareas (donut chart)
+18. Issue 353: Filtros avanzados en Reportes (requiere `SelectorRangoFechas` del Issue 345)
+19. Issue 346: Resumen financiero Dashboard (vistazo mensual + link a Issue 353)
+20. Issue 347: Tasa cumplimiento tareas (donut chart)
 
 ### Fase 6 — Deuda Técnica (Continuo)
 21-27. Issues de deuda técnica (priorizar según impacto)
@@ -856,11 +856,11 @@ El formulario de insumos valida en tiempo real. El formulario de campañas valid
 ## 📊 Grafo de Dependencias
 
 ```
-Issue 16 (Hectáreas en Campaña) ──→ Issue 17 ($/Ha)
+Issue 349 (Hectáreas en Campaña) ──→ Issue 350 ($/Ha)
          │                          
-         └──→ Issue 19 (Evolución Histórica) ←── Issue 18 (ABM Cultivos)
+         └──→ Issue 352 (Evolución Histórica) ←── Issue 351 (ABM Cultivos)
          
-Issue 12 (Rediseño Tareas) ──→ Issue 20 (Filtros Reportes) ←── Issue 13 (Dashboard)
+Issue 345 (Rediseño Tareas) ──→ Issue 353 (Filtros Reportes) ←── Issue 346 (Dashboard)
          └── crea SelectorRangoFechas reutilizable
 ```
 
@@ -873,5 +873,5 @@ Issue 12 (Rediseño Tareas) ──→ Issue 20 (Filtros Reportes) ←── Issu
 3. **PRs:** Cada rama se integra vía Pull Request a `develop`.
 4. **Tests:** Cada cambio en UseCase o ViewModel requiere test unitario.
 5. **Documentación:** Actualizar `CHANGELOG.md` tras cada issue completado.
-6. **Dependencias:** Respetar el grafo de dependencias. Issues 16 y 18 son bloqueantes.
+6. **Dependencias:** Respetar el grafo de dependencias. Issues 349 y 351 son bloqueantes.
 
