@@ -10,7 +10,7 @@
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
 - [x] **[#334] Issue 334:** No se añaden insumos al catálogo
-- [ ] **[#335] Issue 335:** El botón de edición de cosechas no funciona
+- [x] **[#335] Issue 335:** El botón de edición de cosechas no funciona
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto

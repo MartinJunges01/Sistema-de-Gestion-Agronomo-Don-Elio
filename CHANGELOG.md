@@ -347,3 +347,6 @@
 
 **[2026-08-21] - Fix Inserción de Insumos al Catálogo [#334]**
 - Se corrigió un error donde FormularioInsumoViewModel leía un insumoId = -1 por defecto y causaba que se ejecutara el flujo de actualización silenciosamente en lugar de crear uno nuevo.
+
+**[2026-08-21] - Fix Edición de Cosechas [#335]**
+- Se agregó el parámetro cosechaId a la ruta de navegación de FormularioCosecha y se vinculó el evento onEditarCosecha para permitir la edición correcta de las cosechas.
