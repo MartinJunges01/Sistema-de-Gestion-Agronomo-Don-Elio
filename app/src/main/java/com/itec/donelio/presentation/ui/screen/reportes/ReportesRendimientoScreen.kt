@@ -194,19 +194,36 @@ fun ReportesRendimientoScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             if (pieChartData != null) {
-                                PieChart(
-                                    modifier = Modifier.fillMaxSize().padding(24.dp),
-                                    pieChartData = pieChartData!!,
-                                    pieChartConfig = PieChartConfig(
-                                        isAnimationEnable = true,
-                                        showSliceLabels = true,
-                                        sliceLabelTextColor = Color.White,
-                                        activeSliceAlpha = 0.9f,
-                                        isEllipsizeEnabled = true,
-                                        sliceLabelTextSize = 12.sp,
-                                        labelVisible = true
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    PieChart(
+                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        pieChartData = pieChartData!!,
+                                        pieChartConfig = PieChartConfig(
+                                            isAnimationEnable = true,
+                                            showSliceLabels = true,
+                                            sliceLabelTextColor = Color.White,
+                                            activeSliceAlpha = 0.9f,
+                                            isEllipsizeEnabled = true,
+                                            sliceLabelTextSize = 12.sp,
+                                            labelVisible = false
+                                        )
                                     )
-                                )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+                                    androidx.compose.foundation.layout.FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                                    ) {
+                                        pieChartData!!.slices.forEach { slice ->
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Box(modifier = Modifier.size(12.dp).clip(androidx.compose.foundation.shape.CircleShape).androidx.compose.foundation.background(slice.color))
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
+                                            }
+                                        }
+                                    }
+                                }
                             } else {
                                 PlaceholderSeleccion(mensaje = "Sin insumos registrados en esta campaña")
                             }
@@ -233,19 +250,36 @@ fun ReportesRendimientoScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             if (desgloseCosechasData != null) {
-                                PieChart(
-                                    modifier = Modifier.fillMaxSize().padding(24.dp),
-                                    pieChartData = desgloseCosechasData!!,
-                                    pieChartConfig = PieChartConfig(
-                                        isAnimationEnable = true,
-                                        showSliceLabels = true,
-                                        sliceLabelTextColor = Color.White,
-                                        activeSliceAlpha = 0.9f,
-                                        isEllipsizeEnabled = true,
-                                        sliceLabelTextSize = 12.sp,
-                                        labelVisible = true
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    PieChart(
+                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        pieChartData = desgloseCosechasData!!,
+                                        pieChartConfig = PieChartConfig(
+                                            isAnimationEnable = true,
+                                            showSliceLabels = true,
+                                            sliceLabelTextColor = Color.White,
+                                            activeSliceAlpha = 0.9f,
+                                            isEllipsizeEnabled = true,
+                                            sliceLabelTextSize = 12.sp,
+                                            labelVisible = false
+                                        )
                                     )
-                                )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+                                    androidx.compose.foundation.layout.FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                                    ) {
+                                        desgloseCosechasData!!.slices.forEach { slice ->
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Box(modifier = Modifier.size(12.dp).clip(androidx.compose.foundation.shape.CircleShape).androidx.compose.foundation.background(slice.color))
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
+                                            }
+                                        }
+                                    }
+                                }
                             } else {
                                 PlaceholderSeleccion(mensaje = "Sin cosechas registradas en esta campaña")
                             }
