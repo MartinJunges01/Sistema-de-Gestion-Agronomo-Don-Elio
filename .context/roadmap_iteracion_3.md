@@ -13,7 +13,7 @@
 - [x] **[#335] Issue 335:** El botón de edición de cosechas no funciona
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto
+- [x] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto
 - [ ] **[#337] Issue 337:** El botón de edición en observaciones solo funciona para texto (no para foto)
 
 ### ⚪ NIVEL L3 — FIX UI / UX

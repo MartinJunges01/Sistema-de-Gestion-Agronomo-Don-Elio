@@ -350,3 +350,6 @@
 
 **[2026-08-21] - Fix Edición de Cosechas [#335]**
 - Se agregó el parámetro cosechaId a la ruta de navegación de FormularioCosecha y se vinculó el evento onEditarCosecha para permitir la edición correcta de las cosechas.
+
+**[2026-08-21] - Fix Validación de Formulario de Cosechas [#336]**
+- Se añadió una propiedad errorGeneral para evitar que todos los errores del formulario de cosecha se agruparan erróneamente en el campo cantidad, mostrando en cambio un Snackbar universal.
