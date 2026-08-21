@@ -320,3 +320,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **Given:** No hay campaña seleccionada en el comparador (campaniaA = null).
 *   **When:** Se observa `cosechasA`.
 *   **Then:** Debe emitir una lista vacía.
+
+
+### ReportesViewModel
+- **VM-R12:** Given misma campa�a en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
