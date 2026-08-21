@@ -33,19 +33,31 @@ fun FormularioCosechaScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val campanias by viewModel.campanias.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.guardadoExitoso) {
         if (state.guardadoExitoso) onBack()
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
-        )
+    LaunchedEffect(state.errorGeneral) {
+        state.errorGeneral?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.limpiarErrorGeneral()
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+            )
+        }
+    ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
@@ -170,6 +182,7 @@ fun FormularioCosechaScreen(
             }
         }
     }
+}
 
 private fun formatFecha(timestamp: Long): String {
     if (timestamp <= 0) return ""
