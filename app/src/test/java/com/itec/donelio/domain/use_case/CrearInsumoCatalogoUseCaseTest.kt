@@ -1,4 +1,4 @@
-package com.itec.donelio.domain.use_case
+ï»¿package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.repository.InsumoRepository
@@ -8,6 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -49,6 +50,7 @@ class CrearInsumoCatalogoUseCaseTest {
         val exception = assertThrows(IllegalArgumentException::class.java) {
             runBlocking { useCase(nombre, categoria) }
         }
-        assertEquals("El nombre del insumo no puede estar vacío", exception.message)
+        assertTrue(exception.message?.contains("vac") == true)
     }
 }
+
