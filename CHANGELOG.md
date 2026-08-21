@@ -344,3 +344,6 @@
 - ConfiguraciÃ³n inicial del proyecto, dependencias y estructura de Clean Architecture.
 - ImplementaciÃ³n completa de la capa de datos: Entidades Room, TypeConverters y DAOs.
 - ConfiguraciÃ³n de Dagger-Hilt para inyecciÃ³n de dependencias.
+
+**[2026-08-21] - Fix Inserción de Insumos al Catálogo [#334]**
+- Se corrigió un error donde FormularioInsumoViewModel leía un insumoId = -1 por defecto y causaba que se ejecutara el flujo de actualización silenciosamente en lugar de crear uno nuevo.
