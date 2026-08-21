@@ -45,10 +45,13 @@ sealed class NavRoute(val route: String) {
             if (campaniaId != null) "cosechas?campaniaId=$campaniaId" else "cosechas"
     }
 
-    data object FormularioCosecha : NavRoute("formulario_cosecha?campaniaId={campaniaId}") {
-        fun createRoute(campaniaId: Int? = null): String =
-            if (campaniaId != null) "formulario_cosecha?campaniaId=$campaniaId"
-            else "formulario_cosecha"
+    data object FormularioCosecha : NavRoute("formulario_cosecha?campaniaId={campaniaId}&cosechaId={cosechaId}") {
+        fun createRoute(campaniaId: Int? = null, cosechaId: Int? = null): String {
+            val params = mutableListOf<String>()
+            if (campaniaId != null) params.add("campaniaId=$campaniaId")
+            if (cosechaId != null) params.add("cosechaId=$cosechaId")
+            return if (params.isNotEmpty()) "formulario_cosecha?${params.joinToString("&")}" else "formulario_cosecha"
+        }
     }
 
     data object Observaciones : NavRoute("observaciones?campaniaId={campaniaId}") {
