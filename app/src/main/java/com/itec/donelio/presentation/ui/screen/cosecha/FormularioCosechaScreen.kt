@@ -179,7 +179,6 @@ fun FormularioCosechaScreen(
                     Text("Guardar Registro", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
-            }
         }
     }
 }
