@@ -100,16 +100,24 @@ fun DetalleCampaniaScreen(
             if (campania != null) {
                 HeaderCampania(campania = campania)
 
-                TabRow(
+                ScrollableTabRow(
                     selectedTabIndex = selectedTab,
                     containerColor = Color.White,
-                    contentColor = AgriVerde
+                    contentColor = AgriVerde,
+                    edgePadding = 0.dp
                 ) {
                     tabTitles.forEachIndexed { index, title ->
                         Tab(
                             selected = selectedTab == index,
                             onClick = { selectedTab = index },
-                            text = { Text(title, fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal) }
+                            text = { 
+                                Text(
+                                    title, 
+                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                ) 
+                            }
                         )
                     }
                 }
