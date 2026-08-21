@@ -353,3 +353,6 @@
 
 **[2026-08-21] - Fix Validación de Formulario de Cosechas [#336]**
 - Se añadió una propiedad errorGeneral para evitar que todos los errores del formulario de cosecha se agruparan erróneamente en el campo cantidad, mostrando en cambio un Snackbar universal.
+**[2026-08-21] - Fix Reportes Exportación vacía y Comparador [#355] [#356]**
+- Se agregó una guardia en ReportesViewModel para evitar exportar PDFs o CSVs vacíos cuando no hay datos en la campaña seleccionada.
+- Se implementó una tarjeta de advertencia en ReportesRendimientoScreen para prevenir que el usuario seleccione la misma campaña en ambos selectores del comparador, documentando el caso en el plan de pruebas.
