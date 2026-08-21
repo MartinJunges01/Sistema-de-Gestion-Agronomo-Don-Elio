@@ -296,6 +296,33 @@ fun ReportesRendimientoScreen(
                 item {
                     PlaceholderSeleccion(mensaje = "Seleccioná dos campañas para comparar sus métricas")
                 }
+            } else if (campaniaA?.id == campaniaB?.id) {
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
+                        border = BorderStroke(1.dp, Color(0xFFFED7AA)),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Info,
+                                contentDescription = "Advertencia",
+                                tint = Color(0xFFEA580C),
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = "Las campañas seleccionadas son iguales. Elegí campañas distintas para comparar.",
+                                fontSize = 14.sp,
+                                color = Color(0xFF9A3412),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
             } else {
                 item {
                     val costoA = insumosA.sumOf { it.cantidad * it.precio }
