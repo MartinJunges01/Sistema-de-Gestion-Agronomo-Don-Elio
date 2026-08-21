@@ -356,3 +356,6 @@
 **[2026-08-21] - Fix Reportes Exportación vacía y Comparador [#355] [#356]**
 - Se agregó una guardia en ReportesViewModel para evitar exportar PDFs o CSVs vacíos cuando no hay datos en la campaña seleccionada.
 - Se implementó una tarjeta de advertencia en ReportesRendimientoScreen para prevenir que el usuario seleccione la misma campaña en ambos selectores del comparador, documentando el caso en el plan de pruebas.
+**[2026-08-21] - Fix UI Detalles y Reportes [#339] [#340]**
+- Se migró el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestañas se corten o dividan en varias líneas.
+- Se ocultó la leyenda por defecto de los gráficos PieChart en ReportesRendimientoScreen y se creó una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el gráfico.

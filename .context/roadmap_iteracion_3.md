@@ -19,8 +19,8 @@
 
 ### ⚪ NIVEL L3 — FIX UI / UX
 - [ ] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
-- [ ] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
-- [ ] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
+- [x] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
+- [x] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
 - [ ] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
