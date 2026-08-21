@@ -217,7 +217,12 @@ fun ReportesRendimientoScreen(
                                     ) {
                                         pieChartData!!.slices.forEach { slice ->
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Box(modifier = Modifier.size(12.dp).clip(androidx.compose.foundation.shape.CircleShape).androidx.compose.foundation.background(slice.color))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(12.dp)
+                                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                                        .background(slice.color)
+                                                )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
                                             }
@@ -273,7 +278,12 @@ fun ReportesRendimientoScreen(
                                     ) {
                                         desgloseCosechasData!!.slices.forEach { slice ->
                                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Box(modifier = Modifier.size(12.dp).clip(androidx.compose.foundation.shape.CircleShape).androidx.compose.foundation.background(slice.color))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(12.dp)
+                                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                                        .background(slice.color)
+                                                )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
                                             }
