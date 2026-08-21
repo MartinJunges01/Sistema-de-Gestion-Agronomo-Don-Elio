@@ -218,6 +218,10 @@ class ReportesViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val data = exportableData.value
+            if (data.isEmpty()) {
+                _exportStatus.value = "No hay datos para exportar en esta campaña"
+                return@launch
+            }
             val success = ReportExporter.exportToCsv(uri, context, data, campania.nombre)
             _exportStatus.value = if (success) "Reporte CSV exportado exitosamente" else "Error al exportar reporte CSV"
         }
@@ -231,6 +235,10 @@ class ReportesViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val data = exportableData.value
+            if (data.isEmpty()) {
+                _exportStatus.value = "No hay datos para exportar en esta campaña"
+                return@launch
+            }
             val success = ReportExporter.exportToPdf(uri, context, data, campania.nombre)
             _exportStatus.value = if (success) "Reporte PDF exportado exitosamente" else "Error al exportar reporte PDF"
         }
