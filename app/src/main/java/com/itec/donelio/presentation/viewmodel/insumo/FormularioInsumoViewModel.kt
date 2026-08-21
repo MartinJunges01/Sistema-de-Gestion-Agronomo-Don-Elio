@@ -36,7 +36,7 @@ class FormularioInsumoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val insumoId: Int? = savedStateHandle.get<Int>("insumoId")
+    private val insumoId: Int? = savedStateHandle.get<Int>("insumoId")?.takeIf { it != -1 }
 
     private val _state = MutableStateFlow(FormularioInsumoState())
     val state: StateFlow<FormularioInsumoState> = _state.asStateFlow()
