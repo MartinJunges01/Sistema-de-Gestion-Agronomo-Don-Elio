@@ -24,7 +24,8 @@ data class FormularioInsumoState(
     val errorNombre: String? = null,
     val errorCategoria: String? = null,
     val isGuardarHabilitado: Boolean = false,
-    val guardadoExitoso: Boolean = false
+    val guardadoExitoso: Boolean = false,
+    val errorGeneral: String? = null
 )
 
 @HiltViewModel
@@ -36,7 +37,7 @@ class FormularioInsumoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val insumoId: Int? = savedStateHandle.get<Int>("insumoId")
+    private val insumoId: Int? = savedStateHandle.get<Int>("insumoId")?.takeIf { it != -1 }
 
     private val _state = MutableStateFlow(FormularioInsumoState())
     val state: StateFlow<FormularioInsumoState> = _state.asStateFlow()
@@ -108,8 +109,12 @@ class FormularioInsumoViewModel @Inject constructor(
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorNombre = e.message) }
+                _state.update { it.copy(isLoading = false, errorGeneral = e.localizedMessage ?: "Error al guardar insumo") }
             }
         }
+    }
+
+    fun limpiarError() {
+        _state.update { it.copy(errorGeneral = null) }
     }
 }
