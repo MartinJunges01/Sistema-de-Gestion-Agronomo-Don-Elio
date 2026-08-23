@@ -15,12 +15,13 @@ class EditarObservacionUseCase @Inject constructor(
     operator fun invoke(observacion: Observacion): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
         try {
-            if (observacion.texto.isBlank() && observacion.imagenUri == null) {
+            val obsLimpia = observacion.copy(texto = observacion.texto.trim())
+            if (obsLimpia.texto.isBlank() && obsLimpia.imagenUri == null) {
                 emit(Resource.Error("La observación debe tener texto o una foto"))
                 return@flow
             }
             
-            observacionRepository.updateObservacion(observacion)
+            observacionRepository.updateObservacion(obsLimpia)
             emit(Resource.Success(Unit))
         } catch (e: Exception) {
             emit(Resource.Error("Error al editar observación: ${e.message}"))

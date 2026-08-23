@@ -15,14 +15,21 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.itec.donelio.domain.use_case.ValidarObservacionUseCase
+
 @HiltViewModel
 class ObservacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val editarObservacionUseCase: EditarObservacionUseCase,
-    private val eliminarObservacionUseCase: EliminarObservacionUseCase
+    private val eliminarObservacionUseCase: EliminarObservacionUseCase,
+    private val validarObservacionUseCase: ValidarObservacionUseCase
 ) : ViewModel() {
+
+    fun validarEdicion(texto: String, imagenUri: String?): Boolean {
+        return validarObservacionUseCase(texto, imagenUri)
+    }
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()

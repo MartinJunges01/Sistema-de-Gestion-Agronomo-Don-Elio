@@ -370,3 +370,141 @@ private fun ObservacionCard(observacion: Observacion, onEdit: () -> Unit, onDele
         }
     }
 }
+
+@Composable
+private fun DialogEditarObservacion(
+    observacion: Observacion,
+    onDismiss: () -> Unit,
+    onGuardar: (Observacion) -> Unit,
+    onValidar: (String, String?) -> Boolean
+) {
+    val context = LocalContext.current
+    var textoEditado by remember { mutableStateOf(observacion.texto) }
+    var imagenUri by remember { mutableStateOf(observacion.imagenUri) }
+
+    val controlPermiso = recordarPermisoCamara()
+    var mostrarDialogoRazon by remember { mutableStateOf(false) }
+    var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
+    var accionPendiente by remember { mutableStateOf<(() -> Unit)?>(null) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { exito ->
+        if (exito) imagenUri = tempCameraUri?.toString()
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) imagenUri = uri.toString()
+    }
+
+    fun createTempUri(): Uri {
+        val tempFile = File.createTempFile("temp_img", ".jpg", context.cacheDir).apply {
+            createNewFile()
+            deleteOnExit()
+        }
+        return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", tempFile)
+    }
+
+    LaunchedEffect(controlPermiso.permisoConcedido) {
+        if (controlPermiso.permisoConcedido) {
+            accionPendiente?.invoke()
+            accionPendiente = null
+        }
+    }
+    LaunchedEffect(controlPermiso.mostrarRazon) {
+        if (controlPermiso.mostrarRazon) mostrarDialogoRazon = true
+    }
+
+    if (mostrarDialogoRazon) {
+        DialogoRazonPermisoCamara(
+            enConfirmar = {
+                mostrarDialogoRazon = false
+                controlPermiso.restaurar()
+                controlPermiso.solicitar()
+            },
+            enDescartar = {
+                mostrarDialogoRazon = false
+                controlPermiso.restaurar()
+            }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Observación", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = textoEditado,
+                    onValueChange = { textoEditado = it },
+                    label = { Text("Texto") },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
+                    maxLines = 5
+                )
+
+                if (imagenUri != null) {
+                    Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+                        AsyncImage(
+                            model = imagenUri,
+                            contentDescription = "Vista previa",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(8.dp))
+                        )
+                        Row(
+                            modifier = Modifier.align(Alignment.TopEnd).padding(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            IconButton(
+                                onClick = { galleryLauncher.launch("image/*") },
+                                modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(100))
+                            ) {
+                                Icon(Icons.Default.Edit, "Cambiar foto", tint = Color.White)
+                            }
+                            IconButton(
+                                onClick = { imagenUri = null },
+                                modifier = Modifier.background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(100))
+                            ) {
+                                Icon(Icons.Default.Close, "Eliminar foto", tint = Color.White)
+                            }
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        OutlinedButton(onClick = { galleryLauncher.launch("image/*") }) {
+                            Icon(Icons.Default.Image, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Galería")
+                        }
+                        OutlinedButton(onClick = {
+                            accionPendiente = {
+                                val uri = createTempUri()
+                                tempCameraUri = uri
+                                cameraLauncher.launch(uri)
+                            }
+                            if (controlPermiso.permisoYaConcedido(context)) {
+                                accionPendiente?.invoke()
+                                accionPendiente = null
+                            } else {
+                                controlPermiso.solicitar()
+                            }
+                        }) {
+                            Icon(Icons.Default.CameraAlt, contentDescription = null)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Cámara")
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onGuardar(observacion.copy(texto = textoEditado, imagenUri = imagenUri)) },
+                enabled = onValidar(textoEditado, imagenUri)
+            ) { Text("Guardar", color = AgriVerde) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancelar", color = TextoSecundario) }
+        }
+    )
+}
