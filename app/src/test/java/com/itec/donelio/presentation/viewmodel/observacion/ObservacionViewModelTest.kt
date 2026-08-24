@@ -32,6 +32,7 @@ class ObservacionViewModelTest {
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
     private lateinit var editarObservacionUseCase: EditarObservacionUseCase
     private lateinit var eliminarObservacionUseCase: EliminarObservacionUseCase
+    private lateinit var validarObservacionUseCase: com.itec.donelio.domain.use_case.ValidarObservacionUseCase
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var viewModel: ObservacionViewModel
 
@@ -42,6 +43,7 @@ class ObservacionViewModelTest {
         obtenerCampaniasUseCase = mockk()
         editarObservacionUseCase = mockk()
         eliminarObservacionUseCase = mockk()
+        validarObservacionUseCase = com.itec.donelio.domain.use_case.ValidarObservacionUseCase()
         savedStateHandle = SavedStateHandle(mapOf("campaniaId" to 1))
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
@@ -52,7 +54,8 @@ class ObservacionViewModelTest {
             obtenerObservacionesPorCampaniaUseCase = obtenerObservacionesPorCampaniaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             editarObservacionUseCase = editarObservacionUseCase,
-            eliminarObservacionUseCase = eliminarObservacionUseCase
+            eliminarObservacionUseCase = eliminarObservacionUseCase,
+            validarObservacionUseCase = validarObservacionUseCase
         )
     }
 
