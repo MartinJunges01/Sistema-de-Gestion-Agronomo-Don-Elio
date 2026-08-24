@@ -482,7 +482,12 @@ private fun DialogEditarObservacion(
                                 tempCameraUri = uri
                                 cameraLauncher.launch(uri)
                             }
-                            if (controlPermiso.permisoYaConcedido(context)) {
+                            val isGranted = androidx.core.content.ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+                            
+                            if (isGranted) {
                                 accionPendiente?.invoke()
                                 accionPendiente = null
                             } else {
