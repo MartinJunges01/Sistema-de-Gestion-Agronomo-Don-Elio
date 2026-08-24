@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -178,7 +179,7 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() 
                 Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
             } else if (onDelete != null) {
                 IconButton(onClick = onDelete) {
-                    Icon(androidx.compose.material.icons.filled.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
                 }
             }
         }
