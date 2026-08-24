@@ -57,6 +57,7 @@ class HomeViewModelTest {
         viewModel = HomeViewModel(
             obtenerCampaniasActivasUseCase,
             obtenerTareasPendientesUseCase,
+            mockk(), // Mockear CerrarSesionUseCase
             sessionManager
         )
 

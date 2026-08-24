@@ -22,8 +22,8 @@
 - [x] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
 - [x] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
-### 🟡 NIVEL L4 — FEATURES NUEVAS
-- [ ] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
+### 🟢 NIVEL L4 — FEATURES / VALOR AGREGADO
+- [x] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
 - [x] **[#342] Issue 342:** Color y botón de borrado para campañas inactivas
 - [ ] **[#343] Issue 343:** Exportación de reportes con datos de cosechas
 - [ ] **[#344] Issue 344:** Referencias y valores absolutos de gasto por insumos ordenados por costo

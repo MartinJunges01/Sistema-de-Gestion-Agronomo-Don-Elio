@@ -43,7 +43,7 @@ import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 
 @Composable
-fun DonElioApp() {
+fun DonElioApp(isLoggedIn: Boolean = false) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -92,7 +92,7 @@ fun DonElioApp() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = NavRoute.Login.route
+                startDestination = if (isLoggedIn) NavRoute.Home.route else NavRoute.Login.route
             ) {
                 composable(NavRoute.Login.route) {
                     LoginScreen(
@@ -112,7 +112,12 @@ fun DonElioApp() {
                         onGoToDetalle = { campaniaId ->
                             navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId))
                         },
-                        onGoToTareas = { navController.navigate(NavRoute.Tareas.route.replace("?campaniaId={campaniaId}", "")) }
+                        onGoToTareas = { navController.navigate(NavRoute.Tareas.route.replace("?campaniaId={campaniaId}", "")) },
+                        onLogoutSuccess = { 
+                            navController.navigate(NavRoute.Login.route) {
+                                popUpTo(0) // Borra todo el historial
+                            }
+                        }
                     )
                 }
                 composable(
