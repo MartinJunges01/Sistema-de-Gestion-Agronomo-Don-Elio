@@ -31,14 +31,14 @@ object ReportExporter {
                         outputStream.write(line.toByteArray())
                     }
                     
-                    val csvCosechasHeader = "\n--- COSECHAS ---\nFecha,Cantidad (Tn),Has,Destino,Valor ($)\n"
+                    val csvCosechasHeader = "\n--- COSECHAS ---\nFecha,Cantidad (Tn),Destino\n"
                     outputStream.write(csvCosechasHeader.toByteArray())
                     
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     cosechas.forEach { cosecha ->
                         val destino = if (cosecha.almacen.isNotBlank()) "Almacén: ${cosecha.almacen}" else "Venta"
                         val fechaStr = dateFormat.format(Date(cosecha.fecha))
-                        val line = "$fechaStr,${cosecha.cantidad},${cosecha.hectareas},$destino,${cosecha.valorVenta}\n"
+                        val line = "$fechaStr,${cosecha.cantidad},$destino\n"
                         outputStream.write(line.toByteArray())
                     }
                 }
@@ -130,9 +130,8 @@ object ReportExporter {
                 paint.textSize = 14f
                 yPosition += 25f
                 canvas.drawText("Fecha", 50f, yPosition, paint)
-                canvas.drawText("Cantidad (Tn)", 200f, yPosition, paint)
-                canvas.drawText("Destino", 350f, yPosition, paint)
-                canvas.drawText("Valor ($)", 480f, yPosition, paint)
+                canvas.drawText("Cantidad (Tn)", 250f, yPosition, paint)
+                canvas.drawText("Destino", 450f, yPosition, paint)
                 
                 yPosition += 10f
                 canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
@@ -146,12 +145,10 @@ object ReportExporter {
                 cosechas.forEach { cosecha ->
                     val fechaStr = dateFormat.format(Date(cosecha.fecha))
                     val destino = if (cosecha.almacen.isNotBlank()) "Almacén" else "Venta"
-                    val valorStr = if (cosecha.valorVenta > 0) String.format("%.2f", cosecha.valorVenta) else "-"
                     
                     canvas.drawText(fechaStr, 50f, yPosition, paint)
-                    canvas.drawText(String.format("%.2f", cosecha.cantidad), 200f, yPosition, paint)
-                    canvas.drawText(destino, 350f, yPosition, paint)
-                    canvas.drawText(valorStr, 480f, yPosition, paint)
+                    canvas.drawText(String.format("%.2f", cosecha.cantidad), 250f, yPosition, paint)
+                    canvas.drawText(destino, 450f, yPosition, paint)
                     
                     totalCosecha += cosecha.cantidad
                     yPosition += 30f
