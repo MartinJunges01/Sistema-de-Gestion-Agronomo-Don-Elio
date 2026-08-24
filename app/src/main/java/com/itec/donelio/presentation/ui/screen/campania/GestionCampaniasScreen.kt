@@ -178,7 +178,7 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() 
                 Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
             } else if (onDelete != null) {
                 IconButton(onClick = onDelete) {
-                    Icon(androidx.compose.material.icons.Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                    Icon(androidx.compose.material.icons.filled.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
                 }
             }
         }
