@@ -24,7 +24,7 @@
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
 - [ ] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
-- [ ] **[#342] Issue 342:** Color y botón de borrado para campañas inactivas
+- [x] **[#342] Issue 342:** Color y botón de borrado para campañas inactivas
 - [ ] **[#343] Issue 343:** Exportación de reportes con datos de cosechas
 - [ ] **[#344] Issue 344:** Referencias y valores absolutos de gasto por insumos ordenados por costo
 - [ ] **[#345] Issue 345:** Rediseño de la Pantalla de Tareas (filtros + calendario con rango)
