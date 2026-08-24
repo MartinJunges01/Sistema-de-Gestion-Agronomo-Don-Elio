@@ -1,6 +1,7 @@
 package com.itec.donelio.core
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -10,8 +11,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private val Context.dataStore by preferencesDataStore(name = "user_session")
-
-import androidx.datastore.preferences.core.booleanPreferencesKey
 
 interface SessionManager {
     val userName: Flow<String>
