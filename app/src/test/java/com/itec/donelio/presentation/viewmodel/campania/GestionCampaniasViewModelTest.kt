@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasInactivasUseCase
+import com.itec.donelio.domain.use_case.EliminarCampaniaUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ class GestionCampaniasViewModelTest {
 
     private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var obtenerCampaniasInactivasUseCase: ObtenerCampaniasInactivasUseCase
+    private lateinit var eliminarCampaniaUseCase: EliminarCampaniaUseCase
     private lateinit var viewModel: GestionCampaniasViewModel
     
     private val testDispatcher = StandardTestDispatcher()
@@ -33,6 +35,7 @@ class GestionCampaniasViewModelTest {
         Dispatchers.setMain(testDispatcher)
         obtenerCampaniasActivasUseCase = mockk()
         obtenerCampaniasInactivasUseCase = mockk()
+        eliminarCampaniaUseCase = mockk()
     }
 
     @After
@@ -50,7 +53,11 @@ class GestionCampaniasViewModelTest {
         every { obtenerCampaniasInactivasUseCase() } returns flowOf(inactivas)
 
         // When
-        viewModel = GestionCampaniasViewModel(obtenerCampaniasActivasUseCase, obtenerCampaniasInactivasUseCase)
+        viewModel = GestionCampaniasViewModel(
+            obtenerCampaniasActivasUseCase, 
+            obtenerCampaniasInactivasUseCase,
+            eliminarCampaniaUseCase
+        )
 
         // Then
         viewModel.campaniasActivas.test {
