@@ -50,6 +50,7 @@ fun ReportesRendimientoScreen(
     val cosechasIndividual by viewModel.cosechasIndividual.collectAsState()
     val pieChartData by viewModel.pieChartData.collectAsState()
     val desgloseCosechasData by viewModel.desgloseCosechasData.collectAsState()
+    val top3Insumos by viewModel.top3Insumos.collectAsState()
     val campaniaA by viewModel.campaniaA.collectAsState()
     val campaniaB by viewModel.campaniaB.collectAsState()
     val insumosA by viewModel.insumosA.collectAsState()
@@ -173,6 +174,49 @@ fun ReportesRendimientoScreen(
                             color = AgriAzul,
                             modifier = Modifier.weight(1f)
                         )
+                    }
+                }
+
+                if (top3Insumos.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            "Top 3 Insumos de Mayor Gasto",
+                            fontWeight = FontWeight.Bold,
+                            color = TextoPrincipal
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                val formatMoneda = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
+                                top3Insumos.forEach { insumoGasto ->
+                                    Column {
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text("#${insumoGasto.posicion}", fontWeight = FontWeight.Bold, color = AgriVerde, fontSize = 16.sp)
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(insumoGasto.nombre, fontWeight = FontWeight.Medium, color = TextoPrincipal, fontSize = 14.sp)
+                                            }
+                                            Text(formatMoneda.format(insumoGasto.costo), fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 14.sp)
+                                        }
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                            LinearProgressIndicator(
+                                                progress = { insumoGasto.porcentaje / 100f },
+                                                modifier = Modifier.weight(1f).height(6.dp),
+                                                color = AgriVerde,
+                                                trackColor = Color(0xFFE7E5E4),
+                                            )
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("${String.format(java.util.Locale("es", "AR"), "%.1f", insumoGasto.porcentaje)}%", color = TextoSecundario, fontSize = 12.sp)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
