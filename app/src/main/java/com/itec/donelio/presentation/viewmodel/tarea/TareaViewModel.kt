@@ -16,48 +16,59 @@ import javax.inject.Inject
 @HiltViewModel
 class TareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val obtenerTareasPorCampaniaUseCase: ObtenerTareasPorCampaniaUseCase,
-    private val obtenerTareasDelDiaUseCase: ObtenerTareasDelDiaUseCase,
+    private val obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val confirmarTareaUseCase: ConfirmarTareaUseCase,
     private val editarTareaUseCase: EditarTareaUseCase,
     private val eliminarTareaUseCase: EliminarTareaUseCase
 ) : ViewModel() {
 
-    private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
-    val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+    private val _filtroCampania = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
+    val filtroCampania = _filtroCampania.asStateFlow()
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    val isCampaniaValid: StateFlow<Boolean> = _campaniaIdSeleccionada
+    val isCampaniaValid: StateFlow<Boolean> = _filtroCampania
         .map { it != null && it != -1 }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    private val _fechaSeleccionada = MutableStateFlow<Long>(System.currentTimeMillis())
-    val fechaSeleccionada = _fechaSeleccionada.asStateFlow()
+    private val _filtroFechas = MutableStateFlow<Pair<Long, Long>?>(null)
+    val filtroFechas = _filtroFechas.asStateFlow()
 
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val tareas: StateFlow<List<Tarea>> = combine(_campaniaIdSeleccionada, _fechaSeleccionada) { id, fecha ->
-        id to fecha
-    }.flatMapLatest { (id, fecha) ->
-        if (id != null && id != -1) {
-            val cal = Calendar.getInstance().apply {
-                timeInMillis = fecha
-                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+    val tareasUi: StateFlow<List<TareaUiModel>> = combine(
+        _filtroCampania, 
+        _filtroFechas,
+        campanias
+    ) { id, fechas, campaniasList ->
+        Triple(id, fechas, campaniasList)
+    }.flatMapLatest { (id, fechas, campaniasList) ->
+        obtenerTareasFiltradasUseCase(id, fechas).map { tareas ->
+            val hoy = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+            
+            tareas.map { tarea ->
+                val nombreCampania = campaniasList.find { it.id == tarea.idCampania }?.nombre ?: "Sin Campaña"
+                val isVencida = tarea.fecha < hoy
+                TareaUiModel(tarea, isVencida, nombreCampania)
             }
-            obtenerTareasDelDiaUseCase(id, cal.timeInMillis)
-        } else {
-            flowOf(emptyList())
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
-    fun seleccionarFecha(fecha: Long) { _fechaSeleccionada.value = fecha }
+    fun seleccionarCampania(id: Int?) { _filtroCampania.value = id }
+    fun seleccionarFechas(rango: Pair<Long, Long>?) { _filtroFechas.value = rango }
+    fun limpiarFiltros() {
+        _filtroCampania.value = null
+        _filtroFechas.value = null
+    }
     fun clearError() { _errorMessage.value = null }
 
     /**
@@ -69,8 +80,8 @@ class TareaViewModel @Inject constructor(
      * @param id Identificador de la campaña actualmente visible en pantalla.
      */
     fun sincronizarCampania(id: Int) {
-        if (_campaniaIdSeleccionada.value != id) {
-            _campaniaIdSeleccionada.value = id
+        if (_filtroCampania.value != id) {
+            _filtroCampania.value = id
         }
     }
 

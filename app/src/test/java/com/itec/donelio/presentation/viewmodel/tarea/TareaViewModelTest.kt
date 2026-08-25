@@ -8,8 +8,7 @@ import com.itec.donelio.domain.use_case.ConfirmarTareaUseCase
 import com.itec.donelio.domain.use_case.EditarTareaUseCase
 import com.itec.donelio.domain.use_case.EliminarTareaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
-import com.itec.donelio.domain.use_case.ObtenerTareasPorCampaniaUseCase
-import com.itec.donelio.domain.use_case.ObtenerTareasDelDiaUseCase
+import com.itec.donelio.domain.use_case.ObtenerTareasFiltradasUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -40,8 +39,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class TareaViewModelTest {
 
-    private lateinit var obtenerTareasPorCampaniaUseCase: ObtenerTareasPorCampaniaUseCase
-    private lateinit var obtenerTareasDelDiaUseCase: ObtenerTareasDelDiaUseCase
+    private lateinit var obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
     private lateinit var confirmarTareaUseCase: ConfirmarTareaUseCase
     private lateinit var editarTareaUseCase: EditarTareaUseCase
@@ -53,16 +51,14 @@ class TareaViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        obtenerTareasPorCampaniaUseCase = mockk()
-        obtenerTareasDelDiaUseCase = mockk()
+        obtenerTareasFiltradasUseCase = mockk()
         confirmarTareaUseCase = mockk()
         editarTareaUseCase = mockk()
         eliminarTareaUseCase = mockk()
         obtenerCampaniasUseCase = mockk()
 
-        // Se usa receptor explícito para evitar ambigüedad de tipos con invoke()
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList<Campania>())
-        every { obtenerTareasDelDiaUseCase(any<Int>(), any<Long>()) } returns flowOf(emptyList<Tarea>())
+        every { obtenerTareasFiltradasUseCase(any(), any()) } returns flowOf(emptyList<Tarea>())
     }
 
     @After
@@ -79,8 +75,7 @@ class TareaViewModelTest {
         }
         return TareaViewModel(
             savedStateHandle = handle,
-            obtenerTareasPorCampaniaUseCase = obtenerTareasPorCampaniaUseCase,
-            obtenerTareasDelDiaUseCase = obtenerTareasDelDiaUseCase,
+            obtenerTareasFiltradasUseCase = obtenerTareasFiltradasUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             confirmarTareaUseCase = confirmarTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
@@ -102,7 +97,7 @@ class TareaViewModelTest {
         // Given
         viewModel = crearViewModel(campaniaIdEnHandle = null)
 
-        viewModel.campaniaIdSeleccionada.test {
+        viewModel.filtroCampania.test {
             val idInicial = awaitItem()
             assertNull("Dado que no hay id en el handle, el estado inicial debe ser null", idInicial)
 
@@ -112,23 +107,18 @@ class TareaViewModelTest {
 
             // Then
             val idActualizado = awaitItem()
-            assertEquals("Entonces campaniaIdSeleccionada debe valer 5", 5, idActualizado)
+            assertEquals("Entonces filtroCampania debe valer 5", 5, idActualizado)
 
             cancelAndIgnoreRemainingEvents()
         }
     }
 
-    /**
-     * Dado que el ViewModel ya tiene campaniaId = 5,
-     * Cuando se llama a sincronizarCampania(5) con el mismo valor,
-     * Entonces el StateFlow NO debe emitir un nuevo valor (sin efectos secundarios).
-     */
     @Test
     fun `sincronizarCampania no emite si el id es igual al actual`() = runTest {
         // Given
         viewModel = crearViewModel(campaniaIdEnHandle = 5)
 
-        viewModel.campaniaIdSeleccionada.test {
+        viewModel.filtroCampania.test {
             val idInicial = awaitItem()
             assertEquals("Dado que el handle tiene id=5, el estado inicial debe ser 5", 5, idInicial)
 
@@ -153,14 +143,14 @@ class TareaViewModelTest {
      * Entonces debe emitir una lista vacía (no debe consultar el repositorio).
      */
     @Test
-    fun `tareas emite lista vacia si no hay campaniaId valido`() = runTest {
+    fun `tareasUi emite lista vacia si no hay campaniaId valido`() = runTest {
         // Given
         viewModel = crearViewModel(campaniaIdEnHandle = null)
 
         // When / Then
-        viewModel.tareas.test {
+        viewModel.tareasUi.test {
             val tareas = awaitItem()
-            assertTrue("Entonces tareas debe ser lista vacía sin campaniaId", tareas.isEmpty())
+            assertTrue("Entonces tareasUi debe ser lista vacía sin campaniaId", tareas.isEmpty())
             cancelAndIgnoreRemainingEvents()
         }
     }

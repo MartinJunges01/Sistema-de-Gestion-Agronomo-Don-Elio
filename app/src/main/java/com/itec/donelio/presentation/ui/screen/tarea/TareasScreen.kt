@@ -1,34 +1,31 @@
 package com.itec.donelio.presentation.ui.screen.tarea
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.itec.donelio.domain.model.Tarea
-import com.itec.donelio.presentation.ui.components.CalendarioSemanal
-import com.itec.donelio.presentation.ui.components.SelectorCampania
+import com.itec.donelio.presentation.ui.components.SelectorRangoFechas
 import com.itec.donelio.presentation.ui.theme.AgriFondo
 import com.itec.donelio.presentation.ui.theme.AgriVerde
 import com.itec.donelio.presentation.ui.theme.TextoPrincipal
 import com.itec.donelio.presentation.ui.theme.TextoSecundario
+import com.itec.donelio.presentation.viewmodel.tarea.TareaUiModel
 import com.itec.donelio.presentation.viewmodel.tarea.TareaViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -42,14 +39,17 @@ fun TareasScreen(
     onGoToNuevaTarea: () -> Unit,
     onBack: () -> Unit
 ) {
-    val tareas by viewModel.tareas.collectAsState()
+    val tareasUi by viewModel.tareasUi.collectAsState()
     val campanias by viewModel.campanias.collectAsState()
-    val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
-    val fechaSeleccionada by viewModel.fechaSeleccionada.collectAsState()
+    val filtroCampania by viewModel.filtroCampania.collectAsState()
+    val filtroFechas by viewModel.filtroFechas.collectAsState()
     val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
 
-    val pendientes = tareas.filter { !it.confirmar }
-    val completadas = tareas.filter { it.confirmar }
+    var mostrarSelectorFechas by remember { mutableStateOf(false) }
+    var mostrarMenuCampanias by remember { mutableStateOf(false) }
+
+    val pendientes = tareasUi.filter { !it.tarea.confirmar }
+    val completadas = tareasUi.filter { it.tarea.confirmar }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -57,39 +57,79 @@ fun TareasScreen(
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
+
+        // BARRA DE FILTROS
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.FilterList, contentDescription = "Filtros", tint = TextoSecundario)
+            
+            // Filtro Campaña
+            Box {
+                FilterChip(
+                    selected = filtroCampania != null,
+                    onClick = { mostrarMenuCampanias = true },
+                    label = { 
+                        val nombre = if (filtroCampania == null) "Todas las Campañas" 
+                                     else campanias.find { it.id == filtroCampania }?.nombre ?: "Campaña"
+                        Text(nombre)
+                    },
+                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = AgriVerde.copy(alpha = 0.1f), selectedLabelColor = AgriVerde)
+                )
+                DropdownMenu(expanded = mostrarMenuCampanias, onDismissRequest = { mostrarMenuCampanias = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Todas las Campañas", fontWeight = FontWeight.Bold) },
+                        onClick = { viewModel.seleccionarCampania(null); mostrarMenuCampanias = false }
+                    )
+                    HorizontalDivider()
+                    campanias.forEach { c ->
+                        DropdownMenuItem(text = { Text(c.nombre) }, onClick = { viewModel.seleccionarCampania(c.id); mostrarMenuCampanias = false })
+                    }
+                }
+            }
+
+            // Filtro Fechas
+            FilterChip(
+                selected = filtroFechas != null,
+                onClick = { mostrarSelectorFechas = true },
+                label = { 
+                    val texto = if (filtroFechas == null) "Fechas" else "Rango Activo"
+                    Text(texto) 
+                },
+                leadingIcon = { Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(16.dp)) },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = AgriVerde.copy(alpha = 0.1f), selectedLabelColor = AgriVerde)
+            )
+
+            // Limpiar
+            if (filtroCampania != null || filtroFechas != null) {
+                IconButton(onClick = { viewModel.limpiarFiltros() }) {
+                    Icon(Icons.Default.Clear, contentDescription = "Limpiar Filtros", tint = Color.Red.copy(alpha = 0.7f))
+                }
+            }
+        }
+
+        HorizontalDivider(color = Color(0xFFE7E5E4))
+
         LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            item {
-                SelectorCampania(
-                    campanias = campanias,
-                    selectedCampaniaId = campaniaIdSeleccionada,
-                    onCampaniaSelected = { viewModel.seleccionarCampania(it) },
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-            item {
-                Text("Planificación Estratégica", color = TextoSecundario)
-                Spacer(modifier = Modifier.height(12.dp))
-                CalendarioSemanal(
-                    selectedDate = fechaSeleccionada,
-                    onDateSelected = { viewModel.seleccionarFecha(it) }
-                )
-            }
-
-            item { HorizontalDivider(color = Color(0xFFE7E5E4), modifier = Modifier.padding(vertical = 8.dp)) }
-
-            if (tareas.isEmpty()) {
+            if (tareasUi.isEmpty()) {
                 item {
                     Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-                        Text("No hay tareas para esta campaña", color = TextoSecundario, fontSize = 16.sp)
+                        Text("No hay tareas que coincidan con los filtros", color = TextoSecundario, fontSize = 16.sp)
                     }
                 }
             } else {
                 item {
-                    Text("Pendientes", fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 18.sp)
+                    Text(if (filtroFechas == null) "Próximas y Pendientes" else "Tareas Filtradas (Pendientes)", fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 18.sp)
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                items(pendientes) { tarea ->
-                    TarjetaTareaItem(tarea = tarea, onToggle = { viewModel.toggleCompletada(tarea) })
+                if (pendientes.isEmpty()) {
+                    item { Text("No hay tareas pendientes.", color = TextoSecundario, fontSize = 14.sp) }
+                } else {
+                    items(pendientes) { uiModel ->
+                        TarjetaTareaItem(uiModel = uiModel, onToggle = { viewModel.toggleCompletada(uiModel.tarea) })
+                    }
                 }
 
                 if (completadas.isNotEmpty()) {
@@ -97,8 +137,8 @@ fun TareasScreen(
                         Text("Completadas", fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 18.sp, modifier = Modifier.padding(top = 8.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                     }
-                    items(completadas) { tarea ->
-                        TarjetaTareaItem(tarea = tarea, onToggle = { viewModel.toggleCompletada(tarea) })
+                    items(completadas) { uiModel ->
+                        TarjetaTareaItem(uiModel = uiModel, onToggle = { viewModel.toggleCompletada(uiModel.tarea) })
                     }
                 }
             }
@@ -108,7 +148,7 @@ fun TareasScreen(
                     onClick = onGoToNuevaTarea,
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
-                    enabled = isCampaniaValid
+                    enabled = isCampaniaValid || filtroCampania != null // Se permite si hay una campaña seleccionada
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
@@ -117,14 +157,37 @@ fun TareasScreen(
             }
         }
     }
+
+    if (mostrarSelectorFechas) {
+        SelectorRangoFechas(
+            mostrarDialogo = true,
+            onDismiss = { mostrarSelectorFechas = false },
+            onRangoSeleccionado = { rango -> viewModel.seleccionarFechas(rango) }
+        )
+    }
 }
 
 @Composable
-private fun TarjetaTareaItem(tarea: Tarea, onToggle: () -> Unit) {
+private fun TarjetaTareaItem(uiModel: TareaUiModel, onToggle: () -> Unit) {
+    val tarea = uiModel.tarea
     val completada = tarea.confirmar
+    val isVencida = uiModel.isVencida && !completada
+
+    val bgColor = when {
+        completada -> AgriFondo
+        isVencida -> Color(0xFFFEF2F2)
+        else -> Color.White
+    }
+    
+    val borderColor = when {
+        completada -> Color(0xFFE7E5E4)
+        isVencida -> Color(0xFFFCA5A5)
+        else -> Color(0xFFE7E5E4)
+    }
+
     Card(
-        colors = CardDefaults.cardColors(containerColor = if (completada) AgriFondo else Color.White),
-        border = BorderStroke(1.dp, if (completada) Color(0xFFE7E5E4) else Color(0xFFE7E5E4)),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
+        border = BorderStroke(1.dp, borderColor),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -135,17 +198,37 @@ private fun TarjetaTareaItem(tarea: Tarea, onToggle: () -> Unit) {
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    tarea.nombre,
-                    fontWeight = FontWeight.Bold,
-                    color = if (completada) TextoSecundario else TextoPrincipal,
-                    textDecoration = if (completada) TextDecoration.LineThrough else TextDecoration.None
-                )
-                Text(
-                    "${formatFechaTarea(tarea.fecha)} ${tarea.hora}",
-                    fontSize = 14.sp,
-                    color = TextoSecundario
-                )
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = tarea.nombre,
+                        fontWeight = FontWeight.Bold,
+                        color = if (completada) TextoSecundario else if (isVencida) Color(0xFFB91C1C) else TextoPrincipal,
+                        textDecoration = if (completada) TextDecoration.LineThrough else TextDecoration.None,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${formatFechaTarea(tarea.fecha)} ${tarea.hora}",
+                        fontSize = 13.sp,
+                        color = if (isVencida && !completada) Color(0xFFDC2626) else TextoSecundario,
+                        fontWeight = if (isVencida && !completada) FontWeight.Bold else FontWeight.Normal
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        color = AgriVerde.copy(alpha = 0.1f),
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
+                        Text(
+                            text = uiModel.campaniaNombre,
+                            fontSize = 11.sp,
+                            color = AgriVerde,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
             }
         }
     }

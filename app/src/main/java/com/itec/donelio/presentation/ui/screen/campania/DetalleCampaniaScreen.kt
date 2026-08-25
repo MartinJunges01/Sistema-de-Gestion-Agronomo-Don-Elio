@@ -203,7 +203,8 @@ private fun DetalleFila(label: String, value: String) {
 @Composable
 private fun TabTareas(campaniaId: Int, onGoToTareas: () -> Unit) {
     val tareaViewModel: TareaViewModel = hiltViewModel(key = "tab_tareas_$campaniaId")
-    val tareas by tareaViewModel.tareas.collectAsState()
+    val tareasUi by tareaViewModel.tareasUi.collectAsState()
+    val tareas = tareasUi.map { it.tarea }
     val pendientes = tareas.filter { !it.confirmar }
     val completadas = tareas.filter { it.confirmar }
 
