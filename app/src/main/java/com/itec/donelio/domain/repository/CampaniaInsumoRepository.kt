@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CampaniaInsumoRepository {
     fun getInsumosUtilizadosEnCampania(idCampania: Int): Flow<List<CampaniaInsumo>>
+    
+    fun getAllInsumosUtilizados(): Flow<List<CampaniaInsumo>>
 
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumo)
 

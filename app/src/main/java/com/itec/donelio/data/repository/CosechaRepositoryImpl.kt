@@ -19,6 +19,12 @@ class CosechaRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getAllCosechas(): Flow<List<Cosecha>> {
+        return cosechaDao.getAllCosechas().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override suspend fun getCosechaById(id: Int): Cosecha? {
         return cosechaDao.getCosechaById(id)?.toDomain()
     }

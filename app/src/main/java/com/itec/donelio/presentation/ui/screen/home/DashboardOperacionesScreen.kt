@@ -48,6 +48,7 @@ fun DashboardOperacionesScreen(
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
     val userName by viewModel.userName.collectAsState()
+    val resumen by viewModel.resumenMensual.collectAsState()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionLauncher = rememberLauncherForActivityResult(
@@ -79,6 +80,15 @@ fun DashboardOperacionesScreen(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text("Dashboard", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = AgriVerde)
                 Text("Resumen de operaciones en tiempo real", color = TextoSecundario, fontSize = 14.sp)
+            }
+        }
+
+        if (resumen != null) {
+            item {
+                SeccionResumenRendimiento(
+                    resumen = resumen!!,
+                    onGoToReportes = { /* TODO: Navigate to reportes when implemented */ }
+                )
             }
         }
 
@@ -190,4 +200,68 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit) {
 private fun formatFecha(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
+}
+
+@Composable
+private fun SeccionResumenRendimiento(
+    resumen: com.itec.donelio.domain.use_case.ResumenRendimiento,
+    onGoToReportes: () -> Unit
+) {
+    val formatMoneda = java.text.NumberFormat.getCurrencyInstance(Locale("es", "AR"))
+    val formatTn = java.text.DecimalFormat("#,##0.00").apply { 
+        decimalFormatSymbols = java.text.DecimalFormatSymbols(Locale("es", "AR"))
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Rendimiento Global (Mes Actual)", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+            TextButton(onClick = onGoToReportes) {
+                Text("Ver detalle →", color = AgriVerde, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+        
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            CardResumen(
+                titulo = "Inversión",
+                valor = formatMoneda.format(resumen.capitalInvertido),
+                modifier = Modifier.weight(1f)
+            )
+            CardResumen(
+                titulo = "Cosechado",
+                valor = "${formatTn.format(resumen.totalCosechado)} Tn",
+                modifier = Modifier.weight(1f)
+            )
+            CardResumen(
+                titulo = "Costo/Tn",
+                valor = formatMoneda.format(resumen.costoPorTonelada),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CardResumen(titulo: String, valor: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(titulo, fontSize = 12.sp, color = TextoSecundario, maxLines = 1)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(valor, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, maxLines = 1)
+        }
+    }
 }

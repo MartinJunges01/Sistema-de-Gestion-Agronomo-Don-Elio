@@ -14,8 +14,14 @@ class CampaniaInsumoRepositoryImpl @Inject constructor(
 ) : CampaniaInsumoRepository {
 
     override fun getInsumosUtilizadosEnCampania(idCampania: Int): Flow<List<CampaniaInsumo>> {
-        return campaniaInsumoDao.getInsumosUtilizadosEnCampania(idCampania).map { relaciones ->
-            relaciones.map { it.toDomain() }
+        return campaniaInsumoDao.getInsumosUtilizadosEnCampania(idCampania).map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getAllInsumosUtilizados(): Flow<List<CampaniaInsumo>> {
+        return campaniaInsumoDao.getAllInsumosUtilizados().map { entities ->
+            entities.map { it.toDomain() }
         }
     }
 
