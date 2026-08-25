@@ -3,6 +3,7 @@ package com.itec.donelio.presentation.ui.screen.reportes
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -633,8 +634,9 @@ private fun TarjetaMetrica(
     }
 }
 
+@VisibleForTesting
 @Composable
-private fun DoubleBarIndicator(
+internal fun DoubleBarIndicator(
     labelA: String, valueA: Float, maxA: Float, colorA: Color,
     labelB: String, valueB: Float, maxB: Float, colorB: Color
 ) {
