@@ -46,8 +46,8 @@ class GestionCampaniasViewModelTest {
     @Test
     fun `dadoCampaniasActivasEInactivas_cuandoSeObservaActivas_entoncesRetornaSoloActivas`() = runTest {
         // Given
-        val activas = listOf(Campania(1, "Activa", 100.0, 0L, true, ""))
-        val inactivas = listOf(Campania(2, "Inactiva", 100.0, 0L, false, ""))
+        val activas = listOf(Campania(1, "Activa", 100.0, 0L, true, 1, ""))
+        val inactivas = listOf(Campania(2, "Inactiva", 100.0, 0L, false, 2, ""))
         
         every { obtenerCampaniasActivasUseCase() } returns flowOf(activas)
         every { obtenerCampaniasInactivasUseCase() } returns flowOf(inactivas)

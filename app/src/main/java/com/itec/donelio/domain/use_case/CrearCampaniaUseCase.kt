@@ -16,7 +16,7 @@ import javax.inject.Inject
 class CrearCampaniaUseCase @Inject constructor(
     private val campaniaRepository: CampaniaRepository
 ) {
-    operator fun invoke(nombre: String, hectareas: Double, cultivo: String, fechaInicio: Long): Flow<Resource<Unit>> = flow {
+    operator fun invoke(nombre: String, hectareas: Double, cultivoId: Int, fechaInicio: Long): Flow<Resource<Unit>> = flow {
         emit(Resource.Loading)
         try {
             if (nombre.isBlank()) {
@@ -29,7 +29,7 @@ class CrearCampaniaUseCase @Inject constructor(
                 hectareas = hectareas,
                 fechaInicio = fechaInicio,
                 estaActiva = true,
-                cultivo = cultivo.trim()
+                cultivoId = cultivoId
             )
             campaniaRepository.insertCampania(campania)
             emit(Resource.Success(Unit))

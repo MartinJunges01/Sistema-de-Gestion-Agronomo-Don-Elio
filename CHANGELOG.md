@@ -1,5 +1,12 @@
 # Changelog
 
+**[2026-08-25] - [#351] feat(cultivos): ABM de Cultivos (Catálogo estandarizado)**
+- **Data/Domain:** Se creó la entidad `CultivoEntity` y `Cultivo` (modelo de dominio). Se implementó `CultivoDao` con soporte para soft-delete, y se expuso `CultivoRepository` y su implementación. Se actualizó la versión de la base de datos a 7.
+- **Campañas:** Se reemplazó el campo de texto libre `cultivo` en `CampaniaEntity` y `Campania` por `id_cultivo` / `cultivoId` (FK) y `cultivoNombre`, realizando un `INNER JOIN` en todas las consultas de lectura para obtener su descripción del catálogo de forma reactiva.
+- **UI:** Se implementó `CatalogoCultivosScreen` y su `CultivoCatalogoViewModel` para ABM con diálogos inline. El formulario de campaña ahora utiliza un `ExposedDropdownMenuBox` para seleccionar cultivos de forma estricta, con una opción de inserción rápida para nuevos cultivos en el mismo formulario.
+- **Testing:** Se actualizaron todos los tests unitarios e instrumentados afectados, y se añadieron pruebas unitarias para `CultivoCatalogoViewModel`.
+- **Rama:** `Issue351`
+
 **[2026-08-25] - [#349] feat(db): Hectáreas por campaña y métricas Tn/Ha**
 - **Data/Domain:** Se agregó el campo `hectareas` (Double) a `CampaniaEntity` y `Campania`. Se incrementó la versión de la base de datos Room a 6 implementando la migración correspondiente.
 - **UI:** El `FormularioCampaniaScreen` incluye validación de este nuevo campo. Se actualizó la vista de Reportes para mostrar la métrica `Rendimiento: X Tn/Ha`.

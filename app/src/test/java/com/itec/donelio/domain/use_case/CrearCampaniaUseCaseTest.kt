@@ -29,13 +29,13 @@ class CrearCampaniaUseCaseTest {
         // Given
         val nombre = "Trigo de Invierno"
         val hectareas = 100.0
-        val cultivo = "Trigo"
+        val cultivoId = 1
         val fechaInicio = 1680000000000L
         
         coEvery { campaniaRepository.insertCampania(any()) } returns Unit
 
         // When
-        crearCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio).test {
+        crearCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio).test {
             // Then
             val loading = awaitItem()
             assertTrue(loading is Resource.Loading)
@@ -50,7 +50,7 @@ class CrearCampaniaUseCaseTest {
             campaniaRepository.insertCampania(withArg {
                 assertEquals(nombre, it.nombre)
                 assertEquals(hectareas, it.hectareas, 0.0)
-                assertEquals(cultivo, it.cultivo)
+                assertEquals(cultivoId, it.cultivoId)
                 assertEquals(fechaInicio, it.fechaInicio)
                 assertTrue(it.estaActiva)
             })
@@ -62,11 +62,11 @@ class CrearCampaniaUseCaseTest {
         // Given
         val nombre = "  "
         val hectareas = 100.0
-        val cultivo = "Trigo"
+        val cultivoId = 1
         val fechaInicio = 1680000000000L
 
         // When
-        crearCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio).test {
+        crearCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio).test {
             // Then
             val loading = awaitItem()
             assertTrue(loading is Resource.Loading)

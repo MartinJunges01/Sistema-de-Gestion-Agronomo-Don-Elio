@@ -149,7 +149,7 @@ private fun HeaderCampania(campania: com.itec.donelio.domain.model.Campania) {
             Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
         }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            InfoChip(label = "Cultivo", value = campania.cultivo.ifBlank { "—" })
+            InfoChip(label = "Cultivo", value = campania.cultivoNombre.ifBlank { "—" })
             InfoChip(label = "Inicio", value = formatFecha(campania.fechaInicio))
             InfoChip(label = "Estado", value = if (campania.estaActiva) "Activa" else "Inactiva")
         }
@@ -171,7 +171,7 @@ private fun TabInfo(campania: com.itec.donelio.domain.model.Campania, onEditar: 
             Card(colors = CardDefaults.cardColors(containerColor = Color.White), shape = RoundedCornerShape(12.dp), border = BorderStroke(1.dp, Color(0xFFE7E5E4))) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     DetalleFila(label = "Nombre", value = campania.nombre)
-                    DetalleFila(label = "Cultivo", value = campania.cultivo.ifBlank { "Sin especificar" })
+                    DetalleFila(label = "Cultivo", value = campania.cultivoNombre.ifBlank { "Sin especificar" })
                     DetalleFila(label = "Fecha de inicio", value = formatFecha(campania.fechaInicio))
                     DetalleFila(label = "Estado", value = if (campania.estaActiva) "Activa" else "Inactiva")
                 }

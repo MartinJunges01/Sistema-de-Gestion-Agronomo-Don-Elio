@@ -6,8 +6,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +30,8 @@ import java.util.Calendar
 fun FormularioCampaniaScreen(
     viewModel: CampaniaFormViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onGuardadoExitoso: () -> Unit
+    onGuardadoExitoso: () -> Unit,
+    onGoToCatalogoCultivos: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -59,15 +62,101 @@ fun FormularioCampaniaScreen(
                 singleLine = true
             )
 
-            OutlinedTextField(
-                value = state.cultivo,
-                onValueChange = viewModel::onCultivoChange,
-                label = { Text("Cultivo (Ej: Soja, Maíz, Trigo)") },
+            // Selector de Cultivos desde el Catálogo
+            val cultivos by viewModel.cultivos.collectAsState()
+            var dropdownExpanded by remember { mutableStateOf(false) }
+            var showNuevoCultivoDialog by remember { mutableStateOf(false) }
+            val cultivoSeleccionado = cultivos.find { it.id == state.cultivoId }
+            val textoCultivo = cultivoSeleccionado?.nombre ?: ""
+
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                isError = state.errorCultivo != null,
-                supportingText = state.errorCultivo?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
-                singleLine = true
-            )
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = dropdownExpanded,
+                    onExpandedChange = { dropdownExpanded = it },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = textoCultivo,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Cultivo") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                        isError = state.errorCultivo != null,
+                        supportingText = state.errorCultivo?.let { { Text(it, color = MaterialTheme.colorScheme.error) } }
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = dropdownExpanded,
+                        onDismissRequest = { dropdownExpanded = false }
+                    ) {
+                        cultivos.forEach { cultivo ->
+                            DropdownMenuItem(
+                                text = { Text(cultivo.nombre) },
+                                onClick = {
+                                    viewModel.onCultivoIdChange(cultivo.id)
+                                    dropdownExpanded = false
+                                }
+                            )
+                        }
+                        DropdownMenuItem(
+                            text = { Text("+ Agregar nuevo cultivo...", color = AgriVerde, fontWeight = FontWeight.Bold) },
+                            onClick = {
+                                showNuevoCultivoDialog = true
+                                dropdownExpanded = false
+                            }
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onGoToCatalogoCultivos,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Configurar Catálogo",
+                        tint = AgriVerde
+                    )
+                }
+            }
+
+            if (showNuevoCultivoDialog) {
+                var nuevoCultivoNombre by remember { mutableStateOf("") }
+                AlertDialog(
+                    onDismissRequest = { showNuevoCultivoDialog = false },
+                    title = { Text("Agregar Nuevo Cultivo", fontWeight = FontWeight.Bold) },
+                    text = {
+                        OutlinedTextField(
+                            value = nuevoCultivoNombre,
+                            onValueChange = { nuevoCultivoNombre = it },
+                            label = { Text("Nombre del Cultivo") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                if (nuevoCultivoNombre.isNotBlank()) {
+                                    viewModel.crearYSeleccionarNuevoCultivo(nuevoCultivoNombre.trim())
+                                }
+                                showNuevoCultivoDialog = false
+                            },
+                            enabled = nuevoCultivoNombre.isNotBlank(),
+                            colors = ButtonDefaults.buttonColors(containerColor = AgriVerde)
+                        ) { Text("Guardar") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showNuevoCultivoDialog = false }) { Text("Cancelar") }
+                    }
+                )
+            }
 
             OutlinedTextField(
                 value = state.hectareas,

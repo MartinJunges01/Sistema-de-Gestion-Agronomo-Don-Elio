@@ -33,6 +33,7 @@ import com.itec.donelio.presentation.ui.screen.home.DashboardOperacionesScreen
 import com.itec.donelio.presentation.ui.screen.insumo.CatalogoInsumosScreen
 import com.itec.donelio.presentation.ui.screen.insumo.FormularioInsumoScreen
 import com.itec.donelio.presentation.ui.screen.insumo.InsumosScreen
+import com.itec.donelio.presentation.ui.screen.cultivo.CatalogoCultivosScreen
 import com.itec.donelio.presentation.ui.screen.login.LoginScreen
 import com.itec.donelio.presentation.ui.screen.login.RegistroScreen
 import com.itec.donelio.presentation.ui.screen.observacion.ObservacionesScreen
@@ -174,7 +175,8 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                 ) {
                     FormularioCampaniaScreen(
                         onBack = { navController.popBackStack() },
-                        onGuardadoExitoso = { navController.popBackStack() }
+                        onGuardadoExitoso = { navController.popBackStack() },
+                        onGoToCatalogoCultivos = { navController.navigate(NavRoute.CatalogoCultivos.createRoute()) }
                     )
                 }
                 composable(
@@ -230,6 +232,11 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                     CatalogoInsumosScreen(
                         onBack = { navController.popBackStack() },
                         onGoToFormulario = { navController.navigate(NavRoute.FormularioInsumo.createRoute()) }
+                    )
+                }
+                composable(NavRoute.CatalogoCultivos.route) {
+                    CatalogoCultivosScreen(
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable(

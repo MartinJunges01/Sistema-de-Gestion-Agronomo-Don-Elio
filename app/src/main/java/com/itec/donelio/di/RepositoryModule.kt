@@ -7,6 +7,7 @@ import com.itec.donelio.data.repository.CosechaRepositoryImpl
 import com.itec.donelio.data.repository.InsumoRepositoryImpl
 import com.itec.donelio.data.repository.ObservacionRepositoryImpl
 import com.itec.donelio.data.repository.TareaRepositoryImpl
+import com.itec.donelio.data.repository.CultivoRepositoryImpl
 import com.itec.donelio.domain.repository.CampaniaInsumoRepository
 import com.itec.donelio.domain.repository.CampaniaRepository
 import com.itec.donelio.domain.repository.CosechaNoAlmacenadaRepository
@@ -14,6 +15,7 @@ import com.itec.donelio.domain.repository.CosechaRepository
 import com.itec.donelio.domain.repository.InsumoRepository
 import com.itec.donelio.domain.repository.ObservacionRepository
 import com.itec.donelio.domain.repository.TareaRepository
+import com.itec.donelio.domain.repository.CultivoRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -65,4 +67,10 @@ abstract class RepositoryModule {
     abstract fun bindCosechaNoAlmacenadaRepository(
         impl: CosechaNoAlmacenadaRepositoryImpl
     ): CosechaNoAlmacenadaRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCultivoRepository(
+        impl: CultivoRepositoryImpl
+    ): CultivoRepository
 }

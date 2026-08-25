@@ -26,7 +26,7 @@ class EditarCampaniaUseCaseTest {
 
     @Test
     fun `invoke with valid data updates and emits success`() = runTest {
-        val campania = Campania(id = 1, nombre = "Nueva", hectareas = 100.0, cultivo = "Soja", fechaInicio = 1L, estaActiva = true)
+        val campania = Campania(id = 1, nombre = "Nueva", hectareas = 100.0, cultivoId = 1, cultivoNombre = "Soja", fechaInicio = 1L, estaActiva = true)
         
         coEvery { campaniaRepository.updateCampania(any()) } returns Unit
 
@@ -42,7 +42,7 @@ class EditarCampaniaUseCaseTest {
 
     @Test
     fun `invoke with blank name emits error`() = runTest {
-        val campania = Campania(id = 1, nombre = "  ", hectareas = 100.0, cultivo = "Soja", fechaInicio = 1L, estaActiva = true)
+        val campania = Campania(id = 1, nombre = "  ", hectareas = 100.0, cultivoId = 1, cultivoNombre = "Soja", fechaInicio = 1L, estaActiva = true)
 
         editarCampaniaUseCase(campania).test {
             assertTrue(awaitItem() is Resource.Loading)

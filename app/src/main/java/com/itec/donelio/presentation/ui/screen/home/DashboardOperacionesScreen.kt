@@ -199,7 +199,7 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
-                Text(campania.cultivo, fontSize = 14.sp, color = TextoSecundario)
+                Text(campania.cultivoNombre, fontSize = 14.sp, color = TextoSecundario)
                 Text(formatFecha(campania.fechaInicio), fontSize = 12.sp, color = TextoSecundario)
             }
             if (campania.estaActiva) {
