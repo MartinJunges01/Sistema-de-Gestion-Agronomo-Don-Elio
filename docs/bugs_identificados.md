@@ -206,6 +206,30 @@ Dos nuevos artefactos introducidos en PR #378 no tienen tests unitarios. `MainVi
 - [ ] Crear `CerrarSesionUseCaseTest`: caso `Given sessionManager → When invoke() → Then sessionManager.logout() fue llamado`.
 - [ ] Agregar los casos en `docs/plan_de_pruebas.md`.
 
+## [PENDIENTE] DT-011: ReportesViewModelTest incompleto
+**Severidad:** 🟡 UX / Deuda Técnica
+**Descripción:** `ReportesViewModelTest` no cubre exportación con cosechas (nuevos paths de Issue #343).
+
+## [PENDIENTE] DT-012: ObtenerTareasFiltradasUseCase sin tests
+**Severidad:** 🟡 UX / Deuda Técnica
+**Descripción:** `ObtenerTareasFiltradasUseCase` sin tests unitarios propios (Issue #345).
+
+## [PENDIENTE] DT-013: ObtenerResumenRendimientoUseCase sin tests
+**Severidad:** 🟡 UX / Deuda Técnica
+**Descripción:** `ObtenerResumenRendimientoUseCase` sin tests (la lógica de filtro por mes requiere cobertura). (Issue #346)
+
+## [PENDIENTE] DT-014: ObtenerCumplimientoTareasUseCase sin tests
+**Severidad:** 🟡 UX / Deuda Técnica
+**Descripción:** `ObtenerCumplimientoTareasUseCase` sin tests unitarios propios (Issue #347).
+
+## [PENDIENTE] DT-015: Archivo residual build_error.txt
+**Severidad:** 🔴 Bug Bloqueante
+**Descripción:** `build_error.txt` commiteado en `fix/issue-349-refactor-db` — archivo de error de CI que no debe estar en el repositorio.
+
+## [PENDIENTE] DT-016: Migración de BD faltante MIGRATION_5_6
+**Severidad:** 🔴 Bug Bloqueante
+**Descripción:** Verificar si `DonElioDatabase` en PR #349 incluye `MIGRATION_5_6`. Sin ella, Room hace crash al actualizar la app.
+
 <!-- Plantilla para nuevos bugs:
 ## [PENDIENTE-ID] Título descriptivo del bug
 
