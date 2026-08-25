@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -47,64 +48,97 @@ fun GestionCampaniasScreen(
 ) {
     val campaniasActivas by viewModel.campaniasActivas.collectAsState()
     val campaniasInactivas by viewModel.campaniasInactivas.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    var campaniaAEliminar by remember { mutableStateOf<Campania?>(null) }
     var showHistorial by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Gestión de Campañas", fontWeight = FontWeight.Bold) },
-            navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
-        )
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            if (campaniasActivas.isEmpty() && campaniasInactivas.isEmpty()) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(48.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(Icons.Default.Agriculture, contentDescription = null, modifier = Modifier.size(64.dp), tint = TextoSecundario)
-                        Text("No hay campañas", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
-                        Text("Presiona + para crear una", fontSize = 14.sp, color = TextoSecundario)
-                    }
-                }
-            } else {
-                if (campaniasActivas.isNotEmpty()) {
-                    item {
-                        Text("Activas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal, modifier = Modifier.padding(bottom = 4.dp))
-                    }
-                    items(campaniasActivas, key = { it.id }) { campania ->
-                        CampaniaCard(
-                            campania = campania,
-                            onClick = { onGoToDetail(campania.id) }
-                        )
-                    }
-                }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.errorMessage.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
-                if (campaniasInactivas.isNotEmpty()) {
+    if (campaniaAEliminar != null) {
+        AlertDialog(
+            onDismissRequest = { campaniaAEliminar = null },
+            title = { Text("¿Eliminar permanentemente la campaña?", fontWeight = FontWeight.Bold) },
+            text = { Text("Esta acción eliminará todos los datos asociados (cosechas, insumos, observaciones, tareas) y no se puede deshacer.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.eliminarCampaniaPermanente(campaniaAEliminar!!)
+                        campaniaAEliminar = null
+                    }
+                ) { Text("Eliminar", color = Color.Red) }
+            },
+            dismissButton = {
+                TextButton(onClick = { campaniaAEliminar = null }) { Text("Cancelar", color = TextoSecundario) }
+            }
+        )
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            TopAppBar(
+                title = { Text("Gestión de Campañas", fontWeight = FontWeight.Bold) },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (campaniasActivas.isEmpty() && campaniasInactivas.isEmpty()) {
                     item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { showHistorial = !showHistorial }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(48.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text("Historial (${campaniasInactivas.size})", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoSecundario)
-                            Icon(if (showHistorial) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null, tint = TextoSecundario)
+                            Icon(Icons.Default.Agriculture, contentDescription = null, modifier = Modifier.size(64.dp), tint = TextoSecundario)
+                            Text("No hay campañas", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
+                            Text("Presiona + para crear una", fontSize = 14.sp, color = TextoSecundario)
                         }
                     }
-                    if (showHistorial) {
-                        items(campaniasInactivas, key = { it.id }) { campania ->
+                } else {
+                    if (campaniasActivas.isNotEmpty()) {
+                        item {
+                            Text("Activas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal, modifier = Modifier.padding(bottom = 4.dp))
+                        }
+                        items(campaniasActivas, key = { it.id }) { campania ->
                             CampaniaCard(
                                 campania = campania,
-                                onClick = { onGoToDetail(campania.id) }
+                                onClick = { onGoToDetail(campania.id) },
+                                onDelete = null
                             )
+                        }
+                    }
+
+                    if (campaniasInactivas.isNotEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { showHistorial = !showHistorial }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("Historial (${campaniasInactivas.size})", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoSecundario)
+                                Icon(if (showHistorial) Icons.Default.ExpandLess else Icons.Default.ExpandMore, contentDescription = null, tint = TextoSecundario)
+                            }
+                        }
+                        if (showHistorial) {
+                            items(campaniasInactivas, key = { it.id }) { campania ->
+                                CampaniaCard(
+                                    campania = campania,
+                                    onClick = { onGoToDetail(campania.id) },
+                                    onDelete = { campaniaAEliminar = campania }
+                                )
+                            }
                         }
                     }
                 }
@@ -114,10 +148,11 @@ fun GestionCampaniasScreen(
 }
 
 @Composable
-private fun CampaniaCard(campania: Campania, onClick: () -> Unit) {
+private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() -> Unit)?) {
+    val backgroundColor = if (campania.estaActiva) Color.White else Color.Gray.copy(alpha = 0.1f)
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -141,8 +176,12 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit) {
                     Text("Activa", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontSize = 11.sp, color = AgriVerde, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
+                Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
+            } else if (onDelete != null) {
+                IconButton(onClick = onDelete) {
+                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                }
             }
-            Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
         }
     }
 }

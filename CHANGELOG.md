@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#342] feat(campañas): Borrado y estilo visual de campañas inactivas**
+- **Data/Domain:** Se integró `EliminarCampaniaUseCase` en `GestionCampaniasViewModel`. Se confirmó que Room maneja la eliminación en cascada.
+- **UI:** Las tarjetas de campañas inactivas en `GestionCampaniasScreen` tienen un color atenuado. Se agregó un botón de papelera y diálogo de confirmación para eliminación definitiva.
+- **Rama:** `fix/issue-342-campanias-inactivas`
+
 **[2026-08-25] - [#338] fix(ux): Teclado y Scroll en Formularios**
 - **UI:** Se ajustó el manejo de insets en `MainActivity` y se aplicó `consumeWindowInsets` en `screens.kt` para evitar el bloqueo de scroll y el bloque blanco superior al abrir el teclado virtual.
 - **Rama:** `fix/issue-338-teclado`
