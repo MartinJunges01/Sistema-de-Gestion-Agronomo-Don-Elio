@@ -122,6 +122,33 @@ class ReportesViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /**
+     * Modelo de vista para el componente Top 3 Insumos.
+     */
+    data class InsumoGasto(val posicion: Int, val nombre: String, val costo: Double, val porcentaje: Float)
+
+    /**
+     * Los 3 insumos de mayor gasto para la campaña seleccionada,
+     * calculando su porcentaje en base al gasto total.
+     */
+    val top3Insumos: StateFlow<List<InsumoGasto>> = exportableData
+        .map { insumosResumen ->
+            if (insumosResumen.isEmpty()) return@map emptyList()
+            
+            val gastoTotal = insumosResumen.sumOf { it.costoTotal }
+            
+            insumosResumen.take(3).mapIndexed { index, insumo ->
+                val porcentaje = if (gastoTotal > 0) ((insumo.costoTotal / gastoTotal) * 100).toFloat() else 0f
+                InsumoGasto(
+                    posicion = index + 1,
+                    nombre = insumo.nombreInsumo,
+                    costo = insumo.costoTotal,
+                    porcentaje = porcentaje
+                )
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /**
      * Datos del PieChart de distribución de gastos por insumo.
      * Contextual a la campaña seleccionada en Sección 1.
      * Emite null cuando no hay campaña seleccionada o no hay insumos.

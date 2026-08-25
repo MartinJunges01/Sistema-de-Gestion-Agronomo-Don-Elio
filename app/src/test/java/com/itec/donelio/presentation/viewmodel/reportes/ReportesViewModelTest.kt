@@ -252,4 +252,57 @@ class ReportesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    // ──────────────────────────────────────────────
+    // VM-R7: top3Insumos calcula porcentaje y agrupa
+    // ──────────────────────────────────────────────
+
+    /**
+     * Dado que hay varios insumos en la campaña seleccionada,
+     * Cuando se expone [top3Insumos],
+     * Entonces debe tener como máximo 3 insumos, ordenados por costo y con porcentaje calculado.
+     */
+    @Test
+    fun `top3Insumos emite maximo 3 elementos ordenados con porcentaje`() = runTest {
+        // Given
+        val insumoSemilla = CampaniaInsumo(id = 1, idCampania = 1, idInsumo = 1, cantidad = 10.0, precio = 1000.0) // 10000
+        val insumoAgroquimico = CampaniaInsumo(id = 2, idCampania = 1, idInsumo = 2, cantidad = 5.0, precio = 5000.0) // 25000
+        val insumoFertilizante = CampaniaInsumo(id = 3, idCampania = 1, idInsumo = 3, cantidad = 20.0, precio = 500.0) // 10000
+        val insumoExtra = CampaniaInsumo(id = 4, idCampania = 1, idInsumo = 4, cantidad = 1.0, precio = 100.0) // 100
+        
+        val catalogoMock = listOf(
+            Insumo(id = 1, nombre = "Semilla", categoria = "Semillas"),
+            Insumo(id = 2, nombre = "Agroquímico", categoria = "Agroquímicos"),
+            Insumo(id = 3, nombre = "Fertilizante", categoria = "Fertilizantes"),
+            Insumo(id = 4, nombre = "Extra", categoria = "Otros")
+        )
+        
+        every { obtenerInsumosVinculadosUseCase(1) } returns flowOf(listOf(insumoSemilla, insumoAgroquimico, insumoFertilizante, insumoExtra))
+        every { obtenerCatalogoInsumosUseCase() } returns flowOf(catalogoMock)
+        
+        viewModel = crearViewModel()
+        
+        viewModel.top3Insumos.test {
+            val inicial = awaitItem()
+            assertTrue("Debe iniciar vacio", inicial.isEmpty())
+            
+            // When
+            viewModel.seleccionarCampaniaIndividual(campaniaSoja)
+            advanceUntilIdle()
+            
+            // Then
+            val top3 = awaitItem()
+            assertEquals("Debe tener 3 elementos maximo", 3, top3.size)
+            
+            assertEquals("El primero debe ser Agroquimico (mayor costo)", "Agroquímico", top3[0].nombre)
+            assertEquals("El primero debe ser pos 1", 1, top3[0].posicion)
+            assertEquals(25000.0, top3[0].costo, 0.01)
+            
+            val gastoTotal = 10000.0 + 25000.0 + 10000.0 + 100.0 // 45100
+            val porcentajeEsperado = ((25000.0 / 45100.0) * 100).toFloat()
+            assertEquals(porcentajeEsperado, top3[0].porcentaje, 0.01f)
+            
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

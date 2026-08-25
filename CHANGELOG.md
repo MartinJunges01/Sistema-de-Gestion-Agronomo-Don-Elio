@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-08-25] - [#348] feat(reportes): Top 3 insumos de mayor gasto**
+- **UI:** Se agregó una nueva tarjeta en la pantalla de Reportes mostrando los 3 insumos con mayor porcentaje de gasto en la campaña actual.
+- **Rama:** `fix/issue-348-top-insumos`
+
 **[2026-08-25] - [#347] feat(dashboard): Tasa de Cumplimiento de Tareas**
 - **Domain:** Se creó `ObtenerCumplimientoTareasUseCase` y el modelo `CumplimientoTareas` para calcular la relación entre tareas confirmadas y tareas totales en el periodo de las campañas activas.
 - **UI:** Se integró al `HomeViewModel` y se visualiza la tasa de cumplimiento en el `DashboardOperacionesScreen`.
