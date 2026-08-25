@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-08-25] - [#338] fix(ux): Teclado y Scroll en Formularios**
+- **UI:** Se ajustó el manejo de insets en `MainActivity` y se aplicó `consumeWindowInsets` en `screens.kt` para evitar el bloqueo de scroll y el bloque blanco superior al abrir el teclado virtual.
+- **Rama:** `fix/issue-338-teclado`
+
 **[2026-08-25] - [#337] feat(observaciones): Edición de fotos en observaciones**
 - **Dominio:** Se implementó `ValidarObservacionUseCase` y se ajustó `EditarObservacionUseCase` para manejar fotos.
 - **UI:** El diálogo de edición de observaciones ahora permite modificar o eliminar fotos utilizando cámara y galería con permisos dinámicos.
