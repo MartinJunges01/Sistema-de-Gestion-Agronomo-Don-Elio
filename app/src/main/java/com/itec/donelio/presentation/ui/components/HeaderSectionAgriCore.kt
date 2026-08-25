@@ -18,8 +18,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+
 @Composable
-fun HeaderSectionAgriCore(userName: String, onGoToConfig: () -> Unit) {
+fun HeaderSectionAgriCore(userName: String, onGoToConfig: () -> Unit, onLogout: () -> Unit) {
     Surface(color = AgriVerde, shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp), shadowElevation = 4.dp) {
         Row(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 48.dp, bottom = 24.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
             Column {
@@ -27,10 +29,16 @@ fun HeaderSectionAgriCore(userName: String, onGoToConfig: () -> Unit) {
                 Text(text = fechaActual, color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp, fontWeight = FontWeight.Medium)
                 Text(text = "Hola, $userName", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             }
-            Surface(color = Color.Black.copy(alpha = 0.2f), shape = RoundedCornerShape(50), modifier = Modifier.clickable { onGoToConfig() }) {
-                Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Icon(Icons.Default.Close, contentDescription = "Offline", tint = Color.White, modifier = Modifier.size(14.dp))
-                    Text("Local / DB", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            Column(horizontalAlignment = Alignment.End) {
+                Surface(color = Color.Black.copy(alpha = 0.2f), shape = RoundedCornerShape(50), modifier = Modifier.clickable { onGoToConfig() }) {
+                    Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Offline", tint = Color.White, modifier = Modifier.size(14.dp))
+                        Text("Local / DB", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                IconButton(onClick = onLogout, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Cerrar sesión", tint = Color.White)
                 }
             }
         }

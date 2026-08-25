@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#341] feat(auth): Persistencia de Sesión**
+- **Core:** `SessionManager` ahora guarda `isLoggedIn`. Se añadió `MainViewModel` para controlar el estado inicial de `MainActivity` mientras se carga el `DataStore`.
+- **UI:** El flujo de navegación dirige al Dashboard (Home) si la sesión está activa o al Login en caso contrario. El Login fue modificado para persistir también a los usuarios Invitados. Se agregó funcionalidad de "Cerrar sesión" en el Dashboard.
+- **Rama:** `fix/issue-341-persistencia-sesion`
+
 **[2026-08-25] - [#342] feat(campañas): Borrado y estilo visual de campañas inactivas**
 - **Data/Domain:** Se integró `EliminarCampaniaUseCase` en `GestionCampaniasViewModel`. Se confirmó que Room maneja la eliminación en cascada.
 - **UI:** Las tarjetas de campañas inactivas en `GestionCampaniasScreen` tienen un color atenuado. Se agregó un botón de papelera y diálogo de confirmación para eliminación definitiva.

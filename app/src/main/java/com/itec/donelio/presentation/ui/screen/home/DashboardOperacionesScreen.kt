@@ -42,7 +42,8 @@ fun DashboardOperacionesScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onGoToConfig: () -> Unit,
     onGoToDetalle: (campaniaId: Int) -> Unit,
-    onGoToTareas: () -> Unit
+    onGoToTareas: () -> Unit,
+    onLogoutSuccess: () -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
@@ -63,7 +64,16 @@ fun DashboardOperacionesScreen(
         contentPadding = PaddingValues(bottom = 80.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        item { HeaderSectionAgriCore(userName = userName, onGoToConfig = onGoToConfig) }
+        item { 
+            HeaderSectionAgriCore(
+                userName = userName, 
+                onGoToConfig = onGoToConfig,
+                onLogout = {
+                    viewModel.cerrarSesion()
+                    onLogoutSuccess()
+                }
+            ) 
+        }
 
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {

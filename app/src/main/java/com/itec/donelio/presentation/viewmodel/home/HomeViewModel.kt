@@ -13,10 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+import com.itec.donelio.domain.use_case.CerrarSesionUseCase
+import kotlinx.coroutines.launch
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase,
+    private val cerrarSesionUseCase: CerrarSesionUseCase,
     sessionManager: SessionManager
 ) : ViewModel() {
 
@@ -47,4 +51,10 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+
+    fun cerrarSesion() {
+        viewModelScope.launch {
+            cerrarSesionUseCase()
+        }
+    }
 }
