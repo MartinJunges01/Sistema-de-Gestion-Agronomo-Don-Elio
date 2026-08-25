@@ -23,7 +23,7 @@ object ReportExporter {
         return withContext(Dispatchers.IO) {
             try {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    val csvHeader = "CampaÃ±a: $campaniaNombre\n\n--- INSUMOS ---\nInsumo,Cantidad,Total ($)\n"
+                    val csvHeader = "Campaña: $campaniaNombre\n\n--- INSUMOS ---\nInsumo,Cantidad,Total ($)\n"
                     outputStream.write(csvHeader.toByteArray())
                     
                     data.forEach { insumo ->
@@ -36,9 +36,9 @@ object ReportExporter {
                     
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     cosechas.forEach { cosecha ->
-                        val destino = if (cosecha.almacen.isNotBlank()) "AlmacÃ©n: ${cosecha.almacen}" else "Venta"
+                        val destino = if (cosecha.almacen.isNotBlank()) "Almacén: ${cosecha.almacen}" else "Venta"
                         val fechaStr = dateFormat.format(Date(cosecha.fecha))
-                        val line = "$fechaStr,${cosecha.cantidad},$destino\n"
+                        val line = "${fechaStr},${cosecha.cantidad},${destino}\n"
                         outputStream.write(line.toByteArray())
                     }
                 }
@@ -54,53 +54,85 @@ object ReportExporter {
         return withContext(Dispatchers.IO) {
             try {
                 val pdfDocument = PdfDocument()
-                
-                // Formato A4 aprox (595 x 842 pt)
                 val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
-                val page = pdfDocument.startPage(pageInfo)
-                val canvas: Canvas = page.canvas
+                var page = pdfDocument.startPage(pageInfo)
+                var canvas: Canvas = page.canvas
                 val paint = Paint()
+                var yPosition = 50f
+                var pageNum = 1
 
-                // TÃ­tulo
+                fun checkPageBreak(requiredSpace: Float = 30f) {
+                    if (yPosition + requiredSpace > 800f) {
+                        pdfDocument.finishPage(page)
+                        pageNum++
+                        val newPageInfo = PdfDocument.PageInfo.Builder(595, 842, pageNum).create()
+                        page = pdfDocument.startPage(newPageInfo)
+                        canvas = page.canvas
+                        yPosition = 50f
+                    }
+                }
+
+                fun drawInsumosHeader() {
+                    paint.textSize = 16f
+                    paint.isFakeBoldText = true
+                    canvas.drawText("Insumos", 50f, yPosition, paint)
+                    
+                    paint.textSize = 14f
+                    yPosition += 25f
+                    canvas.drawText("Insumo", 50f, yPosition, paint)
+                    canvas.drawText("Cantidad", 300f, yPosition, paint)
+                    canvas.drawText("Total ($)", 450f, yPosition, paint)
+                    
+                    yPosition += 10f
+                    canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
+                    yPosition += 30f
+                }
+
+                fun drawCosechasHeader() {
+                    paint.textSize = 16f
+                    paint.isFakeBoldText = true
+                    canvas.drawText("Cosechas", 50f, yPosition, paint)
+                    
+                    paint.textSize = 14f
+                    yPosition += 25f
+                    canvas.drawText("Fecha", 50f, yPosition, paint)
+                    canvas.drawText("Cantidad (Tn)", 250f, yPosition, paint)
+                    canvas.drawText("Destino", 450f, yPosition, paint)
+                    
+                    yPosition += 10f
+                    canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
+                    yPosition += 30f
+                }
+
+                // Título
                 paint.color = Color.BLACK
                 paint.textSize = 24f
                 paint.isFakeBoldText = true
-                canvas.drawText("Reporte de CampaÃ±a", 50f, 80f, paint)
+                canvas.drawText("Reporte de Campaña", 50f, yPosition + 30f, paint)
+                yPosition += 60f
 
-                // SubtÃ­tulo
+                // Subtítulo
                 paint.textSize = 14f
                 paint.isFakeBoldText = false
-                canvas.drawText("Sistema de GestiÃ³n AgrÃ³nomo - Don Elio", 50f, 110f, paint)
+                canvas.drawText("Sistema de Gestión Agrónomo - Don Elio", 50f, yPosition, paint)
+                yPosition += 25f
 
-                // Nombre de CampaÃ±a
+                // Nombre de Campaña
                 paint.isFakeBoldText = true
-                canvas.drawText("CampaÃ±a: $campaniaNombre", 50f, 135f, paint)
+                canvas.drawText("Campaña: $campaniaNombre", 50f, yPosition, paint)
+                yPosition += 45f
 
                 // SECCION INSUMOS
-                paint.textSize = 16f
-                paint.isFakeBoldText = true
-                var yPosition = 180f
-                canvas.drawText("Insumos", 50f, yPosition, paint)
+                drawInsumosHeader()
                 
-                paint.textSize = 14f
-                yPosition += 25f
-                canvas.drawText("Insumo", 50f, yPosition, paint)
-                canvas.drawText("Cantidad", 300f, yPosition, paint)
-                canvas.drawText("Total ($)", 450f, yPosition, paint)
-                
-                // LÃ­nea separadora
-                yPosition += 10f
-                canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
-                
-                // Filas
                 paint.isFakeBoldText = false
-                yPosition += 30f
-                
                 var granTotal = 0.0
                 
                 data.forEach { insumo ->
                     if (yPosition > 800f) {
-                        // Multi-page logic is skipped for simplicity as per notes
+                        checkPageBreak(30f)
+                        drawInsumosHeader()
+                        paint.isFakeBoldText = false
                     }
                     
                     canvas.drawText(insumo.nombreInsumo, 50f, yPosition, paint)
@@ -111,7 +143,8 @@ object ReportExporter {
                     yPosition += 30f
                 }
                 
-                // Total Final
+                // Total Final Insumos
+                checkPageBreak(50f)
                 yPosition += 10f
                 paint.isFakeBoldText = true
                 canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
@@ -121,30 +154,23 @@ object ReportExporter {
 
                 // SECCION COSECHAS
                 yPosition += 50f
-                if (yPosition > 750f) yPosition = 750f // Avoid drawing off-page in basic version
-                
-                paint.textSize = 16f
-                paint.isFakeBoldText = true
-                canvas.drawText("Cosechas", 50f, yPosition, paint)
-                
-                paint.textSize = 14f
-                yPosition += 25f
-                canvas.drawText("Fecha", 50f, yPosition, paint)
-                canvas.drawText("Cantidad (Tn)", 250f, yPosition, paint)
-                canvas.drawText("Destino", 450f, yPosition, paint)
-                
-                yPosition += 10f
-                canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
+                checkPageBreak(70f)
+                drawCosechasHeader()
                 
                 paint.isFakeBoldText = false
-                yPosition += 30f
                 
                 var totalCosecha = 0.0
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 
                 cosechas.forEach { cosecha ->
+                    if (yPosition > 800f) {
+                        checkPageBreak(30f)
+                        drawCosechasHeader()
+                        paint.isFakeBoldText = false
+                    }
+                    
                     val fechaStr = dateFormat.format(Date(cosecha.fecha))
-                    val destino = if (cosecha.almacen.isNotBlank()) "AlmacÃ©n" else "Venta"
+                    val destino = if (cosecha.almacen.isNotBlank()) "Almacén" else "Venta"
                     
                     canvas.drawText(fechaStr, 50f, yPosition, paint)
                     canvas.drawText(String.format("%.2f", cosecha.cantidad), 250f, yPosition, paint)
@@ -154,6 +180,8 @@ object ReportExporter {
                     yPosition += 30f
                 }
                 
+                // Total Final Cosechas
+                checkPageBreak(50f)
                 yPosition += 10f
                 paint.isFakeBoldText = true
                 canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
