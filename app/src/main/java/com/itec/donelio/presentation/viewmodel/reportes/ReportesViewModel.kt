@@ -118,6 +118,7 @@ class ReportesViewModel @Inject constructor(
                 )
             }
             .filter { it.costoTotal > 0 }
+            .sortedByDescending { it.costoTotal }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /**

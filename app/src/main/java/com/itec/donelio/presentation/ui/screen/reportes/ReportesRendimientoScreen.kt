@@ -187,10 +187,10 @@ fun ReportesRendimientoScreen(
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
-                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 8.dp)
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             if (pieChartData != null) {
@@ -209,23 +209,45 @@ fun ReportesRendimientoScreen(
                                         )
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
-                                    @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
-                                    androidx.compose.foundation.layout.FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                                    val totalGasto = pieChartData!!.slices.sumOf { it.value.toDouble() }
+                                    val currencyFormat = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
+                                    
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         pieChartData!!.slices.forEach { slice ->
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(12.dp)
-                                                        .clip(androidx.compose.foundation.shape.CircleShape)
-                                                        .background(slice.color)
+                                            val porcentaje = if (totalGasto > 0) (slice.value / totalGasto) * 100 else 0.0
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .size(12.dp)
+                                                            .clip(androidx.compose.foundation.shape.CircleShape)
+                                                            .background(slice.color)
+                                                    )
+                                                    Spacer(modifier = Modifier.width(8.dp))
+                                                    Text(slice.label, fontSize = 13.sp, color = TextoPrincipal)
+                                                }
+                                                Text(
+                                                    text = "${String.format(java.util.Locale.US, "%.1f", porcentaje)}% - ${currencyFormat.format(slice.value)}",
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = TextoPrincipal
                                                 )
-                                                Spacer(modifier = Modifier.width(4.dp))
-                                                Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
                                             }
+                                        }
+                                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = Color(0xFFE7E5E4))
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text("Total General:", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                                            Text(currencyFormat.format(totalGasto), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                                         }
                                     }
                                 }
