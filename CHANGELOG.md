@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-08-25] - [#334] fix(insumos): Creación de insumos en el catálogo**
+- **ViewModel:** Se corrigió la lectura del `insumoId` en `FormularioInsumoViewModel` para que un valor de `-1` no se trate como edición, habilitando correctamente el flujo de creación.
+- **Rama:** `fix/issue-334-creacion-insumos`
+
 **[2026-08-12] - [#304] fix(ux): Pantalla no se desplaza al escribir (IME padding global)**
 - **UI:** En `screens.kt`, se aplicó el modificador `imePadding()` al contenedor principal dentro del `Scaffold` para que el espaciado reaccione al teclado virtual de forma automática.
 - **UI:** Este ajuste resuelve globalmente el solapamiento del teclado en todos los formularios de la app.
