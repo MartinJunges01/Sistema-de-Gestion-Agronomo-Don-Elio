@@ -271,10 +271,10 @@ class ReportesViewModelTest {
         val insumoExtra = CampaniaInsumo(id = 4, idCampania = 1, idInsumo = 4, cantidad = 1.0, precio = 100.0) // 100
         
         val catalogoMock = listOf(
-            Insumo(id = 1, nombre = "Semilla", unidad = "kg", stockAnterior = 0.0, entradas = 0.0, salidas = 0.0),
-            Insumo(id = 2, nombre = "Agroquímico", unidad = "lt", stockAnterior = 0.0, entradas = 0.0, salidas = 0.0),
-            Insumo(id = 3, nombre = "Fertilizante", unidad = "kg", stockAnterior = 0.0, entradas = 0.0, salidas = 0.0),
-            Insumo(id = 4, nombre = "Extra", unidad = "un", stockAnterior = 0.0, entradas = 0.0, salidas = 0.0)
+            Insumo(id = 1, nombre = "Semilla", categoria = "Semillas"),
+            Insumo(id = 2, nombre = "Agroquímico", categoria = "Agroquímicos"),
+            Insumo(id = 3, nombre = "Fertilizante", categoria = "Fertilizantes"),
+            Insumo(id = 4, nombre = "Extra", categoria = "Otros")
         )
         
         every { obtenerInsumosVinculadosUseCase(1) } returns flowOf(listOf(insumoSemilla, insumoAgroquimico, insumoFertilizante, insumoExtra))
