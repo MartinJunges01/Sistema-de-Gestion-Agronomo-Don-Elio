@@ -89,7 +89,7 @@ fun LoginScreen(
         if (com.itec.donelio.BuildConfig.DEBUG) {
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
-                onClick = onLoginSuccess,
+                onClick = { viewModel.loginInvitado() },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
