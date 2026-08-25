@@ -9,7 +9,7 @@
 ## Checklist de Progreso
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
-- [ ] **[#334] Issue 334:** No se añaden insumos al catálogo
+- [x] **[#334] Issue 334:** No se añaden insumos al catálogo
 - [ ] **[#335] Issue 335:** El botón de edición de cosechas no funciona
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
