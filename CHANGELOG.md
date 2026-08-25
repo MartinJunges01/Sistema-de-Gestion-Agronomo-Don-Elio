@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#347] feat(dashboard): Tasa de Cumplimiento de Tareas**
+- **Domain:** Se creó `ObtenerCumplimientoTareasUseCase` y el modelo `CumplimientoTareas` para calcular la relación entre tareas confirmadas y tareas totales en el periodo de las campañas activas.
+- **UI:** Se integró al `HomeViewModel` y se visualiza la tasa de cumplimiento en el `DashboardOperacionesScreen`.
+- **Rama:** `fix/issue-347-tasa-cumplimiento`
+
 **[2026-08-25] - [#346] feat(dashboard): Resumen financiero rápido**
 - **Domain:** Se creó `ObtenerResumenRendimientoUseCase` y el modelo `ResumenRendimiento` para calcular capital invertido (insumos) y total cosechado del mes actual.
 - **UI:** Se agregó una tarjeta en el `DashboardOperacionesScreen` para mostrar estos indicadores financieros.
