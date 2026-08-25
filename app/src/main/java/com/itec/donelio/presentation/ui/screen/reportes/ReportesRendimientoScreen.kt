@@ -11,6 +11,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,6 +53,7 @@ fun ReportesRendimientoScreen(
     val pieChartData by viewModel.pieChartData.collectAsState()
     val desgloseCosechasData by viewModel.desgloseCosechasData.collectAsState()
     val top3Insumos by viewModel.top3Insumos.collectAsState()
+    val rendimientoTnHa by viewModel.rendimientoTnHa.collectAsState()
     val campaniaA by viewModel.campaniaA.collectAsState()
     val campaniaB by viewModel.campaniaB.collectAsState()
     val insumosA by viewModel.insumosA.collectAsState()
@@ -172,6 +175,21 @@ fun ReportesRendimientoScreen(
                             valor = if (totalCosechado > 0) "%.1f %s".format(totalCosechado, unidadCosecha) else "Sin registros",
                             icono = Icons.Default.Grain,
                             color = AgriAzul,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TarjetaMetrica(
+                            titulo = "Rendimiento (Tn/Ha)",
+                            valor = rendimientoTnHa,
+                            icono = Icons.Default.Agriculture,
+                            color = Color(0xFFd97706),
                             modifier = Modifier.weight(1f)
                         )
                     }

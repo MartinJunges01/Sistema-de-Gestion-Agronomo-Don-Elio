@@ -30,9 +30,10 @@ class FinalizarCampaniaUseCaseTest {
         val campania = Campania(
             id = 1,
             nombre = "Soja 2026",
-            cultivo = "Soja",
-            fechaInicio = 1000L,
-            estaActiva = true
+            hectareas = 100.0,
+            fechaInicio = 1680000000000L,
+            estaActiva = true,
+            cultivo = "Soja"
         )
         val campaniaFinalizada = campania.copy(estaActiva = false)
         

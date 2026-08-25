@@ -69,6 +69,17 @@ fun FormularioCampaniaScreen(
                 singleLine = true
             )
 
+            OutlinedTextField(
+                value = state.hectareas,
+                onValueChange = viewModel::onHectareasChange,
+                label = { Text("Hectáreas") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = state.errorHectareas != null,
+                supportingText = state.errorHectareas?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
+                singleLine = true,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+            )
+
             var showDatePicker by remember { mutableStateOf(false) }
             val datePickerState = rememberDatePickerState(
                 initialSelectedDateMillis = state.fechaInicio,

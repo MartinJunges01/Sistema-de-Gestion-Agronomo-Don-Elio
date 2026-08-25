@@ -49,16 +49,16 @@ class DataSeederImpl @Inject constructor(
 
         // 2. Campañas (Diferentes estados y fechas)
         val idCampaniaMaiz = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Maíz tardío Lote Sur", fecha = fechaRelativa(-150), cultivo = "Maíz", estaActiva = true)
+            CampaniaEntity(nombre = "Maíz tardío Lote Sur", hectareas = 250.0, fecha = fechaRelativa(-150), cultivo = "Maíz", estaActiva = true)
         )
         val idCampaniaSoja = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Soja 1ra Lote Norte", fecha = fechaRelativa(-90), cultivo = "Soja", estaActiva = true)
+            CampaniaEntity(nombre = "Soja 1ra Lote Norte", hectareas = 180.0, fecha = fechaRelativa(-90), cultivo = "Soja", estaActiva = true)
         )
         val idCampaniaTrigo = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Trigo Invierno (Finalizada)", fecha = fechaRelativa(-300), cultivo = "Trigo", estaActiva = false)
+            CampaniaEntity(nombre = "Trigo Invierno (Finalizada)", hectareas = 200.0, fecha = fechaRelativa(-300), cultivo = "Trigo", estaActiva = false)
         )
         val idCampaniaGirasol = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Girasol Lote Este", fecha = fechaRelativa(-30), cultivo = "Girasol", estaActiva = true)
+            CampaniaEntity(nombre = "Girasol Lote Este", hectareas = 150.0, fecha = fechaRelativa(-30), cultivo = "Girasol", estaActiva = true)
         )
 
         // 3. Tareas (Para probar el Dashboard: atrasadas, de hoy, futuras)

@@ -6,29 +6,34 @@ import javax.inject.Inject
 data class ResultadoValidacionCampania(
     val esValido: Boolean,
     val errorNombre: String? = null,
+    val errorHectareas: String? = null,
     val errorCultivo: String? = null,
     val errorFecha: String? = null
 )
 
 /**
  * Caso de uso para validar los datos de una campaña antes de crearla o editarla.
- * Asegura que el nombre y cultivo no estén en blanco, y que la fecha no sea en el pasado si es creación.
+ * Asegura que el nombre y cultivo no estén en blanco, que las hectáreas sean mayores a 0,
+ * y que la fecha no sea en el pasado si es creación.
  * @return ResultadoValidacionCampania con el estado general y mensajes de error por campo si los hay.
  */
 class ValidarDatosCampaniaUseCase @Inject constructor() {
     /**
      * @param nombre El nombre de la campaña.
+     * @param hectareas La cantidad de hectáreas (puede ser nulo si el input está vacío o es inválido).
      * @param cultivo El tipo de cultivo.
      * @param fechaInicio La fecha de inicio en milisegundos.
      * @param isEditMode True si se está editando una campaña existente (permite fechas pasadas).
      */
     operator fun invoke(
         nombre: String, 
+        hectareas: Double?,
         cultivo: String, 
         fechaInicio: Long, 
         isEditMode: Boolean
     ): ResultadoValidacionCampania {
         val errorNombre = if (nombre.isBlank()) "El nombre es obligatorio" else null
+        val errorHectareas = if (hectareas == null || hectareas <= 0) "Las hectáreas deben ser un valor mayor a cero" else null
         val errorCultivo = if (cultivo.isBlank()) "El cultivo es obligatorio" else null
         
         var errorFecha: String? = null
@@ -48,8 +53,9 @@ class ValidarDatosCampaniaUseCase @Inject constructor() {
         }
         
         return ResultadoValidacionCampania(
-            esValido = errorNombre == null && errorCultivo == null && errorFecha == null,
+            esValido = errorNombre == null && errorHectareas == null && errorCultivo == null && errorFecha == null,
             errorNombre = errorNombre,
+            errorHectareas = errorHectareas,
             errorCultivo = errorCultivo,
             errorFecha = errorFecha
         )
