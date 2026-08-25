@@ -56,7 +56,7 @@ class CampaniaDaoTest {
         val retrieved = campaniaDao.getCampaniaById(id.toInt())
         
         assertNotNull(retrieved)
-        assertEquals("Soja 2026", retrieved?.nombre)
+        assertEquals("Soja 2026", retrieved?.campania?.nombre)
         assertEquals("Soja", retrieved?.cultivoNombre)
     }
 
@@ -81,7 +81,7 @@ class CampaniaDaoTest {
         campaniaDao.updateCampania(campaniaActualizada)
 
         val retrieved = campaniaDao.getCampaniaById(id)
-        assertEquals(false, retrieved?.estaActiva)
+        assertEquals(false, retrieved?.campania?.estaActiva)
         assertEquals("Trigo", retrieved?.cultivoNombre)
     }
 
