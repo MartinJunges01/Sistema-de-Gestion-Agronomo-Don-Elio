@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#345] feat(tareas): Rediseño de pantalla de tareas y filtros**
+- **Domain:** Se creó `ObtenerTareasFiltradasUseCase` para unificar la búsqueda de tareas por campaña y fecha.
+- **UI:** Se implementó `SelectorRangoFechas` interactivo (DateRangePicker). La pantalla de Tareas ahora usa este componente para permitir el filtrado de tareas en un rango específico o mostrar pendientes por defecto.
+- **Rama:** `fix/issue-345-redisenio-tareas`
+
 **[2026-08-25] - [#344] feat(reportes): Leyenda de insumos con valores absolutos**
 - **UI:** Se reemplazó el `FlowRow` en `ReportesRendimientoScreen` por un `Column` ordenado, mostrando el porcentaje y el valor absoluto en pesos de cada insumo.
 - **Rama:** `fix/issue-344-orden-insumos`
