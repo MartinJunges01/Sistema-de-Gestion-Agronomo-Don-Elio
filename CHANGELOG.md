@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#343] feat(reportes): Exportación de datos de cosechas**
+- **Domain:** Se incluyó la lista de `cosechas` como parte del modelo enviado al `ReportExporter`.
+- **Core:** Se actualizaron las funciones `exportToCsv` y `exportToPdf` para anexar el listado de las cosechas de la campaña seleccionada en ambos formatos.
+- **Rama:** `fix/issue-343-exportar-cosechas`
+
 **[2026-08-25] - [#341] feat(auth): Persistencia de Sesión**
 - **Core:** `SessionManager` ahora guarda `isLoggedIn`. Se añadió `MainViewModel` para controlar el estado inicial de `MainActivity` mientras se carga el `DataStore`.
 - **UI:** El flujo de navegación dirige al Dashboard (Home) si la sesión está activa o al Login en caso contrario. El Login fue modificado para persistir también a los usuarios Invitados. Se agregó funcionalidad de "Cerrar sesión" en el Dashboard.
