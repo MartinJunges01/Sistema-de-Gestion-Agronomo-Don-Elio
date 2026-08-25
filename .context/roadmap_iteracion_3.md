@@ -830,23 +830,23 @@ El formulario de insumos valida en tiempo real. El formulario de campañas valid
 7. Issue 340: Etiquetas gráfico desacomodadas
 
 ### Fase 3 — Features Core + Refactors de DB (Sprint 2-3)
-8. Issue 341: Persistencia de sesión
-9. Issue 349: Refactor DB hectáreas → campaña (**bloqueante para Issues 350, 352**)
+8. [x] Issue 341: Persistencia de sesión
+9. [x] Issue 349: Refactor DB hectáreas → campaña (**bloqueante para Issues 350, 352**)
 10. Issue 351: ABM de Cultivos (**bloqueante para Issue 352**)
-11. Issue 342: Color y borrado campañas inactivas
-12. Issue 345: Rediseño pantalla de tareas (crea `SelectorRangoFechas` reutilizable, **bloqueante para Issue 353**)
+11. [x] Issue 342: Color y borrado campañas inactivas
+12. [x] Issue 345: Rediseño pantalla de tareas (crea `SelectorRangoFechas` reutilizable, **bloqueante para Issue 353**)
 
 ### Fase 4 — Reportes Avanzados (Sprint 3-4)
-13. Issue 343: Exportación con cosechas
-14. Issue 344: Referencias y valores absolutos insumos
-15. Issue 348: Top 3 insumos mayor gasto
+13. [x] Issue 343: Exportación con cosechas
+14. [x] Issue 344: Referencias y valores absolutos insumos
+15. [x] Issue 348: Top 3 insumos mayor gasto
 16. Issue 350: Costo por Hectárea ($/Ha)
 17. Issue 352: Evolución histórica por cultivo (requiere Issues 349 + 351)
 
 ### Fase 5 — Dashboard Financiero + Filtros Reportes (Sprint 4-5)
 18. Issue 353: Filtros avanzados en Reportes (requiere `SelectorRangoFechas` del Issue 345)
-19. Issue 346: Resumen financiero Dashboard (vistazo mensual + link a Issue 353)
-20. Issue 347: Tasa cumplimiento tareas (donut chart)
+19. [x] Issue 346: Resumen financiero Dashboard (vistazo mensual + link a Issue 353)
+20. [x] Issue 347: Tasa cumplimiento tareas (donut chart)
 
 ### Fase 6 — Deuda Técnica (Continuo)
 21-27. Issues de deuda técnica (priorizar según impacto)
