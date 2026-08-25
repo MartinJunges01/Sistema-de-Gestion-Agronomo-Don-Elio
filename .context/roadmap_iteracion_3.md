@@ -30,7 +30,7 @@
 
 ### 🔵 NIVEL L5 — NUEVOS DESARROLLOS (Dashboard y Reportes Avanzados)
 - [x] **[#346] Issue 346:** Resumen Financiero Rápido en Dashboard (vistazo mensual)
-- [ ] **[#347] Issue 347:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
+- [x] **[#347] Issue 347:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
 - [ ] **[#348] Issue 348:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
 - [ ] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
 - [ ] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes

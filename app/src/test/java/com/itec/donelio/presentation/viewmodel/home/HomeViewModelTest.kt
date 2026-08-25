@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 
 import com.itec.donelio.domain.use_case.ObtenerResumenRendimientoUseCase
+import com.itec.donelio.domain.use_case.ObtenerCumplimientoTareasUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
@@ -32,6 +33,7 @@ class HomeViewModelTest {
     private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase
     private lateinit var obtenerResumenRendimientoUseCase: ObtenerResumenRendimientoUseCase
+    private lateinit var obtenerCumplimientoTareasUseCase: ObtenerCumplimientoTareasUseCase
     private lateinit var sessionManager: com.itec.donelio.core.SessionManager
     private lateinit var viewModel: HomeViewModel
 
@@ -41,9 +43,11 @@ class HomeViewModelTest {
         obtenerCampaniasActivasUseCase = mockk()
         obtenerTareasPendientesUseCase = mockk()
         obtenerResumenRendimientoUseCase = mockk()
+        obtenerCumplimientoTareasUseCase = mockk()
         sessionManager = mockk(relaxed = true)
         every { sessionManager.userName } returns flowOf("Invitado")
         every { obtenerResumenRendimientoUseCase() } returns flowOf(null)
+        every { obtenerCumplimientoTareasUseCase() } returns flowOf(null)
     }
 
     @After
@@ -63,6 +67,7 @@ class HomeViewModelTest {
             obtenerCampaniasActivasUseCase,
             obtenerTareasPendientesUseCase,
             obtenerResumenRendimientoUseCase,
+            obtenerCumplimientoTareasUseCase,
             mockk(), // Mockear CerrarSesionUseCase
             sessionManager
         )
