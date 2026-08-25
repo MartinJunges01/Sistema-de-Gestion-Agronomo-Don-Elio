@@ -60,6 +60,18 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun loginInvitado() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                sessionManager.saveUserName("Invitado")
+                _state.update { it.copy(isLoading = false, loginExitoso = true) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = "Error al iniciar sesión como invitado") }
+            }
+        }
+    }
+
     fun limpiarError() {
         _state.update { it.copy(error = null) }
     }
