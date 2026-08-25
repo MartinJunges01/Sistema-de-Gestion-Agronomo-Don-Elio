@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#346] feat(dashboard): Resumen financiero rápido**
+- **Domain:** Se creó `ObtenerResumenRendimientoUseCase` y el modelo `ResumenRendimiento` para calcular capital invertido (insumos) y total cosechado del mes actual.
+- **UI:** Se agregó una tarjeta en el `DashboardOperacionesScreen` para mostrar estos indicadores financieros.
+- **Rama:** `fix/issue-346-resumen-dashboard`
+
 **[2026-08-25] - [#345] feat(tareas): Rediseño de pantalla de tareas y filtros**
 - **Domain:** Se creó `ObtenerTareasFiltradasUseCase` para unificar la búsqueda de tareas por campaña y fecha.
 - **UI:** Se implementó `SelectorRangoFechas` interactivo (DateRangePicker). La pantalla de Tareas ahora usa este componente para permitir el filtrado de tareas en un rango específico o mostrar pendientes por defecto.
