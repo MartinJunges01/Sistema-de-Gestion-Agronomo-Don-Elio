@@ -304,5 +304,56 @@ class ReportesViewModelTest {
             
             cancelAndIgnoreRemainingEvents()
         }
+    // ──────────────────────────────────────────────
+    // VM-R8: exportarReporteCsv emite error sin campania
+    // ──────────────────────────────────────────────
+    
+    @Test
+    fun `exportarReporteCsv emite error si no hay campania seleccionada`() = runTest {
+        // Given
+        viewModel = crearViewModel()
+        val mockUri = mockk<android.net.Uri>()
+        val mockContext = mockk<android.content.Context>()
+
+        viewModel.exportStatus.test {
+            val inicial = awaitItem()
+            assertNull("Inicialmente el status debe ser nulo", inicial)
+
+            // When
+            viewModel.exportarReporteCsv(mockUri, mockContext)
+            advanceUntilIdle()
+
+            // Then
+            val status = awaitItem()
+            assertEquals("Seleccione una campaña para exportar", status)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
+
+    // ──────────────────────────────────────────────
+    // VM-R9: exportarReportePdf emite error sin campania
+    // ──────────────────────────────────────────────
+    
+    @Test
+    fun `exportarReportePdf emite error si no hay campania seleccionada`() = runTest {
+        // Given
+        viewModel = crearViewModel()
+        val mockUri = mockk<android.net.Uri>()
+        val mockContext = mockk<android.content.Context>()
+
+        viewModel.exportStatus.test {
+            val inicial = awaitItem()
+            assertNull("Inicialmente el status debe ser nulo", inicial)
+
+            // When
+            viewModel.exportarReportePdf(mockUri, mockContext)
+            advanceUntilIdle()
+
+            // Then
+            val status = awaitItem()
+            assertEquals("Seleccione una campaña para exportar", status)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+}
 }
