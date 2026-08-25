@@ -1,5 +1,10 @@
 # Changelog
 
+**[2026-08-25] - [#349] feat(db): Hectáreas por campaña y métricas Tn/Ha**
+- **Data/Domain:** Se agregó el campo `hectareas` (Double) a `CampaniaEntity` y `Campania`. Se incrementó la versión de la base de datos Room a 6 implementando la migración correspondiente.
+- **UI:** El `FormularioCampaniaScreen` incluye validación de este nuevo campo. Se actualizó la vista de Reportes para mostrar la métrica `Rendimiento: X Tn/Ha`.
+- **Rama:** `fix/issue-349-refactor-db`
+
 **[2026-08-25] - [#348] feat(reportes): Top 3 insumos de mayor gasto**
 - **UI:** Se agregó una nueva tarjeta en la pantalla de Reportes mostrando los 3 insumos con mayor porcentaje de gasto en la campaña actual.
 - **Rama:** `fix/issue-348-top-insumos`

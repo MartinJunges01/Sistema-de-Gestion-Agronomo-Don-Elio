@@ -49,6 +49,12 @@ object DatabaseModule {
     }
 }
 
+    val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE `campanias` ADD COLUMN `hectareas` REAL NOT NULL DEFAULT 0.0")
+        }
+    }
+
     // 1. Provee la Base de Datos completa
     @Provides
     @Singleton // Asegura que solo exista UNA instancia de la DB en toda la app
@@ -58,9 +64,9 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             DonElioDatabase::class.java,
-            "don_elio_db" // Este es el nombre del archivo físico SQLite en el teléfono
+            "don_elio_db" // Este es el nombre del archivo fisico SQLite en el telefono
         )
-        .addMigrations(MIGRATION_4_5)
+        .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
         .fallbackToDestructiveMigration() // Agregado para desarrollo: borra y recrea las tablas si cambia la version
         .build()
     }

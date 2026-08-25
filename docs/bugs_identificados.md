@@ -222,11 +222,11 @@ Dos nuevos artefactos introducidos en PR #378 no tienen tests unitarios. `MainVi
 **Severidad:** 🟡 UX / Deuda Técnica
 **Descripción:** `ObtenerCumplimientoTareasUseCase` sin tests unitarios propios (Issue #347).
 
-## [PENDIENTE] DT-015: Archivo residual build_error.txt
+## [Resuelto] DT-015: Archivo residual build_error.txt
 **Severidad:** 🔴 Bug Bloqueante
 **Descripción:** `build_error.txt` commiteado en `fix/issue-349-refactor-db` — archivo de error de CI que no debe estar en el repositorio.
 
-## [PENDIENTE] DT-016: Migración de BD faltante MIGRATION_5_6
+## [Resuelto] DT-016: Migración de BD faltante MIGRATION_5_6
 **Severidad:** 🔴 Bug Bloqueante
 **Descripción:** Verificar si `DonElioDatabase` en PR #349 incluye `MIGRATION_5_6`. Sin ella, Room hace crash al actualizar la app.
 
