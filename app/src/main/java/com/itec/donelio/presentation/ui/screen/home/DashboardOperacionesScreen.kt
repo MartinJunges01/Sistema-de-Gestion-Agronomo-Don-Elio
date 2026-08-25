@@ -49,6 +49,7 @@ fun DashboardOperacionesScreen(
     val tareas by viewModel.tareasPendientes.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val resumen by viewModel.resumenMensual.collectAsState()
+    val cumplimiento by viewModel.cumplimientoSemanal.collectAsState()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionLauncher = rememberLauncherForActivityResult(
@@ -92,6 +93,21 @@ fun DashboardOperacionesScreen(
             }
         }
 
+
+        if (cumplimiento != null) {
+            item {
+                GraficoCumplimientoCircular(cumplimiento = cumplimiento!!)
+            }
+        } else {
+            item {
+                Text(
+                    text = "Sin tareas esta semana",
+                    color = TextoSecundario,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+        }
 
         if (tareas.isNotEmpty()) {
             item {
@@ -262,6 +278,55 @@ private fun CardResumen(titulo: String, valor: String, modifier: Modifier = Modi
             Text(titulo, fontSize = 12.sp, color = TextoSecundario, maxLines = 1)
             Spacer(modifier = Modifier.height(4.dp))
             Text(valor, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun GraficoCumplimientoCircular(cumplimiento: com.itec.donelio.domain.use_case.CumplimientoTareas) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                val strokeWidth = 8.dp.toPx()
+                val radius = (size.minDimension - strokeWidth) / 2
+                
+                // Fondo gris (tareas pendientes)
+                drawArc(
+                    color = Color(0xFFE5E7EB),
+                    startAngle = 0f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                )
+
+                // Arco verde (tareas completadas)
+                if (cumplimiento.completadas > 0) {
+                    val sweepAngle = 360f * (cumplimiento.porcentaje / 100f)
+                    drawArc(
+                        color = AgriVerde,
+                        startAngle = -90f,
+                        sweepAngle = sweepAngle,
+                        useCenter = false,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                    )
+                }
+            }
+            Text(
+                text = "${cumplimiento.porcentaje.toInt()}%",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextoPrincipal
+            )
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text("Cumplimiento Semanal", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
+            Text("${cumplimiento.completadas} de ${cumplimiento.total} tareas completadas", fontSize = 14.sp, color = TextoSecundario)
         }
     }
 }

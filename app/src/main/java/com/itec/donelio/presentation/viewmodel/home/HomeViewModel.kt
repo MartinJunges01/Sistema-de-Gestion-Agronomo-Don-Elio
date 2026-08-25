@@ -19,11 +19,15 @@ import kotlinx.coroutines.launch
 import com.itec.donelio.domain.use_case.ObtenerResumenRendimientoUseCase
 import com.itec.donelio.domain.use_case.ResumenRendimiento
 
+import com.itec.donelio.domain.use_case.ObtenerCumplimientoTareasUseCase
+import com.itec.donelio.domain.use_case.CumplimientoTareas
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase,
     private val obtenerResumenRendimientoUseCase: ObtenerResumenRendimientoUseCase,
+    private val obtenerCumplimientoTareasUseCase: ObtenerCumplimientoTareasUseCase,
     private val cerrarSesionUseCase: CerrarSesionUseCase,
     sessionManager: SessionManager
 ) : ViewModel() {
@@ -39,6 +43,13 @@ class HomeViewModel @Inject constructor(
         )
 
     val resumenMensual: StateFlow<ResumenRendimiento?> = obtenerResumenRendimientoUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
+        )
+
+    val cumplimientoSemanal: StateFlow<CumplimientoTareas?> = obtenerCumplimientoTareasUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
