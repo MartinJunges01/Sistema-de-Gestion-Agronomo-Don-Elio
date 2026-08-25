@@ -48,6 +48,7 @@ fun DashboardOperacionesScreen(
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
     val userName by viewModel.userName.collectAsState()
+    val resumen by viewModel.resumenMensual.collectAsState()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val permissionLauncher = rememberLauncherForActivityResult(
@@ -82,11 +83,10 @@ fun DashboardOperacionesScreen(
             }
         }
 
-        val resumen = viewModel.resumenMensual.collectAsState().value
         if (resumen != null) {
             item {
                 SeccionResumenRendimiento(
-                    resumen = resumen,
+                    resumen = resumen!!,
                     onGoToReportes = { /* TODO: Navigate to reportes when implemented */ }
                 )
             }
