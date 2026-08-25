@@ -17,7 +17,7 @@
 - [x] **[#337] Issue 337:** El botón de edición en observaciones solo funciona para texto (no para foto)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
-- [ ] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
+- [x] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
 - [ ] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
 - [ ] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
