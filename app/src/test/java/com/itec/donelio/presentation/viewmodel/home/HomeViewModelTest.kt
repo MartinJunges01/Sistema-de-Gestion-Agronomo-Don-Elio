@@ -22,6 +22,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+import com.itec.donelio.domain.use_case.ObtenerResumenRendimientoUseCase
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
 
@@ -29,6 +31,7 @@ class HomeViewModelTest {
 
     private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase
+    private lateinit var obtenerResumenRendimientoUseCase: ObtenerResumenRendimientoUseCase
     private lateinit var sessionManager: com.itec.donelio.core.SessionManager
     private lateinit var viewModel: HomeViewModel
 
@@ -37,8 +40,10 @@ class HomeViewModelTest {
         Dispatchers.setMain(testDispatcher)
         obtenerCampaniasActivasUseCase = mockk()
         obtenerTareasPendientesUseCase = mockk()
+        obtenerResumenRendimientoUseCase = mockk()
         sessionManager = mockk(relaxed = true)
         every { sessionManager.userName } returns flowOf("Invitado")
+        every { obtenerResumenRendimientoUseCase() } returns flowOf(null)
     }
 
     @After
@@ -57,6 +62,7 @@ class HomeViewModelTest {
         viewModel = HomeViewModel(
             obtenerCampaniasActivasUseCase,
             obtenerTareasPendientesUseCase,
+            obtenerResumenRendimientoUseCase,
             mockk(), // Mockear CerrarSesionUseCase
             sessionManager
         )

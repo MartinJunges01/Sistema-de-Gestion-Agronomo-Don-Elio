@@ -16,10 +16,14 @@ import javax.inject.Inject
 import com.itec.donelio.domain.use_case.CerrarSesionUseCase
 import kotlinx.coroutines.launch
 
+import com.itec.donelio.domain.use_case.ObtenerResumenRendimientoUseCase
+import com.itec.donelio.domain.use_case.ResumenRendimiento
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerTareasPendientesUseCase: ObtenerTareasPendientesUseCase,
+    private val obtenerResumenRendimientoUseCase: ObtenerResumenRendimientoUseCase,
     private val cerrarSesionUseCase: CerrarSesionUseCase,
     sessionManager: SessionManager
 ) : ViewModel() {
@@ -32,6 +36,13 @@ class HomeViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
+        )
+
+    val resumenMensual: StateFlow<ResumenRendimiento?> = obtenerResumenRendimientoUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
         )
 
     // Filtro: hoy - 7 días a medianoche

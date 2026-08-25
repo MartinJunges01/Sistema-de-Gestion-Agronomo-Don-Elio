@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CosechaRepository {
     fun getCosechasByCampania(idCampania: Int): Flow<List<Cosecha>>
+    
+    fun getAllCosechas(): Flow<List<Cosecha>>
 
     suspend fun getCosechaById(id: Int): Cosecha?
 

@@ -25,4 +25,7 @@ interface CosechaDao {
 
     @Query("SELECT * FROM cosechas WHERE id_cosecha = :id")
     suspend fun getCosechaById(id: Int): CosechaEntity?
+
+    @Query("SELECT * FROM cosechas ORDER BY fecha DESC")
+    fun getAllCosechas(): Flow<List<CosechaEntity>>
 }
