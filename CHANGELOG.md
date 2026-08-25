@@ -1,5 +1,9 @@
 # Changelog
 
+**[2026-08-25] - [#344] feat(reportes): Leyenda de insumos con valores absolutos**
+- **UI:** Se reemplazó el `FlowRow` en `ReportesRendimientoScreen` por un `Column` ordenado, mostrando el porcentaje y el valor absoluto en pesos de cada insumo.
+- **Rama:** `fix/issue-344-orden-insumos`
+
 **[2026-08-25] - [#343] feat(reportes): Exportación de datos de cosechas**
 - **Domain:** Se incluyó la lista de `cosechas` como parte del modelo enviado al `ReportExporter`.
 - **Core:** Se actualizaron las funciones `exportToCsv` y `exportToPdf` para anexar el listado de las cosechas de la campaña seleccionada en ambos formatos.

@@ -25,7 +25,7 @@
 - [x] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
 - [x] **[#342] Issue 342:** Color y botón de borrado para campañas inactivas
 - [x] **[#343] Issue 343:** Exportación de reportes con datos de cosechas
-- [ ] **[#344] Issue 344:** Referencias y valores absolutos de gasto por insumos ordenados por costo
+- [x] **[#344] Issue 344:** Referencias y valores absolutos de gasto por insumos ordenados por costo
 - [ ] **[#345] Issue 345:** Rediseño de la Pantalla de Tareas (filtros + calendario con rango)
 
 ### 🔵 NIVEL L5 — NUEVOS DESARROLLOS (Dashboard y Reportes Avanzados)
