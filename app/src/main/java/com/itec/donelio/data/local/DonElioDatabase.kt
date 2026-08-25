@@ -31,7 +31,7 @@ import com.itec.donelio.data.local.entity.UsuarioEntity
         CampaniaInsumoEntity::class,
         UsuarioEntity::class
     ],
-    version = 5, // Subimos a 5 para eliminar la columna "unidad" de insumos y cosechas
+    version = 6, // Subimos a 6 para el refactor de hectareas a Campania
     exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
 )
 abstract class DonElioDatabase : RoomDatabase() {

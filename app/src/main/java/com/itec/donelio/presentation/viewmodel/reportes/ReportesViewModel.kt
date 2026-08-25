@@ -94,6 +94,22 @@ class ReportesViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /**
+     * Métrica de eficiencia productiva: Rendimiento (Tn/Ha).
+     * Se calcula dividiendo el total cosechado por las hectáreas de la campaña.
+     */
+    val rendimientoTnHa: StateFlow<String> = combine(
+        campaniaIndividual,
+        cosechasIndividual
+    ) { campania, cosechas ->
+        if (campania == null || campania.hectareas <= 0) return@combine "N/A"
+        val totalCosechado = cosechas.sumOf { it.cantidad }
+        if (totalCosechado <= 0) return@combine "0.0 Tn/Ha"
+        
+        val rendimiento = totalCosechado / campania.hectareas
+        String.format(java.util.Locale("es", "AR"), "%.2f Tn/Ha", rendimiento)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "N/A")
+
     private val coloresInsumos = listOf(
         Color(0xFF15803d), Color(0xFF1d4ed8), Color(0xFFd97706),
         Color(0xFFb91c1c), Color(0xFF6b21a8), Color(0xFF0369a1), Color(0xFF4d7c0f)

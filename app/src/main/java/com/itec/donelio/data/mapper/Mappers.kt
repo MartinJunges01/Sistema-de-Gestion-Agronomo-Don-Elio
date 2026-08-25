@@ -22,6 +22,7 @@ fun CampaniaEntity.toDomain(): Campania {
     return Campania(
         id = id_campania,
         nombre = nombre,
+        hectareas = hectareas,
         fechaInicio = fecha,
         estaActiva = estaActiva,
         cultivo = cultivo
@@ -32,6 +33,7 @@ fun Campania.toEntity(): CampaniaEntity {
     return CampaniaEntity(
         id_campania = id,
         nombre = nombre,
+        hectareas = hectareas,
         fecha = fechaInicio,
         cultivo = cultivo,
         estaActiva = estaActiva

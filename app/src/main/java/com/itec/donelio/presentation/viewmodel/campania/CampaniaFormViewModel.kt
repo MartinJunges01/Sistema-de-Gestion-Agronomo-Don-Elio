@@ -20,9 +20,11 @@ import javax.inject.Inject
 
 data class CampaniaFormState(
     val nombre: String = "",
+    val hectareas: String = "",
     val cultivo: String = "",
     val fechaInicio: Long = System.currentTimeMillis(),
     val errorNombre: String? = null,
+    val errorHectareas: String? = null,
     val errorCultivo: String? = null,
     val errorFecha: String? = null,
     val isLoading: Boolean = false,
@@ -59,6 +61,7 @@ class CampaniaFormViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         nombre = campania.nombre,
+                        hectareas = campania.hectareas.toString(),
                         cultivo = campania.cultivo,
                         fechaInicio = campania.fechaInicio,
                         isEditMode = true,
@@ -75,6 +78,10 @@ class CampaniaFormViewModel @Inject constructor(
     fun onNombreChange(value: String) {
         _state.update { it.copy(nombre = value, errorNombre = null) }
     }
+    
+    fun onHectareasChange(value: String) {
+        _state.update { it.copy(hectareas = value, errorHectareas = null) }
+    }
 
     fun onCultivoChange(value: String) {
         _state.update { it.copy(cultivo = value, errorCultivo = null) }
@@ -87,8 +94,11 @@ class CampaniaFormViewModel @Inject constructor(
     fun guardar() {
         val current = _state.value
         
+        val hectareasParsed = current.hectareas.toDoubleOrNull()
+        
         val resultadoValidacion = validarDatosCampaniaUseCase(
             nombre = current.nombre,
+            hectareas = hectareasParsed,
             cultivo = current.cultivo,
             fechaInicio = current.fechaInicio,
             isEditMode = current.isEditMode
@@ -97,6 +107,7 @@ class CampaniaFormViewModel @Inject constructor(
         if (!resultadoValidacion.esValido) {
             _state.update { it.copy(
                 errorNombre = resultadoValidacion.errorNombre,
+                errorHectareas = resultadoValidacion.errorHectareas,
                 errorCultivo = resultadoValidacion.errorCultivo,
                 errorFecha = resultadoValidacion.errorFecha
             ) }
@@ -108,6 +119,7 @@ class CampaniaFormViewModel @Inject constructor(
                 val campania = Campania(
                     id = current.campaniaId,
                     nombre = current.nombre.trim(),
+                    hectareas = hectareasParsed!!,
                     fechaInicio = current.fechaInicio,
                     estaActiva = true,
                     cultivo = current.cultivo.trim()
@@ -122,6 +134,7 @@ class CampaniaFormViewModel @Inject constructor(
             } else {
                 crearCampaniaUseCase(
                     nombre = current.nombre.trim(),
+                    hectareas = hectareasParsed!!,
                     cultivo = current.cultivo.trim(),
                     fechaInicio = current.fechaInicio
                 ).collect { resource ->

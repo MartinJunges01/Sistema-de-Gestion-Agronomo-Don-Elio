@@ -8,6 +8,7 @@ data class CampaniaEntity(
     @PrimaryKey(autoGenerate = true)
     val id_campania: Int = 0,
     val nombre: String,
+    val hectareas: Double,
     val fecha: Long, // Guardaremos la fecha en milisegundos (Timestamp)
     val cultivo: String,
     val estaActiva: Boolean = true

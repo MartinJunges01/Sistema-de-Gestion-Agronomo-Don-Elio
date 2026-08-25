@@ -33,7 +33,7 @@
 - [x] **[#346] Issue 346:** Resumen Financiero Rápido en Dashboard (vistazo mensual)
 - [x] **[#347] Issue 347:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
 - [x] **[#348] Issue 348:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
-- [ ] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
+- [x] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
 - [ ] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes
 - [ ] **[#351] Issue 351:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
 - [ ] **[#352] Issue 352:** Evolución Histórica por Cultivo (gráfico de tendencia)
