@@ -6,5 +6,6 @@ data class Campania(
     val hectareas: Double,
     val fechaInicio: Long,
     val estaActiva: Boolean,
-    val cultivo: String
+    val cultivoId: Int,
+    val cultivoNombre: String = ""
 )
