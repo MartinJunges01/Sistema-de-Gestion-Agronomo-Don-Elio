@@ -181,15 +181,22 @@ fun DonElioApp() {
                     CosechasScreen(
                         campaniaId = campaniaId,
                         onBack = { navController.popBackStack() },
-                        onGoToCampaniaDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) }
+                        onGoToCampaniaDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) },
+                        onEditarCosecha = { cosechaId -> navController.navigate(NavRoute.FormularioCosecha.createRoute(campaniaId, cosechaId)) }
                     )
                 }
                 composable(
                     route = NavRoute.FormularioCosecha.route,
-                    arguments = listOf(navArgument("campaniaId") {
-                        type = NavType.IntType
-                        defaultValue = -1
-                    })
+                    arguments = listOf(
+                        navArgument("campaniaId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        },
+                        navArgument("cosechaId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
                 ) { backStackEntry ->
                     val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
                     FormularioCosechaScreen(

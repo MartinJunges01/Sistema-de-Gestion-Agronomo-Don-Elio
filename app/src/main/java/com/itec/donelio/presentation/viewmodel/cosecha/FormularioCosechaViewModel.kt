@@ -32,7 +32,8 @@ data class FormularioCosechaState(
     val errorCantidad: String? = null,
     val errorPrecio: String? = null,
     val errorCampania: String? = null,
-    val guardadoExitoso: Boolean = false
+    val guardadoExitoso: Boolean = false,
+    val errorGeneral: String? = null
 )
 
 @HiltViewModel
@@ -138,8 +139,19 @@ class FormularioCosechaViewModel @Inject constructor(
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, errorCantidad = e.message ?: "Error al guardar") }
+                val msg = e.message ?: "Error al guardar"
+                _state.update { 
+                    it.copy(
+                        isLoading = false, 
+                        errorCantidad = if (msg.contains("cantidad", ignoreCase = true)) msg else null,
+                        errorGeneral = if (!msg.contains("cantidad", ignoreCase = true)) msg else null
+                    ) 
+                }
             }
         }
+    }
+
+    fun limpiarErrorGeneral() {
+        _state.update { it.copy(errorGeneral = null) }
     }
 }
