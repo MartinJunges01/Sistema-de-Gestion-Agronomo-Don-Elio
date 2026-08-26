@@ -1,5 +1,25 @@
 # Changelog
 
+**[2026-08-25] - [#357] feat(export): implementar paginacion automatica en reportes PDF**
+- Se refactorizo ReportExporter.exportToPdf() para mantener control dinamico de yPosition.
+- Se a馻dio logica de salto de pagina al superar los 800f en el eje Y.
+- Se extrajo el pintado de cabeceras en funciones internas para re-imprimirlas automaticamente al abrir una nueva pagina.
+
+**[2026-08-25] - [#358] test(reportes): test unitario de DoubleBarIndicator y arreglo de mocks**
+- Se expuso DoubleBarIndicator con @VisibleForTesting e internal.
+- Se agrego el test instrumentado DoubleBarIndicatorTest validando el renderizado cuando max = 0f.
+- Se a馻dieron hectareas por defecto a las entidades mockeadas en DAO.
+
+**[2026-08-25] - [#359] test(reportes): implementar tests VM-R8 y VM-R9 de guardia de exportacion**
+- Se implemento validacion para exportarReporteCsv y exportarReportePdf cuando no hay campa馻 seleccionada.
+- Ambos validan que exportStatus emite la cadena correcta.
+
+**[2026-08-25] - [#350] feat(reportes): agregar Costo por Hectarea ($/Ha)**
+- Se agrego CalcularCostoPorHectareaUseCase para aislar la logica.
+- ReportesViewModel inyecta estados transformados a Strings de moneda.
+- Se a馻dio una tarjeta y grafico de barras para visualizar la diferencia de rentabilidad por hectarea entre campa馻s.
+
+
 **[2026-08-25] - [#351] feat(cultivos): ABM de Cultivos (Cat谩logo estandarizado)**
 - **Data/Domain:** Se cre贸 la entidad `CultivoEntity` y `Cultivo` (modelo de dominio). Se implement贸 `CultivoDao` con soporte para soft-delete, y se expuso `CultivoRepository` y su implementaci贸n. Se actualiz贸 la versi贸n de la base de datos a 7.
 - **Campa帽as:** Se reemplaz贸 el campo de texto libre `cultivo` en `CampaniaEntity` y `Campania` por `id_cultivo` / `cultivoId` (FK) y `cultivoNombre`, realizando un `INNER JOIN` en todas las consultas de lectura para obtener su descripci贸n del cat谩logo de forma reactiva.
