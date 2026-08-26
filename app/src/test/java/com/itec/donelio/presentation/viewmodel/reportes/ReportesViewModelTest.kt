@@ -9,6 +9,7 @@ import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerInsumosVinculadosUseCase
+import com.itec.donelio.domain.use_case.CalcularCostoPorHectareaUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,7 @@ class ReportesViewModelTest {
     private lateinit var obtenerInsumosVinculadosUseCase: ObtenerInsumosVinculadosUseCase
     private lateinit var obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase
     private lateinit var obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase
+    private lateinit var calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
     private lateinit var viewModel: ReportesViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -59,11 +61,13 @@ class ReportesViewModelTest {
         obtenerInsumosVinculadosUseCase = mockk()
         obtenerCosechasPorCampaniaUseCase = mockk()
         obtenerCatalogoInsumosUseCase = mockk()
+        calcularCostoPorHectareaUseCase = mockk()
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         every { obtenerInsumosVinculadosUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerCosechasPorCampaniaUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerCatalogoInsumosUseCase() } returns flowOf(emptyList())
+        every { calcularCostoPorHectareaUseCase(any(), any()) } returns 0.0
     }
 
     @After
@@ -75,7 +79,8 @@ class ReportesViewModelTest {
         obtenerCampaniasUseCase = obtenerCampaniasUseCase,
         obtenerInsumosVinculadosUseCase = obtenerInsumosVinculadosUseCase,
         obtenerCosechasPorCampaniaUseCase = obtenerCosechasPorCampaniaUseCase,
-        obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase
+        obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase,
+        calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase
     )
 
     // ──────────────────────────────────────────────

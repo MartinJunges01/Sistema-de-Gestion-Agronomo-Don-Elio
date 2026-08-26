@@ -60,6 +60,11 @@ fun ReportesRendimientoScreen(
     val insumosB by viewModel.insumosB.collectAsState()
     val cosechasA by viewModel.cosechasA.collectAsState()
     val cosechasB by viewModel.cosechasB.collectAsState()
+    val costoPorHectarea by viewModel.costoPorHectarea.collectAsState()
+    val costoHaStringA by viewModel.costoHaStringA.collectAsState()
+    val costoHaStringB by viewModel.costoHaStringB.collectAsState()
+    val costoHaFloatA by viewModel.costoHaFloatA.collectAsState()
+    val costoHaFloatB by viewModel.costoHaFloatB.collectAsState()
     val exportStatus by viewModel.exportStatus.collectAsState()
 
     LaunchedEffect(exportStatus) {
@@ -190,6 +195,13 @@ fun ReportesRendimientoScreen(
                             valor = rendimientoTnHa,
                             icono = Icons.Default.Agriculture,
                             color = Color(0xFFd97706),
+                            modifier = Modifier.weight(1f)
+                        )
+                        TarjetaMetrica(
+                            titulo = "Costo/Ha",
+                            valor = costoPorHectarea,
+                            icono = Icons.Default.MonetizationOn,
+                            color = Color(0xFFb91c1c),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -479,6 +491,17 @@ fun ReportesRendimientoScreen(
                             modifier = Modifier.weight(1f)
                         )
                     }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                        CardMetricaComparativa(
+                            titulo = "Costo/Ha",
+                            valor1 = costoHaStringA,
+                            valor2 = costoHaStringB,
+                            color = Color(0xFFb91c1c),
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
@@ -489,6 +512,7 @@ fun ReportesRendimientoScreen(
                     val rendimientoB = cosechasB.sumOf { it.cantidad }.toFloat()
                     val maxCosto = maxOf(costoA, costoB, 1f)
                     val maxRendimiento = maxOf(rendimientoA, rendimientoB, 1f)
+                    val maxCostoHa = maxOf(costoHaFloatA, costoHaFloatB, 1f)
                     
                     val nombreA = campaniaA?.nombre ?: "Campaña A"
                     val nombreB = campaniaB?.nombre ?: "Campaña B"
@@ -502,7 +526,7 @@ fun ReportesRendimientoScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             // Comparacion de Costos
-                            Text("Costos", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                            Text("Costos Totales", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                             Spacer(modifier = Modifier.height(8.dp))
                             DoubleBarIndicator(nombreA, costoA, maxCosto, AgriVerde, nombreB, costoB, maxCosto, AgriVerde.copy(alpha = 0.5f))
                             
@@ -512,6 +536,13 @@ fun ReportesRendimientoScreen(
                             Text("Rendimiento", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                             Spacer(modifier = Modifier.height(8.dp))
                             DoubleBarIndicator(nombreA, rendimientoA, maxRendimiento, AgriAzul, nombreB, rendimientoB, maxRendimiento, AgriAzul.copy(alpha = 0.5f))
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                            
+                            // Comparacion de Costo/Ha
+                            Text("Costo por Hectárea", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            DoubleBarIndicator(nombreA, costoHaFloatA, maxCostoHa, Color(0xFFb91c1c), nombreB, costoHaFloatB, maxCostoHa, Color(0xFFb91c1c).copy(alpha = 0.5f))
                         }
                     }
                 }

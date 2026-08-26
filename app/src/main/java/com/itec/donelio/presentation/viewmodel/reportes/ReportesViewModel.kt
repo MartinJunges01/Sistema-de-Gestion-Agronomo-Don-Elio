@@ -12,6 +12,7 @@ import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.InsumoResumen
+import com.itec.donelio.domain.use_case.CalcularCostoPorHectareaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
@@ -47,7 +48,8 @@ class ReportesViewModel @Inject constructor(
     obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val obtenerInsumosVinculadosUseCase: ObtenerInsumosVinculadosUseCase,
     obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
-    obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase
+    obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
+    private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
 ) : ViewModel() {
 
     // ──────────────────────────────────────────────
@@ -93,6 +95,16 @@ class ReportesViewModel @Inject constructor(
             else flowOf(emptyList())
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val costoPorHectarea: StateFlow<String> = combine(
+        campaniaIndividual,
+        insumosIndividual
+    ) { campania, insumos ->
+        val costo = calcularCostoPorHectareaUseCase(campania, insumos)
+        if (costo == 0.0) return@combine "N/A"
+        val format = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
+        "${format.format(costo)}/Ha"
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "N/A")
 
     /**
      * Métrica de eficiencia productiva: Rendimiento (Tn/Ha).
@@ -249,6 +261,40 @@ class ReportesViewModel @Inject constructor(
             else flowOf(emptyList())
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val costoHaStringA: StateFlow<String> = combine(
+        campaniaA,
+        insumosA
+    ) { campania, insumos ->
+        val costo = calcularCostoPorHectareaUseCase(campania, insumos)
+        if (costo == 0.0) return@combine "N/A"
+        val format = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
+        "${format.format(costo)}/Ha"
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "N/A")
+
+    val costoHaStringB: StateFlow<String> = combine(
+        campaniaB,
+        insumosB
+    ) { campania, insumos ->
+        val costo = calcularCostoPorHectareaUseCase(campania, insumos)
+        if (costo == 0.0) return@combine "N/A"
+        val format = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
+        "${format.format(costo)}/Ha"
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "N/A")
+
+    val costoHaFloatA: StateFlow<Float> = combine(
+        campaniaA,
+        insumosA
+    ) { campania, insumos ->
+        calcularCostoPorHectareaUseCase(campania, insumos).toFloat()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0f)
+
+    val costoHaFloatB: StateFlow<Float> = combine(
+        campaniaB,
+        insumosB
+    ) { campania, insumos ->
+        calcularCostoPorHectareaUseCase(campania, insumos).toFloat()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0f)
 
     // ──────────────────────────────────────────────
     // Exportación (por campaña seleccionada en Sección 1)
