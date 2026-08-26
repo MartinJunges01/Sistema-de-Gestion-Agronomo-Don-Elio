@@ -7,12 +7,14 @@ import com.itec.donelio.data.local.dao.CosechaDao
 import com.itec.donelio.data.local.dao.InsumoDao
 import com.itec.donelio.data.local.dao.ObservacionDao
 import com.itec.donelio.data.local.dao.TareaDao
+import com.itec.donelio.data.local.dao.CultivoDao
 import com.itec.donelio.data.local.entity.CampaniaEntity
 import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
 import com.itec.donelio.data.local.entity.CosechaEntity
 import com.itec.donelio.data.local.entity.InsumoEntity
 import com.itec.donelio.data.local.entity.ObservacionEntity
 import com.itec.donelio.data.local.entity.TareaEntity
+import com.itec.donelio.data.local.entity.CultivoEntity
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,7 +26,8 @@ class DataSeederImpl @Inject constructor(
     private val cosechaDao: CosechaDao,
     private val insumoDao: InsumoDao,
     private val campaniaInsumoDao: CampaniaInsumoDao,
-    private val observacionDao: ObservacionDao
+    private val observacionDao: ObservacionDao,
+    private val cultivoDao: CultivoDao
 ) : DataSeeder {
 
     private fun fechaRelativa(diasOffset: Int, horaOffset: Int = 12): Long =
@@ -37,6 +40,15 @@ class DataSeederImpl @Inject constructor(
         }.timeInMillis
 
     override suspend fun seedData() {
+        // 0. Catálogo de Cultivos por defecto
+        val idSoja = cultivoDao.insertCultivo(CultivoEntity(nombre = "Soja", activo = true))
+        val idTrigo = cultivoDao.insertCultivo(CultivoEntity(nombre = "Trigo", activo = true))
+        val idMaiz = cultivoDao.insertCultivo(CultivoEntity(nombre = "Maíz", activo = true))
+        val idGirasol = cultivoDao.insertCultivo(CultivoEntity(nombre = "Girasol", activo = true))
+        val idCebada = cultivoDao.insertCultivo(CultivoEntity(nombre = "Cebada", activo = true))
+        val idSorgo = cultivoDao.insertCultivo(CultivoEntity(nombre = "Sorgo", activo = true))
+        val idAlgodon = cultivoDao.insertCultivo(CultivoEntity(nombre = "Algodón", activo = true))
+
         // 1. Catálogo de Insumos (ampliado y realista)
         val idUrea = insumoDao.insertInsumo(InsumoEntity(nombre = "Urea 46%", categoria = "Fertilizante", icono = "🧪"))
         val idGlifosato = insumoDao.insertInsumo(InsumoEntity(nombre = "Glifosato 74%", categoria = "Herbicida", icono = "💧"))
@@ -49,16 +61,16 @@ class DataSeederImpl @Inject constructor(
 
         // 2. Campañas (Diferentes estados y fechas)
         val idCampaniaMaiz = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Maíz tardío Lote Sur", hectareas = 250.0, fecha = fechaRelativa(-150), cultivo = "Maíz", estaActiva = true)
+            CampaniaEntity(nombre = "Maíz tardío Lote Sur", hectareas = 250.0, fecha = fechaRelativa(-150), id_cultivo = idMaiz.toInt(), estaActiva = true)
         )
         val idCampaniaSoja = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Soja 1ra Lote Norte", hectareas = 180.0, fecha = fechaRelativa(-90), cultivo = "Soja", estaActiva = true)
+            CampaniaEntity(nombre = "Soja 1ra Lote Norte", hectareas = 180.0, fecha = fechaRelativa(-90), id_cultivo = idSoja.toInt(), estaActiva = true)
         )
         val idCampaniaTrigo = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Trigo Invierno (Finalizada)", hectareas = 200.0, fecha = fechaRelativa(-300), cultivo = "Trigo", estaActiva = false)
+            CampaniaEntity(nombre = "Trigo Invierno (Finalizada)", hectareas = 200.0, fecha = fechaRelativa(-300), id_cultivo = idTrigo.toInt(), estaActiva = false)
         )
         val idCampaniaGirasol = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Girasol Lote Este", hectareas = 150.0, fecha = fechaRelativa(-30), cultivo = "Girasol", estaActiva = true)
+            CampaniaEntity(nombre = "Girasol Lote Este", hectareas = 150.0, fecha = fechaRelativa(-30), id_cultivo = idGirasol.toInt(), estaActiva = true)
         )
 
         // 3. Tareas (Para probar el Dashboard: atrasadas, de hoy, futuras)

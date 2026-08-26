@@ -7,6 +7,8 @@ import com.itec.donelio.data.local.DonElioDatabase
 import com.itec.donelio.data.local.entity.CampaniaEntity
 import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
 import com.itec.donelio.data.local.entity.InsumoEntity
+import com.itec.donelio.data.local.entity.CultivoEntity
+import com.itec.donelio.data.local.dao.CultivoDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -23,6 +25,7 @@ class CampaniaInsumoDaoTest {
     private lateinit var campaniaDao: CampaniaDao
     private lateinit var insumoDao: InsumoDao
     private lateinit var campaniaInsumoDao: CampaniaInsumoDao
+    private lateinit var cultivoDao: CultivoDao
 
     @Before
     fun setUp() {
@@ -33,6 +36,7 @@ class CampaniaInsumoDaoTest {
         campaniaDao = database.campaniaDao
         insumoDao = database.insumoDao
         campaniaInsumoDao = database.campaniaInsumoDao
+        cultivoDao = database.cultivoDao
     }
 
     @After
@@ -43,8 +47,12 @@ class CampaniaInsumoDaoTest {
     @Test
     fun asignarInsumo_y_getInsumosUtilizadosEnCampania() = runTest {
         // 1. Crear dependencias
+        val cultivoId = cultivoDao.insertCultivo(
+            CultivoEntity(nombre = "Trigo", activo = true)
+        ).toInt()
+
         val campaniaId = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Campania 1", cultivo = "Trigo", fecha = 1000L)
+            CampaniaEntity(nombre = "Campania 1", id_cultivo = cultivoId, hectareas = 100.0, fecha = 1000L)
         ).toInt()
 
         val insumoId = insumoDao.insertInsumo(
@@ -73,8 +81,12 @@ class CampaniaInsumoDaoTest {
     @Test
     fun desvincularInsumo_lo_elimina_de_la_campania() = runTest {
         // 1. Crear dependencias
+        val cultivoId = cultivoDao.insertCultivo(
+            CultivoEntity(nombre = "Trigo", activo = true)
+        ).toInt()
+
         val campaniaId = campaniaDao.insertCampania(
-            CampaniaEntity(nombre = "Campania 1", cultivo = "Trigo", fecha = 1000L)
+            CampaniaEntity(nombre = "Campania 1", id_cultivo = cultivoId, hectareas = 100.0, fecha = 1000L)
         ).toInt()
 
         val insumoId = insumoDao.insertInsumo(

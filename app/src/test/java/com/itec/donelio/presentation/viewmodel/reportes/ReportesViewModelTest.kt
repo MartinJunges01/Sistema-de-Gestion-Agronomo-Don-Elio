@@ -49,8 +49,8 @@ class ReportesViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val campaniaSoja = Campania(id = 1, nombre = "Soja 2026", hectareas = 100.0, fechaInicio = 0L, estaActiva = true, cultivo = "Soja")
-    private val campaniaMaiz = Campania(id = 2, nombre = "Maíz 2025", hectareas = 120.0, fechaInicio = 0L, estaActiva = false, cultivo = "Maíz")
+    private val campaniaSoja = Campania(id = 1, nombre = "Soja 2026", hectareas = 100.0, fechaInicio = 0L, estaActiva = true, cultivoId = 1, cultivoNombre = "Soja")
+    private val campaniaMaiz = Campania(id = 2, nombre = "Maíz 2025", hectareas = 120.0, fechaInicio = 0L, estaActiva = false, cultivoId = 2, cultivoNombre = "Maíz")
 
     @Before
     fun setUp() {

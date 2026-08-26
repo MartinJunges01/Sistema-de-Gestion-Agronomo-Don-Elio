@@ -9,6 +9,8 @@ import com.itec.donelio.data.local.entity.InsumoUtilizadoRelacion
 import com.itec.donelio.data.local.entity.ObservacionEntity
 import com.itec.donelio.data.local.entity.TareaEntity
 import com.itec.donelio.data.local.entity.UsuarioEntity
+import com.itec.donelio.data.local.entity.CultivoEntity
+import com.itec.donelio.data.local.entity.CampaniaConCultivoSchema
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
 import com.itec.donelio.domain.model.Cosecha
@@ -17,6 +19,7 @@ import com.itec.donelio.domain.model.Insumo
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.model.Usuario
+import com.itec.donelio.domain.model.Cultivo
 
 fun CampaniaEntity.toDomain(): Campania {
     return Campania(
@@ -25,7 +28,20 @@ fun CampaniaEntity.toDomain(): Campania {
         hectareas = hectareas,
         fechaInicio = fecha,
         estaActiva = estaActiva,
-        cultivo = cultivo
+        cultivoId = id_cultivo,
+        cultivoNombre = ""
+    )
+}
+
+fun CampaniaConCultivoSchema.toDomain(): Campania {
+    return Campania(
+        id = id_campania,
+        nombre = nombre,
+        hectareas = hectareas,
+        fechaInicio = fecha,
+        estaActiva = estaActiva,
+        cultivoId = id_cultivo,
+        cultivoNombre = cultivoNombre
     )
 }
 
@@ -35,8 +51,24 @@ fun Campania.toEntity(): CampaniaEntity {
         nombre = nombre,
         hectareas = hectareas,
         fecha = fechaInicio,
-        cultivo = cultivo,
+        id_cultivo = cultivoId,
         estaActiva = estaActiva
+    )
+}
+
+fun CultivoEntity.toDomain(): Cultivo {
+    return Cultivo(
+        id = id_cultivo,
+        nombre = nombre,
+        activo = activo
+    )
+}
+
+fun Cultivo.toEntity(): CultivoEntity {
+    return CultivoEntity(
+        id_cultivo = id,
+        nombre = nombre,
+        activo = activo
     )
 }
 

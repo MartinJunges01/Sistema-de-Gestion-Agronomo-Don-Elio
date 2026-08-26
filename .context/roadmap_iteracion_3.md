@@ -34,7 +34,7 @@
 - [x] **[#348] Issue 348:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
 - [x] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
 - [ ] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes
-- [ ] **[#351] Issue 351:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
+- [x] **[#351] Issue 351:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
 - [ ] **[#352] Issue 352:** Evolución Histórica por Cultivo (gráfico de tendencia)
 - [ ] **[#353] Issue 353:** Filtros Avanzados en Reportes (rango de fechas + selector de campañas + datos financieros)
 

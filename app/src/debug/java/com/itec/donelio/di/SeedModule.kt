@@ -26,7 +26,8 @@ object SeedModule {
         cosechaDao: CosechaDao,
         insumoDao: InsumoDao,
         campaniaInsumoDao: CampaniaInsumoDao,
-        observacionDao: ObservacionDao
+        observacionDao: ObservacionDao,
+        cultivoDao: com.itec.donelio.data.local.dao.CultivoDao
     ): DataSeeder {
         return DataSeederImpl(
             campaniaDao = campaniaDao,
@@ -34,7 +35,8 @@ object SeedModule {
             cosechaDao = cosechaDao,
             insumoDao = insumoDao,
             campaniaInsumoDao = campaniaInsumoDao,
-            observacionDao = observacionDao
+            observacionDao = observacionDao,
+            cultivoDao = cultivoDao
         )
     }
 }

@@ -11,6 +11,7 @@ import com.itec.donelio.data.local.dao.InsumoDao
 import com.itec.donelio.data.local.dao.ObservacionDao
 import com.itec.donelio.data.local.dao.TareaDao
 import com.itec.donelio.data.local.dao.UsuarioDao
+import com.itec.donelio.data.local.dao.CultivoDao
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import dagger.Module
@@ -120,5 +121,11 @@ object DatabaseModule {
     @Singleton
     fun provideUsuarioDao(db: DonElioDatabase): UsuarioDao {
         return db.usuarioDao
+    }
+
+    @Provides
+    @Singleton
+    fun provideCultivoDao(db: DonElioDatabase): CultivoDao {
+        return db.cultivoDao
     }
 }

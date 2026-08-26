@@ -38,6 +38,7 @@ sealed class NavRoute(val route: String) {
     }
 
     data object CatalogoInsumos : NavRoute("catalogo_insumos") { fun createRoute() = route }
+    data object CatalogoCultivos : NavRoute("catalogo_cultivos") { fun createRoute() = route }
     data object FormularioInsumo : NavRoute("formulario_insumo") { fun createRoute() = route }
 
     data object Cosechas : NavRoute("cosechas?campaniaId={campaniaId}") {

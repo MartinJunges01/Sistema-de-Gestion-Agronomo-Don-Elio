@@ -230,6 +230,10 @@ Dos nuevos artefactos introducidos en PR #378 no tienen tests unitarios. `MainVi
 **Severidad:** 🔴 Bug Bloqueante
 **Descripción:** Verificar si `DonElioDatabase` en PR #349 incluye `MIGRATION_5_6`. Sin ella, Room hace crash al actualizar la app.
 
+## [PENDIENTE] DT-017: Fallo en CI por falta de actualización en tests y SeedModule durante refactor (Issue351)
+**Severidad:** 🔴 Bug Bloqueante
+**Descripción:** Durante el refactor de `CampaniaEntity` para la Issue #351, se actualizaron los DAO tests pero se omitió actualizar `SeedModule` (lo que causaba un fallo de compilación en debug) y los tests unitarios en `main` que referenciaban la firma vieja, lo que rompió el CI.
+
 <!-- Plantilla para nuevos bugs:
 ## [PENDIENTE-ID] Título descriptivo del bug
 

@@ -10,6 +10,7 @@ import com.itec.donelio.data.local.dao.InsumoDao
 import com.itec.donelio.data.local.dao.ObservacionDao
 import com.itec.donelio.data.local.dao.TareaDao
 import com.itec.donelio.data.local.dao.UsuarioDao
+import com.itec.donelio.data.local.dao.CultivoDao
 import com.itec.donelio.data.local.entity.CampaniaEntity
 import com.itec.donelio.data.local.entity.CampaniaInsumoEntity
 import com.itec.donelio.data.local.entity.CosechaEntity
@@ -18,8 +19,8 @@ import com.itec.donelio.data.local.entity.InsumoEntity
 import com.itec.donelio.data.local.entity.ObservacionEntity
 import com.itec.donelio.data.local.entity.TareaEntity
 import com.itec.donelio.data.local.entity.UsuarioEntity
+import com.itec.donelio.data.local.entity.CultivoEntity
 
-// Aquí listamos TODAS las tablas (entities) que creaste en los Issues 1 y 2
 @Database(
     entities = [
         CampaniaEntity::class,
@@ -29,14 +30,14 @@ import com.itec.donelio.data.local.entity.UsuarioEntity
         InsumoEntity::class,
         ObservacionEntity::class,
         CampaniaInsumoEntity::class,
-        UsuarioEntity::class
+        UsuarioEntity::class,
+        CultivoEntity::class
     ],
-    version = 6, // Subimos a 6 para el refactor de hectareas a Campania
-    exportSchema = false // Por ahora lo dejamos en false para evitar warnings del compilador
+    version = 7, // Subimos a 7 para el ABM de Cultivos
+    exportSchema = false
 )
 abstract class DonElioDatabase : RoomDatabase() {
 
-    // Aquí conectamos el Issue 4: Le decimos a Room qué DAOs existen
     abstract val campaniaDao: CampaniaDao
     abstract val tareaDao: TareaDao
     abstract val cosechaDao: CosechaDao
@@ -45,7 +46,5 @@ abstract class DonElioDatabase : RoomDatabase() {
     abstract val observacionDao: ObservacionDao
     abstract val cosechaNoAlmacenadaDao: CosechaNoAlmacenadaDao
     abstract val usuarioDao: UsuarioDao
-
-    // Nota: ¡No necesitas escribir el código de estas funciones!
-    // Room generará todo el código real por detrás cuando compiles.
+    abstract val cultivoDao: CultivoDao
 }

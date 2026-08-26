@@ -51,7 +51,7 @@ fun CampaniaSeleccionadaCard(campania: Campania?, onClick: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("Cultivo: ${campania.cultivo} · Inicio: $fechaInicioStr", fontSize = 14.sp, color = TextoSecundario)
+                Text("Cultivo: ${campania.cultivoNombre} · Inicio: $fechaInicioStr", fontSize = 14.sp, color = TextoSecundario)
             }
             Icon(Icons.Default.ChevronRight, contentDescription = "Ver Detalles", tint = TextoSecundario)
         }

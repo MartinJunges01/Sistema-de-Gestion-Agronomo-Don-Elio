@@ -4,16 +4,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.domain.model.Cultivo
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.CrearCampaniaUseCase
 import com.itec.donelio.domain.use_case.EditarCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniaPorIdUseCase
 import com.itec.donelio.domain.use_case.ValidarDatosCampaniaUseCase
+import com.itec.donelio.domain.use_case.ObtenerCultivosUseCase
+import com.itec.donelio.domain.use_case.CrearCultivoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +26,7 @@ import javax.inject.Inject
 data class CampaniaFormState(
     val nombre: String = "",
     val hectareas: String = "",
-    val cultivo: String = "",
+    val cultivoId: Int? = null,
     val fechaInicio: Long = System.currentTimeMillis(),
     val errorNombre: String? = null,
     val errorHectareas: String? = null,
@@ -39,13 +44,18 @@ class CampaniaFormViewModel @Inject constructor(
     private val crearCampaniaUseCase: CrearCampaniaUseCase,
     private val editarCampaniaUseCase: EditarCampaniaUseCase,
     private val obtenerCampaniaPorIdUseCase: ObtenerCampaniaPorIdUseCase,
-    private val validarDatosCampaniaUseCase: ValidarDatosCampaniaUseCase
+    private val validarDatosCampaniaUseCase: ValidarDatosCampaniaUseCase,
+    private val obtenerCultivosUseCase: ObtenerCultivosUseCase,
+    private val crearCultivoUseCase: CrearCultivoUseCase
 ) : ViewModel() {
 
     private val campaniaId: Int? = savedStateHandle.get<Int>("campaniaId")
 
     private val _state = MutableStateFlow(CampaniaFormState())
     val state: StateFlow<CampaniaFormState> = _state.asStateFlow()
+
+    val cultivos: StateFlow<List<Cultivo>> = obtenerCultivosUseCase(soloActivos = true)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
         if (campaniaId != null && campaniaId > 0) {
@@ -62,7 +72,7 @@ class CampaniaFormViewModel @Inject constructor(
                     it.copy(
                         nombre = campania.nombre,
                         hectareas = campania.hectareas.toString(),
-                        cultivo = campania.cultivo,
+                        cultivoId = campania.cultivoId,
                         fechaInicio = campania.fechaInicio,
                         isEditMode = true,
                         campaniaId = campania.id,
@@ -83,8 +93,19 @@ class CampaniaFormViewModel @Inject constructor(
         _state.update { it.copy(hectareas = value, errorHectareas = null) }
     }
 
-    fun onCultivoChange(value: String) {
-        _state.update { it.copy(cultivo = value, errorCultivo = null) }
+    fun onCultivoIdChange(id: Int) {
+        _state.update { it.copy(cultivoId = id, errorCultivo = null) }
+    }
+
+    fun crearYSeleccionarNuevoCultivo(nombre: String) {
+        viewModelScope.launch {
+            try {
+                val newId = crearCultivoUseCase(nombre)
+                _state.update { it.copy(cultivoId = newId.toInt(), errorCultivo = null) }
+            } catch (e: Exception) {
+                _state.update { it.copy(errorCultivo = e.localizedMessage) }
+            }
+        }
     }
 
     fun onFechaChange(timestamp: Long) {
@@ -99,7 +120,7 @@ class CampaniaFormViewModel @Inject constructor(
         val resultadoValidacion = validarDatosCampaniaUseCase(
             nombre = current.nombre,
             hectareas = hectareasParsed,
-            cultivo = current.cultivo,
+            cultivoId = current.cultivoId,
             fechaInicio = current.fechaInicio,
             isEditMode = current.isEditMode
         )
@@ -122,7 +143,7 @@ class CampaniaFormViewModel @Inject constructor(
                     hectareas = hectareasParsed!!,
                     fechaInicio = current.fechaInicio,
                     estaActiva = true,
-                    cultivo = current.cultivo.trim()
+                    cultivoId = current.cultivoId!!
                 )
                 editarCampaniaUseCase(campania).collect { resource ->
                     when (resource) {
@@ -135,7 +156,7 @@ class CampaniaFormViewModel @Inject constructor(
                 crearCampaniaUseCase(
                     nombre = current.nombre.trim(),
                     hectareas = hectareasParsed!!,
-                    cultivo = current.cultivo.trim(),
+                    cultivoId = current.cultivoId!!,
                     fechaInicio = current.fechaInicio
                 ).collect { resource ->
                     when (resource) {

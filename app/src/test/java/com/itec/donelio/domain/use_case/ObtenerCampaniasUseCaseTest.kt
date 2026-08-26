@@ -26,8 +26,8 @@ class ObtenerCampaniasUseCaseTest {
     @Test
     fun `invoke calls getCampanias and returns flow`() = runTest {
         val campanias = listOf(
-            Campania(id = 1, nombre = "Trigo", hectareas = 100.0, cultivo = "Trigo", fechaInicio = 1L, estaActiva = true),
-            Campania(id = 2, nombre = "Soja", hectareas = 100.0, cultivo = "Soja", fechaInicio = 2L, estaActiva = false)
+            Campania(id = 1, nombre = "Trigo", hectareas = 100.0, cultivoId = 1, cultivoNombre = "Trigo", fechaInicio = 1L, estaActiva = true),
+            Campania(id = 2, nombre = "Soja", hectareas = 100.0, cultivoId = 2, cultivoNombre = "Soja", fechaInicio = 2L, estaActiva = false)
         )
         every { campaniaRepository.getCampanias() } returns flowOf(campanias)
 

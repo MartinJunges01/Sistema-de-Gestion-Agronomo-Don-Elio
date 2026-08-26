@@ -21,20 +21,20 @@ class ValidarDatosCampaniaUseCase @Inject constructor() {
     /**
      * @param nombre El nombre de la campaña.
      * @param hectareas La cantidad de hectáreas (puede ser nulo si el input está vacío o es inválido).
-     * @param cultivo El tipo de cultivo.
+     * @param cultivoId El ID del cultivo seleccionado.
      * @param fechaInicio La fecha de inicio en milisegundos.
      * @param isEditMode True si se está editando una campaña existente (permite fechas pasadas).
      */
     operator fun invoke(
         nombre: String, 
         hectareas: Double?,
-        cultivo: String, 
+        cultivoId: Int?, 
         fechaInicio: Long, 
         isEditMode: Boolean
     ): ResultadoValidacionCampania {
         val errorNombre = if (nombre.isBlank()) "El nombre es obligatorio" else null
         val errorHectareas = if (hectareas == null || hectareas <= 0) "Las hectáreas deben ser un valor mayor a cero" else null
-        val errorCultivo = if (cultivo.isBlank()) "El cultivo es obligatorio" else null
+        val errorCultivo = if (cultivoId == null || cultivoId <= 0) "El cultivo es obligatorio" else null
         
         var errorFecha: String? = null
         if (fechaInicio <= 0) {

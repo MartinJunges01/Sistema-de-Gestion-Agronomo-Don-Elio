@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.itec.donelio.data.local.entity.CampaniaEntity
+import com.itec.donelio.data.local.entity.CampaniaConCultivoSchema
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -21,15 +22,37 @@ interface CampaniaDao {
     @Delete
     suspend fun deleteCampania(campania: CampaniaEntity): Int
 
-    @Query("SELECT * FROM campanias ORDER BY fecha DESC")
-    fun getCampanias(): Flow<List<CampaniaEntity>>
+    @Query("""
+        SELECT c.id_campania, c.nombre, c.hectareas, c.fecha, c.id_cultivo, c.estaActiva, cu.nombre AS cultivoNombre 
+        FROM campanias c 
+        INNER JOIN cultivos cu ON c.id_cultivo = cu.id_cultivo 
+        ORDER BY c.fecha DESC
+    """)
+    fun getCampanias(): Flow<List<CampaniaConCultivoSchema>>
 
-    @Query("SELECT * FROM campanias WHERE estaActiva = 1 ORDER BY fecha DESC")
-    fun getCampaniasActivas(): Flow<List<CampaniaEntity>>
+    @Query("""
+        SELECT c.id_campania, c.nombre, c.hectareas, c.fecha, c.id_cultivo, c.estaActiva, cu.nombre AS cultivoNombre 
+        FROM campanias c 
+        INNER JOIN cultivos cu ON c.id_cultivo = cu.id_cultivo 
+        WHERE c.estaActiva = 1 
+        ORDER BY c.fecha DESC
+    """)
+    fun getCampaniasActivas(): Flow<List<CampaniaConCultivoSchema>>
 
-    @Query("SELECT * FROM campanias WHERE estaActiva = 0 ORDER BY fecha DESC")
-    fun getCampaniasInactivas(): Flow<List<CampaniaEntity>>
+    @Query("""
+        SELECT c.id_campania, c.nombre, c.hectareas, c.fecha, c.id_cultivo, c.estaActiva, cu.nombre AS cultivoNombre 
+        FROM campanias c 
+        INNER JOIN cultivos cu ON c.id_cultivo = cu.id_cultivo 
+        WHERE c.estaActiva = 0 
+        ORDER BY c.fecha DESC
+    """)
+    fun getCampaniasInactivas(): Flow<List<CampaniaConCultivoSchema>>
 
-    @Query("SELECT * FROM campanias WHERE id_campania = :id")
-    suspend fun getCampaniaById(id: Int): CampaniaEntity?
+    @Query("""
+        SELECT c.id_campania, c.nombre, c.hectareas, c.fecha, c.id_cultivo, c.estaActiva, cu.nombre AS cultivoNombre 
+        FROM campanias c 
+        INNER JOIN cultivos cu ON c.id_cultivo = cu.id_cultivo 
+        WHERE c.id_campania = :id
+    """)
+    suspend fun getCampaniaById(id: Int): CampaniaConCultivoSchema?
 }

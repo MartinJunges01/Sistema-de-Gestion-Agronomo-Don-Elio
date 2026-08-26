@@ -22,12 +22,12 @@ class ValidarDatosCampaniaUseCaseTest {
         // Given
         val nombre = ""
         val hectareas = 100.0
-        val cultivo = "Soja"
+        val cultivoId = 1
         val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.timeInMillis
         val isEditMode = false
 
         // When
-        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio, isEditMode)
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
 
         // Then
         assertFalse(resultado.esValido)
@@ -39,12 +39,12 @@ class ValidarDatosCampaniaUseCaseTest {
         // Given
         val nombre = "Campaña 1"
         val hectareas = -5.0
-        val cultivo = "Soja"
+        val cultivoId = 1
         val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.timeInMillis
         val isEditMode = false
 
         // When
-        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio, isEditMode)
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
 
         // Then
         assertFalse(resultado.esValido)
@@ -52,16 +52,33 @@ class ValidarDatosCampaniaUseCaseTest {
     }
 
     @Test
+    fun `cultivo vacio o nulo devuelve error`() {
+        // Given
+        val nombre = "Campaña 1"
+        val hectareas = 100.0
+        val cultivoId = null
+        val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.timeInMillis
+        val isEditMode = false
+
+        // When
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
+
+        // Then
+        assertFalse(resultado.esValido)
+        assertEquals("El cultivo es obligatorio", resultado.errorCultivo)
+    }
+
+    @Test
     fun `fecha pasada en creacion devuelve error`() {
         // Given
         val nombre = "Campaña 1"
         val hectareas = 100.0
-        val cultivo = "Soja"
+        val cultivoId = 1
         val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }.timeInMillis
         val isEditMode = false
 
         // When
-        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio, isEditMode)
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
 
         // Then
         assertFalse(resultado.esValido)
@@ -73,12 +90,12 @@ class ValidarDatosCampaniaUseCaseTest {
         // Given
         val nombre = "Campaña 1"
         val hectareas = 100.0
-        val cultivo = "Soja"
+        val cultivoId = 1
         val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -1) }.timeInMillis
         val isEditMode = true
 
         // When
-        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio, isEditMode)
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
 
         // Then
         assertTrue(resultado.esValido)
@@ -90,12 +107,12 @@ class ValidarDatosCampaniaUseCaseTest {
         // Given
         val nombre = "Campaña 1"
         val hectareas = 100.0
-        val cultivo = "Soja"
+        val cultivoId = 1
         val fechaInicio = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.timeInMillis
         val isEditMode = false
 
         // When
-        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivo, fechaInicio, isEditMode)
+        val resultado = validarDatosCampaniaUseCase(nombre, hectareas, cultivoId, fechaInicio, isEditMode)
 
         // Then
         assertTrue(resultado.esValido)
