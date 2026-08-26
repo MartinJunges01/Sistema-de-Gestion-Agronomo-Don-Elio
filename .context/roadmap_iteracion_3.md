@@ -33,7 +33,7 @@
 - [x] **[#347] Issue 347:** Tasa de Cumplimiento de Tareas (gráfico circular en Dashboard)
 - [x] **[#348] Issue 348:** Top 3 Insumos de Mayor Gasto (en pestaña Reportes)
 - [x] **[#349] Issue 349:** Refactorizar DB — Hectáreas en campaña + métrica Tn/Ha en reportes
-- [ ] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes
+- [x] **[#350] Issue 350:** Costo por Hectárea ($/Ha) en reportes
 - [x] **[#351] Issue 351:** ABM de Cultivos (Catálogo estandarizado + nueva entidad DB)
 - [ ] **[#352] Issue 352:** Evolución Histórica por Cultivo (gráfico de tendencia)
 - [ ] **[#353] Issue 353:** Filtros Avanzados en Reportes (rango de fechas + selector de campañas + datos financieros)
@@ -42,9 +42,9 @@
 - [ ] **[#354] Issue 354:** InsumoVinculacionViewModel sin método sincronizarInsumos()
 - [ ] **[#355] Issue 355:** Exportación CSV/PDF sin identificación de campaña en el encabezado
 - [ ] **[#356] Issue 356:** Comparador permite seleccionar la misma campaña para A y B
-- [ ] **[#357] Issue 357:** ReportExporter no soporta PDF de múltiples páginas
-- [ ] **[#358] Issue 358:** DoubleBarIndicator no tiene tests unitarios
-- [ ] **[#359] Issue 359:** Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
+- [x] **[#357] Issue 357:** ReportExporter no soporta PDF de múltiples páginas
+- [x] **[#358] Issue 358:** DoubleBarIndicator no tiene tests unitarios
+- [x] **[#359] Issue 359:** Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
 - [ ] **[#360] Issue 360:** UX Inconsistente de Validación entre Formulario de Insumos y Campañas
 
 ---
