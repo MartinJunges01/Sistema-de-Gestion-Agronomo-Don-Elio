@@ -43,7 +43,8 @@ class FormularioCosechaViewModel @Inject constructor(
     private val registrarConVentaUseCase: RegistrarCosechaConVentaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase,
-    private val editarCosechaUseCase: EditarCosechaUseCase
+    private val editarCosechaUseCase: EditarCosechaUseCase,
+    private val validarDatosCosechaUseCase: com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
 ) : ViewModel() {
 
     private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
@@ -108,15 +109,24 @@ class FormularioCosechaViewModel @Inject constructor(
             return
         }
 
-        if (current.cantidad.isBlank()) {
-            _state.update { it.copy(errorCantidad = "La cantidad es obligatoria") }
+        val cantidadDouble = current.cantidad.toDoubleOrNull()
+        val validacion = validarDatosCosechaUseCase(
+            cantidad = cantidadDouble,
+            fecha = current.fecha,
+            hectareas = 1.0, // Solo a fines de firma por ahora, no se usa
+            isAlmacenada = current.almacenado,
+            almacen = current.almacen
+        )
+
+        if (validacion is com.itec.donelio.domain.util.ValidationResult.Error) {
+            _state.update { it.copy(errorCantidad = validacion.message) }
             return
         }
 
-        if (current.errorCantidad != null || current.errorPrecio != null) return
+        if (current.errorPrecio != null) return
 
         val campaniaId = current.campaniaId
-        val cantidad = current.cantidad.toDouble()
+        val cantidad = cantidadDouble ?: 0.0
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
