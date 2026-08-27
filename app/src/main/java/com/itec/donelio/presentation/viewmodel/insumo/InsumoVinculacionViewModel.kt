@@ -48,6 +48,12 @@ class InsumoVinculacionViewModel @Inject constructor(
         _campaniaIdSeleccionada.value = id
     }
 
+    fun sincronizarInsumos(campaniaId: Int) {
+        if (_campaniaIdSeleccionada.value != campaniaId) {
+            _campaniaIdSeleccionada.value = campaniaId
+        }
+    }
+
     fun clearError() { _errorMessage.value = null }
 
     fun asignarInsumo(idInsumo: Int, cantidad: Double, precio: Double) {
