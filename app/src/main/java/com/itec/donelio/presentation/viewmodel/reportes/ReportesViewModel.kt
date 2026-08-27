@@ -49,7 +49,11 @@ class ReportesViewModel @Inject constructor(
     private val obtenerInsumosVinculadosUseCase: ObtenerInsumosVinculadosUseCase,
     obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
-    private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
+    private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase,
+    private val obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase,
+    private val obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase,
+    private val campaniaInsumoRepository: com.itec.donelio.domain.repository.CampaniaInsumoRepository,
+    private val cosechaRepository: com.itec.donelio.domain.repository.CosechaRepository
 ) : ViewModel() {
 
     // ──────────────────────────────────────────────
@@ -62,6 +66,65 @@ class ReportesViewModel @Inject constructor(
     fun clearExportStatus() { _exportStatus.value = null }
 
     // ──────────────────────────────────────────────
+    // Filtros Avanzados (Sección 0 - Resumen General)
+    // ──────────────────────────────────────────────
+    
+    private val _filtroRangoFechas = MutableStateFlow<Pair<Long, Long>?>(null)
+    val filtroRangoFechas: StateFlow<Pair<Long, Long>?> = _filtroRangoFechas.asStateFlow()
+
+    private val _filtroCampaniasMulti = MutableStateFlow<List<Int>>(emptyList())
+    val filtroCampaniasMulti: StateFlow<List<Int>> = _filtroCampaniasMulti.asStateFlow()
+
+    fun setFiltroRangoFechas(rango: Pair<Long, Long>?) {
+        _filtroRangoFechas.value = rango
+    }
+
+    fun toggleFiltroCampania(campaniaId: Int) {
+        val current = _filtroCampaniasMulti.value.toMutableList()
+        if (current.contains(campaniaId)) {
+            current.remove(campaniaId)
+        } else {
+            current.add(campaniaId)
+        }
+        _filtroCampaniasMulti.value = current
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val resumenFiltrado: StateFlow<com.itec.donelio.domain.use_case.ResumenRendimiento?> = combine(
+        _filtroCampaniasMulti,
+        _filtroRangoFechas,
+        campaniaInsumoRepository.getAllInsumosUtilizados(),
+        cosechaRepository.getAllCosechas()
+    ) { filtroCamps, filtroFechas, todosInsumos, todasCosechas ->
+        
+        // Filtrar insumos
+        val insumosFiltrados = if (filtroCamps.isNotEmpty()) {
+            todosInsumos.filter { it.idCampania in filtroCamps }
+        } else {
+            todosInsumos
+        }
+        val capitalInvertido = insumosFiltrados.sumOf { it.cantidad * it.precio }
+
+        // Filtrar cosechas
+        val cosechasFiltradas = todasCosechas.filter { cosecha ->
+            val pasaCampania = if (filtroCamps.isNotEmpty()) cosecha.idCampania in filtroCamps else true
+            val pasaFecha = if (filtroFechas != null) {
+                cosecha.fecha in filtroFechas.first..filtroFechas.second
+            } else true
+            pasaCampania && pasaFecha
+        }
+        val totalCosechado = cosechasFiltradas.sumOf { it.cantidad }
+
+        val costoPorTn = if (totalCosechado > 0) capitalInvertido / totalCosechado else 0.0
+
+        com.itec.donelio.domain.use_case.ResumenRendimiento(
+            capitalInvertido = capitalInvertido,
+            totalCosechado = totalCosechado,
+            costoPorTonelada = costoPorTn
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    // ──────────────────────────────────────────────
     // Lista de campañas para dropdowns
     // ──────────────────────────────────────────────
 
@@ -71,6 +134,24 @@ class ReportesViewModel @Inject constructor(
     // ──────────────────────────────────────────────
     // Sección 1 — Estadísticas de campaña individual
     // ──────────────────────────────────────────────
+
+    val cultivos: StateFlow<List<com.itec.donelio.domain.model.Cultivo>> = obtenerCultivosUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    private val _cultivoSeleccionado = MutableStateFlow<com.itec.donelio.domain.model.Cultivo?>(null)
+    val cultivoSeleccionado: StateFlow<com.itec.donelio.domain.model.Cultivo?> = _cultivoSeleccionado.asStateFlow()
+
+    fun seleccionarCultivo(cultivo: com.itec.donelio.domain.model.Cultivo) {
+        _cultivoSeleccionado.value = cultivo
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val evolucionCultivo: StateFlow<List<com.itec.donelio.domain.model.PuntoCultivo>> = _cultivoSeleccionado
+        .flatMapLatest { cultivo ->
+            if (cultivo != null) obtenerEvolucionCultivoUseCase(cultivo.id)
+            else flowOf(emptyList())
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _campaniaIndividual = MutableStateFlow<Campania?>(null)
     val campaniaIndividual: StateFlow<Campania?> = _campaniaIndividual.asStateFlow()
