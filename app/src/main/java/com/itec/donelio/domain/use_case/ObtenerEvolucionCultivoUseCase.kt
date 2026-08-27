@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.domain.use_case
+package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.PuntoCultivo
 import com.itec.donelio.domain.repository.CampaniaRepository
@@ -18,7 +18,7 @@ class ObtenerEvolucionCultivoUseCase @Inject constructor(
             campanias.filter { it.cultivoId == cultivoId && !it.estaActiva }.sortedBy { it.fechaInicio }
         }.combine(cosechaRepository.getAllCosechas()) { campaniasFiltradas, todasCosechas ->
             campaniasFiltradas.map { campania ->
-                val cosechasCampania = todasCosechas.filter { it.id_campania == campania.id }
+                val cosechasCampania = todasCosechas.filter { it.idCampania == campania.id }
                 val totalCosechado = cosechasCampania.sumOf { it.cantidad }
                 val rendimiento = if (campania.hectareas > 0) totalCosechado / campania.hectareas else 0.0
                 
