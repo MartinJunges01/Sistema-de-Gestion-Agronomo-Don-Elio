@@ -36,6 +36,7 @@ class FormularioCosechaViewModelTest {
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
     private lateinit var obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase
     private lateinit var editarCosechaUseCase: EditarCosechaUseCase
+    private lateinit var validarDatosCosechaUseCase: com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
     private lateinit var viewModel: FormularioCosechaViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -48,15 +49,18 @@ class FormularioCosechaViewModelTest {
         obtenerCampaniasUseCase = mockk()
         obtenerCosechaPorIdUseCase = mockk()
         editarCosechaUseCase = mockk()
+        validarDatosCosechaUseCase = mockk()
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         coEvery { obtenerCosechaPorIdUseCase(any()) } returns null
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Success
         viewModel = FormularioCosechaViewModel(
             savedStateHandle = SavedStateHandle(),
             registrarCosechaUseCase = registrarCosechaUseCase,
             registrarConVentaUseCase = registrarConVentaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
-            editarCosechaUseCase = editarCosechaUseCase
+            editarCosechaUseCase = editarCosechaUseCase,
+            validarDatosCosechaUseCase = validarDatosCosechaUseCase
         )
     }
 
@@ -90,13 +94,14 @@ class FormularioCosechaViewModelTest {
     @Test
     fun `guardar con cantidad vacia setea errorCantidad y no llama a los use cases`() = runTest {
         // Given: campaña seleccionada, cantidad vacía
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Error("La cantidad debe ser mayor a 0.")
         viewModel.onCampaniaChange(1)
 
         // When
         viewModel.guardar()
 
         // Then
-        assertEquals("La cantidad es obligatoria", viewModel.state.value.errorCantidad)
+        assertEquals("La cantidad debe ser mayor a 0.", viewModel.state.value.errorCantidad)
         assertNull(viewModel.state.value.errorCampania)
         coVerify(exactly = 0) { registrarCosechaUseCase(any(), any(), any(), any()) }
     }
