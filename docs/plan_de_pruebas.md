@@ -324,3 +324,14 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 
 ### ReportesViewModel
 - **VM-R12:** Given misma campaña en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
+
+## ValidarDatosCosechaUseCase
+- **Dado** cantidad = null -> **Cuando** invoke() -> **Entonces** retorna Error("La cantidad debe ser mayor a 0.")
+- **Dado** fecha = null -> **Cuando** invoke() -> **Entonces** retorna Error("La fecha es obligatoria.")
+- **Dado** isAlmacenada=true y almacen en blanco -> **Cuando** invoke() -> **Entonces** retorna Error("El nombre del almacen o silo es obligatorio.")
+- **Dado** todos los campos son válidos -> **Cuando** invoke() -> **Entonces** retorna Success
+
+## FormularioInsumoViewModel — Validación al guardar
+- **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
+- **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
+- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
