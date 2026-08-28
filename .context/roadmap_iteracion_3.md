@@ -19,7 +19,7 @@
 ### ⚪ NIVEL L3 — FIX UI / UX
 - [x] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
 - [ ] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
-- [ ] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
+- [x] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
 - [x] **[#341] Issue 341:** Persistencia de sesión (login una sola vez)
@@ -40,7 +40,7 @@
 
 ### 📋 NIVEL L6 — DEUDA TÉCNICA (Pendientes de Iteración 2)
 - [x] **[#354] Issue 354:** InsumoVinculacionViewModel sin método sincronizarInsumos()
-- [ ] **[#355] Issue 355:** Exportación CSV/PDF sin identificación de campaña en el encabezado
+- [x] **[#355] Issue 355:** Exportación CSV/PDF sin identificación de campaña en el encabezado
 - [ ] **[#356] Issue 356:** Comparador permite seleccionar la misma campaña para A y B
 - [x] **[#357] Issue 357:** ReportExporter no soporta PDF de múltiples páginas
 - [x] **[#358] Issue 358:** DoubleBarIndicator no tiene tests unitarios
