@@ -10,15 +10,15 @@
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS
 - [x] **[#334] Issue 334:** No se añaden insumos al catálogo
-- [ ] **[#335] Issue 335:** El botón de edición de cosechas no funciona
+- [x] **[#335] Issue 335:** El botón de edición de cosechas no funciona
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto
+- [x] **[#336] Issue 336:** Validación del formulario de cosecha marca el campo incorrecto
 - [x] **[#337] Issue 337:** El botón de edición en observaciones solo funciona para texto (no para foto)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
 - [x] **[#338] Issue 338:** El teclado bloquea el movimiento de la pantalla al escribir (bloque blanco superior)
-- [ ] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
+- [x] **[#339] Issue 339:** Header de columnas cortado en el panel de detalle de campaña
 - [x] **[#340] Issue 340:** Etiquetas del gráfico de reportes desacomodadas
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
