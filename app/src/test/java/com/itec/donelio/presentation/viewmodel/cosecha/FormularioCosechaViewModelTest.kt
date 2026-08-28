@@ -52,7 +52,7 @@ class FormularioCosechaViewModelTest {
         validarDatosCosechaUseCase = mockk()
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         coEvery { obtenerCosechaPorIdUseCase(any()) } returns null
-        every { validarDatosCosechaUseCase(any(), any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Success
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Success
         viewModel = FormularioCosechaViewModel(
             savedStateHandle = SavedStateHandle(),
             registrarCosechaUseCase = registrarCosechaUseCase,
@@ -94,7 +94,7 @@ class FormularioCosechaViewModelTest {
     @Test
     fun `guardar con cantidad vacia setea errorCantidad y no llama a los use cases`() = runTest {
         // Given: campaña seleccionada, cantidad vacía
-        every { validarDatosCosechaUseCase(any(), any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Error("La cantidad debe ser mayor a 0.")
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Error("La cantidad debe ser mayor a 0.")
         viewModel.onCampaniaChange(1)
 
         // When

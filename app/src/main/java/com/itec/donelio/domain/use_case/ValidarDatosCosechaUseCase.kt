@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.domain.use_case
+package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.util.ValidationResult
 import javax.inject.Inject
@@ -7,7 +7,6 @@ class ValidarDatosCosechaUseCase @Inject constructor() {
     operator fun invoke(
         cantidad: Double?,
         fecha: Long?,
-        hectareas: Double?,
         isAlmacenada: Boolean,
         almacen: String
     ): ValidationResult {
@@ -18,10 +17,6 @@ class ValidarDatosCosechaUseCase @Inject constructor() {
             return ValidationResult.Error("La fecha es obligatoria.")
         }
         
-        if (isAlmacenada && (cantidad == null || cantidad <= 0)) {
-            return ValidationResult.Error("Debe especificar una cantidad para almacenar.")
-        }
-
         if (isAlmacenada && almacen.isBlank()) {
             return ValidationResult.Error("El nombre del almacén o silo es obligatorio.")
         }

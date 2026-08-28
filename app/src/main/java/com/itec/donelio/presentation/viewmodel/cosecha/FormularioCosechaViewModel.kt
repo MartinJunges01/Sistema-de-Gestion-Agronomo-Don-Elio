@@ -113,7 +113,6 @@ class FormularioCosechaViewModel @Inject constructor(
         val validacion = validarDatosCosechaUseCase(
             cantidad = cantidadDouble,
             fecha = current.fecha,
-            hectareas = 1.0, // Solo a fines de firma por ahora, no se usa
             isAlmacenada = current.almacenado,
             almacen = current.almacen
         )
