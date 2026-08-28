@@ -100,6 +100,8 @@ fun FormularioCosechaScreen(
                 label = { Text("Fecha") },
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
+                isError = state.errorFecha != null,
+                supportingText = state.errorFecha?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(Icons.Default.DateRange, contentDescription = null)
