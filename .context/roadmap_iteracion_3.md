@@ -41,7 +41,7 @@
 ### 📋 NIVEL L6 — DEUDA TÉCNICA (Pendientes de Iteración 2)
 - [x] **[#354] Issue 354:** InsumoVinculacionViewModel sin método sincronizarInsumos()
 - [x] **[#355] Issue 355:** Exportación CSV/PDF sin identificación de campaña en el encabezado
-- [ ] **[#356] Issue 356:** Comparador permite seleccionar la misma campaña para A y B
+- [x] **[#356] Issue 356:** Comparador permite seleccionar la misma campaña para A y B
 - [x] **[#357] Issue 357:** ReportExporter no soporta PDF de múltiples páginas
 - [x] **[#358] Issue 358:** DoubleBarIndicator no tiene tests unitarios
 - [x] **[#359] Issue 359:** Tests VM-R8 y VM-R9 (guardia de exportación) sin implementación
