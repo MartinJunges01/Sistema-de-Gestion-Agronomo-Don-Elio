@@ -208,8 +208,10 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                     )
                 ) { backStackEntry ->
                     val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
+                    val cosechaId = backStackEntry.arguments?.getInt("cosechaId") ?: -1
                     FormularioCosechaScreen(
                         campaniaId = campaniaId,
+                        cosechaId = cosechaId,
                         onBack = { navController.popBackStack() }
                     )
                 }

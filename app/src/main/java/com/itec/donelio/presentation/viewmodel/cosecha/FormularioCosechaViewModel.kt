@@ -30,6 +30,7 @@ data class FormularioCosechaState(
     val cosechaId: Int? = null,
     val isLoading: Boolean = false,
     val errorCantidad: String? = null,
+    val errorFecha: String? = null,
     val errorPrecio: String? = null,
     val errorCampania: String? = null,
     val guardadoExitoso: Boolean = false,
@@ -92,7 +93,7 @@ class FormularioCosechaViewModel @Inject constructor(
             "Cantidad inválida" else null
         _state.update { it.copy(cantidad = value, errorCantidad = error) }
     }
-    fun onFechaChange(timestamp: Long) { _state.update { it.copy(fecha = timestamp) } }
+    fun onFechaChange(timestamp: Long) { _state.update { it.copy(fecha = timestamp, errorFecha = null) } }
     fun onAlmacenChange(value: String) { _state.update { it.copy(almacen = value) } }
     fun onTipoChange(value: String) { _state.update { it.copy(tipo = value) } }
     fun onPrecioChange(value: String) {
@@ -118,7 +119,15 @@ class FormularioCosechaViewModel @Inject constructor(
         )
 
         if (validacion is com.itec.donelio.domain.util.ValidationResult.Error) {
-            _state.update { it.copy(errorCantidad = validacion.message) }
+            val msg = validacion.message
+            when {
+                msg.contains("cantidad", ignoreCase = true) ->
+                    _state.update { it.copy(errorCantidad = msg) }
+                msg.contains("fecha", ignoreCase = true) ->
+                    _state.update { it.copy(errorFecha = msg) }
+                else ->
+                    _state.update { it.copy(errorGeneral = msg) }
+            }
             return
         }
 
