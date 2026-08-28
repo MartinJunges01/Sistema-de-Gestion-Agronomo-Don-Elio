@@ -335,3 +335,26 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 - **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
 - **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
 - **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
+
+
+## FormularioCosechaViewModel - Edición y validación por campo (#335 / #336)
+
+**Test VM-C6: Init con cosechaId válido carga la cosecha en el estado**
+*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almacén "Silo A".
+*   **When:** Se inicializa el ViewModel.
+*   **Then:** state.cosechaId == 7, state.cantidad == "55.0", state.almacen == "Silo A", state.almacenado == true.
+
+**Test VM-C7: Error de cantidad va a errorCantidad, no a errorFecha**
+*   **Given:** Campaña seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorCantidad != null, errorFecha == null.
+
+**Test VM-C8: Error de fecha va a errorFecha, no a errorCantidad**
+*   **Given:** Campaña y cantidad válidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorFecha != null, errorCantidad == null.
+
+**Test VM-C9: onFechaChange limpia errorFecha**
+*   **Given:** Existe errorFecha en el state (provocado por un guardar fallido).
+*   **When:** Se llama a onFechaChange(timestamp).
+*   **Then:** errorFecha == null.

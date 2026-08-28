@@ -174,4 +174,91 @@ class FormularioCosechaViewModelTest {
             registrarConVentaUseCase(100.0, any(), 1, "Venta", 500.0)
         }
     }
+    // -------------------------------------------------------------------------
+    // Test 6 (#335): Init con cosechaId válido → cargarCosecha() carga datos en state
+    // -------------------------------------------------------------------------
+    @Test
+    fun `init con cosechaId valido carga la cosecha en el estado`() = runTest {
+        // Given: cosechaId = 7 en SavedStateHandle
+        val cosechaFalsa = com.itec.donelio.domain.model.Cosecha(
+            id = 7, idCampania = 2, cantidad = 55.0,
+            fecha = 1_700_000_000_000L, almacen = "Silo A"
+        )
+        coEvery { obtenerCosechaPorIdUseCase(7) } returns cosechaFalsa
+
+        val vmConId = FormularioCosechaViewModel(
+            savedStateHandle = SavedStateHandle(mapOf("cosechaId" to 7, "campaniaId" to 2)),
+            registrarCosechaUseCase = registrarCosechaUseCase,
+            registrarConVentaUseCase = registrarConVentaUseCase,
+            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
+            editarCosechaUseCase = editarCosechaUseCase,
+            validarDatosCosechaUseCase = validarDatosCosechaUseCase
+        )
+        advanceUntilIdle()
+
+        // Then: el state refleja los datos de la cosecha cargada
+        assertEquals(7, vmConId.state.value.cosechaId)
+        assertEquals("55.0", vmConId.state.value.cantidad)
+        assertEquals("Silo A", vmConId.state.value.almacen)
+        assertEquals(2, vmConId.state.value.campaniaId)
+        assertTrue(vmConId.state.value.almacenado)
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 7 (#336): Error del UseCase con mensaje "cantidad" → errorCantidad, errorFecha null
+    // -------------------------------------------------------------------------
+    @Test
+    fun `guardar con error de cantidad setea errorCantidad y errorFecha permanece null`() = runTest {
+        // Given: UseCase retorna error de cantidad
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns
+            com.itec.donelio.domain.util.ValidationResult.Error("La cantidad debe ser mayor a 0.")
+        viewModel.onCampaniaChange(1)
+
+        // When
+        viewModel.guardar()
+
+        // Then
+        assertEquals("La cantidad debe ser mayor a 0.", viewModel.state.value.errorCantidad)
+        assertNull(viewModel.state.value.errorFecha)
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 8 (#336): Error del UseCase con mensaje "fecha" → errorFecha, errorCantidad null
+    // -------------------------------------------------------------------------
+    @Test
+    fun `guardar con error de fecha setea errorFecha y errorCantidad permanece null`() = runTest {
+        // Given: UseCase retorna error de fecha
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns
+            com.itec.donelio.domain.util.ValidationResult.Error("La fecha es obligatoria.")
+        viewModel.onCampaniaChange(1)
+        viewModel.onCantidadChange("50")
+
+        // When
+        viewModel.guardar()
+
+        // Then
+        assertEquals("La fecha es obligatoria.", viewModel.state.value.errorFecha)
+        assertNull(viewModel.state.value.errorCantidad)
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 9 (#336): onFechaChange limpia errorFecha
+    // -------------------------------------------------------------------------
+    @Test
+    fun `onFechaChange limpia errorFecha`() = runTest {
+        // Given: hay un errorFecha en el state
+        every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns
+            com.itec.donelio.domain.util.ValidationResult.Error("La fecha es obligatoria.")
+        viewModel.onCampaniaChange(1)
+        viewModel.onCantidadChange("50")
+        viewModel.guardar()
+        assertEquals("La fecha es obligatoria.", viewModel.state.value.errorFecha)
+
+        // When
+        viewModel.onFechaChange(System.currentTimeMillis())
+
+        // Then
+        assertNull(viewModel.state.value.errorFecha)
+    }
 }
