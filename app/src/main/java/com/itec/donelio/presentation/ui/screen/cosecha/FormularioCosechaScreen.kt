@@ -28,6 +28,7 @@ import java.util.Locale
 @Composable
 fun FormularioCosechaScreen(
     campaniaId: Int = -1,
+    cosechaId: Int = -1,
     viewModel: FormularioCosechaViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
@@ -50,7 +51,7 @@ fun FormularioCosechaScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Registrar Cosecha", fontWeight = FontWeight.Bold) },
+                title = { Text(if (cosechaId != -1) "Editar Cosecha" else "Registrar Cosecha", fontWeight = FontWeight.Bold) },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
             )
