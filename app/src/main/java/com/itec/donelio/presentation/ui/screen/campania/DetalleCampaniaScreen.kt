@@ -148,7 +148,10 @@ private fun HeaderCampania(campania: com.itec.donelio.domain.model.Campania) {
             Spacer(modifier = Modifier.width(8.dp))
             Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(
+            modifier = Modifier.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             InfoChip(label = "Cultivo", value = campania.cultivoNombre.ifBlank { "—" })
             InfoChip(label = "Inicio", value = formatFecha(campania.fechaInicio))
             InfoChip(label = "Estado", value = if (campania.estaActiva) "Activa" else "Inactiva")
@@ -271,7 +274,11 @@ private fun TabInsumos(campaniaId: Int, onGoToInsumos: () -> Unit) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text("Resumen de Insumos", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextoPrincipal)
                     Text("${vinculados.size} insumos vinculados", color = TextoSecundario, fontSize = 14.sp)
-                    Text("Total estimado: $ ${"%,.2f".format(total)}", color = AgriVerde, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        "Total estimado: $ ${"%,.2f".format(total)}",
+                        color = AgriVerde, fontWeight = FontWeight.Bold, fontSize = 14.sp,
+                        softWrap = true
+                    )
                 }
             }
         }
@@ -308,8 +315,9 @@ private fun TabCosechas(campaniaId: Int, onGoToCosechas: () -> Unit) {
                     )
                     if (almacenadas.isNotEmpty() || noAlmacenadasDetalle.isNotEmpty()) {
                         Text(
-                            "${formatCantidad(totalAlmacenado)} almacenadas · $ ${"%,.2f".format(totalNoAlmacenado)} en ventas",
-                            color = AgriVerde, fontWeight = FontWeight.Bold, fontSize = 14.sp
+                            "${formatCantidad(totalAlmacenado)} almacenadas\n$ ${"%,.2f".format(totalNoAlmacenado)} en ventas",
+                            color = AgriVerde, fontWeight = FontWeight.Bold, fontSize = 13.sp,
+                            softWrap = true
                         )
                     }
                 }
