@@ -1,5 +1,13 @@
 # Changelog
 
+**[2026-08-28] - Merge Unificado de Iteración 3 (Issues #352, #353, #354, #360, #373, #374)**
+- **#352 / #353 / #374**: Reportes avanzados, evolución histórica por cultivo con Canvas, filtros multicampaña, y leyenda ajustada en el PieChart.
+- **#354**: Sincronización de insumos tras creación (InsumoVinculacionViewModel).
+- **#360**: Estandarización de UX al validar insumos (Lazy validation on submit).
+- **#373**: Validación en capa de dominio y obligatoriedad de almacén en cosechas.
+- **Deuda Técnica**: Corrección de firmas redundantes (DT-021), nuevos test de dominio (DT-023) y actualización del Plan de Pruebas (DT-024). Refactor de Clean Architecture diferido a Issue #398 (DT-022).
+
+
 **[2026-08-25] - [#357] feat(export): implementar paginacion automatica en reportes PDF**
 - Se refactorizo ReportExporter.exportToPdf() para mantener control dinamico de yPosition.
 - Se añadio logica de salto de pagina al superar los 800f en el eje Y.
@@ -442,3 +450,4 @@
 **[2026-08-21] - Fix UI Detalles y Reportes [#339] [#340]**
 - Se migrÃ³ el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestaÃ±as se corten o dividan en varias lÃ­neas.
 - Se ocultÃ³ la leyenda por defecto de los grÃ¡ficos PieChart en ReportesRendimientoScreen y se creÃ³ una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el grÃ¡fico.
+

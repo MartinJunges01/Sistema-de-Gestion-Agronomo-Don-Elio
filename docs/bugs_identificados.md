@@ -47,3 +47,20 @@ Breve descripción del problema encontrado...
 - [ ] Criterio 1
 - [ ] Criterio 2
 -->
+
+## [Resuelto] DT-021: ValidarDatosCosechaUseCase tiene logica redundante
+**Severidad:** 🟡 Deuda Técnica
+**Resolución:** Se eliminó el parámetro hectareas y la guarda inalcanzable durante el merge de la PR #395.
+
+## [Pendiente] DT-022: ReportesViewModel inyecta repositorios directamente (Issue #398)
+**Severidad:** 🔴 Deuda Técnica (Arquitectura)
+**Descripción:** ReportesViewModel inyecta CampaniaInsumoRepository y CosechaRepository violando Clean Architecture.
+**Criterios de Aceptación:** Crear ObtenerResumenFinancieroPorCampaniasUseCase y delegar.
+
+## [Resuelto] DT-023: ObtenerEvolucionCultivoUseCase sin tests
+**Severidad:** 🟡 Cobertura / Deuda Técnica
+**Resolución:** Se agregó ObtenerEvolucionCultivoUseCaseTest con 4 casos luego del merge de la PR #394.
+
+## [Resuelto] DT-024: plan_de_pruebas.md desactualizado
+**Severidad:** 🔵 Documentación / Deuda Técnica
+**Resolución:** Se agregaron los flujos GWT de PRs #395 y #396 al final de la iteración.
