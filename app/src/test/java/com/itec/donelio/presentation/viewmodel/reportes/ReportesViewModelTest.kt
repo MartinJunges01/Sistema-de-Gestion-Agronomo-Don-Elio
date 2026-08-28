@@ -47,6 +47,10 @@ class ReportesViewModelTest {
     private lateinit var obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase
     private lateinit var obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase
     private lateinit var calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
+    private lateinit var obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase
+    private lateinit var obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase
+    private lateinit var campaniaInsumoRepository: com.itec.donelio.domain.repository.CampaniaInsumoRepository
+    private lateinit var cosechaRepository: com.itec.donelio.domain.repository.CosechaRepository
     private lateinit var viewModel: ReportesViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -62,12 +66,20 @@ class ReportesViewModelTest {
         obtenerCosechasPorCampaniaUseCase = mockk()
         obtenerCatalogoInsumosUseCase = mockk()
         calcularCostoPorHectareaUseCase = mockk()
+        obtenerCultivosUseCase = mockk()
+        obtenerEvolucionCultivoUseCase = mockk()
+        campaniaInsumoRepository = mockk()
+        cosechaRepository = mockk()
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         every { obtenerInsumosVinculadosUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerCosechasPorCampaniaUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerCatalogoInsumosUseCase() } returns flowOf(emptyList())
         every { calcularCostoPorHectareaUseCase(any(), any()) } returns 0.0
+        every { obtenerCultivosUseCase() } returns flowOf(emptyList())
+        every { obtenerEvolucionCultivoUseCase(any<Int>()) } returns flowOf(emptyList())
+        every { campaniaInsumoRepository.getAllInsumosUtilizados() } returns flowOf(emptyList())
+        every { cosechaRepository.getAllCosechas() } returns flowOf(emptyList())
     }
 
     @After
@@ -80,7 +92,11 @@ class ReportesViewModelTest {
         obtenerInsumosVinculadosUseCase = obtenerInsumosVinculadosUseCase,
         obtenerCosechasPorCampaniaUseCase = obtenerCosechasPorCampaniaUseCase,
         obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase,
-        calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase
+        calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase,
+        obtenerCultivosUseCase = obtenerCultivosUseCase,
+        obtenerEvolucionCultivoUseCase = obtenerEvolucionCultivoUseCase,
+        campaniaInsumoRepository = campaniaInsumoRepository,
+        cosechaRepository = cosechaRepository
     )
 
     // ──────────────────────────────────────────────

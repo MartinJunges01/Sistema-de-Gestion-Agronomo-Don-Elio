@@ -135,6 +135,178 @@ fun ReportesRendimientoScreen(
         ) {
 
             // ──────────────────────────────────────────────
+            // SECCIÓN 0: Filtros Avanzados y Evolución
+            // ──────────────────────────────────────────────
+            
+            item {
+                val filtroCampanias by viewModel.filtroCampaniasMulti.collectAsState()
+                val filtroRangoFechas by viewModel.filtroRangoFechas.collectAsState()
+                val resumenFiltrado by viewModel.resumenFiltrado.collectAsState()
+
+                Text(
+                    "Resumen Productivo-Financiero (Filtros Avanzados)",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = TextoPrincipal
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Filtro Campañas (Multi-select)
+                Text("Filtrar por Campañas:", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    campanias.forEach { campania ->
+                        val isSelected = filtroCampanias.contains(campania.id)
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.toggleFiltroCampania(campania.id) },
+                            label = { Text(campania.nombre, fontSize = 12.sp) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Resumen Cards
+                if (resumenFiltrado != null) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        TarjetaMetrica(
+                            titulo = "Capital Invertido",
+                            valor = "$ %.2f".format(resumenFiltrado!!.capitalInvertido),
+                            icono = Icons.Default.AttachMoney,
+                            color = AgriVerde,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TarjetaMetrica(
+                            titulo = "Volumen Cosechado",
+                            valor = "%.1f Tn".format(resumenFiltrado!!.totalCosechado),
+                            icono = Icons.Default.Grain,
+                            color = AgriAzul,
+                            modifier = Modifier.weight(1f)
+                        )
+                        TarjetaMetrica(
+                            titulo = "Costo/Tn",
+                            valor = "$ %.2f".format(resumenFiltrado!!.costoPorTonelada),
+                            icono = Icons.Default.MonetizationOn,
+                            color = Color(0xFFb91c1c),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                } else {
+                    PlaceholderSeleccion(mensaje = "Seleccioná filtros para ver el resumen")
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                val cultivos by viewModel.cultivos.collectAsState()
+                val cultivoSeleccionado by viewModel.cultivoSeleccionado.collectAsState()
+                val evolucion by viewModel.evolucionCultivo.collectAsState()
+
+                Text(
+                    "Evolución Histórica por Cultivo",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = TextoPrincipal
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                var expandidoCultivos by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
+                    expanded = expandidoCultivos,
+                    onExpandedChange = { expandidoCultivos = it }
+                ) {
+                    OutlinedTextField(
+                        value = cultivoSeleccionado?.nombre ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Seleccionar Cultivo") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoCultivos) },
+                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(expanded = expandidoCultivos, onDismissRequest = { expandidoCultivos = false }) {
+                        cultivos.forEach { cult ->
+                            DropdownMenuItem(
+                                text = { Text(cult.nombre) },
+                                onClick = {
+                                    viewModel.seleccionarCultivo(cult)
+                                    expandidoCultivos = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (cultivoSeleccionado == null) {
+                    PlaceholderSeleccion(mensaje = "Seleccioná un cultivo para ver su evolución")
+                } else if (evolucion.isEmpty()) {
+                    PlaceholderSeleccion(mensaje = "Sin datos históricos para este cultivo")
+                } else {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
+                        modifier = Modifier.fillMaxWidth().height(250.dp)
+                    ) {
+                        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                            // Simple Canvas Line Chart implementation
+                            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                                val maxRend = evolucion.maxOfOrNull { it.rendimientoTnHa } ?: 1.0
+                                val padding = 40f
+                                val width = size.width - padding * 2
+                                val height = size.height - padding * 2
+                                val stepX = if (evolucion.size > 1) width / (evolucion.size - 1) else width
+
+                                // Draw Axes
+                                drawLine(
+                                    color = Color.LightGray,
+                                    start = androidx.compose.ui.geometry.Offset(padding, padding),
+                                    end = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
+                                    strokeWidth = 2f
+                                )
+                                drawLine(
+                                    color = Color.LightGray,
+                                    start = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
+                                    end = androidx.compose.ui.geometry.Offset(size.width - padding, size.height - padding),
+                                    strokeWidth = 2f
+                                )
+
+                                // Draw Path
+                                val path = androidx.compose.ui.graphics.Path()
+                                evolucion.forEachIndexed { index, punto ->
+                                    val x = padding + index * stepX
+                                    val y = size.height - padding - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
+                                    if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                                    drawCircle(
+                                        color = AgriVerde,
+                                        radius = 6f,
+                                        center = androidx.compose.ui.geometry.Offset(x, y)
+                                    )
+                                }
+                                drawPath(
+                                    path = path,
+                                    color = AgriVerde,
+                                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                HorizontalDivider(thickness = 1.dp, color = Color(0xFFE7E5E4))
+            }
+
+            // ──────────────────────────────────────────────
             // SECCIÓN 1: Estadísticas de campaña individual
             // ──────────────────────────────────────────────
 
@@ -345,10 +517,10 @@ fun ReportesRendimientoScreen(
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
-                        modifier = Modifier.fillMaxWidth().height(300.dp)
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(bottom = 8.dp)
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
+                            modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             if (desgloseCosechasData != null) {
@@ -373,7 +545,9 @@ fun ReportesRendimientoScreen(
                                         verticalArrangement = Arrangement.spacedBy(8.dp),
                                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                                     ) {
+                                        val totalCosechas = desgloseCosechasData!!.slices.sumOf { it.value.toDouble() }
                                         desgloseCosechasData!!.slices.forEach { slice ->
+                                            val porcentaje = if (totalCosechas > 0) (slice.value / totalCosechas) * 100 else 0.0
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Box(
                                                     modifier = Modifier
@@ -382,7 +556,11 @@ fun ReportesRendimientoScreen(
                                                         .background(slice.color)
                                                 )
                                                 Spacer(modifier = Modifier.width(4.dp))
-                                                Text(slice.label, fontSize = 12.sp, color = TextoPrincipal)
+                                                Text(
+                                                    "${slice.label} (${String.format(java.util.Locale.US, "%.1f", porcentaje)}% - ${String.format(java.util.Locale.US, "%.1f Tn", slice.value)})", 
+                                                    fontSize = 12.sp, 
+                                                    color = TextoPrincipal
+                                                )
                                             }
                                         }
                                     }
