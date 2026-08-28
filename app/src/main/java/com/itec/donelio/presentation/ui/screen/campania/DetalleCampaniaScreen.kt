@@ -1,6 +1,8 @@
 package com.itec.donelio.presentation.ui.screen.campania
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -149,7 +151,7 @@ private fun HeaderCampania(campania: com.itec.donelio.domain.model.Campania) {
             Text(campania.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
         }
         Row(
-            modifier = Modifier.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             InfoChip(label = "Cultivo", value = campania.cultivoNombre.ifBlank { "—" })

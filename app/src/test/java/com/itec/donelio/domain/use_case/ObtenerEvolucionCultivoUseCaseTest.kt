@@ -33,8 +33,8 @@ class ObtenerEvolucionCultivoUseCaseTest {
             Campania(id = 2, nombre = "Soja 2", hectareas = 200.0, fechaInicio = 2000, estaActiva = false, cultivoId = 1, cultivoNombre = "")
         )
         val cosechas = listOf(
-            Cosecha(id = 1, idCampania = 1, cantidad = 300.0, fecha = 0, almacenado = false, almacen = ""),
-            Cosecha(id = 2, idCampania = 2, cantidad = 400.0, fecha = 0, almacenado = false, almacen = "")
+            Cosecha(id = 1, idCampania = 1, cantidad = 300.0, fecha = 0, almacen = ""),
+            Cosecha(id = 2, idCampania = 2, cantidad = 400.0, fecha = 0, almacen = "")
         )
         every { campaniaRepository.getCampanias() } returns flowOf(campanias)
         every { cosechaRepository.getAllCosechas() } returns flowOf(cosechas)
@@ -55,7 +55,7 @@ class ObtenerEvolucionCultivoUseCaseTest {
             Campania(id = 1, nombre = "Soja 1", hectareas = 0.0, fechaInicio = 1000, estaActiva = false, cultivoId = 1, cultivoNombre = "")
         )
         val cosechas = listOf(
-            Cosecha(id = 1, idCampania = 1, cantidad = 300.0, fecha = 0, almacenado = false, almacen = "")
+            Cosecha(id = 1, idCampania = 1, cantidad = 300.0, fecha = 0, almacen = "")
         )
         every { campaniaRepository.getCampanias() } returns flowOf(campanias)
         every { cosechaRepository.getAllCosechas() } returns flowOf(cosechas)
