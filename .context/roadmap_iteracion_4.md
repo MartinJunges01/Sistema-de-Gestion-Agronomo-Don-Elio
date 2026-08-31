@@ -25,6 +25,7 @@
 - [ ] **[#410] Issue 410:** ABM completo de Tareas — agregar edición y eliminación
 
 ### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
+- [ ] **[#412] Issue 412:** Agregar etiquetas de eje X (nombre de campañas) al gráfico de evolución
 - [ ] **[#405] Issue 405:** Completar filtros avanzados de tiempo en Reportes (DateRangePicker + accesos rápidos)
 - [ ] **[#406] Issue 406:** Rediseñar UI del comparador de campañas + agregar métricas Cosecha/Ha y Costo/Tn
 
@@ -252,6 +253,22 @@ La interfaz del comparador agrupa los datos por métrica (viñeta) en lugar de p
 - Mostrar una tarjeta por campaña (A y B) debajo de su selector respectivo, con todas las métricas de esa campaña juntas.
 - Agregar métricas Cosecha/Ha y Costo/Tn a cada tarjeta del comparador.
 - El gráfico de barras existente se mantiene.
+
+---
+
+## [#412] Issue 412: Agregar etiquetas de eje X (nombre de campañas) al gráfico de evolución
+
+**Severidad:** 🔵 Mejora
+**Módulo:** Reportes / Gráficos
+**Archivo afectado:** `presentation/ui/screen/reportes/ReportesRendimientoScreen.kt`
+
+**Descripción**
+El gráfico de evolución histórica (Canvas) actualmente dibuja los puntos pero carece de etiquetas en el eje X para identificar a qué campaña corresponde cada punto, a pesar de que el backend ya las ordena cronológicamente por campaña.
+
+**Acceptance Criteria**
+- Dibujar el nombre de la campaña correspondiente debajo de cada punto en el eje X del Canvas.
+- Rotar el texto si es necesario para evitar solapamientos.
+- Mantener el orden cronológico actual.
 
 ---
 ---
