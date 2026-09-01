@@ -304,7 +304,7 @@ fun ReportesRendimientoScreen(
                                     )
                                     
                                     // Draw X-axis label (campania nombre)
-                                    val campaniaName = campanias.find { it.id == punto.campaniaId }?.nombre ?: "Camp ${punto.campaniaId}"
+                                    val campaniaName = punto.campaniaNombre
                                     drawContext.canvas.nativeCanvas.apply {
                                         save()
                                         rotate(-45f, x, size.height - paddingBottom + 30f)
