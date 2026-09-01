@@ -649,37 +649,55 @@ fun ReportesRendimientoScreen(
                     val rendimientoA = cosechasA.sumOf { it.cantidad }
                     val rendimientoB = cosechasB.sumOf { it.cantidad }
                     
+                    val haA = campaniaA!!.hectareas
+                    val haB = campaniaB!!.hectareas
+                    
+                    val cosechaHaA = if (haA > 0) rendimientoA / haA else 0.0
+                    val cosechaHaB = if (haB > 0) rendimientoB / haB else 0.0
+                    
+                    val costoTnA = if (rendimientoA > 0) costoA / rendimientoA else 0.0
+                    val costoTnB = if (rendimientoB > 0) costoB / rendimientoB else 0.0
+                    
                     val nombreA = campaniaA?.nombre ?: "Campaña A"
                     val nombreB = campaniaB?.nombre ?: "Campaña B"
 
                     Text("Métricas Comparativas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                        CardMetricaComparativa(
-                            titulo = "Costo Insumos",
-                            valor1 = "$ %.2f".format(costoA),
-                            valor2 = "$ %.2f".format(costoB),
-                            color = AgriVerde,
+                    
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, AgriVerde),
                             modifier = Modifier.weight(1f)
-                        )
-                        CardMetricaComparativa(
-                            titulo = "Rendimiento",
-                            valor1 = "%.2f".format(rendimientoA),
-                            valor2 = "%.2f".format(rendimientoB),
-                            color = AgriAzul,
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(nombreA, fontWeight = FontWeight.Bold, color = AgriVerde, fontSize = 15.sp)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriVerde.copy(alpha = 0.3f))
+                                Text("Inversión: $ %.2f".format(costoA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: %.2f Tn".format(rendimientoA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: $ %.2f".format(costoTnA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo: $costoHaStringA", fontSize = 12.sp, color = TextoPrincipal)
+                            }
+                        }
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, AgriAzul),
                             modifier = Modifier.weight(1f)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                        CardMetricaComparativa(
-                            titulo = "Costo/Ha",
-                            valor1 = costoHaStringA,
-                            valor2 = costoHaStringB,
-                            color = Color(0xFFb91c1c),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(nombreB, fontWeight = FontWeight.Bold, color = AgriAzul, fontSize = 15.sp)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriAzul.copy(alpha = 0.3f))
+                                Text("Inversión: $ %.2f".format(costoB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: %.2f Tn".format(rendimientoB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: $ %.2f".format(costoTnB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo: $costoHaStringB", fontSize = 12.sp, color = TextoPrincipal)
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
