@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -260,36 +261,56 @@ fun ReportesRendimientoScreen(
                             // Simple Canvas Line Chart implementation
                             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                                 val maxRend = evolucion.maxOfOrNull { it.rendimientoTnHa } ?: 1.0
-                                val padding = 40f
-                                val width = size.width - padding * 2
-                                val height = size.height - padding * 2
+                                val paddingLeft = 60f
+                                val paddingTop = 40f
+                                val paddingBottom = 120f
+                                val paddingRight = 40f
+                                val width = size.width - paddingLeft - paddingRight
+                                val height = size.height - paddingTop - paddingBottom
                                 val stepX = if (evolucion.size > 1) width / (evolucion.size - 1) else width
+
+                                // Text paint configuration
+                                val textPaint = android.graphics.Paint().apply {
+                                    color = android.graphics.Color.DKGRAY
+                                    textSize = 28f
+                                    isAntiAlias = true
+                                    textAlign = android.graphics.Paint.Align.RIGHT
+                                }
 
                                 // Draw Axes
                                 drawLine(
                                     color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(padding, padding),
-                                    end = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
+                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, paddingTop),
+                                    end = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
                                     strokeWidth = 2f
                                 )
                                 drawLine(
                                     color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
-                                    end = androidx.compose.ui.geometry.Offset(size.width - padding, size.height - padding),
+                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
+                                    end = androidx.compose.ui.geometry.Offset(size.width - paddingRight, size.height - paddingBottom),
                                     strokeWidth = 2f
                                 )
 
-                                // Draw Path
+                                // Draw Path and points
                                 val path = androidx.compose.ui.graphics.Path()
                                 evolucion.forEachIndexed { index, punto ->
-                                    val x = padding + index * stepX
-                                    val y = size.height - padding - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
+                                    val x = paddingLeft + index * stepX
+                                    val y = size.height - paddingBottom - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
                                     if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
                                     drawCircle(
                                         color = AgriVerde,
                                         radius = 6f,
                                         center = androidx.compose.ui.geometry.Offset(x, y)
                                     )
+                                    
+                                    // Draw X-axis label (campania nombre)
+                                    val campaniaName = campanias.find { it.id == punto.campaniaId }?.nombre ?: "Camp ${punto.campaniaId}"
+                                    drawContext.canvas.nativeCanvas.apply {
+                                        save()
+                                        rotate(-45f, x, size.height - paddingBottom + 30f)
+                                        drawText(campaniaName, x, size.height - paddingBottom + 30f, textPaint)
+                                        restore()
+                                    }
                                 }
                                 drawPath(
                                     path = path,
