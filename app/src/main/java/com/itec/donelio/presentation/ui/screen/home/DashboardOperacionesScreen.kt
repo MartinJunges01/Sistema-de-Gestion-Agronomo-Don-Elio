@@ -43,7 +43,8 @@ fun DashboardOperacionesScreen(
     onGoToConfig: () -> Unit,
     onGoToDetalle: (campaniaId: Int) -> Unit,
     onGoToTareas: () -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onGoToReportes: () -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
@@ -88,7 +89,7 @@ fun DashboardOperacionesScreen(
             item {
                 SeccionResumenRendimiento(
                     resumen = resumen!!,
-                    onGoToReportes = { /* TODO: Navigate to reportes when implemented */ }
+                    onGoToReportes = onGoToReportes
                 )
             }
         }
