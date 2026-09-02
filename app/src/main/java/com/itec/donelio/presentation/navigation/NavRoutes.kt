@@ -27,9 +27,13 @@ sealed class NavRoute(val route: String) {
             if (campaniaId != null) "tareas?campaniaId=$campaniaId" else "tareas"
     }
 
-    data object NuevaTarea : NavRoute("nueva_tarea?campaniaId={campaniaId}") {
-        fun createRoute(campaniaId: Int? = null): String =
-            if (campaniaId != null) "nueva_tarea?campaniaId=$campaniaId" else "nueva_tarea"
+    data object NuevaTarea : NavRoute("nueva_tarea?campaniaId={campaniaId}&tareaId={tareaId}") {
+        fun createRoute(campaniaId: Int? = null, tareaId: Int? = null): String {
+            val params = mutableListOf<String>()
+            if (campaniaId != null) params.add("campaniaId=$campaniaId")
+            if (tareaId != null) params.add("tareaId=$tareaId")
+            return if (params.isNotEmpty()) "nueva_tarea?${params.joinToString("&")}" else "nueva_tarea"
+        }
     }
 
     data object Insumos : NavRoute("insumos?campaniaId={campaniaId}") {

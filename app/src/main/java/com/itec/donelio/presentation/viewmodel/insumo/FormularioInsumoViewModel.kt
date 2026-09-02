@@ -72,11 +72,21 @@ class FormularioInsumoViewModel @Inject constructor(
     }
 
     fun onNombreChange(value: String) {
-        _state.update { it.copy(nombre = value, errorNombre = null) }
+        val validacion = validarInsumoUseCase(value, _state.value.categoria)
+        _state.update { it.copy(
+            nombre = value, 
+            errorNombre = null,
+            isGuardarHabilitado = validacion.esValido
+        ) }
     }
 
     fun onCategoriaChange(value: String) {
-        _state.update { it.copy(categoria = value, errorCategoria = null) }
+        val validacion = validarInsumoUseCase(_state.value.nombre, value)
+        _state.update { it.copy(
+            categoria = value, 
+            errorCategoria = null,
+            isGuardarHabilitado = validacion.esValido
+        ) }
     }
 
     fun onIconoChange(value: String?) {

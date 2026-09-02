@@ -160,32 +160,14 @@ fun ObservacionesScreen(
     }
 
     if (showEditDialog != null) {
-        var textoEditado by remember { mutableStateOf(showEditDialog!!.texto) }
-        AlertDialog(
-            onDismissRequest = { showEditDialog = null },
-            title = { Text("Editar Observación", fontWeight = FontWeight.Bold) },
-            text = {
-                OutlinedTextField(
-                    value = textoEditado,
-                    onValueChange = { textoEditado = it },
-                    label = { Text("Texto") },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 100.dp),
-                    maxLines = 5
-                )
+        DialogEditarObservacion(
+            observacion = showEditDialog!!,
+            onDismiss = { showEditDialog = null },
+            onGuardar = { obsEditada ->
+                listViewModel.editarObservacion(obsEditada)
+                showEditDialog = null
             },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val obsEditada = showEditDialog!!.copy(texto = textoEditado.trim())
-                        listViewModel.editarObservacion(obsEditada)
-                        showEditDialog = null
-                    },
-                    enabled = textoEditado.isNotBlank() || showEditDialog!!.imagenUri != null
-                ) { Text("Guardar", color = AgriVerde) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showEditDialog = null }) { Text("Cancelar", color = TextoSecundario) }
-            }
+            onValidar = { texto, imagen -> texto.isNotBlank() || imagen != null }
         )
     }
 
