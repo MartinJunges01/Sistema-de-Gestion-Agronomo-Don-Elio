@@ -9,6 +9,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,7 +38,7 @@ import java.util.Locale
 fun TareasScreen(
     campaniaId: Int = -1,
     viewModel: TareaViewModel = hiltViewModel(),
-    onGoToNuevaTarea: () -> Unit,
+    onGoToNuevaTarea: (Int?, Int?) -> Unit,
     onBack: () -> Unit
 ) {
     val tareasUi by viewModel.tareasUi.collectAsState()
@@ -47,6 +49,8 @@ fun TareasScreen(
 
     var mostrarSelectorFechas by remember { mutableStateOf(false) }
     var mostrarMenuCampanias by remember { mutableStateOf(false) }
+    
+    var tareaAEliminar by remember { mutableStateOf<com.itec.donelio.domain.model.Tarea?>(null) }
 
     val pendientes = tareasUi.filter { !it.tarea.confirmar }
     val completadas = tareasUi.filter { it.tarea.confirmar }
@@ -57,6 +61,23 @@ fun TareasScreen(
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
+
+        if (tareaAEliminar != null) {
+            AlertDialog(
+                onDismissRequest = { tareaAEliminar = null },
+                title = { Text("Eliminar Tarea", fontWeight = FontWeight.Bold) },
+                text = { Text("¿Eliminar la tarea '${tareaAEliminar!!.nombre}'? Esta acción no se puede deshacer.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.eliminarTarea(tareaAEliminar!!)
+                        tareaAEliminar = null
+                    }) { Text("Eliminar", color = MaterialTheme.colorScheme.error) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { tareaAEliminar = null }) { Text("Cancelar", color = TextoSecundario) }
+                }
+            )
+        }
 
         // BARRA DE FILTROS
         Row(
@@ -128,7 +149,12 @@ fun TareasScreen(
                     item { Text("No hay tareas pendientes.", color = TextoSecundario, fontSize = 14.sp) }
                 } else {
                     items(pendientes) { uiModel ->
-                        TarjetaTareaItem(uiModel = uiModel, onToggle = { viewModel.toggleCompletada(uiModel.tarea) })
+                        TarjetaTareaItem(
+                            uiModel = uiModel, 
+                            onToggle = { viewModel.toggleCompletada(uiModel.tarea) },
+                            onEdit = { onGoToNuevaTarea(uiModel.tarea.idCampania, uiModel.tarea.id) },
+                            onDelete = { tareaAEliminar = uiModel.tarea }
+                        )
                     }
                 }
 
@@ -138,14 +164,19 @@ fun TareasScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                     items(completadas) { uiModel ->
-                        TarjetaTareaItem(uiModel = uiModel, onToggle = { viewModel.toggleCompletada(uiModel.tarea) })
+                        TarjetaTareaItem(
+                            uiModel = uiModel, 
+                            onToggle = { viewModel.toggleCompletada(uiModel.tarea) },
+                            onEdit = { onGoToNuevaTarea(uiModel.tarea.idCampania, uiModel.tarea.id) },
+                            onDelete = { tareaAEliminar = uiModel.tarea }
+                        )
                     }
                 }
             }
 
             item {
                 Button(
-                    onClick = onGoToNuevaTarea,
+                    onClick = { onGoToNuevaTarea(campaniaId.takeIf { it != -1 }, null) },
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                     enabled = isCampaniaValid || filtroCampania != null // Se permite si hay una campaña seleccionada
@@ -168,7 +199,7 @@ fun TareasScreen(
 }
 
 @Composable
-private fun TarjetaTareaItem(uiModel: TareaUiModel, onToggle: () -> Unit) {
+private fun TarjetaTareaItem(uiModel: TareaUiModel, onToggle: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     val tarea = uiModel.tarea
     val completada = tarea.confirmar
     val isVencida = uiModel.isVencida && !completada
@@ -206,6 +237,16 @@ private fun TarjetaTareaItem(uiModel: TareaUiModel, onToggle: () -> Unit) {
                         textDecoration = if (completada) TextDecoration.LineThrough else TextDecoration.None,
                         modifier = Modifier.weight(1f)
                     )
+                    if (!completada) {
+                        Row {
+                            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                                Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextoSecundario, modifier = Modifier.size(20.dp))
+                            }
+                            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
+                            }
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

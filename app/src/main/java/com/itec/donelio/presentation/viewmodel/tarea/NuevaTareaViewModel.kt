@@ -34,16 +34,40 @@ data class NuevaTareaFormState(
 class NuevaTareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val crearTareaUseCase: CrearTareaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val editarTareaUseCase: com.itec.donelio.domain.use_case.EditarTareaUseCase,
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase
 ) : ViewModel() {
 
     private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+    private val tareaId = savedStateHandle.get<Int>("tareaId").takeIf { it != -1 }
 
     private val _state = MutableStateFlow(NuevaTareaFormState(campaniaId = initialCampaniaId))
     val state: StateFlow<NuevaTareaFormState> = _state.asStateFlow()
 
     val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    init {
+        if (tareaId != null) {
+            cargarTarea(tareaId)
+        }
+    }
+
+    private fun cargarTarea(id: Int) {
+        viewModelScope.launch {
+            val tarea = obtenerTareaPorIdUseCase(id)
+            if (tarea != null) {
+                _state.update { it.copy(
+                    nombre = tarea.nombre,
+                    fecha = tarea.fecha,
+                    hora = tarea.hora,
+                    notificar = tarea.notificar,
+                    campaniaId = tarea.idCampania
+                ) }
+            }
+        }
+    }
 
     fun onNombreChange(value: String) {
         _state.update { it.copy(nombre = value, errorNombre = null) }
@@ -91,17 +115,38 @@ class NuevaTareaViewModel @Inject constructor(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            crearTareaUseCase(
-                nombre = current.nombre.trim(),
-                fecha = current.fecha,
-                hora = current.hora,
-                notificar = current.notificar,
-                idCampania = current.campaniaId
-            ).collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> _state.update { it.copy(isLoading = true) }
-                    is Resource.Success -> _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
-                    is Resource.Error -> _state.update { it.copy(isLoading = false, errorNombre = resource.message) }
+            if (tareaId != null) {
+                // Modo Edición
+                val tareaEditada = com.itec.donelio.domain.model.Tarea(
+                    id = tareaId,
+                    nombre = current.nombre.trim(),
+                    fecha = current.fecha,
+                    hora = current.hora,
+                    notificar = current.notificar,
+                    confirmar = false, // Mantener estado de completada si se necesita, pero generalmente al editar está activa.
+                    idCampania = current.campaniaId
+                )
+                editarTareaUseCase(tareaEditada).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> _state.update { it.copy(isLoading = true) }
+                        is Resource.Success -> _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
+                        is Resource.Error -> _state.update { it.copy(isLoading = false, errorNombre = resource.message) }
+                    }
+                }
+            } else {
+                // Modo Alta
+                crearTareaUseCase(
+                    nombre = current.nombre.trim(),
+                    fecha = current.fecha,
+                    hora = current.hora,
+                    notificar = current.notificar,
+                    idCampania = current.campaniaId
+                ).collect { resource ->
+                    when (resource) {
+                        is Resource.Loading -> _state.update { it.copy(isLoading = true) }
+                        is Resource.Success -> _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
+                        is Resource.Error -> _state.update { it.copy(isLoading = false, errorNombre = resource.message) }
+                    }
                 }
             }
         }

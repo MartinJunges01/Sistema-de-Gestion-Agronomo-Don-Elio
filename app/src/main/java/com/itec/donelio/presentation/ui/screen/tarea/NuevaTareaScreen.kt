@@ -34,6 +34,7 @@ import java.util.Locale
 @Composable
 fun NuevaTareaScreen(
     campaniaId: Int = -1,
+    tareaId: Int = -1,
     viewModel: NuevaTareaViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
@@ -46,7 +47,7 @@ fun NuevaTareaScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Nueva Tarea", fontWeight = FontWeight.Bold) },
+            title = { Text(if (tareaId != -1) "Editar Tarea" else "Nueva Tarea", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
@@ -196,7 +197,7 @@ fun NuevaTareaScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
                 } else {
-                    Text("Guardar Tarea", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(if (tareaId != -1) "Guardar Cambios" else "Guardar Tarea", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
