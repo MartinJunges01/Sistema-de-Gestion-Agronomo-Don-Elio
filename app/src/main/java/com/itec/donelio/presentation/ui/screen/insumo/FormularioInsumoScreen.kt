@@ -56,7 +56,12 @@ fun FormularioInsumoScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
@@ -106,7 +111,7 @@ fun FormularioInsumoScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = viewModel::guardar,
                 modifier = Modifier.fillMaxWidth().height(56.dp),

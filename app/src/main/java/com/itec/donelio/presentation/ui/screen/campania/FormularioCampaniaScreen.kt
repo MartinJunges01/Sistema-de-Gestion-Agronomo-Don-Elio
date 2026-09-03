@@ -49,7 +49,11 @@ fun FormularioCampaniaScreen(
         )
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedTextField(
@@ -219,7 +223,7 @@ fun FormularioCampaniaScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = viewModel::guardar,

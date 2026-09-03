@@ -48,7 +48,11 @@ fun NuevaTareaScreen(
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
@@ -177,7 +181,7 @@ fun NuevaTareaScreen(
                 Text("Activar Notificación de Recordatorio", color = TextoPrincipal)
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = viewModel::guardar,
