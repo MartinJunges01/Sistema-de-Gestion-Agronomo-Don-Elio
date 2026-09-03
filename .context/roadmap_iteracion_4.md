@@ -14,7 +14,7 @@
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#401] Issue 401:** Botón "Ver detalle →" del Dashboard no navega a Reportes
-- [ ] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
+- [x] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
 - [ ] **[#404] Issue 404:** Edición de foto en observaciones sin implementar (Issue #337 sin resolver)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
@@ -301,7 +301,7 @@ El gráfico de evolución histórica (Canvas) actualmente dibuja los puntos pero
 
 ### Fase 2 — Bugs Funcionales (Sprint 1-2)
 3. **[#401]** Botón "Ver detalle" Dashboard sin navegación
-4. **[#402]** Métricas Dashboard incorrectas
+4. [x] **[#402]** Métricas Dashboard incorrectas
 5. **[#404]** Edición de foto en observaciones sin implementar
 
 ### Fase 3 — Fix UI/UX (Sprint 2)

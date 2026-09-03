@@ -17,6 +17,10 @@ class CosechaNoAlmacenadaRepositoryImpl @Inject constructor(
         dao.getNoAlmacenadasPorCampania(idCampania)
             .map { entities -> entities.map { it.toDomain() } }
 
+    override fun getAllNoAlmacenadas(): Flow<List<CosechaNoAlmacenada>> =
+        dao.getAllNoAlmacenadas()
+            .map { entities -> entities.map { it.toDomain() } }
+
     override suspend fun getPorCosechaId(cosechaId: Int): CosechaNoAlmacenada? =
         dao.getPorCosechaId(cosechaId)?.toDomain()
 

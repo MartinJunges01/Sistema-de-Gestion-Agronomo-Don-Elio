@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CosechaNoAlmacenadaRepository {
     fun getNoAlmacenadasPorCampania(idCampania: Int): Flow<List<CosechaNoAlmacenada>>
+    fun getAllNoAlmacenadas(): Flow<List<CosechaNoAlmacenada>>
     suspend fun getPorCosechaId(cosechaId: Int): CosechaNoAlmacenada?
     suspend fun insert(cosechaNoAlmacenada: CosechaNoAlmacenada)
     suspend fun delete(cosechaNoAlmacenada: CosechaNoAlmacenada)
