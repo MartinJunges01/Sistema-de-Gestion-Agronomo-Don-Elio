@@ -27,6 +27,7 @@
 ### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
 - [ ] **[#412] Issue 412:** Agregar etiquetas de eje X (nombre de campañas) al gráfico de evolución
 - [ ] **[#405] Issue 405:** Completar filtros avanzados de tiempo en Reportes (DateRangePicker + accesos rápidos)
+- [x] **[#416] Issue 416:** Persistir selección de campaña al navegar desde BottomNav (UX)
 - [ ] **[#406] Issue 406:** Rediseñar UI del comparador de campañas + agregar métricas Cosecha/Ha y Costo/Tn
 
 ### 📋 NIVEL L6 — DEUDA TÉCNICA (Pendientes de Iteración 3)

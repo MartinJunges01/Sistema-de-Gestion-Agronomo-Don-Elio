@@ -16,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val confirmarTareaUseCase: ConfirmarTareaUseCase,
@@ -25,6 +26,19 @@ class TareaViewModel @Inject constructor(
 
     private val _filtroCampania = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val filtroCampania = _filtroCampania.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                if (id != null && _filtroCampania.value != id) {
+                    _filtroCampania.value = id
+                }
+            }
+        }
+        _filtroCampania.value?.let { 
+            ultimaSeleccionManager.seleccionarCampania(it) 
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -63,7 +77,10 @@ class TareaViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int?) { _filtroCampania.value = id }
+    fun seleccionarCampania(id: Int?) { 
+        _filtroCampania.value = id 
+        id?.let { ultimaSeleccionManager.seleccionarCampania(it) }
+    }
     fun seleccionarFechas(rango: Pair<Long, Long>?) { _filtroFechas.value = rango }
     fun limpiarFiltros() {
         _filtroCampania.value = null

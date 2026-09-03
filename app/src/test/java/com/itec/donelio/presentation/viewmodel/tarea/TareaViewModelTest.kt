@@ -73,8 +73,12 @@ class TareaViewModelTest {
         } else {
             SavedStateHandle()
         }
+        val mockManager = mockk<com.itec.donelio.presentation.state.UltimaSeleccionManager>(relaxed = true)
+        every { mockManager.campaniaIdSeleccionada } returns kotlinx.coroutines.flow.MutableStateFlow(null)
+
         return TareaViewModel(
             savedStateHandle = handle,
+            ultimaSeleccionManager = mockManager,
             obtenerTareasFiltradasUseCase = obtenerTareasFiltradasUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             confirmarTareaUseCase = confirmarTareaUseCase,
