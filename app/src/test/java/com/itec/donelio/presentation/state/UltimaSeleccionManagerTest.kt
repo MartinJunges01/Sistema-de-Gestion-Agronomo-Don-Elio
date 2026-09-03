@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.presentation.state
+package com.itec.donelio.presentation.state
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -18,13 +18,13 @@ class UltimaSeleccionManagerTest {
     }
 
     @Test
-    fun manager inicia con campania nula() = runTest {
+    fun `manager inicia con campania nula`() = runTest {
         val seleccion = manager.campaniaIdSeleccionada.first()
         assertEquals(null, seleccion)
     }
 
     @Test
-    fun manager guarda y emite el id de campania seleccionado() = runTest {
+    fun `manager guarda y emite el id de campania seleccionado`() = runTest {
         manager.seleccionarCampania(42)
         val seleccion = manager.campaniaIdSeleccionada.first()
         assertEquals(42, seleccion)
