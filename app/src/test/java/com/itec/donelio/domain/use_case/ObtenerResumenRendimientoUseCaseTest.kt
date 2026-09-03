@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.domain.use_case
+package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.CampaniaInsumo
@@ -42,7 +42,7 @@ class ObtenerResumenRendimientoUseCaseTest {
     }
 
     @Test
-    fun "resumen financiero calcula correctamente ingresos y balance"() = runTest {
+    fun `resumen financiero calcula correctamente ingresos y balance`() = runTest {
         val cal = Calendar.getInstance()
         val timestampHoy = cal.timeInMillis
 
