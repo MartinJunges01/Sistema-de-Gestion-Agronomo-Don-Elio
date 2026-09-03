@@ -1,6 +1,9 @@
-package com.itec.donelio.presentation.ui.screen.campania
+﻿package com.itec.donelio.presentation.ui.screen.campania
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,7 +46,7 @@ fun FormularioCampaniaScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text(if (state.isEditMode) "Editar Campaña" else "Crear Campaña", fontWeight = FontWeight.Bold) },
+            title = { Text(if (state.isEditMode) "Editar CampaÃ±a" else "Crear CampaÃ±a", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
@@ -59,14 +62,14 @@ fun FormularioCampaniaScreen(
             OutlinedTextField(
                 value = state.nombre,
                 onValueChange = viewModel::onNombreChange,
-                label = { Text("Nombre de la Campaña") },
+                label = { Text("Nombre de la CampaÃ±a") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errorNombre != null,
                 supportingText = state.errorNombre?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
                 singleLine = true
             )
 
-            // Selector de Cultivos desde el Catálogo
+            // Selector de Cultivos desde el CatÃ¡logo
             val cultivos by viewModel.cultivos.collectAsState()
             var dropdownExpanded by remember { mutableStateOf(false) }
             var showNuevoCultivoDialog by remember { mutableStateOf(false) }
@@ -124,7 +127,7 @@ fun FormularioCampaniaScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "Configurar Catálogo",
+                        contentDescription = "Configurar CatÃ¡logo",
                         tint = AgriVerde
                     )
                 }
@@ -165,7 +168,7 @@ fun FormularioCampaniaScreen(
             OutlinedTextField(
                 value = state.hectareas,
                 onValueChange = viewModel::onHectareasChange,
-                label = { Text("Hectáreas") },
+                label = { Text("HectÃ¡reas") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errorHectareas != null,
                 supportingText = state.errorHectareas?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
@@ -242,7 +245,7 @@ fun FormularioCampaniaScreen(
                     Icon(Icons.Default.Save, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        if (state.isEditMode) "Actualizar Campaña" else "Guardar Campaña",
+                        if (state.isEditMode) "Actualizar CampaÃ±a" else "Guardar CampaÃ±a",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -257,3 +260,4 @@ private fun formatFecha(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
+

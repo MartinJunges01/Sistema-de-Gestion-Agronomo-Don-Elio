@@ -1,6 +1,9 @@
-package com.itec.donelio.presentation.ui.screen.insumo
+﻿package com.itec.donelio.presentation.ui.screen.insumo
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,7 +34,7 @@ fun FormularioInsumoScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
+    val iconosDisponibles = listOf("ðŸŒ±", "ðŸ’§", "ðŸ’Š", "â›½", "âš™ï¸", "ðŸšœ", "ðŸ“¦", "ðŸ§ª", "ðŸŒ¾", "âœ‚ï¸")
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.guardadoExitoso) {
@@ -76,7 +79,7 @@ fun FormularioInsumoScreen(
             OutlinedTextField(
                 value = state.categoria,
                 onValueChange = viewModel::onCategoriaChange,
-                label = { Text("Categoría (Ej: Semilla, Fertilizante)") },
+                label = { Text("CategorÃ­a (Ej: Semilla, Fertilizante)") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errorCategoria != null,
                 supportingText = state.errorCategoria?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
@@ -84,7 +87,7 @@ fun FormularioInsumoScreen(
             )
 
 
-            Text("Seleccionar Ícono", fontWeight = FontWeight.Bold)
+            Text("Seleccionar Ãcono", fontWeight = FontWeight.Bold)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -128,3 +131,4 @@ fun FormularioInsumoScreen(
         }
     }
 }
+
