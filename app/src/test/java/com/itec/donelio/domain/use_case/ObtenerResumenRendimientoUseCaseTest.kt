@@ -48,7 +48,7 @@ class ObtenerResumenRendimientoUseCaseTest {
 
         // 1 campaña activa
         val campanias = listOf(
-            Campania(id = 1, nombre = "Camp1", cultivoNombre = "Soja", hectareas = 100.0, fechaInicio = timestampHoy, estaActiva = true, ubicacion = "")
+            Campania(id = 1, nombre = "Camp1", cultivoId = 1, cultivoNombre = "Soja", hectareas = 100.0, fechaInicio = timestampHoy, estaActiva = true)
         )
 
         // Inversión: 2 insumos de 100 y 50 de precio, cantidad 2 y 1. Total = 200 + 50 = 250
@@ -59,7 +59,7 @@ class ObtenerResumenRendimientoUseCaseTest {
 
         // Cosecha: 1 cosecha de 10 Tn hoy
         val cosechas = listOf(
-            Cosecha(id = 1, idCampania = 1, cantidad = 10.0, humedad = 12.0, observaciones = "", fecha = timestampHoy, almacen = "")
+            Cosecha(id = 1, idCampania = 1, cantidad = 10.0, fecha = timestampHoy, almacen = "")
         )
 
         // Venta: vende la cosecha 1 a precio 300 / Tn. Total = 10 * 300 = 3000
