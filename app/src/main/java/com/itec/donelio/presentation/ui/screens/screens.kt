@@ -118,6 +118,11 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                             navController.navigate(NavRoute.Login.route) {
                                 popUpTo(0) // Borra todo el historial
                             }
+                        },
+                        onGoToReportes = {
+                            navController.navigate(NavRoute.Reportes.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
