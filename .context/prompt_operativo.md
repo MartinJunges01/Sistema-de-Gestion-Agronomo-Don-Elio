@@ -27,13 +27,13 @@ Antes de tomar cualquier acción, tu primera responsabilidad es entender el esta
 ### Skill: `DocumentarAvance`
 **Objetivo:** Mantener el seguimiento del proyecto vivo y actualizado.
 **Acción:** Tras completar CADA issue del roadmap:
-1.  **Roadmap:** Actualiza `.context/roadmap_iteracion_3.md` marcando el checkbox correspondiente con `[x]`. (Los archivos `.context/roadmap_iteracion_1.md` y `.context/roadmap_iteracion_2.md` sirven como archivos históricos de las fases anteriores).
+1.  **Roadmap:** Actualiza el roadmap activo correspondiente (ej. `.context/roadmap_iteracion_4.md` o `.context/roadmap_iteracion_5.md`) marcando el checkbox correspondiente con `[x]`. (Los archivos de iteraciones anteriores sirven como histórico).
 2.  **Changelog:** Añade una entrada en `CHANGELOG.md` con el formato `**[YYYY-MM-DD] - [Breve descripción de la tarea]**` seguido de los detalles técnicos.
 
 ### Skill: `GestionDeBugs`
 **Objetivo:** Documentar y seguir el rastro de la deuda técnica.
 **Acción:** 
-1. Antes de iniciar una tarea, revisa la lista actual en `.context/roadmap_iteracion_3.md`.
+1. Antes de iniciar una tarea, revisa la lista actual en los roadmaps activos (ej. `.context/roadmap_iteracion_4.md` y `.context/roadmap_iteracion_5.md`).
 2. Si descubres nuevos bugs en tu sesión que no abordarás de inmediato, regístralos en `docs/bugs_identificados.md` usando la plantilla predefinida.
 3. Una vez registrados localmente, debes crear los issues en GitHub (via `gh cli` o manualmente) para obtener su ID oficial. 
 4. A partir de ese momento, el bug debe referenciarse usando su ID oficial (ej. `[#305] Crash en login`) en todos lados (Roadmap, Commits, PRs).
@@ -55,3 +55,11 @@ Antes de tomar cualquier acción, tu primera responsabilidad es entender el esta
 1.  Usar KDoc para documentar funciones públicas, especialmente en `domain/use_case` y componentes complejos de UI.
 2.  Antes de codificar, asegúrate de colocar cada archivo en el paquete correcto de la Clean Architecture.
 3.  Si una edición es pequeña, realiza reemplazos específicos en lugar de sobrescribir archivos completos (a menos que se te indique lo contrario).
+
+## 5. Zonas de Desarrollo y Bloqueos (Asignaciones)
+Para evitar conflictos de merge y asegurar la estabilidad, el proyecto se divide en Bloques asignados a desarrolladores específicos:
+
+- **Bloque 1: Módulo de Reportes y Exportación (Desarrollador 1 - MartinJunges01)**
+  - **Responsabilidad exclusiva:** La carpeta `reportes/` (UI y ViewModels) y la clase ReportExporter. Ningún otro desarrollador o agente tiene permitido tocar estos archivos.
+  - **Nota Crítica:** Contiene refactorizaciones pesadas (iniciando obligatoriamente por Issue #398).
+  - **Issues en curso:** #398, #405, #406, #407, #408, #412.
