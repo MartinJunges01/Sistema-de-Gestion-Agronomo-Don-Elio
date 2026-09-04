@@ -3,6 +3,7 @@ package com.itec.donelio.domain.use_case
 import com.itec.donelio.domain.repository.CampaniaInsumoRepository
 import com.itec.donelio.domain.repository.CampaniaRepository
 import com.itec.donelio.domain.repository.CosechaRepository
+import com.itec.donelio.domain.repository.CosechaNoAlmacenadaRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import java.util.Calendar
@@ -11,14 +12,16 @@ import javax.inject.Inject
 class ObtenerResumenRendimientoUseCase @Inject constructor(
     private val campaniaRepository: CampaniaRepository,
     private val campaniaInsumoRepository: CampaniaInsumoRepository,
-    private val cosechaRepository: CosechaRepository
+    private val cosechaRepository: CosechaRepository,
+    private val cosechaNoAlmacenadaRepository: CosechaNoAlmacenadaRepository
 ) {
     operator fun invoke(): Flow<ResumenRendimiento?> {
         return combine(
             campaniaRepository.getCampaniasActivas(),
             campaniaInsumoRepository.getAllInsumosUtilizados(),
-            cosechaRepository.getAllCosechas()
-        ) { campaniasActivas, todosInsumos, todasCosechas ->
+            cosechaRepository.getAllCosechas(),
+            cosechaNoAlmacenadaRepository.getAllNoAlmacenadas()
+        ) { campaniasActivas, todosInsumos, todasCosechas, todasNoAlmacenadas ->
             if (campaniasActivas.isEmpty()) return@combine null
 
             val idsActivas = campaniasActivas.map { it.id }.toSet()
@@ -48,9 +51,23 @@ class ObtenerResumenRendimientoUseCase @Inject constructor(
             } else {
                 0.0
             }
+            
+            // Filtrar y sumar ingresos por ventas de campañas activas en este mes.
+            val idsCosechasDelMes = cosechasDelMes.map { it.id }.toSet()
+            val ventasDelMes = todasNoAlmacenadas.filter { noAlmacenada ->
+                noAlmacenada.tipo.equals("venta", ignoreCase = true) && noAlmacenada.idCosecha in idsCosechasDelMes
+            }
+            val ingresosBrutos = ventasDelMes.sumOf { venta ->
+                val cosecha = cosechasDelMes.find { it.id == venta.idCosecha }
+                val cantidad = cosecha?.cantidad ?: 0.0
+                cantidad * venta.precio
+            }
+            val balance = ingresosBrutos - capitalInvertido
 
             ResumenRendimiento(
                 capitalInvertido = capitalInvertido,
+                ingresosBrutos = ingresosBrutos,
+                balance = balance,
                 totalCosechado = totalCosechado,
                 costoPorTonelada = costoPorTn
             )

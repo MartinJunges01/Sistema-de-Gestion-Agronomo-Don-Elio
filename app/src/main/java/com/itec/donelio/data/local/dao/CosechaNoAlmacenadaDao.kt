@@ -20,6 +20,9 @@ interface CosechaNoAlmacenadaDao {
            "(SELECT id_cosecha FROM cosechas WHERE id_campania = :campaniaId AND almacen = '')")
     fun getNoAlmacenadasPorCampania(campaniaId: Int): Flow<List<CosechaNoAlmacenadaEntity>>
 
+    @Query("SELECT * FROM cosechas_no_almacenadas")
+    fun getAllNoAlmacenadas(): Flow<List<CosechaNoAlmacenadaEntity>>
+
     @Delete
     suspend fun delete(entity: CosechaNoAlmacenadaEntity): Int
 }
