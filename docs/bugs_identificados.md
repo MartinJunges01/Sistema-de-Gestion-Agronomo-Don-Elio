@@ -1,7 +1,7 @@
 # Bugs Identificados
 
-> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_4.md`).
-> Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo de la Iteración 4, pendiente de subir a GitHub para obtener su ID.
+> Los issues con ID oficial se encuentran en los Roadmaps activos (`.context/roadmap_iteracion_4.md` y `.context/roadmap_iteracion_5.md`).
+> Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo (Iteraciones 4 y 5), pendiente de subir a GitHub para obtener su ID.
 
 ---
 
@@ -115,3 +115,48 @@ Planteamiento estratégico documentado. Con el rediseño del grid 2xN y la persi
 - [ ] Flujo de creación desde Detalle de Campaña no supera 3 clics.
 - [ ] Flujo desde BottomNav no requiere re-seleccionar campaña si ya fue usada.
 - [ ] Documentar en docs/plan_de_pruebas.md los flujos GWT de los 3 escenarios.
+
+---
+
+## [PENDIENTE-ID] NuevaTareaScreen no soporta modo edición
+
+**Severidad:** 🟡 Deuda Técnica / Feature incompleta
+**Módulo:** Tareas / UI
+**Archivo afectado:** `presentation/ui/screen/tarea/NuevaTareaScreen.kt`
+
+**Descripción**
+Al implementar el Issue #410 (ABM completo de Tareas), se identificó que `NuevaTareaScreen` no acepta un `tareaId: Int?` para operar en modo edición. Actualmente solo soporta el flujo de alta. El formulario necesita pre-cargarse con los datos de la tarea existente cuando se navega desde el botón "editar" en `TareasScreen`.
+
+**Causa Raíz (Código)**
+```kotlin
+// NuevaTareaScreen.kt — firma actual (aproximada)
+@Composable
+fun NuevaTareaScreen(
+    campaniaId: Int,
+    onBack: () -> Unit
+) { ... }
+// Falta: tareaId: Int? = null
+```
+
+**Criterios de Aceptación**
+- [ ] El composable acepta `tareaId: Int? = null` como parámetro opcional.
+- [ ] Si `tareaId != null`, el ViewModel carga la tarea existente y pre-rellena todos los campos.
+- [ ] El título de la pantalla cambia: "Nueva Tarea" vs "Editar Tarea".
+- [ ] Test unitario que verifique la carga de datos en modo edición.
+
+---
+
+## [PENDIENTE-ID] Cobertura de tests de ObservacionViewModel insuficiente
+
+**Severidad:** 🔵 Deuda Técnica / Testing
+**Módulo:** Observaciones / ViewModel
+**Archivo afectado:** `presentation/viewmodel/observacion/ObservacionViewModel.kt`
+
+**Descripción**
+Al revisar el módulo de Observaciones para el Issue #404, no se pudo confirmar la existencia de `ObservacionViewModelTest`. La funcionalidad de edición/eliminación de foto agregada en la sesión actual no tiene cobertura de test unitario verificada.
+
+**Criterios de Aceptación**
+- [ ] Crear/completar `ObservacionViewModelTest` con MockK.
+- [ ] Cubrir: `onFotoActualizada()` persiste la nueva URI correctamente.
+- [ ] Cubrir: `onFotoEliminada()` establece `fotoUri = null` en el estado.
+- [ ] Cubrir: guardar observación sin foto no lanza excepción.

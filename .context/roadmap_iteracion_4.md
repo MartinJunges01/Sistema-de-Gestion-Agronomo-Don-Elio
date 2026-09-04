@@ -10,7 +10,7 @@
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS (BUGS BLOQUEANTES)
 - [ ] **[#403] Issue 403:** Botón Guardar permanece deshabilitado al crear insumo nuevo
-- [ ] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
+- [x] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#401] Issue 401:** Botón "Ver detalle →" del Dashboard no navega a Reportes
@@ -297,7 +297,7 @@ El gráfico de evolución histórica (Canvas) actualmente dibuja los puntos pero
 
 ### Fase 1 — Bugs Bloqueantes (Sprint 1)
 1. **[#403]** Botón Guardar insumo deshabilitado (**crítico — regresión del Issue #334**)
-2. **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
+2. [x] **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
 
 ### Fase 2 — Bugs Funcionales (Sprint 1-2)
 3. **[#401]** Botón "Ver detalle" Dashboard sin navegación
