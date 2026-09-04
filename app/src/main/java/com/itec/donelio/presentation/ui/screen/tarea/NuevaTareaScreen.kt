@@ -1,6 +1,9 @@
-package com.itec.donelio.presentation.ui.screen.tarea
+﻿package com.itec.donelio.presentation.ui.screen.tarea
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -48,11 +51,15 @@ fun NuevaTareaScreen(
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
-                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                Text("CampaÃ±a vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 SelectorCampania(
                     campanias = campanias,
                     selectedCampaniaId = state.campaniaId,
@@ -174,10 +181,10 @@ fun NuevaTareaScreen(
                     onCheckedChange = viewModel::onNotificarChange,
                     colors = CheckboxDefaults.colors(checkedColor = AgriVerde)
                 )
-                Text("Activar Notificación de Recordatorio", color = TextoPrincipal)
+                Text("Activar NotificaciÃ³n de Recordatorio", color = TextoPrincipal)
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = viewModel::guardar,
@@ -201,3 +208,4 @@ private fun formatFecha(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
+

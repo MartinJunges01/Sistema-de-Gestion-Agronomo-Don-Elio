@@ -10,11 +10,11 @@
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS (BUGS BLOQUEANTES)
 - [ ] **[#403] Issue 403:** Botón Guardar permanece deshabilitado al crear insumo nuevo
-- [ ] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
+- [x] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#401] Issue 401:** Botón "Ver detalle →" del Dashboard no navega a Reportes
-- [ ] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
+- [x] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
 - [ ] **[#404] Issue 404:** Edición de foto en observaciones sin implementar (Issue #337 sin resolver)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
@@ -298,11 +298,11 @@ El gráfico de evolución histórica (Canvas) actualmente dibuja los puntos pero
 
 ### Fase 1 — Bugs Bloqueantes (Sprint 1)
 1. **[#403]** Botón Guardar insumo deshabilitado (**crítico — regresión del Issue #334**)
-2. **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
+2. [x] **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
 
 ### Fase 2 — Bugs Funcionales (Sprint 1-2)
 3. **[#401]** Botón "Ver detalle" Dashboard sin navegación
-4. **[#402]** Métricas Dashboard incorrectas
+4. [x] **[#402]** Métricas Dashboard incorrectas
 5. **[#404]** Edición de foto en observaciones sin implementar
 
 ### Fase 3 — Fix UI/UX (Sprint 2)

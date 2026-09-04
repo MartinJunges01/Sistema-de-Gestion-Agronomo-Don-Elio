@@ -43,7 +43,8 @@ fun DashboardOperacionesScreen(
     onGoToConfig: () -> Unit,
     onGoToDetalle: (campaniaId: Int) -> Unit,
     onGoToTareas: () -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onGoToReportes: () -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
@@ -60,6 +61,8 @@ fun DashboardOperacionesScreen(
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
+
+    val inicioDeHoy = androidx.compose.runtime.remember { com.itec.donelio.core.utils.getStartOfDay() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +91,7 @@ fun DashboardOperacionesScreen(
             item {
                 SeccionResumenRendimiento(
                     resumen = resumen!!,
-                    onGoToReportes = { /* TODO: Navigate to reportes when implemented */ }
+                    onGoToReportes = onGoToReportes
                 )
             }
         }
@@ -115,9 +118,8 @@ fun DashboardOperacionesScreen(
                     Text("Tareas Próximas", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 }
             }
-            val hoy = System.currentTimeMillis()
             items(tareas, key = { "t_${it.id}" }) { tarea ->
-                val isVencida = tarea.fecha < hoy
+                val isVencida = tarea.fecha < inicioDeHoy
                 val containerColor = if (isVencida) AgriRojoFondo else Color.White
                 val iconColor = if (isVencida) AgriRojoUrgencia else AgriVerde
                 
@@ -245,18 +247,19 @@ private fun SeccionResumenRendimiento(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CardResumen(
-                titulo = "Inversión",
+                titulo = "Capital Invertido",
                 valor = formatMoneda.format(resumen.capitalInvertido),
                 modifier = Modifier.weight(1f)
             )
             CardResumen(
-                titulo = "Cosechado",
-                valor = "${formatTn.format(resumen.totalCosechado)} Tn",
+                titulo = "Ingresos Brutos",
+                valor = formatMoneda.format(resumen.ingresosBrutos),
                 modifier = Modifier.weight(1f)
             )
             CardResumen(
-                titulo = "Costo/Tn",
-                valor = formatMoneda.format(resumen.costoPorTonelada),
+                titulo = "Balance",
+                valor = formatMoneda.format(resumen.balance),
+                valorColor = if (resumen.balance >= 0) AgriVerde else MaterialTheme.colorScheme.error,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -264,7 +267,7 @@ private fun SeccionResumenRendimiento(
 }
 
 @Composable
-private fun CardResumen(titulo: String, valor: String, modifier: Modifier = Modifier) {
+private fun CardResumen(titulo: String, valor: String, valorColor: Color = TextoPrincipal, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -277,7 +280,7 @@ private fun CardResumen(titulo: String, valor: String, modifier: Modifier = Modi
         ) {
             Text(titulo, fontSize = 12.sp, color = TextoSecundario, maxLines = 1)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(valor, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, maxLines = 1)
+            Text(valor, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = valorColor, maxLines = 1)
         }
     }
 }

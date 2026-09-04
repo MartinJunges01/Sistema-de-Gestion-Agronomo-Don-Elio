@@ -1,6 +1,9 @@
-package com.itec.donelio.presentation.ui.screen.cosecha
+﻿package com.itec.donelio.presentation.ui.screen.cosecha
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -58,11 +61,16 @@ fun FormularioCosechaScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(androidx.compose.foundation.rememberScrollState())
+                .imePadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
-                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                Text("CampaÃ±a vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 SelectorCampania(
                     campanias = campanias,
                     selectedCampaniaId = state.campaniaId,
@@ -139,7 +147,7 @@ fun FormularioCosechaScreen(
                 OutlinedTextField(
                     value = state.almacen,
                     onValueChange = viewModel::onAlmacenChange,
-                    label = { Text("Almacén (Silo, Silobolsa)") },
+                    label = { Text("AlmacÃ©n (Silo, Silobolsa)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -163,7 +171,7 @@ fun FormularioCosechaScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = viewModel::guardar,
@@ -191,3 +199,4 @@ private fun formatFecha(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
+
