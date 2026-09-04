@@ -27,7 +27,7 @@ class LoginViewModelTest {
 
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var registroUseCase: RegistroUseCase
-    private lateinit var sessionManager: SessionManager
+    private lateinit var guardarSesionUseCase: com.itec.donelio.domain.use_case.GuardarSesionUseCase
     private lateinit var loginViewModel: LoginViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -37,8 +37,8 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
         loginUseCase = mockk()
         registroUseCase = mockk()
-        sessionManager = mockk(relaxed = true)
-        loginViewModel = LoginViewModel(loginUseCase, registroUseCase, sessionManager)
+        guardarSesionUseCase = mockk(relaxed = true)
+        loginViewModel = LoginViewModel(loginUseCase, registroUseCase, guardarSesionUseCase)
     }
 
     @After
@@ -76,7 +76,7 @@ class LoginViewModelTest {
             assertEquals(null, successState.error)
             
             // Verify session manager was called
-            coVerify(exactly = 1) { sessionManager.saveUserName(usuario.nombre) }
+            coVerify(exactly = 1) { guardarSesionUseCase(usuario.nombre) }
             
             // Should not receive any more items
             cancelAndIgnoreRemainingEvents()
@@ -107,7 +107,7 @@ class LoginViewModelTest {
             assertEquals("Credenciales inválidas", errorState.error)
             
             // Verify session manager was not called
-            coVerify(exactly = 0) { sessionManager.saveUserName(any()) }
+            coVerify(exactly = 0) { guardarSesionUseCase(any()) }
             
             cancelAndIgnoreRemainingEvents()
         }
@@ -137,8 +137,38 @@ class LoginViewModelTest {
             assertEquals("El nombre de usuario no puede estar vacío", errorState.error)
             
             // Verify session manager was not called
-            coVerify(exactly = 0) { sessionManager.saveUserName(any()) }
+            coVerify(exactly = 0) { guardarSesionUseCase(any()) }
             
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `registro with valid data updates state and saves session`() = runTest {
+        // Given
+        val nombre = "Don Elio"
+        val nombreUsuario = "DonElio"
+        val contrasena = "123456"
+
+        coEvery { registroUseCase(nombre, nombreUsuario, contrasena) } returns Unit
+
+        // When
+        loginViewModel.state.test {
+            val initialState = awaitItem()
+            assertFalse(initialState.isLoading)
+
+            loginViewModel.registro(nombre, nombreUsuario, contrasena)
+
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+
+            val successState = awaitItem()
+            assertFalse(successState.isLoading)
+            assertTrue(successState.registroExitoso)
+            assertEquals(null, successState.error)
+
+            coVerify(exactly = 1) { guardarSesionUseCase(nombre) }
+
             cancelAndIgnoreRemainingEvents()
         }
     }
