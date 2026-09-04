@@ -1,5 +1,14 @@
 # Changelog
 
+**[2026-09-01] - [#398, #405, #406, #407, #408, #412] Reportes: Filtros, Gráficos y Comparador Mejorados**
+- **#408 (fix/reportes):** Se corrigió el recorte vertical del PieChart y el desborde de leyendas, forzando aspectRatio(1f) y asegurando ajuste dinámico de altura.
+- **#407 (fix/pdf):** Solucionado el problema de renderizado de caracteres especiales (Ñ, tildes) en la exportación a PDF, actualizando la codificación del archivo y explicitando la fuente sans-serif en PdfDocument.
+- **#412 (feat/reportes):** Se agregaron etiquetas para el eje X en el gráfico Canvas de Evolución Histórica, dibujando los nombres de las campañas bajo cada punto.
+- **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes, incluyendo opciones rápidas ('Este mes', 'Último mes', 'Este año') y un modal con DateRangePicker para selección de fechas personalizadas.
+- **#406 (feat/reportes):** Rediseño del comparador de campañas, reemplazando la lista simple por dos tarjetas lado a lado (Card) y sumando las métricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
+- **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para inyectar y usar ObtenerTodasLasCosechasUseCase y ObtenerTodosLosInsumosUtilizadosUseCase en lugar de repositorios directos, adhiriendo a Clean Architecture.
+
+
 **[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
 - **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
 - **#336 (fix/cosecha):** Se agregó `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) según el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6–9).
