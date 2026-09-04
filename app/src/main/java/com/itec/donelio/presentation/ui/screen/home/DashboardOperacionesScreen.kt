@@ -62,6 +62,8 @@ fun DashboardOperacionesScreen(
         }
     }
 
+    val inicioDeHoy = androidx.compose.runtime.remember { com.itec.donelio.core.utils.getStartOfDay() }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 80.dp),
@@ -116,9 +118,8 @@ fun DashboardOperacionesScreen(
                     Text("Tareas Próximas", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 }
             }
-            val hoy = System.currentTimeMillis()
             items(tareas, key = { "t_${it.id}" }) { tarea ->
-                val isVencida = tarea.fecha < hoy
+                val isVencida = tarea.fecha < inicioDeHoy
                 val containerColor = if (isVencida) AgriRojoFondo else Color.White
                 val iconColor = if (isVencida) AgriRojoUrgencia else AgriVerde
                 
