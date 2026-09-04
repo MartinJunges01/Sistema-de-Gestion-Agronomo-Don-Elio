@@ -443,7 +443,7 @@ fun ReportesRendimientoScreen(
                             if (pieChartData != null) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     PieChart(
-                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).padding(16.dp),
                                         pieChartData = pieChartData!!,
                                         pieChartConfig = PieChartConfig(
                                             isAnimationEnable = true,
@@ -526,7 +526,7 @@ fun ReportesRendimientoScreen(
                             if (desgloseCosechasData != null) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     PieChart(
-                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).padding(16.dp),
                                         pieChartData = desgloseCosechasData!!,
                                         pieChartConfig = PieChartConfig(
                                             isAnimationEnable = true,
