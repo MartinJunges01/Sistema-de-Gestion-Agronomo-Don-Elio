@@ -1,14 +1,24 @@
-﻿**[2026-09-03] - Fix nombre de usuario tras registro (Issue #413)**
+**[2026-09-03] - Fix nombre de usuario tras registro (Issue #413)**
 - Se abstrajo el guardado de sesión en un nuevo GuardarSesionUseCase.
 - Se actualizó el LoginViewModel para invocar este caso de uso tras un registro y login de invitado exitosos.
 - Se añadieron y ajustaron pruebas unitarias en LoginViewModelTest.
 
 # Changelog
 
-**[2026-08-28] - Fix pre-testing: correcciones de UX y validaciÃ³n (#335, #336, #339)**
-- **#335 (fix/cosecha):** Se corrigiÃ³ el flujo de ediciÃ³n de cosechas. `FormularioCosechaScreen` ahora recibe el parÃ¡metro `cosechaId` desde la navegaciÃ³n y muestra el tÃ­tulo dinÃ¡mico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
-- **#336 (fix/cosecha):** Se agregÃ³ `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) segÃºn el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6â€“9).
-- **#339 (fix/campania):** Se agregÃ³ `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
+**[2026-09-01] - [#398, #401, #405, #406, #407, #408, #412, #414] Reportes: Filtros, Gráficos, Comparador y Fixes de Dashboard**
+- **#401 (fix/dashboard):** Se conectó el botón 'Ver detalle' de rendimiento en el Dashboard con la ruta de Reportes.
+- **#414 (fix/dashboard):** Se corrigió el cálculo del umbral de inicio del día para que las tareas de hoy no aparezcan en rojo.
+- **#408 (fix/reportes):** Se corrigió el recorte vertical del PieChart y el desborde de leyendas, forzando aspectRatio(1f) y asegurando ajuste dinámico de altura.
+- **#407 (fix/pdf):** Solucionado el problema de renderizado de caracteres especiales (Ñ, tildes) en la exportación a PDF.
+- **#412 (feat/reportes):** Se agregaron etiquetas para el eje X en el gráfico Canvas de Evolución Histórica, dibujando los nombres de las campañas bajo cada punto.
+- **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes, incluyendo opciones rápidas ('Este mes', 'Último mes', 'Este año') y un modal con DateRangePicker.
+- **#406 (feat/reportes):** Rediseño del comparador de campañas con dos tarjetas lado a lado y métricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
+- **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para inyectar ObtenerTodasLasCosechasUseCase y ObtenerTodosLosInsumosUtilizadosUseCase en lugar de repositorios directos.
+
+**[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
+- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
+- **#336 (fix/cosecha):** Se agregó `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) según el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6–9).
+- **#339 (fix/campania):** Se agregó `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
 
 **[2026-08-28] - Merge Unificado de IteraciÃ³n 3 (Issues #352, #353, #354, #360, #373, #374)**
 - **#352 / #353 / #374**: Reportes avanzados, evoluciÃ³n histÃ³rica por cultivo con Canvas, filtros multicampaÃ±a, y leyenda ajustada en el PieChart.

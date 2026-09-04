@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -144,7 +145,7 @@ fun ReportesRendimientoScreen(
                 val resumenFiltrado by viewModel.resumenFiltrado.collectAsState()
 
                 Text(
-                    "Resumen Productivo-Financiero (Filtros Avanzados)",
+                    "Resumen Productivo-Financiero",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -166,6 +167,101 @@ fun ReportesRendimientoScreen(
                             selected = isSelected,
                             onClick = { viewModel.toggleFiltroCampania(campania.id) },
                             label = { Text(campania.nombre, fontSize = 12.sp) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Filtro Tiempo
+                Text("Filtrar por Fecha:", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                var showDateRangePicker by remember { mutableStateOf(false) }
+                val dateRangePickerState = rememberDateRangePickerState()
+                
+                @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val cal = java.util.Calendar.getInstance()
+                    val hoy = cal.timeInMillis
+                    
+                    val mesActualInicio = cal.apply { set(java.util.Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+                    val mesActualFin = hoy
+                    
+                    val mesPasadoInicio = cal.apply { 
+                        add(java.util.Calendar.MONTH, -1)
+                        set(java.util.Calendar.DAY_OF_MONTH, 1)
+                    }.timeInMillis
+                    val mesPasadoFin = cal.apply { 
+                        set(java.util.Calendar.DAY_OF_MONTH, getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) 
+                    }.timeInMillis
+                    
+                    val anioActualInicio = cal.apply {
+                        timeInMillis = hoy
+                        set(java.util.Calendar.DAY_OF_YEAR, 1)
+                    }.timeInMillis
+                    
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == mesActualInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(mesActualInicio, mesActualFin)) },
+                        label = { Text("Este mes", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == mesPasadoInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(mesPasadoInicio, mesPasadoFin)) },
+                        label = { Text("Último mes", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == anioActualInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(anioActualInicio, hoy)) },
+                        label = { Text("Este año", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = showDateRangePicker,
+                        onClick = { showDateRangePicker = true },
+                        label = { Text("Personalizado", fontSize = 12.sp) },
+                        trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                    )
+                    if (filtroRangoFechas != null) {
+                        FilterChip(
+                            selected = false,
+                            onClick = { viewModel.setFiltroRangoFechas(null) },
+                            label = { Text("Limpiar", fontSize = 12.sp) },
+                            trailingIcon = { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                        )
+                    }
+                }
+                
+                if (showDateRangePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDateRangePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val start = dateRangePickerState.selectedStartDateMillis
+                                val end = dateRangePickerState.selectedEndDateMillis
+                                if (start != null && end != null) {
+                                    viewModel.setFiltroRangoFechas(Pair(start, end))
+                                }
+                                showDateRangePicker = false
+                            }) { Text("Aplicar") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDateRangePicker = false }) { Text("Cancelar") }
+                        }
+                    ) {
+                        DateRangePicker(
+                            state = dateRangePickerState,
+                            title = { Text(text = "Seleccionar Rango", modifier = Modifier.padding(16.dp)) },
+                            headline = { 
+                                Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                    Text("Fechas", style = MaterialTheme.typography.titleLarge)
+                                }
+                            },
+                            showModeToggle = false,
+                            modifier = Modifier.fillMaxWidth().weight(1f)
                         )
                     }
                 }
@@ -260,36 +356,56 @@ fun ReportesRendimientoScreen(
                             // Simple Canvas Line Chart implementation
                             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                                 val maxRend = evolucion.maxOfOrNull { it.rendimientoTnHa } ?: 1.0
-                                val padding = 40f
-                                val width = size.width - padding * 2
-                                val height = size.height - padding * 2
+                                val paddingLeft = 60f
+                                val paddingTop = 40f
+                                val paddingBottom = 120f
+                                val paddingRight = 40f
+                                val width = size.width - paddingLeft - paddingRight
+                                val height = size.height - paddingTop - paddingBottom
                                 val stepX = if (evolucion.size > 1) width / (evolucion.size - 1) else width
+
+                                // Text paint configuration
+                                val textPaint = android.graphics.Paint().apply {
+                                    color = android.graphics.Color.DKGRAY
+                                    textSize = 28f
+                                    isAntiAlias = true
+                                    textAlign = android.graphics.Paint.Align.RIGHT
+                                }
 
                                 // Draw Axes
                                 drawLine(
                                     color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(padding, padding),
-                                    end = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
+                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, paddingTop),
+                                    end = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
                                     strokeWidth = 2f
                                 )
                                 drawLine(
                                     color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(padding, size.height - padding),
-                                    end = androidx.compose.ui.geometry.Offset(size.width - padding, size.height - padding),
+                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
+                                    end = androidx.compose.ui.geometry.Offset(size.width - paddingRight, size.height - paddingBottom),
                                     strokeWidth = 2f
                                 )
 
-                                // Draw Path
+                                // Draw Path and points
                                 val path = androidx.compose.ui.graphics.Path()
                                 evolucion.forEachIndexed { index, punto ->
-                                    val x = padding + index * stepX
-                                    val y = size.height - padding - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
+                                    val x = paddingLeft + index * stepX
+                                    val y = size.height - paddingBottom - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
                                     if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
                                     drawCircle(
                                         color = AgriVerde,
                                         radius = 6f,
                                         center = androidx.compose.ui.geometry.Offset(x, y)
                                     )
+                                    
+                                    // Draw X-axis label (campania nombre)
+                                    val campaniaName = punto.campaniaNombre
+                                    drawContext.canvas.nativeCanvas.apply {
+                                        save()
+                                        rotate(-45f, x, size.height - paddingBottom + 30f)
+                                        drawText(campaniaName, x, size.height - paddingBottom + 30f, textPaint)
+                                        restore()
+                                    }
                                 }
                                 drawPath(
                                     path = path,
@@ -443,7 +559,7 @@ fun ReportesRendimientoScreen(
                             if (pieChartData != null) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     PieChart(
-                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).padding(16.dp),
                                         pieChartData = pieChartData!!,
                                         pieChartConfig = PieChartConfig(
                                             isAnimationEnable = true,
@@ -526,7 +642,7 @@ fun ReportesRendimientoScreen(
                             if (desgloseCosechasData != null) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     PieChart(
-                                        modifier = Modifier.fillMaxWidth().height(200.dp).padding(16.dp),
+                                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).padding(16.dp),
                                         pieChartData = desgloseCosechasData!!,
                                         pieChartConfig = PieChartConfig(
                                             isAnimationEnable = true,
@@ -649,37 +765,55 @@ fun ReportesRendimientoScreen(
                     val rendimientoA = cosechasA.sumOf { it.cantidad }
                     val rendimientoB = cosechasB.sumOf { it.cantidad }
                     
+                    val haA = campaniaA!!.hectareas
+                    val haB = campaniaB!!.hectareas
+                    
+                    val cosechaHaA = if (haA > 0) rendimientoA / haA else 0.0
+                    val cosechaHaB = if (haB > 0) rendimientoB / haB else 0.0
+                    
+                    val costoTnA = if (rendimientoA > 0) costoA / rendimientoA else 0.0
+                    val costoTnB = if (rendimientoB > 0) costoB / rendimientoB else 0.0
+                    
                     val nombreA = campaniaA?.nombre ?: "Campaña A"
                     val nombreB = campaniaB?.nombre ?: "Campaña B"
 
                     Text("Métricas Comparativas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
                     Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                        CardMetricaComparativa(
-                            titulo = "Costo Insumos",
-                            valor1 = "$ %.2f".format(costoA),
-                            valor2 = "$ %.2f".format(costoB),
-                            color = AgriVerde,
+                    
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, AgriVerde),
                             modifier = Modifier.weight(1f)
-                        )
-                        CardMetricaComparativa(
-                            titulo = "Rendimiento",
-                            valor1 = "%.2f".format(rendimientoA),
-                            valor2 = "%.2f".format(rendimientoB),
-                            color = AgriAzul,
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(nombreA, fontWeight = FontWeight.Bold, color = AgriVerde, fontSize = 15.sp)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriVerde.copy(alpha = 0.3f))
+                                Text("Inversión: $ %.2f".format(costoA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: %.2f Tn".format(rendimientoA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: $ %.2f".format(costoTnA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo: $costoHaStringA", fontSize = 12.sp, color = TextoPrincipal)
+                            }
+                        }
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, AgriAzul),
                             modifier = Modifier.weight(1f)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                        CardMetricaComparativa(
-                            titulo = "Costo/Ha",
-                            valor1 = costoHaStringA,
-                            valor2 = costoHaStringB,
-                            color = Color(0xFFb91c1c),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(nombreB, fontWeight = FontWeight.Bold, color = AgriAzul, fontSize = 15.sp)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriAzul.copy(alpha = 0.3f))
+                                Text("Inversión: $ %.2f".format(costoB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: %.2f Tn".format(rendimientoB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: $ %.2f".format(costoTnB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo: $costoHaStringB", fontSize = 12.sp, color = TextoPrincipal)
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }

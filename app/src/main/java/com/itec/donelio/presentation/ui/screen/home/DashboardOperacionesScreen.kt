@@ -43,7 +43,8 @@ fun DashboardOperacionesScreen(
     onGoToConfig: () -> Unit,
     onGoToDetalle: (campaniaId: Int) -> Unit,
     onGoToTareas: () -> Unit,
-    onLogoutSuccess: () -> Unit
+    onLogoutSuccess: () -> Unit,
+    onGoToReportes: () -> Unit
 ) {
     val campanias by viewModel.campanias.collectAsState()
     val tareas by viewModel.tareasPendientes.collectAsState()
@@ -60,6 +61,8 @@ fun DashboardOperacionesScreen(
             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
+
+    val inicioDeHoy = androidx.compose.runtime.remember { com.itec.donelio.core.utils.getStartOfDay() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +91,7 @@ fun DashboardOperacionesScreen(
             item {
                 SeccionResumenRendimiento(
                     resumen = resumen!!,
-                    onGoToReportes = { /* TODO: Navigate to reportes when implemented */ }
+                    onGoToReportes = onGoToReportes
                 )
             }
         }
@@ -115,9 +118,8 @@ fun DashboardOperacionesScreen(
                     Text("Tareas Próximas", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 }
             }
-            val hoy = System.currentTimeMillis()
             items(tareas, key = { "t_${it.id}" }) { tarea ->
-                val isVencida = tarea.fecha < hoy
+                val isVencida = tarea.fecha < inicioDeHoy
                 val containerColor = if (isVencida) AgriRojoFondo else Color.White
                 val iconColor = if (isVencida) AgriRojoUrgencia else AgriVerde
                 

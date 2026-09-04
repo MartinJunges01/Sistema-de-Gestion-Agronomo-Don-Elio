@@ -31,6 +31,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.itec.donelio.domain.use_case.ObtenerTodosLosInsumosUtilizadosUseCase
+import com.itec.donelio.domain.use_case.ObtenerTodasLasCosechasUseCase
+
 /**
  * ViewModel de la pantalla de Reportes y Análisis.
  *
@@ -52,8 +55,8 @@ class ReportesViewModel @Inject constructor(
     private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase,
     private val obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase,
     private val obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase,
-    private val campaniaInsumoRepository: com.itec.donelio.domain.repository.CampaniaInsumoRepository,
-    private val cosechaRepository: com.itec.donelio.domain.repository.CosechaRepository
+    private val obtenerTodosLosInsumosUtilizadosUseCase: ObtenerTodosLosInsumosUtilizadosUseCase,
+    private val obtenerTodasLasCosechasUseCase: ObtenerTodasLasCosechasUseCase
 ) : ViewModel() {
 
     // ──────────────────────────────────────────────
@@ -93,8 +96,8 @@ class ReportesViewModel @Inject constructor(
     val resumenFiltrado: StateFlow<com.itec.donelio.domain.use_case.ResumenRendimiento?> = combine(
         _filtroCampaniasMulti,
         _filtroRangoFechas,
-        campaniaInsumoRepository.getAllInsumosUtilizados(),
-        cosechaRepository.getAllCosechas()
+        obtenerTodosLosInsumosUtilizadosUseCase(),
+        obtenerTodasLasCosechasUseCase()
     ) { filtroCamps, filtroFechas, todosInsumos, todasCosechas ->
         
         // Filtrar insumos
