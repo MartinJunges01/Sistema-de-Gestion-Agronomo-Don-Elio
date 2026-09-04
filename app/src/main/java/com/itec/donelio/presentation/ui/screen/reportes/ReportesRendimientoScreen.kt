@@ -145,7 +145,7 @@ fun ReportesRendimientoScreen(
                 val resumenFiltrado by viewModel.resumenFiltrado.collectAsState()
 
                 Text(
-                    "Resumen Productivo-Financiero (Filtros Avanzados)",
+                    "Resumen Productivo-Financiero",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -167,6 +167,101 @@ fun ReportesRendimientoScreen(
                             selected = isSelected,
                             onClick = { viewModel.toggleFiltroCampania(campania.id) },
                             label = { Text(campania.nombre, fontSize = 12.sp) }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Filtro Tiempo
+                Text("Filtrar por Fecha:", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                var showDateRangePicker by remember { mutableStateOf(false) }
+                val dateRangePickerState = rememberDateRangePickerState()
+                
+                @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+                androidx.compose.foundation.layout.FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val cal = java.util.Calendar.getInstance()
+                    val hoy = cal.timeInMillis
+                    
+                    val mesActualInicio = cal.apply { set(java.util.Calendar.DAY_OF_MONTH, 1) }.timeInMillis
+                    val mesActualFin = hoy
+                    
+                    val mesPasadoInicio = cal.apply { 
+                        add(java.util.Calendar.MONTH, -1)
+                        set(java.util.Calendar.DAY_OF_MONTH, 1)
+                    }.timeInMillis
+                    val mesPasadoFin = cal.apply { 
+                        set(java.util.Calendar.DAY_OF_MONTH, getActualMaximum(java.util.Calendar.DAY_OF_MONTH)) 
+                    }.timeInMillis
+                    
+                    val anioActualInicio = cal.apply {
+                        timeInMillis = hoy
+                        set(java.util.Calendar.DAY_OF_YEAR, 1)
+                    }.timeInMillis
+                    
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == mesActualInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(mesActualInicio, mesActualFin)) },
+                        label = { Text("Este mes", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == mesPasadoInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(mesPasadoInicio, mesPasadoFin)) },
+                        label = { Text("Último mes", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = filtroRangoFechas?.first == anioActualInicio,
+                        onClick = { viewModel.setFiltroRangoFechas(Pair(anioActualInicio, hoy)) },
+                        label = { Text("Este año", fontSize = 12.sp) }
+                    )
+                    FilterChip(
+                        selected = showDateRangePicker,
+                        onClick = { showDateRangePicker = true },
+                        label = { Text("Personalizado", fontSize = 12.sp) },
+                        trailingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                    )
+                    if (filtroRangoFechas != null) {
+                        FilterChip(
+                            selected = false,
+                            onClick = { viewModel.setFiltroRangoFechas(null) },
+                            label = { Text("Limpiar", fontSize = 12.sp) },
+                            trailingIcon = { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                        )
+                    }
+                }
+                
+                if (showDateRangePicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDateRangePicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val start = dateRangePickerState.selectedStartDateMillis
+                                val end = dateRangePickerState.selectedEndDateMillis
+                                if (start != null && end != null) {
+                                    viewModel.setFiltroRangoFechas(Pair(start, end))
+                                }
+                                showDateRangePicker = false
+                            }) { Text("Aplicar") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDateRangePicker = false }) { Text("Cancelar") }
+                        }
+                    ) {
+                        DateRangePicker(
+                            state = dateRangePickerState,
+                            title = { Text(text = "Seleccionar Rango", modifier = Modifier.padding(16.dp)) },
+                            headline = { 
+                                Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                                    Text("Fechas", style = MaterialTheme.typography.titleLarge)
+                                }
+                            },
+                            showModeToggle = false,
+                            modifier = Modifier.fillMaxWidth().weight(1f)
                         )
                     }
                 }
