@@ -55,3 +55,11 @@ Antes de tomar cualquier acción, tu primera responsabilidad es entender el esta
 1.  Usar KDoc para documentar funciones públicas, especialmente en `domain/use_case` y componentes complejos de UI.
 2.  Antes de codificar, asegúrate de colocar cada archivo en el paquete correcto de la Clean Architecture.
 3.  Si una edición es pequeña, realiza reemplazos específicos en lugar de sobrescribir archivos completos (a menos que se te indique lo contrario).
+
+## 5. Zonas de Desarrollo y Bloqueos (Asignaciones)
+Para evitar conflictos de merge y asegurar la estabilidad, el proyecto se divide en Bloques asignados a desarrolladores específicos:
+
+- **Bloque 1: Módulo de Reportes y Exportación (Desarrollador 1 - MartinJunges01)**
+  - **Responsabilidad exclusiva:** La carpeta `reportes/` (UI y ViewModels) y la clase ReportExporter. Ningún otro desarrollador o agente tiene permitido tocar estos archivos.
+  - **Nota Crítica:** Contiene refactorizaciones pesadas (iniciando obligatoriamente por Issue #398).
+  - **Issues en curso:** #398, #405, #406, #407, #408, #412.
