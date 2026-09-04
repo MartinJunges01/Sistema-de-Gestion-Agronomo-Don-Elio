@@ -1,3 +1,8 @@
+**[2026-09-04] - Persistir seleccion de campania en BottomNav (Issue #416)**
+- Se agregó UltimaSeleccionManager (Singleton inyectado por Hilt) para mantener en memoria el ID de la campaña seleccionada.
+- Se refactorizaron InsumoVinculacionViewModel, ObservacionViewModel, CosechaViewModel y TareaViewModel para inyectar UltimaSeleccionManager.
+- Se crearon y modificaron las pruebas unitarias para mockear UltimaSeleccionManager.
+
 **[2026-09-03] - Fix metricas financieras Dashboard (Issue #402)**
 - Se agregó getAllNoAlmacenadas al CosechaNoAlmacenadaRepository.
 - Se modificó ObtenerResumenRendimientoUseCase para calcular ingresos con precio x cantidad de ventas.
@@ -16,7 +21,8 @@
 
 # Changelog
 
-**[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414] Iteración 4: Reportes, Auth, Dashboard y UX**
+**[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414, #416] Iteración 4: Reportes, Auth, Dashboard y UX**
+- **#416 (feat/ux):** UltimaSeleccionManager para persistir campaña seleccionada al navegar desde BottomNav.
 - **#402 (fix/dashboard):** Reglas de negocio de métricas financieras (ingresos, balance) movidas a Domain. Tarjetas actualizadas con colores dinámicos.
 - **#409 (fix/ux):** Scroll vertical y imePadding en formularios para que el teclado no tape campos.
 - **#413 (fix/auth):** GuardarSesionUseCase para persistir nombre de usuario tras registro.
@@ -30,7 +36,7 @@
 - **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para usar Use Cases en lugar de repositorios directos.
 
 **[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
-- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
+- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico \"Editar Cosecha\" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
 - **#336 (fix/cosecha):** Se agregó `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) según el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6–9).
 - **#339 (fix/campania):** Se agregó `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
 

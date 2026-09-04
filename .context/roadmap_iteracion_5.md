@@ -22,7 +22,7 @@
 *(Sin nuevas features reportadas)*
 
 ### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
-- [ ] **[#416] Issue 416:** Conservar campaña seleccionada en formularios al acceder desde BottomNav
+- [x] **[#416] Issue 416:** Conservar campaña seleccionada en formularios al acceder desde BottomNav
 - [ ] **[#415] Issue 415:** Rediseño de DetalleCampaniaScreen con grid 2xN y botones de accion rapida
 - [ ] **[#417] Issue 417:** Planteamiento para reducir clics de acceso a cosechas, observaciones y tareas
 
@@ -38,7 +38,7 @@
 2. [x] **[#413]** Nombre de usuario muestra Invitado (Fix rápido en LoginViewModel)
 
 ### Fase 2 — Mejoras de Flujo y UX (Sprint 2)
-3. **[#416]** Conservar campaña seleccionada (Requiere nuevo UltimaSeleccionManager)
+3. [x] **[#416]** Conservar campaña seleccionada (Requiere nuevo UltimaSeleccionManager)
 4. **[#415]** Rediseño de DetalleCampaniaScreen a grid 2xN
 
 ### Fase 3 — Evaluación Final

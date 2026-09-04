@@ -19,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CosechaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     private val obtenerCosechasNoAlmacenadasUseCase: ObtenerCosechasNoAlmacenadasUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
@@ -27,6 +28,19 @@ class CosechaViewModel @Inject constructor(
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                if (id != null && _campaniaIdSeleccionada.value != id) {
+                    _campaniaIdSeleccionada.value = id
+                }
+            }
+        }
+        _campaniaIdSeleccionada.value?.let { 
+            ultimaSeleccionManager.seleccionarCampania(it) 
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -47,7 +61,10 @@ class CosechaViewModel @Inject constructor(
     }.catch { _errorMessage.value = "Error al cargar cosechas" }
      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun seleccionarCampania(id: Int) { 
+        _campaniaIdSeleccionada.value = id 
+        ultimaSeleccionManager.seleccionarCampania(id)
+    }
     fun clearError() { _errorMessage.value = null }
 
     fun solicitarEliminacion(cosecha: Cosecha) {

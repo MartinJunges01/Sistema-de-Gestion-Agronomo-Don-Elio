@@ -16,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InsumoVinculacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerInsumosVinculadosUseCase: ObtenerInsumosVinculadosUseCase,
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase,
@@ -25,6 +26,21 @@ class InsumoVinculacionViewModel @Inject constructor(
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                if (id != null && _campaniaIdSeleccionada.value != id) {
+                    _campaniaIdSeleccionada.value = id
+                }
+            }
+        }
+        
+        // Si hay una campania seteada desde el nav arg, actualizamos el manager global
+        _campaniaIdSeleccionada.value?.let { 
+            ultimaSeleccionManager.seleccionarCampania(it) 
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -46,6 +62,7 @@ class InsumoVinculacionViewModel @Inject constructor(
 
     fun seleccionarCampania(id: Int) {
         _campaniaIdSeleccionada.value = id
+        ultimaSeleccionManager.seleccionarCampania(id)
     }
 
     fun sincronizarInsumos(campaniaId: Int) {
