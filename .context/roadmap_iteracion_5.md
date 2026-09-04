@@ -1,4 +1,4 @@
-﻿# Roadmap: Iteración 5 — Mejoras de UX, Fixes de Regresión y Cierre de Features
+# Roadmap: Iteración 5 — Mejoras de UX, Fixes de Regresión y Cierre de Features
 
 > **Fuente:** Prueba manual de APK — 2026-09-01
 >
@@ -12,7 +12,7 @@
 *(Sin nuevos bugs reportados)*
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#413] Issue 413:** Nombre de usuario muestra Invitado tras primer registro
+- [x] **[#413] Issue 413:** Nombre de usuario muestra Invitado tras primer registro
 - [ ] **[#414] Issue 414:** Tareas del dia actual se marcan en rojo en el Dashboard
 
 ### ⚪ NIVEL L3 — FIX UI / UX
@@ -35,7 +35,7 @@
 
 ### Fase 1 — Bugs Funcionales (Sprint 1)
 1. **[#414]** Tareas del dia actual se marcan en rojo (Fix rápido en DashboardOperacionesScreen)
-2. **[#413]** Nombre de usuario muestra Invitado (Fix rápido en LoginViewModel)
+2. [x] **[#413]** Nombre de usuario muestra Invitado (Fix rápido en LoginViewModel)
 
 ### Fase 2 — Mejoras de Flujo y UX (Sprint 2)
 3. **[#416]** Conservar campaña seleccionada (Requiere nuevo UltimaSeleccionManager)

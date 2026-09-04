@@ -10,6 +10,8 @@ import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerInsumosVinculadosUseCase
 import com.itec.donelio.domain.use_case.CalcularCostoPorHectareaUseCase
+import com.itec.donelio.domain.use_case.ObtenerTodosLosInsumosUtilizadosUseCase
+import com.itec.donelio.domain.use_case.ObtenerTodasLasCosechasUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +38,7 @@ import org.junit.Test
  * - Issue [#300]: guardia de exportación si no hay campaña seleccionada.
  * - Issue [#301]: desglose de cosechas por destino (Almacenada vs Vendida).
  * - Issue [#302]: comparación real entre campañas (cosechasA / cosechasB).
+ * - Issue [#398]: refactor para usar UseCases en lugar de repositorios directos.
  *
  * Paradigma: Given-When-Then (Dado que... Cuando... Entonces...)
  */
@@ -49,8 +52,8 @@ class ReportesViewModelTest {
     private lateinit var calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
     private lateinit var obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase
     private lateinit var obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase
-    private lateinit var campaniaInsumoRepository: com.itec.donelio.domain.repository.CampaniaInsumoRepository
-    private lateinit var cosechaRepository: com.itec.donelio.domain.repository.CosechaRepository
+    private lateinit var obtenerTodosLosInsumosUtilizadosUseCase: ObtenerTodosLosInsumosUtilizadosUseCase
+    private lateinit var obtenerTodasLasCosechasUseCase: ObtenerTodasLasCosechasUseCase
     private lateinit var viewModel: ReportesViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -68,8 +71,8 @@ class ReportesViewModelTest {
         calcularCostoPorHectareaUseCase = mockk()
         obtenerCultivosUseCase = mockk()
         obtenerEvolucionCultivoUseCase = mockk()
-        campaniaInsumoRepository = mockk()
-        cosechaRepository = mockk()
+        obtenerTodosLosInsumosUtilizadosUseCase = mockk()
+        obtenerTodasLasCosechasUseCase = mockk()
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         every { obtenerInsumosVinculadosUseCase(any<Int>()) } returns flowOf(emptyList())
@@ -78,8 +81,8 @@ class ReportesViewModelTest {
         every { calcularCostoPorHectareaUseCase(any(), any()) } returns 0.0
         every { obtenerCultivosUseCase() } returns flowOf(emptyList())
         every { obtenerEvolucionCultivoUseCase(any<Int>()) } returns flowOf(emptyList())
-        every { campaniaInsumoRepository.getAllInsumosUtilizados() } returns flowOf(emptyList())
-        every { cosechaRepository.getAllCosechas() } returns flowOf(emptyList())
+        every { obtenerTodosLosInsumosUtilizadosUseCase() } returns flowOf(emptyList())
+        every { obtenerTodasLasCosechasUseCase() } returns flowOf(emptyList())
     }
 
     @After
@@ -95,8 +98,8 @@ class ReportesViewModelTest {
         calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase,
         obtenerCultivosUseCase = obtenerCultivosUseCase,
         obtenerEvolucionCultivoUseCase = obtenerEvolucionCultivoUseCase,
-        campaniaInsumoRepository = campaniaInsumoRepository,
-        cosechaRepository = cosechaRepository
+        obtenerTodosLosInsumosUtilizadosUseCase = obtenerTodosLosInsumosUtilizadosUseCase,
+        obtenerTodasLasCosechasUseCase = obtenerTodasLasCosechasUseCase
     )
 
     // ──────────────────────────────────────────────
