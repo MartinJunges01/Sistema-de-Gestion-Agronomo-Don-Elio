@@ -1,7 +1,7 @@
 # Bugs Identificados
 
-> Los issues con ID oficial se encuentran en los Roadmaps activos (`.context/roadmap_iteracion_4.md` y `.context/roadmap_iteracion_5.md`).
-> Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo (Iteraciones 4 y 5), pendiente de subir a GitHub para obtener su ID.
+> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_4.md`).
+> Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo de la Iteración 4, pendiente de subir a GitHub para obtener su ID.
 
 ---
 
@@ -118,45 +118,106 @@ Planteamiento estratégico documentado. Con el rediseño del grid 2xN y la persi
 
 ---
 
-## [PENDIENTE-ID] NuevaTareaScreen no soporta modo edición
+## [PENDIENTE-ID] fix(tareas): campo `confirmar` se resetea a `false` al editar tarea completada
 
-**Severidad:** 🟡 Deuda Técnica / Feature incompleta
-**Módulo:** Tareas / UI
-**Archivo afectado:** `presentation/ui/screen/tarea/NuevaTareaScreen.kt`
+**Severidad:** 🟠 Bug Funcional
+**Módulo:** Tareas / ABM
+**Archivo afectado:** `presentation/viewmodel/tarea/NuevaTareaViewModel.kt`
 
 **Descripción**
-Al implementar el Issue #410 (ABM completo de Tareas), se identificó que `NuevaTareaScreen` no acepta un `tareaId: Int?` para operar en modo edición. Actualmente solo soporta el flujo de alta. El formulario necesita pre-cargarse con los datos de la tarea existente cuando se navega desde el botón "editar" en `TareasScreen`.
+En `NuevaTareaViewModel.guardar()`, modo edición, el campo `confirmar` del objeto `Tarea` se construye con el valor literal `false` en lugar de preservar el estado actual de la tarea cargada. Si el usuario edita el nombre de una tarea ya marcada como completada, el guardado la regresará al estado pendiente.
 
 **Causa Raíz (Código)**
 ```kotlin
-// NuevaTareaScreen.kt — firma actual (aproximada)
-@Composable
-fun NuevaTareaScreen(
-    campaniaId: Int,
-    onBack: () -> Unit
-) { ... }
-// Falta: tareaId: Int? = null
+// NuevaTareaViewModel.kt — modo edición
+val tareaEditada = Tarea(
+    id = tareaId,
+    nombre = current.nombre.trim(),
+    fecha = current.fecha,
+    hora = current.hora,
+    notificar = current.notificar,
+    confirmar = false, // ❌ Hardcodeado — debería preservar el estado original
+    idCampania = current.campaniaId
+)
 ```
 
 **Criterios de Aceptación**
-- [ ] El composable acepta `tareaId: Int? = null` como parámetro opcional.
-- [ ] Si `tareaId != null`, el ViewModel carga la tarea existente y pre-rellena todos los campos.
-- [ ] El título de la pantalla cambia: "Nueva Tarea" vs "Editar Tarea".
-- [ ] Test unitario que verifique la carga de datos en modo edición.
+- [ ] El `NuevaTareaFormState` incluye un campo `confirmar: Boolean` que se carga en `cargarTarea()`.
+- [ ] Al guardar en modo edición, `confirmar` toma el valor del state (no un literal `false`).
+- [ ] Test unitario: editar tarea completada → `confirmar` permanece `true` tras guardar.
 
 ---
 
-## [PENDIENTE-ID] Cobertura de tests de ObservacionViewModel insuficiente
+## [PENDIENTE-ID] ux(observaciones): botón `+` en card de Observaciones navega al listado en vez de al formulario de alta
 
-**Severidad:** 🔵 Deuda Técnica / Testing
-**Módulo:** Observaciones / ViewModel
-**Archivo afectado:** `presentation/viewmodel/observacion/ObservacionViewModel.kt`
+**Severidad:** 🔵 UX / Deuda Técnica
+**Módulo:** Campañas / DetalleCampaniaScreen
+**Archivo afectado:** `presentation/ui/screen/campania/DetalleCampaniaScreen.kt`
 
 **Descripción**
-Al revisar el módulo de Observaciones para el Issue #404, no se pudo confirmar la existencia de `ObservacionViewModelTest`. La funcionalidad de edición/eliminación de foto agregada en la sesión actual no tiene cobertura de test unitario verificada.
+En `CardModuloObservaciones`, el parámetro `onQuickAddClick` recibe el mismo lambda que `onCardClick` (navega al listado de observaciones). Esto rompe la consistencia del grid 2xN del Issue #415, donde el botón `+` debe navegar directamente al formulario de alta precargado con `campaniaId`.
+
+**Causa Raíz (Código)**
+```kotlin
+// DetalleCampaniaScreen.kt
+private fun CardModuloObservaciones(..., onGoToObservaciones: () -> Unit) {
+    ModuloCardBase(
+        onCardClick = onGoToObservaciones,
+        onQuickAddClick = onGoToObservaciones // ❌ Mismo destino que el card principal
+    )
+}
+```
 
 **Criterios de Aceptación**
-- [ ] Crear/completar `ObservacionViewModelTest` con MockK.
-- [ ] Cubrir: `onFotoActualizada()` persiste la nueva URI correctamente.
-- [ ] Cubrir: `onFotoEliminada()` establece `fotoUri = null` en el estado.
-- [ ] Cubrir: guardar observación sin foto no lanza excepción.
+- [ ] El botón `+` en la card de Observaciones abre el diálogo de nueva observación directamente (o navega a la pantalla correspondiente).
+- [ ] El comportamiento es consistente con Tareas, Insumos y Cosechas.
+
+---
+
+## [PENDIENTE-ID] dt(permisos): verificación de permiso de cámara hardcodeada en composable
+
+**Severidad:** 🔵 UX / Deuda Técnica (Arquitectura)
+**Módulo:** Observaciones / Edición
+**Archivo afectado:** `presentation/ui/screen/observacion/ObservacionesScreen.kt`
+
+**Descripción**
+En `DialogEditarObservacion`, el botón "Cámara" verifica el permiso directamente con `ContextCompat.checkSelfPermission()` en el cuerpo del composable. Esta lógica de negocio viola Clean Architecture (la UI no debe contener lógica de permisos) y duplica el manejo que ya existe en el composable `recordarPermisoCamara()`.
+
+**Causa Raíz (Código)**
+```kotlin
+// ObservacionesScreen.kt — dentro del botón Cámara en DialogEditarObservacion
+val isGranted = ContextCompat.checkSelfPermission(
+    context, android.Manifest.permission.CAMERA
+) == PackageManager.PERMISSION_GRANTED
+
+if (isGranted) {
+    accionPendiente?.invoke()  // ❌ Lógica de permisos en composable
+} else {
+    controlPermiso.solicitar()
+}
+```
+
+**Criterios de Aceptación**
+- [ ] La verificación y solicitud de permiso se centraliza en `recordarPermisoCamara()` o en un ViewModel/Manager dedicado.
+- [ ] No hay llamadas directas a `ContextCompat.checkSelfPermission` en composables de pantalla.
+
+---
+
+## [PENDIENTE-ID] test(insumos/tareas): tests unitarios faltantes para AC de issues #403 y #410
+
+**Severidad:** 🔵 Deuda Técnica (Testing)
+**Módulo:** Insumos / Tareas
+**Archivos afectados:**
+- `app/src/test/.../insumo/FormularioInsumoViewModelTest.kt` (no existe)
+- `app/src/test/.../tarea/NuevaTareaViewModelTest.kt` (cobertura de edición faltante)
+
+**Descripción**
+Los Acceptance Criteria de los Issues #403 y #410 definen tests unitarios obligatorios que no fueron incluidos en el PR #436:
+- **#403:** Test: formulario nuevo + tipear nombre y categoría válidos → `isGuardarHabilitado = true`.
+- **#410:** Tests: edición de tarea → datos pre-cargados correctamente; eliminación → tarea removida del estado.
+
+**Criterios de Aceptación**
+- [ ] Crear `FormularioInsumoViewModelTest` con caso Given-When-Then para modo creación.
+- [ ] Agregar casos de edición y eliminación a `NuevaTareaViewModelTest` / `TareaViewModelTest`.
+- [ ] Documentar los nuevos casos GWT en `docs/plan_de_pruebas.md`.
+- [ ] Todos los tests pasan con `./gradlew test`.
