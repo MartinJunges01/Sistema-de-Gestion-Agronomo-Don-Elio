@@ -19,7 +19,7 @@
 - Se actualizó el LoginViewModel para invocar este caso de uso tras un registro y login de invitado exitosos.
 - Se añadieron y ajustaron pruebas unitarias en LoginViewModelTest.
 
-# Changelog
+**[2026-09-08] - Fix DTs pre-merge: preservar confirmar en edicion, callback observaciones, tests (#403, #410, #415)**
 
 **[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414, #416] Iteración 4: Reportes, Auth, Dashboard y UX**
 - **#416 (feat/ux):** UltimaSeleccionManager para persistir campaña seleccionada al navegar desde BottomNav.
@@ -34,6 +34,13 @@
 - **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes con DateRangePicker y accesos rápidos.
 - **#406 (feat/reportes):** Rediseño del comparador de campañas con dos tarjetas lado a lado y métricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
 - **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para usar Use Cases en lugar de repositorios directos.
+- **DT/confirmar (#410):** `NuevaTareaViewModel` — Agrega campo `confirmar` a `NuevaTareaFormState` y lo carga en `cargarTarea()`. `guardar()` en modo edicion usa `current.confirmar` en lugar del literal `false`, evitando que una tarea completada vuelva a pendiente al ser editada.
+- **DT/observaciones (#415):** `DetalleCampaniaScreen` — `CardModuloObservaciones` recibe ahora un callback separado `onGoToNuevaObservacion` para el boton `+`, siendo semanticamente consistente con los otros modulos del grid 2xN.
+- **test(insumos) (#403):** `FormularioInsumoViewModelTest` [NUEVO] — 5 casos GWT cubriendo los AC del Issue #403: estado inicial false, solo nombre/categoria no habilitan, nombre+categoria validos habilitan, borrar nombre deshabilita.
+- **test(tareas) (#410):** `NuevaTareaViewModelTest` — Actualizado para inyectar `editarTareaUseCase` y `obtenerTareaPorIdUseCase`. Agrega VM-T-E1 (precarga datos incluyendo confirmar) y VM-T-E2 (confirmar se preserva al guardar).
+- **docs(pruebas):** `plan_de_pruebas.md` — Casos GWT VM-I-1 a VM-I-5 (#403) y VM-T-E1/E2 (#410) documentados.
+- **docs(roadmap):** `roadmap_iteracion_4.md` — Todos los issues de la Iteracion 4 marcados `[x]` reflejando el estado real de `main`.
+- **docs(bugs):** `bugs_identificados.md` — Conflicto de merge resuelto. Nuevas DTs de las PRs #435 y #436 registradas.
 
 **[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
 - **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico \"Editar Cosecha\" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
@@ -509,6 +516,7 @@
 **[2026-08-21] - Fix UI Detalles y Reportes [#339] [#340]**
 - Se migrÃƒÂ³ el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestaÃƒÂ±as se corten o dividan en varias lÃƒÂ­neas.
 - Se ocultÃƒÂ³ la leyenda por defecto de los grÃƒÂ¡ficos PieChart en ReportesRendimientoScreen y se creÃƒÂ³ una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el grÃƒÂ¡fico.
+
 
 
 
