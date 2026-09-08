@@ -23,6 +23,7 @@ data class NuevaTareaFormState(
     val hora: String = "",
     val notificar: Boolean = true,
     val campaniaId: Int? = null,
+    val confirmar: Boolean = false,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
     val errorHora: String? = null,
@@ -63,6 +64,7 @@ class NuevaTareaViewModel @Inject constructor(
                     fecha = tarea.fecha,
                     hora = tarea.hora,
                     notificar = tarea.notificar,
+                    confirmar = tarea.confirmar,
                     campaniaId = tarea.idCampania
                 ) }
             }
@@ -116,14 +118,14 @@ class NuevaTareaViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             if (tareaId != null) {
-                // Modo Edición
+                // Modo Edición — se preserva el estado de confirmar para no revertir tareas completadas
                 val tareaEditada = com.itec.donelio.domain.model.Tarea(
                     id = tareaId,
                     nombre = current.nombre.trim(),
                     fecha = current.fecha,
                     hora = current.hora,
                     notificar = current.notificar,
-                    confirmar = false, // Mantener estado de completada si se necesita, pero generalmente al editar está activa.
+                    confirmar = current.confirmar,
                     idCampania = current.campaniaId
                 )
                 editarTareaUseCase(tareaEditada).collect { resource ->

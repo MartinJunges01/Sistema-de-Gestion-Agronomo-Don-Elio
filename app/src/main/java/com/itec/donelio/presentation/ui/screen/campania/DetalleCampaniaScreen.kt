@@ -128,7 +128,11 @@ fun DetalleCampaniaScreen(
                         CardModuloCosechas(campaniaId = campania.id, onGoToCosechas = { onGoToCosechas(campania.id) }, onGoToNueva = { onGoToNuevaCosecha(campania.id) })
                     }
                     item {
-                        CardModuloObservaciones(campaniaId = campania.id, onGoToObservaciones = { onGoToObservaciones(campania.id) })
+                        CardModuloObservaciones(
+                            campaniaId = campania.id,
+                            onGoToObservaciones = { onGoToObservaciones(campania.id) },
+                            onGoToNuevaObservacion = { onGoToObservaciones(campania.id) }
+                        )
                     }
                 }
             }
@@ -310,7 +314,11 @@ private fun CardModuloCosechas(campaniaId: Int, onGoToCosechas: () -> Unit, onGo
 }
 
 @Composable
-private fun CardModuloObservaciones(campaniaId: Int, onGoToObservaciones: () -> Unit) {
+private fun CardModuloObservaciones(
+    campaniaId: Int,
+    onGoToObservaciones: () -> Unit,
+    onGoToNuevaObservacion: () -> Unit
+) {
     val vm: ObservacionViewModel = hiltViewModel(key = "card_observaciones_$campaniaId")
     val observaciones by vm.observaciones.collectAsState()
 
@@ -321,7 +329,7 @@ private fun CardModuloObservaciones(campaniaId: Int, onGoToObservaciones: () -> 
         icon = Icons.Default.NoteAlt,
         summary = "${observaciones.size} registradas",
         onCardClick = onGoToObservaciones,
-        onQuickAddClick = onGoToObservaciones // Since adding requires opening the screen dialog
+        onQuickAddClick = onGoToNuevaObservacion
     )
 }
 
