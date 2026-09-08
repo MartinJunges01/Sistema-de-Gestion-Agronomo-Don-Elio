@@ -19,7 +19,7 @@
 - Se actualizó el LoginViewModel para invocar este caso de uso tras un registro y login de invitado exitosos.
 - Se añadieron y ajustaron pruebas unitarias en LoginViewModelTest.
 
-# Changelog
+**[2026-09-08] - Fix DTs pre-merge: preservar confirmar en edicion, callback observaciones, tests (#403, #410, #415)**
 
 **[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414, #416] Iteración 4: Reportes, Auth, Dashboard y UX**
 - **#416 (feat/ux):** UltimaSeleccionManager para persistir campaña seleccionada al navegar desde BottomNav.
@@ -34,9 +34,35 @@
 - **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes con DateRangePicker y accesos rápidos.
 - **#406 (feat/reportes):** Rediseño del comparador de campañas con dos tarjetas lado a lado y métricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
 - **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para usar Use Cases en lugar de repositorios directos.
+- **DT/confirmar (#410):** `NuevaTareaViewModel` — Agrega campo `confirmar` a `NuevaTareaFormState` y lo carga en `cargarTarea()`. `guardar()` en modo edicion usa `current.confirmar` en lugar del literal `false`, evitando que una tarea completada vuelva a pendiente al ser editada.
+- **DT/observaciones (#415):** `DetalleCampaniaScreen` — `CardModuloObservaciones` recibe ahora un callback separado `onGoToNuevaObservacion` para el boton `+`, siendo semanticamente consistente con los otros modulos del grid 2xN.
+- **test(insumos) (#403):** `FormularioInsumoViewModelTest` [NUEVO] — 5 casos GWT cubriendo los AC del Issue #403: estado inicial false, solo nombre/categoria no habilitan, nombre+categoria validos habilitan, borrar nombre deshabilita.
+- **test(tareas) (#410):** `NuevaTareaViewModelTest` — Actualizado para inyectar `editarTareaUseCase` y `obtenerTareaPorIdUseCase`. Agrega VM-T-E1 (precarga datos incluyendo confirmar) y VM-T-E2 (confirmar se preserva al guardar).
+- **docs(pruebas):** `plan_de_pruebas.md` — Casos GWT VM-I-1 a VM-I-5 (#403) y VM-T-E1/E2 (#410) documentados.
+- **docs(roadmap):** `roadmap_iteracion_4.md` — Todos los issues de la Iteracion 4 marcados `[x]` reflejando el estado real de `main`.
+- **docs(bugs):** `bugs_identificados.md` — Conflicto de merge resuelto. Nuevas DTs de las PRs #435 y #436 registradas.
 
 **[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
 - **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico \"Editar Cosecha\" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
+**[2026-09-01] - Iteración 4 / Bloque 3: ABM de Tareas, Edición de Foto, Fix Insumo y Rediseño Campaña (#403, #404, #410, #415)**
+
+- **#403 (fix/insumos):** `FormularioInsumoViewModel` — `evaluarValidaciones()` ahora se llama dentro de `onNombreChange()` y `onCategoriaChange()`. El estado `isGuardarHabilitado` se actualiza en tiempo real al tipear, habilitando el botón "Guardar Insumo" en cuanto los campos son válidos.
+- **#404 (fix/observaciones):** `ObservacionesScreen` — El `AlertDialog` inline (solo texto) fue reemplazado por el composable `DialogEditarObservacion` existente, que ya soporta reemplazar y eliminar la foto desde cámara/galería. El callback `onGuardar` conecta directamente con `listViewModel.editarObservacion`.
+- **#410 (feat/tareas):** ABM completo de Tareas implementado:
+  - `TareasScreen`: Iconos ✏️ (Editar) y 🗑️ (Eliminar) en cada `TarjetaTareaItem` para tareas no completadas. Diálogo de confirmación antes de eliminar.
+  - `NavRoutes.kt`: Ruta `NuevaTarea` extendida con parámetro opcional `tareaId`.
+  - `NuevaTareaViewModel`: Lee `tareaId` desde `SavedStateHandle`, pre-carga el formulario con los datos existentes y bifurca el guardado entre `CrearTareaUseCase` y `EditarTareaUseCase`.
+  - `NuevaTareaScreen`: Título ("Nueva Tarea" / "Editar Tarea") y texto del botón ("Guardar Tarea" / "Guardar Cambios") dinámicos según el modo.
+  - `ObtenerTareaPorIdUseCase` [NUEVO]: Caso de uso para recuperar una tarea por su ID.
+- **#415 (ux/campanias):** `DetalleCampaniaScreen` rediseñada como Dashboard Grid 2xN:
+  - Eliminado el `ScrollableTabRow` y la variable `selectedTab`.
+  - Reemplazado por `LazyVerticalGrid(GridCells.Fixed(2))` con 4 tarjetas de módulo (Tareas, Insumos, Cosechas, Observaciones).
+  - Cada tarjeta (`ModuloCardBase`) muestra: contador de elementos, métrica principal y botón `+` verde para acceso rápido al formulario de Alta precargado con `campaniaId`.
+  - El toque en el cuerpo de la tarjeta navega al listado completo del módulo.
+  - Nuevos callbacks `onGoToNuevaTarea`, `onGoToNuevoInsumo` y `onGoToNuevaCosecha` conectados en `screens.kt`.
+
+
+- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
 - **#336 (fix/cosecha):** Se agregó `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) según el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6–9).
 - **#339 (fix/campania):** Se agregó `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
 
@@ -490,5 +516,7 @@
 **[2026-08-21] - Fix UI Detalles y Reportes [#339] [#340]**
 - Se migrÃƒÂ³ el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestaÃƒÂ±as se corten o dividan en varias lÃƒÂ­neas.
 - Se ocultÃƒÂ³ la leyenda por defecto de los grÃƒÂ¡ficos PieChart en ReportesRendimientoScreen y se creÃƒÂ³ una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el grÃƒÂ¡fico.
+
+
 
 

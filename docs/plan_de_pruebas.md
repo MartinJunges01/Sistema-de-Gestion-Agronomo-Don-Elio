@@ -358,20 +358,44 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 *   **Given:** Existe errorFecha en el state (provocado por un guardar fallido).
 *   **When:** Se llama a onFechaChange(timestamp).
 *   **Then:** errorFecha == null.
+## FormularioInsumoViewModel - Habilitacion de boton guardar en tiempo real (#403)
 
-## Módulo de Navegación Global y UX (Reducción de Clics)
+**VM-I-1: Estado inicial en modo Alta tiene isGuardarHabilitado = false**
+* **Dado** el ViewModel se inicializa sin insumoId (modo Alta).
+* **Cuando** se observa el state.isGuardarHabilitado.
+* **Entonces** debe ser false.
 
-**Test UX-N1: Creación de entidad desde Detalle de Campaña (Grid 2xN)**
-*   **Given:** El usuario se encuentra viendo los detalles de una campaña específica (ej. "Soja 2026").
-*   **When:** El usuario presiona el botón de acceso rápido "Agregar Cosecha" (o Tarea/Insumo/Observación) desde el Grid 2xN.
-*   **Then:** El sistema navega al formulario correspondiente con la campaña "Soja 2026" ya seteada, requiriendo un total máximo de 3 clics para guardar.
+**VM-I-2: Tipear solo nombre no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida") y categoria esta vacia.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
 
-**Test UX-N2: Creación desde BottomNav (Con Caché de Campaña Activa)**
-*   **Given:** El usuario ha interactuado previamente con la campaña "Trigo 2025" (la última selección se guardó en caché/preferencias a través del Repository).
-*   **When:** El usuario navega a "Tareas" usando el menú inferior (BottomNav) y presiona "Nueva Tarea".
-*   **Then:** El formulario se abre con "Trigo 2025" preseleccionada, permitiendo continuar sin selección manual de contexto.
+**VM-I-3: Tipear solo categoria no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onCategoriaChange("Pesticidas") y nombre esta vacio.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
 
-**Test UX-N3: Creación desde BottomNav (Sin Caché Previo)**
-*   **Given:** Es la primera vez que el usuario usa la app o no hay campañas guardadas en caché (ej. acaba de crear su primera campaña pero no ha interactuado con ella).
-*   **When:** Navega a "Tareas" desde BottomNav y presiona "Nueva Tarea".
-*   **Then:** El campo de selección de campaña aparece vacío o pide explícitamente seleccionar una, obligando al usuario a establecer el contexto manualmente.
+**VM-I-4: Tipear nombre y categoria validos habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida Total") y luego onCategoriaChange("Pesticidas").
+* **Entonces** isGuardarHabilitado = true, errorNombre = null, errorCategoria = null.
+
+**VM-I-5: Borrar nombre deshabilita el boton guardar**
+* **Dado** el formulario tiene nombre y categoria validos (isGuardarHabilitado = true).
+* **Cuando** se llama a onNombreChange("") vaciando el nombre.
+* **Entonces** isGuardarHabilitado vuelve a false.
+
+## NuevaTareaViewModel - Modo Edicion y preservacion de confirmar (#410)
+
+**VM-T-E1: Modo edicion precarga datos de la tarea existente incluyendo confirmar**
+* **Dado** existe una Tarea con id=5, nombre="Tarea Completada", confirmar=true en la BD.
+* **Cuando** el ViewModel inicia con tareaId=5 en el SavedStateHandle.
+* **Entonces** state.nombre = "Tarea Completada", state.confirmar = true, state.hora = "09:00".
+
+**VM-T-E2: Editar tarea completada preserva confirmar=true al guardar**
+* **Dado** una Tarea con confirmar=true esta cargada en modo edicion.
+* **Cuando** se modifica el nombre y se llama a guardar().
+* **Entonces** editarTareaUseCase recibe una Tarea con confirmar=true (no reseteado a false).
+
+
+

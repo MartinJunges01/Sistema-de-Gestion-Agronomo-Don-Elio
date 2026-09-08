@@ -150,7 +150,7 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                     val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
                     TareasScreen(
                         campaniaId = campaniaId,
-                        onGoToNuevaTarea = { navController.navigate(NavRoute.NuevaTarea.createRoute(campaniaId)) },
+                        onGoToNuevaTarea = { cId, tId -> navController.navigate(NavRoute.NuevaTarea.createRoute(cId, tId)) },
                         onBack = { navController.popBackStack() }
                     )
                 }
@@ -168,7 +168,10 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                         onGoToTareas = { id -> navController.navigate(NavRoute.Tareas.createRoute(id)) },
                         onGoToInsumos = { id -> navController.navigate(NavRoute.Insumos.createRoute(id)) },
                         onGoToCosechas = { id -> navController.navigate(NavRoute.Cosechas.createRoute(id)) },
-                        onGoToObservaciones = { id -> navController.navigate(NavRoute.Observaciones.createRoute(id)) }
+                        onGoToObservaciones = { id -> navController.navigate(NavRoute.Observaciones.createRoute(id)) },
+                        onGoToNuevaTarea = { id -> navController.navigate(NavRoute.NuevaTarea.createRoute(campaniaId = id)) },
+                        onGoToNuevoInsumo = { _ -> navController.navigate(NavRoute.FormularioInsumo.createRoute()) },
+                        onGoToNuevaCosecha = { id -> navController.navigate(NavRoute.FormularioCosecha.createRoute(campaniaId = id)) }
                     )
                 }
                 composable(
@@ -262,14 +265,22 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                 }
                 composable(
                     route = NavRoute.NuevaTarea.route,
-                    arguments = listOf(navArgument("campaniaId") {
-                        type = NavType.IntType
-                        defaultValue = -1
-                    })
+                    arguments = listOf(
+                        navArgument("campaniaId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        },
+                        navArgument("tareaId") {
+                            type = NavType.IntType
+                            defaultValue = -1
+                        }
+                    )
                 ) { backStackEntry ->
                     val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
+                    val tareaId = backStackEntry.arguments?.getInt("tareaId") ?: -1
                     NuevaTareaScreen(
                         campaniaId = campaniaId,
+                        tareaId = tareaId,
                         onBack = { navController.popBackStack() }
                     )
                 }
