@@ -1,45 +1,64 @@
-# Roadmap: Iteración 5 — Mejoras de UX, Fixes de Regresión y Cierre de Features
+﻿# Roadmap: Iteración 5 — Estabilización Post-Testing, Fixes de UI y Arquitectura de Insumos
 
-> **Fuente:** Prueba manual de APK — 2026-09-01
+> **Fuente:** Verificación manual en emulador — 2026-09-09 (post-merge Iteración 4).
 >
-> **Iteración anterior:** Los issues de .context/roadmap_iteracion_4.md están pendientes de finalización y se asumen en curso. Este roadmap cubre los nuevos hallazgos.
+> **Iteración anterior:** Todos los issues del `roadmap_iteracion_4.md` fueron completados. Este roadmap cubre los hallazgos del testing manual y la deuda técnica pendiente relevada.
 
 ---
 
 ## Checklist de Progreso
 
-### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS (BUGS BLOQUEANTES)
-*(Sin nuevos bugs reportados)*
-
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [x] **[#413] Issue 413:** Nombre de usuario muestra Invitado tras primer registro
-- [ ] **[#414] Issue 414:** Tareas del dia actual se marcan en rojo en el Dashboard
+- [ ] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto cuando es negativo + tarjetas con overflow de texto
+- [ ] **[#438] Issue 438:** Grafico de Evolucion Historica falla visualmente con un solo punto de datos (1 campania)
+- [ ] **[#441] Issue 441:** Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
 
 ### ⚪ NIVEL L3 — FIX UI / UX
-*(Sin nuevos bugs reportados)*
-
-### 🟡 NIVEL L4 — FEATURES NUEVAS
-*(Sin nuevas features reportadas)*
+- [ ] **[#440] Issue 440:** Emojis del campo icono en InsumoEntity se guardan como caracteres corruptos en Room
 
 ### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
-- [x] **[#416] Issue 416:** Conservar campaña seleccionada en formularios al acceder desde BottomNav
-- [ ] **[#415] Issue 415:** Rediseño de DetalleCampaniaScreen con grid 2xN y botones de accion rapida
-- [ ] **[#417] Issue 417:** Planteamiento para reducir clics de acceso a cosechas, observaciones y tareas
-
-### 📋 NIVEL L6 — DEUDA TÉCNICA
-*(Sin deuda técnica reportada)*
+- [ ] **[#439] Issue 439:** Formulario dedicado de Vinculacion de Insumos a Campania desde grid DetalleCampania
 
 ---
 
-## 🗓️ Orden de Ejecución Sugerido
+## Orden de Ejecucion Sugerido
 
 ### Fase 1 — Bugs Funcionales (Sprint 1)
-1. **[#414]** Tareas del dia actual se marcan en rojo (Fix rápido en DashboardOperacionesScreen)
-2. [x] **[#413]** Nombre de usuario muestra Invitado (Fix rápido en LoginViewModel)
+1. **[#441]** Contadores del grid DetalleCampania desactualizados (fix rapido en ViewModels)
+2. **[#437]** Balance incorrecto + overflow tarjetas Dashboard (fix formateador + altura fija)
+3. **[#438]** Grafico Evolucion falla con 1 punto (fix matematico en Canvas)
 
-### Fase 2 — Mejoras de Flujo y UX (Sprint 2)
-3. [x] **[#416]** Conservar campaña seleccionada (Requiere nuevo UltimaSeleccionManager)
-4. **[#415]** Rediseño de DetalleCampaniaScreen a grid 2xN
+### Fase 2 — Fix UX (Sprint 1-2)
+4. **[#440]** Emojis corruptos en Insumos (investigacion + decision arquitectonica)
 
-### Fase 3 — Evaluación Final
-5. **[#417]** Planteamiento para reducir clics (Se valida y cierra al concluir #415 y #416)
+### Fase 3 — Feature (Sprint 2)
+5. **[#439]** Formulario dedicado de Vinculacion de Insumos (feature nueva - requiere nueva ruta + pantalla)
+
+---
+
+## Detalles de Issues
+
+### [#437] Balance del Dashboard y overflow de tarjetas
+**Archivos:** ObtenerResumenRendimientoUseCase.kt, DashboardOperacionesScreen.kt
+**Causa:** NumberFormat AR pone el signo - al final; maxLines=1 trunca antes del signo. Tarjetas sin altura minima fija.
+**AC:** Balance negativo visible, tarjetas de altura uniforme, formato abreviado para valores grandes ($6.3M), test unitario.
+
+### [#438] Grafico Evolucion con 1 punto
+**Archivo:** ReportesRendimientoScreen.kt (Canvas)
+**Causa:** Con size==1, x = paddingLeft + 0*stepX = paddingLeft (extremo izquierdo). paddingBottom=120f excesivo.
+**AC:** Punto centrado con 1 dataset, etiquetas Eje X dentro del Card, sin regresion con 2+ campanias.
+
+### [#439] Formulario Vinculacion Insumos
+**Archivos:** InsumosScreen.kt, DetalleCampaniaScreen.kt, NavRoutes.kt, screens.kt
+**Causa:** Boton + navega al catalogo global en vez de al formulario de vinculacion. El BottomSheet de InsumosScreen ya tiene la logica pero no es accesible por ruta.
+**AC:** Nueva ruta VincularInsumo(campaniaId), buscador de catalogo + campos Cantidad/Precio, campaniaId precargado.
+
+### [#440] Emojis corruptos en Room
+**Archivos:** DataSeederImpl.kt, InsumoEntity.kt, CatalogoInsumosScreen.kt
+**Causa:** Emojis SMP (> U+FFFF) requieren pares sustitutos UTF-16. Archivo puede no estar en UTF-8 correcto.
+**AC:** Investigar encoding, prueba instrumentada, si no soporta SMP migrar a Icons.Default.* de Material.
+
+### [#441] Contadores desactualizados en grid
+**Archivos:** DetalleCampaniaScreen.kt (CardModuloTareas, CardModuloCosechas), TareaViewModel.kt, CosechaViewModel.kt
+**Causa:** Condicion de carrera - StateFlow emite emptyList() antes de que seleccionarCampania actualice el ID.
+**AC:** Tareas muestra N pendientes + M completadas, Cosechas muestra total + Kg, actualizacion en tiempo real.
