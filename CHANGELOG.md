@@ -1,3 +1,9 @@
+**[2026-09-11] - Fix race condition en contadores de Tareas y Cosechas en DetalleCampaniaScreen [#441]**
+- `TareaViewModel`: el `init{}` ahora prioriza el `campaniaId` del `SavedStateHandle`. Si hay ID explícito, notifica al `UltimaSeleccionManager` pero no suscribe su flow, eliminando la race condition donde un ID obsoleto sobreescribía el correcto.
+- `CosechaViewModel`: mismo patrón de prioridad aplicado. Se agrega `sincronizarCampania(id)` para uso desde `DetalleCampaniaScreen` sin contaminar el manager global.
+- `DetalleCampaniaScreen`: `CardModuloCosechas` migra de `seleccionarCampania()` a `sincronizarCampania()`, consistente con `CardModuloTareas`.
+- Se crean tests unitarios GWT en `CosechaViewModelTest` y se amplía `TareaViewModelTest` con casos de la race condition.
+
 **[2026-09-04] - Persistir seleccion de campania en BottomNav (Issue #416)**
 - Se agregó UltimaSeleccionManager (Singleton inyectado por Hilt) para mantener en memoria el ID de la campaña seleccionada.
 - Se refactorizaron InsumoVinculacionViewModel, ObservacionViewModel, CosechaViewModel y TareaViewModel para inyectar UltimaSeleccionManager.

@@ -1,4 +1,4 @@
-﻿# Roadmap: Iteración 5 — Estabilización Post-Testing, Fixes de UI y Arquitectura de Insumos
+# Roadmap: Iteración 5 — Estabilización Post-Testing, Fixes de UI y Arquitectura de Insumos
 
 > **Fuente:** Verificación manual en emulador — 2026-09-09 (post-merge Iteración 4).
 >
@@ -11,7 +11,7 @@
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
 - [ ] **[#438] Issue 438:** Gráfico de Evolución Histórica falla visualmente con un solo punto de datos (1 campaña)
-- [ ] **[#441] Issue 441:** Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
+- [x] **[#441] Issue 441:** Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
 
 ### ⚪ NIVEL L3 — FIX UI / UX
 - [ ] **[#434] Issue 434:** Truncamiento de nombres largos en eje X del gráfico de evolución
