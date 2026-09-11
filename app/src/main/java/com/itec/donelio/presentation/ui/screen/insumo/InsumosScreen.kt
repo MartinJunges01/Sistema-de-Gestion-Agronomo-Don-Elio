@@ -35,25 +35,17 @@ fun InsumosScreen(
     viewModel: InsumoVinculacionViewModel = hiltViewModel(),
     onGoToCatalogo: () -> Unit,
     onGoToCampaniaDetalle: () -> Unit,
+    onGoToVincular: () -> Unit,
     onBack: () -> Unit
 ) {
     val vinculados by viewModel.insumosVinculados.collectAsState()
-    val catalogo by viewModel.catalogo.collectAsState()
     val campanias by viewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
     val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
-    val catalogoMap = remember(catalogo) { catalogo.associateBy { it.id } }
-
-    var mostrarBottomSheet by remember { mutableStateOf(false) }
-    var busqueda by remember { mutableStateOf("") }
-    var cantidad by remember { mutableStateOf("") }
-    var precio by remember { mutableStateOf("") }
-
-    val filtrados = if (busqueda.isBlank()) catalogo else catalogo.filter { it.nombre.contains(busqueda, ignoreCase = true) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
-            title = { Text("Vincular Insumos", fontWeight = FontWeight.Bold) },
+            title = { Text("Insumos", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
@@ -76,7 +68,7 @@ fun InsumosScreen(
 
             item {
                 Button(
-                    onClick = { mostrarBottomSheet = true },
+                    onClick = onGoToVincular,
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
                     shape = RoundedCornerShape(12.dp),
@@ -119,100 +111,6 @@ fun InsumosScreen(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    if (mostrarBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { mostrarBottomSheet = false },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp).verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text("Vincular Insumo a Campaña", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
-
-                OutlinedTextField(
-                    value = busqueda,
-                    onValueChange = { busqueda = it },
-                    label = { Text("Buscar insumo en catálogo") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-                )
-
-                if (filtrados.isEmpty() && busqueda.isNotBlank()) {
-                    Text("El insumo no existe en el catálogo", color = TextoSecundario, fontSize = 14.sp)
-                    OutlinedButton(
-                        onClick = {
-                            mostrarBottomSheet = false
-                            onGoToCatalogo()
-                        },
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) { Text("Crear nuevo insumo") }
-                }
-
-                filtrados.forEach { insumo ->
-                    Surface(
-                        modifier = Modifier.fillMaxWidth().clickable { busqueda = insumo.nombre },
-                        color = if (busqueda == insumo.nombre) AgriVerde.copy(alpha = 0.1f) else Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("${insumo.nombre} (${insumo.categoria})", modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp), color = TextoPrincipal)
-                    }
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = cantidad,
-                        onValueChange = { cantidad = it },
-                        label = { Text("Cantidad") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true
-                    )
-                    OutlinedTextField(
-                        value = precio,
-                        onValueChange = { precio = it },
-                        label = { Text("Precio (opcional)") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
-                    )
-                }
-
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                    val insumoSeleccionado = catalogo.find { it.nombre == busqueda }
-                    Button(
-                        onClick = {
-                            if (insumoSeleccionado != null) {
-                                viewModel.asignarInsumo(
-                                    idInsumo = insumoSeleccionado.id,
-                                    cantidad = cantidad.toDoubleOrNull() ?: 0.0,
-                                    precio = precio.toDoubleOrNull() ?: 0.0
-                                )
-                            }
-                            mostrarBottomSheet = false
-                            busqueda = ""
-                            cantidad = ""
-                            precio = ""
-                        },
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
-                        shape = RoundedCornerShape(12.dp),
-                        enabled = isCampaniaValid && insumoSeleccionado != null && cantidad.isNotBlank()
-                    ) { Text("Vincular a Campaña") }
-
-                    OutlinedButton(
-                        onClick = { onGoToCatalogo() },
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) { Text("Agregar al catálogo") }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

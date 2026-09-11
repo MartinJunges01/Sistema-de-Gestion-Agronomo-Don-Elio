@@ -17,8 +17,8 @@
 - [ ] **[#434] Issue 434:** Truncamiento de nombres largos en eje X del gráfico de evolución
 - [ ] **[#440] Issue 440:** Emojis/íconos se ven rotos al ingresarlos en el formulario de nuevo insumo
 
-### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
-- [ ] **[#439] Issue 439:** Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania
+### 🔵 NIVEL L5 — NUEVOS REQUERIMIENTOS
+- [x] **[#439] Issue 439:** Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania
 
 ---
 ---

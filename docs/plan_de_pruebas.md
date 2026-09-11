@@ -475,3 +475,10 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 * **Dado** valor = 1.000.000.
 * **Cuando** se llama a formatearMoneda(1000000.0).
 * **Entonces** devuelve "`$`1,0M".
+
+## InsumoVinculacionViewModel - Pantalla unificada VincularInsumoScreen (#439)
+
+**VM-I-S1: Asignar insumo utiliza el campaniaId correcto**
+* **Dado** un InsumoVinculacionViewModel con una campaña seleccionada (campaniaId).
+* **Cuando** se llama a signarInsumo(idInsumo, cantidad, precio).
+* **Entonces** llama a AsignarInsumoACampaniaUseCase pasando correctamente el idCampania desde el estado, junto a idInsumo, cantidad y precio.

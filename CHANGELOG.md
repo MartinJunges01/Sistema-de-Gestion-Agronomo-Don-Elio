@@ -1,3 +1,10 @@
+**[2026-09-11] - Formulario dedicado de vinculación de insumos (Pantalla Unificada) [#439]**
+- `VincularInsumoScreen`: Se creó una pantalla nueva independiente para vincular insumos a campañas, unificando la lógica.
+- `InsumosScreen`: Se eliminó el `ModalBottomSheet` interno que tenía duplicada la funcionalidad de vinculación. Ahora se redirige a `VincularInsumoScreen`.
+- `DetalleCampaniaScreen`: En `CardModuloInsumos`, el botón "+" (Nuevo Insumo) ahora navega correctamente al formulario de vinculación `VincularInsumoScreen` de esa campaña (antes navegaba al formulario de crear insumo al catálogo, lo que era un flujo incorrecto).
+- `InsumoVinculacionViewModel`: Actualizado el `init` para que priorice el `campaniaId` de navegación y aplique sincronización segura del manager (evitando posibles race conditions).
+- `InsumoVinculacionViewModelTest`: Agregadas pruebas para verificar que `asignarInsumo` y los UseCases funcionan correctamente con el `campaniaId`.
+
 **[2026-09-11] - Fix balance en Dashboard y overflow de tarjetas [#437]**
 - `DashboardOperacionesScreen`: Se implementó la utilidad `formatearMoneda` para manejar correctamente balances negativos con el signo por delante, utilizando `Locale.US` para el control manual del separador de miles/decimales y formato abreviado (K/M) según magnitud.
 - `CardResumen`: Se aplicó una altura fija de `72.dp` y `TextOverflow.Ellipsis` para garantizar la uniformidad del grid.

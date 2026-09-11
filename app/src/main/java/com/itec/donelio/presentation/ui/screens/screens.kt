@@ -170,7 +170,7 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                         onGoToCosechas = { id -> navController.navigate(NavRoute.Cosechas.createRoute(id)) },
                         onGoToObservaciones = { id -> navController.navigate(NavRoute.Observaciones.createRoute(id)) },
                         onGoToNuevaTarea = { id -> navController.navigate(NavRoute.NuevaTarea.createRoute(campaniaId = id)) },
-                        onGoToNuevoInsumo = { _ -> navController.navigate(NavRoute.FormularioInsumo.createRoute()) },
+                        onVincularInsumo = { id -> navController.navigate(NavRoute.VincularInsumo.createRoute(campaniaId = id)) },
                         onGoToNuevaCosecha = { id -> navController.navigate(NavRoute.FormularioCosecha.createRoute(campaniaId = id)) }
                     )
                 }
@@ -235,6 +235,21 @@ fun DonElioApp(isLoggedIn: Boolean = false) {
                         campaniaId = campaniaId,
                         onGoToCatalogo = { navController.navigate(NavRoute.CatalogoInsumos.createRoute()) },
                         onGoToCampaniaDetalle = { navController.navigate(NavRoute.DetalleCampania.createRoute(campaniaId)) },
+                        onGoToVincular = { navController.navigate(NavRoute.VincularInsumo.createRoute(campaniaId)) },
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(
+                    route = NavRoute.VincularInsumo.route,
+                    arguments = listOf(navArgument("campaniaId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    })
+                ) { backStackEntry ->
+                    val campaniaId = backStackEntry.arguments?.getInt("campaniaId") ?: -1
+                    com.itec.donelio.presentation.ui.screen.insumo.VincularInsumoScreen(
+                        campaniaId = campaniaId,
+                        onGoToCatalogo = { navController.navigate(NavRoute.CatalogoInsumos.createRoute()) },
                         onBack = { navController.popBackStack() }
                     )
                 }

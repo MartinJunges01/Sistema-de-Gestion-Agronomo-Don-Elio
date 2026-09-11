@@ -50,7 +50,7 @@ fun DetalleCampaniaScreen(
     onGoToCosechas: (Int) -> Unit,
     onGoToObservaciones: (Int) -> Unit,
     onGoToNuevaTarea: (Int) -> Unit,
-    onGoToNuevoInsumo: (Int) -> Unit,
+    onVincularInsumo: (Int) -> Unit,
     onGoToNuevaCosecha: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -122,7 +122,7 @@ fun DetalleCampaniaScreen(
                         CardModuloTareas(campaniaId = campania.id, onGoToTareas = { onGoToTareas(campania.id) }, onGoToNueva = { onGoToNuevaTarea(campania.id) })
                     }
                     item {
-                        CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onGoToNuevoInsumo(campania.id) })
+                        CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onVincularInsumo(campania.id) })
                     }
                     item {
                         CardModuloCosechas(campaniaId = campania.id, onGoToCosechas = { onGoToCosechas(campania.id) }, onGoToNueva = { onGoToNuevaCosecha(campania.id) })
@@ -283,7 +283,7 @@ private fun CardModuloInsumos(campaniaId: Int, onGoToInsumos: () -> Unit, onGoTo
     val vinculados by vm.insumosVinculados.collectAsState()
     val total = vinculados.sumOf { it.cantidad * it.precio }
 
-    LaunchedEffect(campaniaId) { vm.seleccionarCampania(campaniaId) }
+    LaunchedEffect(campaniaId) { vm.sincronizarInsumos(campaniaId) }
 
     ModuloCardBase(
         title = "Insumos",

@@ -41,6 +41,11 @@ sealed class NavRoute(val route: String) {
             if (campaniaId != null) "insumos?campaniaId=$campaniaId" else "insumos"
     }
 
+    data object VincularInsumo : NavRoute("vincular_insumo?campaniaId={campaniaId}") {
+        fun createRoute(campaniaId: Int? = null): String =
+            if (campaniaId != null) "vincular_insumo?campaniaId=$campaniaId" else "vincular_insumo"
+    }
+
     data object CatalogoInsumos : NavRoute("catalogo_insumos") { fun createRoute() = route }
     data object CatalogoCultivos : NavRoute("catalogo_cultivos") { fun createRoute() = route }
     data object FormularioInsumo : NavRoute("formulario_insumo") { fun createRoute() = route }
