@@ -9,7 +9,7 @@
 ## Checklist de Progreso
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
+- [x] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
 - [ ] **[#438] Issue 438:** Gráfico de Evolución Histórica falla visualmente con un solo punto de datos (1 campaña)
 - [x] **[#441] Issue 441:** Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
 

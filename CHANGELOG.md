@@ -1,3 +1,8 @@
+**[2026-09-11] - Fix balance en Dashboard y overflow de tarjetas [#437]**
+- `DashboardOperacionesScreen`: Se implementó la utilidad `formatearMoneda` para manejar correctamente balances negativos con el signo por delante, utilizando `Locale.US` para el control manual del separador de miles/decimales y formato abreviado (K/M) según magnitud.
+- `CardResumen`: Se aplicó una altura fija de `72.dp` y `TextOverflow.Ellipsis` para garantizar la uniformidad del grid.
+- Se agregaron las pruebas unitarias correspondientes en `FormatearMonedaTest` con 9 casos GWT.
+
 **[2026-09-11] - Fix race condition en contadores de Tareas y Cosechas en DetalleCampaniaScreen [#441]**
 - `TareaViewModel`: el `init{}` ahora prioriza el `campaniaId` del `SavedStateHandle`. Si hay ID explícito, notifica al `UltimaSeleccionManager` pero no suscribe su flow, eliminando la race condition donde un ID obsoleto sobreescribía el correcto.
 - `CosechaViewModel`: mismo patrón de prioridad aplicado. Se agrega `sincronizarCampania(id)` para uso desde `DetalleCampaniaScreen` sin contaminar el manager global.
