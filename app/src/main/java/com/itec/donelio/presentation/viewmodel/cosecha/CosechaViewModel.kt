@@ -30,15 +30,20 @@ class CosechaViewModel @Inject constructor(
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
-                if (id != null && _campaniaIdSeleccionada.value != id) {
-                    _campaniaIdSeleccionada.value = id
+        val idExplicito = _campaniaIdSeleccionada.value
+        if (idExplicito != null) {
+            // Hay un campaniaId explícito en SavedState: notificar al manager pero
+            // NO suscribir al flow para evitar que un ID obsoleto lo sobreescriba.
+            ultimaSeleccionManager.seleccionarCampania(idExplicito)
+        } else {
+            // Sin ID explícito: usar el manager como fuente de verdad (fallback BottomNav).
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _campaniaIdSeleccionada.value != id) {
+                        _campaniaIdSeleccionada.value = id
+                    }
                 }
             }
-        }
-        _campaniaIdSeleccionada.value?.let { 
-            ultimaSeleccionManager.seleccionarCampania(it) 
         }
     }
 
@@ -65,6 +70,21 @@ class CosechaViewModel @Inject constructor(
         _campaniaIdSeleccionada.value = id 
         ultimaSeleccionManager.seleccionarCampania(id)
     }
+
+    /**
+     * Sincroniza el [campaniaId] externo con el estado interno del ViewModel.
+     * Equivalente a [seleccionarCampania] pero sin notificar al [ultimaSeleccionManager],
+     * ya que se usa desde las tarjetas de [DetalleCampaniaScreen] donde el ID ya es explícito
+     * y no debe alterar la "última selección global" del usuario.
+     *
+     * @param id Identificador de la campaña actualmente visible en pantalla.
+     */
+    fun sincronizarCampania(id: Int) {
+        if (_campaniaIdSeleccionada.value != id) {
+            _campaniaIdSeleccionada.value = id
+        }
+    }
+
     fun clearError() { _errorMessage.value = null }
 
     fun solicitarEliminacion(cosecha: Cosecha) {
