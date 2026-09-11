@@ -66,15 +66,18 @@ class TareaViewModelTest {
         Dispatchers.resetMain()
     }
 
-    /** Construye el ViewModel con un SavedStateHandle configurable por test. */
-    private fun crearViewModel(campaniaIdEnHandle: Int? = null): TareaViewModel {
+    /** Construye el ViewModel con un SavedStateHandle y manager configurables por test. */
+    private fun crearViewModel(
+        campaniaIdEnHandle: Int? = null,
+        managerFlow: kotlinx.coroutines.flow.MutableStateFlow<Int?> = kotlinx.coroutines.flow.MutableStateFlow(null)
+    ): TareaViewModel {
         val handle = if (campaniaIdEnHandle != null) {
             SavedStateHandle(mapOf("campaniaId" to campaniaIdEnHandle))
         } else {
             SavedStateHandle()
         }
         val mockManager = mockk<com.itec.donelio.presentation.state.UltimaSeleccionManager>(relaxed = true)
-        every { mockManager.campaniaIdSeleccionada } returns kotlinx.coroutines.flow.MutableStateFlow(null)
+        every { mockManager.campaniaIdSeleccionada } returns managerFlow
 
         return TareaViewModel(
             savedStateHandle = handle,
@@ -85,6 +88,58 @@ class TareaViewModelTest {
             editarTareaUseCase = editarTareaUseCase,
             eliminarTareaUseCase = eliminarTareaUseCase
         )
+    }
+
+    // ──────────────────────────────────────────────
+    // Fix #441: prioridad SavedState sobre manager
+    // ──────────────────────────────────────────────
+
+    /**
+     * Dado que el ViewModel se crea con campaniaId = 5 en SavedState,
+     * Cuando el UltimaSeleccionManager emite id = 3,
+     * Entonces filtroCampania debe permanecer en 5 (no sobreescribirse).
+     */
+    @Test
+    fun `campaniaId explicito en SavedState no se sobreescribe por el manager`() = runTest {
+        // Given: manager emite ID 3, handle tiene ID 5
+        val managerFlow = kotlinx.coroutines.flow.MutableStateFlow<Int?>(null)
+        viewModel = crearViewModel(campaniaIdEnHandle = 5, managerFlow = managerFlow)
+        advanceUntilIdle()
+
+        // When
+        managerFlow.value = 3
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(
+            "El campaniaId explícito del SavedState no debe sobreescribirse por el manager",
+            5, viewModel.filtroCampania.value
+        )
+    }
+
+    /**
+     * Dado que el ViewModel se crea sin campaniaId en SavedState,
+     * Cuando el UltimaSeleccionManager emite id = 7,
+     * Entonces filtroCampania debe actualizarse a 7 (fallback BottomNav funciona correctamente).
+     */
+    @Test
+    fun `sin campaniaId en SavedState el manager actua como fallback`() = runTest {
+        // Given: crear el ViewModel ANTES de abrir el bloque test{}
+        val managerFlow = kotlinx.coroutines.flow.MutableStateFlow<Int?>(null)
+        viewModel = crearViewModel(campaniaIdEnHandle = null, managerFlow = managerFlow)
+
+        viewModel.filtroCampania.test {
+            awaitItem() // null inicial
+
+            // When
+            managerFlow.value = 7
+            advanceUntilIdle()
+
+            // Then
+            val idActualizado = awaitItem()
+            assertEquals("El manager debe actuar como fallback cuando no hay ID explícito", 7, idActualizado)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     // ──────────────────────────────────────────────

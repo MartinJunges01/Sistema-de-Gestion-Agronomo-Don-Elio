@@ -301,7 +301,7 @@ private fun CardModuloCosechas(campaniaId: Int, onGoToCosechas: () -> Unit, onGo
     val almacenadas by vm.almacenadas.collectAsState()
     val totalAlmacenado = almacenadas.sumOf { it.cantidad }
 
-    LaunchedEffect(campaniaId) { vm.seleccionarCampania(campaniaId) }
+    LaunchedEffect(campaniaId) { vm.sincronizarCampania(campaniaId) }
 
     ModuloCardBase(
         title = "Cosechas",

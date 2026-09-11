@@ -399,3 +399,47 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 
 
 
+
+## CosechaViewModel - Fix Race Condition (#441)
+
+**VM-C-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** campaniaIdSeleccionada permanece en 5.
+
+**VM-C-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** campaniaIdSeleccionada se actualiza a 7.
+
+**VM-C-S3: sincronizarCampania actualiza el id cuando difiere del actual**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(2).
+* **Entonces** campaniaIdSeleccionada emite 2.
+
+**VM-C-S4: sincronizarCampania no emite si el id es igual al actual (idempotente)**
+* **Dado** el ViewModel tiene campaniaId = 4 en SavedState.
+* **Cuando** se llama a sincronizarCampania(4).
+* **Entonces** NO se emite un nuevo evento (expectNoEvents).
+
+**VM-C-S5: isCampaniaValid emite false cuando campaniaId es nulo**
+* **Dado** el ViewModel inicia sin campaniaId válido.
+* **Cuando** se observa isCampaniaValid.
+* **Entonces** isCampaniaValid = false.
+
+**VM-C-S6: isCampaniaValid emite true tras sincronizarCampania con id válido**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(1).
+* **Entonces** isCampaniaValid = true.
+
+## TareaViewModel - Fix Race Condition (#441)
+
+**VM-T-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** filtroCampania permanece en 5.
+
+**VM-T-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** filtroCampania se actualiza a 7.

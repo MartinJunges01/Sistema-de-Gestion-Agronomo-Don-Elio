@@ -28,15 +28,20 @@ class TareaViewModel @Inject constructor(
     val filtroCampania = _filtroCampania.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
-                if (id != null && _filtroCampania.value != id) {
-                    _filtroCampania.value = id
+        val idExplicito = _filtroCampania.value
+        if (idExplicito != null) {
+            // Hay un campaniaId explícito en SavedState: notificar al manager pero
+            // NO suscribir al flow para evitar que un ID obsoleto lo sobreescriba.
+            ultimaSeleccionManager.seleccionarCampania(idExplicito)
+        } else {
+            // Sin ID explícito: usar el manager como fuente de verdad (fallback BottomNav).
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _filtroCampania.value != id) {
+                        _filtroCampania.value = id
+                    }
                 }
             }
-        }
-        _filtroCampania.value?.let { 
-            ultimaSeleccionManager.seleccionarCampania(it) 
         }
     }
 
