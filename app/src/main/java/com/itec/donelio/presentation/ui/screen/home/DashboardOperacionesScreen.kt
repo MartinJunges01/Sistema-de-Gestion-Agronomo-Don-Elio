@@ -220,16 +220,48 @@ private fun formatFecha(timestamp: Long): String {
     return sdf.format(Date(timestamp))
 }
 
+/**
+ * Formatea un valor monetario con el signo negativo siempre al frente
+ * y con formato abreviado para valores grandes, evitando el truncamiento
+ * que produce [NumberFormat.getCurrencyInstance] con la locale es_AR
+ * (que coloca el signo al final del string).
+ *
+ * Ejemplos:
+ * - 6133500.0  → "$6,1M"
+ * - -6133500.0 → "-$6,1M"
+ * - 250000.0   → "$250K"
+ * - -1500.0    → "-$1.500"
+ * - 0.0        → "$0"
+ */
+internal fun formatearMoneda(valor: Double): String {
+    val negativo = valor < 0
+    val absoluto = kotlin.math.abs(valor)
+    // Usamos Locale.US para que el separador de miles sea siempre ',' y el decimal sea '.'
+    // Luego reemplazamos manualmente al formato numérico argentino (punto para miles, coma para decimal)
+    val texto = when {
+        absoluto >= 1_000_000 -> {
+            val millones = absoluto / 1_000_000
+            // Ej: 6.1 -> "6,1M"
+            String.format(java.util.Locale.US, "%.1f", millones).replace(".", ",") + "M"
+        }
+        absoluto >= 1_000 -> {
+            // Truncamos (no redondeamos): 1500 -> 1K, 250000 -> 250K
+            val miles = (absoluto / 1_000).toLong()
+            "${miles}K"
+        }
+        else -> {
+            // Ej: 999 -> "999" | 1500 -> nunca llega aqui (>= 1000)
+            String.format(java.util.Locale.US, "%,.0f", absoluto).replace(",", ".")
+        }
+    }
+    return if (negativo) "-\$$texto" else "\$$texto"
+}
+
 @Composable
 private fun SeccionResumenRendimiento(
     resumen: com.itec.donelio.domain.use_case.ResumenRendimiento,
     onGoToReportes: () -> Unit
 ) {
-    val formatMoneda = java.text.NumberFormat.getCurrencyInstance(Locale("es", "AR"))
-    val formatTn = java.text.DecimalFormat("#,##0.00").apply { 
-        decimalFormatSymbols = java.text.DecimalFormatSymbols(Locale("es", "AR"))
-    }
-
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -248,17 +280,17 @@ private fun SeccionResumenRendimiento(
         ) {
             CardResumen(
                 titulo = "Capital Invertido",
-                valor = formatMoneda.format(resumen.capitalInvertido),
+                valor = formatearMoneda(resumen.capitalInvertido),
                 modifier = Modifier.weight(1f)
             )
             CardResumen(
                 titulo = "Ingresos Brutos",
-                valor = formatMoneda.format(resumen.ingresosBrutos),
+                valor = formatearMoneda(resumen.ingresosBrutos),
                 modifier = Modifier.weight(1f)
             )
             CardResumen(
                 titulo = "Balance",
-                valor = formatMoneda.format(resumen.balance),
+                valor = formatearMoneda(resumen.balance),
                 valorColor = if (resumen.balance >= 0) AgriVerde else MaterialTheme.colorScheme.error,
                 modifier = Modifier.weight(1f)
             )
@@ -269,18 +301,32 @@ private fun SeccionResumenRendimiento(
 @Composable
 private fun CardResumen(titulo: String, valor: String, valorColor: Color = TextoPrincipal, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier,
+        modifier = modifier.height(72.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(titulo, fontSize = 12.sp, color = TextoSecundario, maxLines = 1)
+            Text(
+                text = titulo,
+                fontSize = 11.sp,
+                color = TextoSecundario,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(valor, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = valorColor, maxLines = 1)
+            Text(
+                text = valor,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = valorColor,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
         }
     }
 }

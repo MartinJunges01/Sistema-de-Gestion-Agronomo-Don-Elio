@@ -443,3 +443,35 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 * **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
 * **Cuando** el UltimaSeleccionManager emite id = 7.
 * **Entonces** filtroCampania se actualiza a 7.
+
+## FormatearMoneda - Fix balance Dashboard (#437)
+
+**FM-1: Formatea valor positivo en millones**
+* **Dado** un valor de 6.133.500.
+* **Cuando** se llama a formatearMoneda(6133500.0).
+* **Entonces** devuelve "`$`6,1M".
+
+**FM-2: Formatea valor positivo en miles**
+* **Dado** un valor de 250.000.
+* **Cuando** se llama a formatearMoneda(250000.0).
+* **Entonces** devuelve "`$`250K".
+
+**FM-3: Formatea balance negativo en millones con signo al frente**
+* **Dado** un balance negativo de -6.133.500 (caso del bug reportado).
+* **Cuando** se llama a formatearMoneda(-6133500.0).
+* **Entonces** devuelve "-`$`6,1M" con el signo al frente (no al final como haría NumberFormat de locale es_AR).
+
+**FM-4: Formatea balance negativo en miles**
+* **Dado** un balance de -250.000.
+* **Cuando** se llama a formatearMoneda(-250000.0).
+* **Entonces** devuelve "-`$`250K".
+
+**FM-5: Formatea cero**
+* **Dado** valor = 0.0.
+* **Cuando** se llama a formatearMoneda(0.0).
+* **Entonces** devuelve "`$` ".
+
+**FM-6: Formatea exactamente 1.000.000**
+* **Dado** valor = 1.000.000.
+* **Cuando** se llama a formatearMoneda(1000000.0).
+* **Entonces** devuelve "`$`1,0M".
