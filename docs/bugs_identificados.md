@@ -27,7 +27,21 @@ Breve descripción del problema encontrado...
 
 ## 🔴 DEUDA TÉCNICA PENDIENTE — Iteración 5
 
-*(Sin deuda técnica registrada por el momento)*
+## [PENDIENTE-ID] feat(insumos): edición de insumos vinculados a campaña
+
+**Severidad:** 🔵 UX / Feature Faltante
+**Módulo:** Insumos / CampaniaInsumo
+**Archivo afectado:** `presentation/ui/screen/insumo/InsumosScreen.kt`
+
+**Descripción**
+El listado de insumos vinculados a una campaña solo permite eliminar una vinculación pero no editarla. Si el usuario cometió un error de cantidad o precio debe borrar y volver a vincular. No existe UseCase ni pantalla de edición para la entidad `CampaniaInsumo`.
+
+**Criterios de Aceptación**
+- [ ] Al presionar el ícono de edición en la card de un insumo vinculado, navegar a un formulario pre-cargado con los datos actuales (cantidad, precio).
+- [ ] El formulario reutiliza (o adapta) `VincularInsumoScreen` con modo edición.
+- [ ] Se crea `EditarCampaniaInsumoUseCase` que llama a `CampaniaInsumoRepository.update(...)`.
+- [ ] Tests unitarios del UseCase y ViewModel para el caso de edición.
+- [ ] Test GWT documentado en `docs/plan_de_pruebas.md`.
 
 ---
 

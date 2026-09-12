@@ -4,16 +4,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
+import com.itec.donelio.domain.model.Cosecha
+import com.itec.donelio.domain.use_case.EditarCosechaConVentaUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechaPorIdUseCase
-import com.itec.donelio.domain.use_case.EditarCosechaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaConVentaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaUseCase
+import com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
+import com.itec.donelio.domain.repository.CosechaNoAlmacenadaRepository
+import com.itec.donelio.presentation.state.UltimaSeleccionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,19 +49,31 @@ class FormularioCosechaViewModel @Inject constructor(
     private val registrarConVentaUseCase: RegistrarCosechaConVentaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase,
-    private val editarCosechaUseCase: EditarCosechaUseCase,
-    private val validarDatosCosechaUseCase: com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
+    private val editarCosechaConVentaUseCase: EditarCosechaConVentaUseCase,
+    private val validarDatosCosechaUseCase: ValidarDatosCosechaUseCase,
+    private val cosechaNoAlmacenadaRepository: CosechaNoAlmacenadaRepository,
+    private val ultimaSeleccionManager: UltimaSeleccionManager
 ) : ViewModel() {
 
     private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
     private val initialCosechaId = savedStateHandle.get<Int>("cosechaId").takeIf { it != -1 }
 
-    private val _state = MutableStateFlow(FormularioCosechaState(campaniaId = initialCampaniaId, cosechaId = initialCosechaId))
+    private val _state = MutableStateFlow(
+        FormularioCosechaState(campaniaId = initialCampaniaId, cosechaId = initialCosechaId)
+    )
     val state: StateFlow<FormularioCosechaState> = _state.asStateFlow()
 
     init {
         if (initialCosechaId != null) {
             cargarCosecha(initialCosechaId)
+        } else if (initialCampaniaId == null) {
+            // Fallback: si no se navegó con un campaniaId explícito, usar el Singleton
+            viewModelScope.launch {
+                val idDelManager = ultimaSeleccionManager.campaniaIdSeleccionada.first()
+                if (idDelManager != null) {
+                    _state.update { it.copy(campaniaId = idDelManager) }
+                }
+            }
         }
     }
 
@@ -65,17 +82,22 @@ class FormularioCosechaViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             val cosecha = obtenerCosechaPorIdUseCase(id)
             if (cosecha != null) {
-                // Si es almacenada (almacen no es blank) o venta (almacen en blanco pero sin detalle - esto lo asume la vista)
-                _state.update { 
+                val esAlmacenada = cosecha.almacen.isNotBlank()
+                // Si es una venta/reserva, buscar los detalles de la tabla secundaria
+                val detalle = if (!esAlmacenada) {
+                    cosechaNoAlmacenadaRepository.getPorCosechaId(cosecha.id)
+                } else null
+
+                _state.update {
                     it.copy(
                         isLoading = false,
                         cantidad = cosecha.cantidad.toString(),
                         fecha = cosecha.fecha,
                         almacen = cosecha.almacen,
-                        almacenado = cosecha.almacen.isNotBlank(),
-                        campaniaId = cosecha.idCampania
-                        // NOTA: Para ventas/no almacenadas, en un futuro se debería cargar el detalle de CosechaNoAlmacenada
-                        // Por simplicidad del bug, el form asume almacenada o blanquea si no.
+                        almacenado = esAlmacenada,
+                        campaniaId = cosecha.idCampania,
+                        tipo = detalle?.tipo ?: "",
+                        precio = if (detalle?.precio != null && detalle.precio > 0) detalle.precio.toString() else ""
                     )
                 }
             } else {
@@ -88,18 +110,26 @@ class FormularioCosechaViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onAlmacenadoChange(value: Boolean) { _state.update { it.copy(almacenado = value) } }
+
     fun onCantidadChange(value: String) {
-        val error = if (value.isNotBlank() && (value.toDoubleOrNull() == null || value.toDouble() <= 0))
+        // Normalizar: reemplazar coma por punto para aceptar ambos separadores decimales
+        val normalizado = value.replace(",", ".")
+        val error = if (normalizado.isNotBlank() && (normalizado.toDoubleOrNull() == null || normalizado.toDouble() <= 0))
             "Cantidad inválida" else null
-        _state.update { it.copy(cantidad = value, errorCantidad = error) }
+        _state.update { it.copy(cantidad = normalizado, errorCantidad = error) }
     }
+
     fun onFechaChange(timestamp: Long) { _state.update { it.copy(fecha = timestamp, errorFecha = null) } }
     fun onAlmacenChange(value: String) { _state.update { it.copy(almacen = value) } }
     fun onTipoChange(value: String) { _state.update { it.copy(tipo = value) } }
+
     fun onPrecioChange(value: String) {
-        val error = if (value.isNotBlank() && value.toDoubleOrNull() == null) "Precio inválido" else null
-        _state.update { it.copy(precio = value, errorPrecio = error) }
+        // Normalizar: reemplazar coma por punto para aceptar ambos separadores decimales
+        val normalizado = value.replace(",", ".")
+        val error = if (normalizado.isNotBlank() && normalizado.toDoubleOrNull() == null) "Precio inválido" else null
+        _state.update { it.copy(precio = normalizado, errorPrecio = error) }
     }
+
     fun onCampaniaChange(id: Int) { _state.update { it.copy(campaniaId = id, errorCampania = null) } }
 
     fun guardar() {
@@ -140,30 +170,41 @@ class FormularioCosechaViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             try {
                 if (current.cosechaId != null) {
-                    val cosechaEditada = com.itec.donelio.domain.model.Cosecha(
+                    // Modo edición: usar el UseCase que actualiza ambas tablas
+                    val cosechaEditada = Cosecha(
                         id = current.cosechaId,
                         idCampania = campaniaId,
                         cantidad = cantidad,
                         fecha = current.fecha,
                         almacen = if (current.almacenado) current.almacen.trim() else ""
                     )
-                    editarCosechaUseCase(cosechaEditada)
+                    editarCosechaConVentaUseCase(
+                        cosecha = cosechaEditada,
+                        esAlmacenada = current.almacenado,
+                        tipo = current.tipo.trim(),
+                        precioTotal = current.precio.toDoubleOrNull() ?: 0.0
+                    )
                 } else {
+                    // Modo creación
                     if (current.almacenado) {
                         registrarCosechaUseCase(cantidad, current.fecha, current.almacen.trim(), campaniaId)
                     } else {
-                        registrarConVentaUseCase(cantidad, current.fecha, campaniaId, current.tipo.trim(), current.precio.toDoubleOrNull() ?: 0.0)
+                        registrarConVentaUseCase(
+                            cantidad, current.fecha, campaniaId,
+                            current.tipo.trim(),
+                            current.precio.toDoubleOrNull() ?: 0.0
+                        )
                     }
                 }
                 _state.update { it.copy(isLoading = false, guardadoExitoso = true) }
             } catch (e: Exception) {
                 val msg = e.message ?: "Error al guardar"
-                _state.update { 
+                _state.update {
                     it.copy(
-                        isLoading = false, 
+                        isLoading = false,
                         errorCantidad = if (msg.contains("cantidad", ignoreCase = true)) msg else null,
                         errorGeneral = if (!msg.contains("cantidad", ignoreCase = true)) msg else null
-                    ) 
+                    )
                 }
             }
         }

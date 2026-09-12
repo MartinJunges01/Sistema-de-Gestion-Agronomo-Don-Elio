@@ -53,15 +53,12 @@ class ObtenerResumenRendimientoUseCase @Inject constructor(
             }
             
             // Filtrar y sumar ingresos por ventas de campañas activas en este mes.
+            // El precio almacenado en CosechaNoAlmacenada es el PRECIO TOTAL de la venta (no unitario).
             val idsCosechasDelMes = cosechasDelMes.map { it.id }.toSet()
             val ventasDelMes = todasNoAlmacenadas.filter { noAlmacenada ->
                 noAlmacenada.tipo.equals("venta", ignoreCase = true) && noAlmacenada.idCosecha in idsCosechasDelMes
             }
-            val ingresosBrutos = ventasDelMes.sumOf { venta ->
-                val cosecha = cosechasDelMes.find { it.id == venta.idCosecha }
-                val cantidad = cosecha?.cantidad ?: 0.0
-                cantidad * venta.precio
-            }
+            val ingresosBrutos = ventasDelMes.sumOf { venta -> venta.precio }
             val balance = ingresosBrutos - capitalInvertido
 
             ResumenRendimiento(

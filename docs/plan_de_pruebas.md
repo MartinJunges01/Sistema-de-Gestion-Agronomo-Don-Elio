@@ -482,3 +482,47 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 * **Dado** un InsumoVinculacionViewModel con una campaña seleccionada (campaniaId).
 * **Cuando** se llama a signarInsumo(idInsumo, cantidad, precio).
 * **Entonces** llama a AsignarInsumoACampaniaUseCase pasando correctamente el idCampania desde el estado, junto a idInsumo, cantidad y precio.
+
+## FormularioCosechaViewModel - Fixes verificacion manual (fix/cosechas-dashboard-vinculacion)
+
+**FC-1: Fallback al Singleton cuando no llega campaniaId por navegacion**
+* **Dado** un FormularioCosechaViewModel instanciado SIN campaniaId en SavedStateHandle y el UltimaSeleccionManager tiene el id=5.
+* **Cuando** se inicializa el ViewModel.
+* **Entonces** state.campaniaId es 5 (tomado del Singleton).
+
+**FC-2: campaniaId explicito tiene prioridad sobre el Singleton**
+* **Dado** un FormularioCosechaViewModel instanciado con campaniaId=3 en SavedStateHandle y el Singleton tiene id=9.
+* **Cuando** se inicializa el ViewModel.
+* **Entonces** state.campaniaId es 3 (no 9).
+
+**FC-3: Sanitizacion de coma en onCantidadChange**
+* **Dado** el usuario ingresa "1234,56" en el campo cantidad.
+* **Cuando** se llama a onCantidadChange("1234,56").
+* **Entonces** state.cantidad es "1234.56" (coma reemplazada por punto) y errorCantidad es null.
+
+**FC-4: Sanitizacion de coma en onPrecioChange**
+* **Dado** el usuario ingresa "100.000,50" en el campo precio.
+* **Cuando** se llama a onPrecioChange("100.000,50").
+* **Entonces** state.precio es "100.000.50" y no hay errorPrecio.
+
+**FC-5: Carga de detalle de venta al editar cosecha no almacenada**
+* **Dado** una cosecha con almacen="" y un CosechaNoAlmacenada asociado (tipo="venta", precio=150000).
+* **Cuando** se inicializa el ViewModel con cosechaId de esa cosecha.
+* **Entonces** state.tipo es "venta" y state.precio es "150000.0" y state.almacenado es false.
+
+**FC-6: Guardado edicion de cosecha no almacenada actualiza ambas tablas**
+* **Dado** un ViewModel en modo edicion con cosechaId y state valido (no almacenada).
+* **Cuando** se llama a guardar().
+* **Entonces** se invoca EditarCosechaConVentaUseCase con esAlmacenada=false, tipo y precioTotal correctos.
+
+## ObtenerResumenRendimientoUseCase - Fix calculo Dashboard
+
+**DR-1: Ingresos brutos = suma de precios totales de ventas (no cantidad x precio)**
+* **Dado** una venta de 1000 Tn con precio total = 150000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos == 150000.0 (NO 150.000.000).
+
+**DR-2: Solo las ventas (tipo="venta") suman a ingresos brutos**
+* **Dado** una CosechaNoAlmacenada con tipo="reserva" y precio=50000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos == 0 (no incluye reservas).
