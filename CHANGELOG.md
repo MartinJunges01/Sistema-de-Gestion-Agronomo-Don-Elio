@@ -1,3 +1,18 @@
+**[2026-09-12] - fix(cosechas): edición completa, fallback Singleton y corrección cálculo Dashboard [out-of-scope #437, #439, #441]**
+
+> ⚠️ Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
+
+- `ObtenerResumenRendimientoUseCase`: Corregido el cálculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
+- `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operación la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la edición de cosechas tipo Venta solo actualizaba la tabla base.
+- `FormularioCosechaViewModel`:
+  - Fallback al `UltimaSeleccionManager`: si el formulario se abre sin `campaniaId` explícito (ej. botón FAB global), ahora pre-carga la última campaña seleccionada (homologa comportamiento con Tareas e Insumos — out-of-scope de #441).
+  - Sanitización de decimales: `onCantidadChange` y `onPrecioChange` normalizan coma `,` a punto `.` antes de parsear, evitando que valores como `1234,5` se guarden como `0`.
+  - `cargarCosecha()` ahora también consulta `CosechaNoAlmacenadaRepository` para pre-cargar `tipo` y `precio` al editar cosechas no almacenadas (out-of-scope de #439).
+- `FormularioCosechaScreen`: Label del campo precio cambiado de `"Precio (Opcional)"` a `"Precio Total de Venta ($)"` para claridad del usuario.
+- `VincularInsumoScreen`: Agrega `SelectorCampania` en la parte superior para mostrar y permitir cambiar la campaña destino. Listado de insumos refactorizado a `LazyColumn` para scroll nativo (out-of-scope de #439).
+- `docs/bugs_identificados.md`: Registrada DT [PENDIENTE-ID] para la edición de insumos vinculados (feature no implementada originalmente).
+- `docs/plan_de_pruebas.md`: Agregados casos GWT FC-1 a FC-6 y DR-1, DR-2.
+
 **[2026-09-11] - Formulario dedicado de vinculación de insumos (Pantalla Unificada) [#439]**
 - `VincularInsumoScreen`: Se creó una pantalla nueva independiente para vincular insumos a campañas, unificando la lógica.
 - `InsumosScreen`: Se eliminó el `ModalBottomSheet` interno que tenía duplicada la funcionalidad de vinculación. Ahora se redirige a `VincularInsumoScreen`.
