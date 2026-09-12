@@ -148,31 +148,7 @@ val tareaEditada = Tarea(
 
 ---
 
-## [PENDIENTE-ID] ux(observaciones): botón `+` en card de Observaciones navega al listado en vez de al formulario de alta
 
-**Severidad:** 🔵 UX / Deuda Técnica
-**Módulo:** Campañas / DetalleCampaniaScreen
-**Archivo afectado:** `presentation/ui/screen/campania/DetalleCampaniaScreen.kt`
-
-**Descripción**
-En `CardModuloObservaciones`, el parámetro `onQuickAddClick` recibe el mismo lambda que `onCardClick` (navega al listado de observaciones). Esto rompe la consistencia del grid 2xN del Issue #415, donde el botón `+` debe navegar directamente al formulario de alta precargado con `campaniaId`.
-
-**Causa Raíz (Código)**
-```kotlin
-// DetalleCampaniaScreen.kt
-private fun CardModuloObservaciones(..., onGoToObservaciones: () -> Unit) {
-    ModuloCardBase(
-        onCardClick = onGoToObservaciones,
-        onQuickAddClick = onGoToObservaciones // ❌ Mismo destino que el card principal
-    )
-}
-```
-
-**Criterios de Aceptación**
-- [ ] El botón `+` en la card de Observaciones abre el diálogo de nueva observación directamente (o navega a la pantalla correspondiente).
-- [ ] El comportamiento es consistente con Tareas, Insumos y Cosechas.
-
----
 
 ## [PENDIENTE-ID] dt(permisos): verificación de permiso de cámara hardcodeada en composable
 
