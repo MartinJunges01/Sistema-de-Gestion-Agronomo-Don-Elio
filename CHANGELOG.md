@@ -1,4 +1,12 @@
-**[2026-09-12] - fix(cosechas): edición completa, fallback Singleton y corrección cálculo Dashboard [out-of-scope #437, #439, #441]**
+**[2026-09-12] - fix(ui): estandarización de números, contadores de campaña y cálculo de ingresos [out-of-scope]**
+
+> ⚠️ Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
+
+- `ObtenerResumenRendimientoUseCase`: Se cambió el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
+- `TareaViewModel` y `DetalleCampaniaScreen`: El card del menú ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
+- `DetalleCampaniaScreen` (Cosechas): El card ahora contabiliza **todas** las cosechas (almacenadas + ventas/reservas) en lugar de solo las almacenadas. Además, la unidad de medida se cambió de "Kg" a "Tn" para mantener consistencia.
+- `FormatUtils` **[NUEVO]**: Se creó un utilitario centralizado con la configuración `Locale("es", "AR")` para asegurar que en toda la aplicación los miles se separen con punto (`.`) y los decimales con coma (`,`).
+- `DashboardOperacionesScreen`, `CosechasScreen`, `InsumosScreen`: Refactorizados para usar `FormatUtils` en lugar de formatos de texto ad-hoc.
 
 > ⚠️ Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
 

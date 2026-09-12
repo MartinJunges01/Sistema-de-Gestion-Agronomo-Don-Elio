@@ -526,3 +526,25 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃ¡n incluid
 * **Dado** una CosechaNoAlmacenada con tipo="reserva" y precio=50000.
 * **Cuando** se calcula el resumen mensual.
 * **Entonces** ingresosBrutos == 0 (no incluye reservas).
+
+## Fixes adicionales Verificacion Manual 2 (fix/cosechas-dashboard-vinculacion)
+
+**FC-7: Formateo de cantidades y monedas estandarizado (es_AR)**
+* **Dado** la pantalla de Insumos, Cosechas o Dashboard.
+* **Cuando** se muestran valores como 1234.56.
+* **Entonces** se muestran con el formato "1.234,56".
+
+**DC-1: El menú de Detalle de Campaña muestra todas las tareas**
+* **Dado** una campaña con 1 tarea pendiente y 1 completada.
+* **Cuando** se visualiza el CardModuloTareas.
+* **Entonces** dice "1 pendientes" y "1 completadas" (antes decía 0 completadas).
+
+**DC-2: El menú de Detalle de Campaña muestra todas las cosechas**
+* **Dado** una campaña con 1 cosecha almacenada de 5 Tn y 1 venta de 2 Tn.
+* **Cuando** se visualiza el CardModuloCosechas.
+* **Entonces** el total cosechado muestra 7 Tn (antes solo mostraba las almacenadas) y usa sufijo "Tn" en lugar de "Kg".
+
+**DR-3: El cálculo de ingresos detecta precio mayor a 0 en lugar de la palabra "venta"**
+* **Dado** una cosecha no almacenada cuyo tipo es "Reserva Especial" y precio = 50000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos incluye esos 50000.
