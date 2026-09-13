@@ -62,9 +62,9 @@ class ObtenerResumenRendimientoUseCaseTest {
             Cosecha(id = 1, idCampania = 1, cantidad = 10.0, fecha = timestampHoy, almacen = "")
         )
 
-        // Venta: vende la cosecha 1 a precio 300 / Tn. Total = 10 * 300 = 3000
+        // Venta: vende la cosecha 1 a un precio total de 3000
         val ventas = listOf(
-            CosechaNoAlmacenada(id = 1, idCosecha = 1, tipo = "Venta", precio = 300.0)
+            CosechaNoAlmacenada(id = 1, idCosecha = 1, tipo = "Venta", precio = 3000.0)
         )
 
         every { campaniaRepository.getCampaniasActivas() } returns flowOf(campanias)

@@ -250,7 +250,7 @@ internal fun formatearMoneda(valor: Double): String {
             String.format(locale, "%,.0f", absoluto)
         }
     }
-    return if (negativo) "- $ $texto" else "$ $texto"
+    return if (negativo) "-$$texto" else "$$texto"
 }
 
 @Composable
