@@ -255,3 +255,29 @@ Los Acceptance Criteria de los Issues #403 y #410 definen tests unitarios obliga
 - [ ] Agregar casos de ediciÃ³n y eliminaciÃ³n a `NuevaTareaViewModelTest` / `TareaViewModelTest`.
 - [ ] Documentar los nuevos casos GWT en `docs/plan_de_pruebas.md`.
 - [ ] Todos los tests pasan con `./gradlew test`.
+
+## ?? DEUDA TÉCNICA RESUELTA — Iteración 5
+
+## [RESUELTO-EN-PR-446] fix(dashboard): cálculo de ingresos dependiente de texto libre
+**Severidad:** ?? Bug Funcional
+**Módulo:** Dashboard
+**Descripción:** El dashboard filtraba ingresos buscando la palabra "venta" exacta. Dado que el campo es libre, causaba que ventas reales no se sumaran.
+**Solución:** Se modificó `ObtenerResumenRendimientoUseCase` para sumar cualquier cosecha no almacenada con `precio > 0.0`.
+
+## [RESUELTO-EN-PR-446] fix(ui): formato numérico inconsistente y fallas con decimales
+**Severidad:** ?? Baja / UX
+**Módulo:** UI Global
+**Descripción:** El separador de miles aparecía como coma, y el usuario no podía ingresar comas decimales sin que se borrara el valor.
+**Solución:** Se creó `FormatUtils` con Locale("es", "AR") para toda la UI, y se añadió lógica de reemplazo automático de comas por puntos en los TextFields.
+
+## [RESUELTO-EN-PR-446] fix(campania): contadores de DetalleCampania no incluyen tareas completadas ni todas las cosechas
+**Severidad:** ?? Media / UX
+**Módulo:** Campaña
+**Descripción:** El contador de tareas de la campaña siempre mostraba 0 tareas completadas porque se alimentaba de un flow filtrado. El contador de cosechas solo sumaba las almacenadas e indicaba "Kg".
+**Solución:** Se inyectó el TareaRepository para tener un flow puro `todasLasTareas` y se corrigió el CardModuloCosechas para sumar todas y usar "Tn".
+
+## [RESUELTO-EN-PR-446] feat(cosechas): edición incompleta de ventas
+**Severidad:** ?? Media / UX
+**Módulo:** Cosechas
+**Descripción:** Al editar una cosecha tipo "venta", los campos de tipo y precio no se precargaban ni se guardaban los cambios.
+**Solución:** Se creó `EditarCosechaConVentaUseCase` para recuperar y guardar simultáneamente en ambas tablas.
