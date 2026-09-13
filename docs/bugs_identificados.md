@@ -27,6 +27,21 @@ Breve descripción del problema encontrado...
 
 ## 🔴 DEUDA TÉCNICA PENDIENTE — Iteración 5
 
+## [PENDIENTE-ID] refactor(reportes): extender FormatUtils a pestaña de reportes y exportación PDF/Excel
+**Severidad:** 🟢 Baja / Consistencia Visual
+**Módulo:** Reportes
+**Descripción:** Se implementó `FormatUtils` para estandarizar los separadores de miles (punto) y decimales (coma). Sin embargo, aún falta aplicar esta utilidad en las visualizaciones de reportes y en las funciones de exportación (PDF/Excel) para que respeten la misma configuración regional.
+
+## [PENDIENTE-ID] fix(ui): errores de codificación (caracteres especiales/ñ/tildes) en formularios
+**Severidad:** 🟡 Media / UX
+**Módulo:** UI Global
+**Descripción:** En algunos formularios e inputs del sistema los caracteres especiales del español (como tildes y la letra 'ñ') se guardan o se visualizan incorrectamente (aparecen como `?` o corrompidos). Es necesario revisar la configuración de encoding (`UTF-8`) tanto en los TextFields como en la persistencia local de Room.
+
+## [PENDIENTE-ID] feat(insumos): acumular cantidad al vincular un insumo repetido en lugar de reemplazarlo
+**Severidad:** 🔵 Feature Faltante / UX
+**Módulo:** Insumos / CampaniaInsumo
+**Descripción:** Actualmente, si se intenta vincular un insumo que ya está asociado a la misma campaña, el sistema simplemente sobreescribe el registro anterior. El comportamiento esperado debería ser que se acumule/sume la nueva cantidad ingresada a la cantidad preexistente.
+
 ## [PENDIENTE-ID] feat(insumos): edición de insumos vinculados a campaña
 
 **Severidad:** 🔵 UX / Feature Faltante
