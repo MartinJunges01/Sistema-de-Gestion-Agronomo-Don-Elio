@@ -236,21 +236,25 @@ private fun formatFecha(timestamp: Long): String {
 internal fun formatearMoneda(valor: Double): String {
     val negativo = valor < 0
     val absoluto = kotlin.math.abs(valor)
-    val locale = java.util.Locale("es", "AR")
+    // Usamos Locale.US para que el separador de miles sea siempre ',' y el decimal sea '.'
+    // Luego reemplazamos manualmente al formato numérico argentino (punto para miles, coma para decimal)
     val texto = when {
         absoluto >= 1_000_000 -> {
             val millones = absoluto / 1_000_000
-            String.format(locale, "%.1fM", millones)
+            // Ej: 6.1 -> "6,1M"
+            String.format(java.util.Locale.US, "%.1f", millones).replace(".", ",") + "M"
         }
         absoluto >= 1_000 -> {
+            // Truncamos (no redondeamos): 1500 -> 1K, 250000 -> 250K
             val miles = (absoluto / 1_000).toLong()
-            String.format(locale, "%,dK", miles)
+            "${miles}K"
         }
         else -> {
-            String.format(locale, "%,.0f", absoluto)
+            // Ej: 999 -> "999" | 1500 -> nunca llega aqui (>= 1000)
+            String.format(java.util.Locale.US, "%,.0f", absoluto).replace(",", ".")
         }
     }
-    return if (negativo) "-$$texto" else "$$texto"
+    return if (negativo) "-\$$texto" else "\$$texto"
 }
 
 @Composable
