@@ -1687,3 +1687,12 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃƒÂƒÃ�
 ### Insumos UI
 - **UI-I1 (Issue #440):** Given el formulario de Nuevo Insumo / When se tipean caracteres Unicode/Emojis complejos / Then se insertan y guardan correctamente en la BD local.
 
+
+
+## Pruebas de Estabilizacion - DTs #447, #449, #450
+
+### Tareas y Permisos (DTs)
+- **VM-T-E1/E2 (Issue #447/#410):** Given tarea completada en BD / When editamos en NuevaTareaViewModel / Then 'confirmar' se precarga en true y se mantiene true al guardar.
+- **UI-O-1 (Issue #449):** Given permiso concedido / When boton Camara en dialogo de edicion / Then lanza la camara directamente sin dialogos extra.
+- **UI-O-2 (Issue #449):** Given permiso denegado / When boton Camara en dialogo / Then se invoca el control de permisos de la UI (recordarPermisoCamara).
+
