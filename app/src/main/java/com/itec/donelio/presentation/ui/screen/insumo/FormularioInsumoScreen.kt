@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.presentation.ui.screen.insumo
+package com.itec.donelio.presentation.ui.screen.insumo
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -34,7 +34,7 @@ fun FormularioInsumoScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val iconosDisponibles = listOf("ðŸŒ±", "ðŸ’§", "ðŸ’Š", "â›½", "âš™ï¸", "ðŸšœ", "ðŸ“¦", "ðŸ§ª", "ðŸŒ¾", "âœ‚ï¸")
+    val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.guardadoExitoso) {
