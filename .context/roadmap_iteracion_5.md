@@ -2,7 +2,8 @@
 
 > **Fuente:** Verificación manual en emulador — 2026-09-09 (post-merge Iteración 4).
 >
-> **Iteración anterior:** Todos los issues del oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del testing manual y la deuda técnica pendiente relevada.
+> **Iteración anterior:** Todos los issues del 
+oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del testing manual y la deuda técnica pendiente relevada.
 
 ---
 
@@ -165,7 +166,8 @@ Actualmente, el botón + en el módulo Insumos (dentro de Detalle de Campaña) n
 
 ## 🛠️ Reglas de Desarrollo
 
-1. **Ramas:** Cada issue se trabaja en su propia rama (eature/, ix/, efactor/).
+1. **Ramas:** Cada issue se trabaja en su propia rama (eature/, ix/, 
+efactor/).
 2. **Commits:** Convención de Conventional Commits (ej: ix(dashboard): formato de moneda en balance).
 3. **PRs:** Cada rama se integra vía Pull Request a main.
 4. **Tests:** Cada cambio en UseCase o ViewModel requiere actualizar su test unitario correspondiente.
