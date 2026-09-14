@@ -21,7 +21,8 @@ class TareaViewModel @Inject constructor(
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val confirmarTareaUseCase: ConfirmarTareaUseCase,
     private val editarTareaUseCase: EditarTareaUseCase,
-    private val eliminarTareaUseCase: EliminarTareaUseCase
+    private val eliminarTareaUseCase: EliminarTareaUseCase,
+    private val tareaRepository: com.itec.donelio.domain.repository.TareaRepository
 ) : ViewModel() {
 
     private val _filtroCampania = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
@@ -74,6 +75,32 @@ class TareaViewModel @Inject constructor(
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
             
+            tareas.map { tarea ->
+                val nombreCampania = campaniasList.find { it.id == tarea.idCampania }?.nombre ?: "Sin Campaña"
+                val isVencida = tarea.fecha < hoy
+                TareaUiModel(tarea, isVencida, nombreCampania)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val todasLasTareas: StateFlow<List<TareaUiModel>> = combine(
+        _filtroCampania,
+        campanias
+    ) { id, campaniasList -> Pair(id, campaniasList) }
+    .flatMapLatest { (id, campaniasList) ->
+        val flowTareas = if (id != null && id != -1) {
+            tareaRepository.getTareasByCampania(id)
+        } else {
+            tareaRepository.getAllTareas()
+        }
+        flowTareas.map { tareas ->
+            val hoy = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
             tareas.map { tarea ->
                 val nombreCampania = campaniasList.find { it.id == tarea.idCampania }?.nombre ?: "Sin Campaña"
                 val isVencida = tarea.fecha < hoy

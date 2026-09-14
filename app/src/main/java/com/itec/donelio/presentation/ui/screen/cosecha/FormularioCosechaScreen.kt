@@ -1,4 +1,4 @@
-﻿package com.itec.donelio.presentation.ui.screen.cosecha
+package com.itec.donelio.presentation.ui.screen.cosecha
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -162,7 +162,7 @@ fun FormularioCosechaScreen(
                 OutlinedTextField(
                     value = state.precio,
                     onValueChange = viewModel::onPrecioChange,
-                    label = { Text("Precio (Opcional)") },
+                    label = { Text("Precio Total de Venta ($)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = state.errorPrecio != null,

@@ -100,7 +100,7 @@ fun InsumosScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(nombreInsumo, fontWeight = FontWeight.Bold, color = if (vinculado.insumoActivo) TextoPrincipal else TextoSecundario)
                                 Text(
-                                    "${"%.2f".format(vinculado.cantidad)} × $ ${"%,.2f".format(vinculado.precio)} = $ ${"%,.2f".format(total)}",
+                                    "${com.itec.donelio.presentation.util.FormatUtils.formatCantidad(vinculado.cantidad)} × ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(vinculado.precio)} = ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(total)}",
                                     fontSize = 12.sp,
                                     color = if (vinculado.precio > 0) AgriVerde else TextoSecundario
                                 )
