@@ -28,7 +28,7 @@ oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del t
 
 ---
 
-## [#437] Issue 437: Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
+## [#437] Issue 437: Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto (Resuelto en PR #444)
 
 **Severidad:** 🟠 Bug Funcional / 🔵 Mejora UX
 **Módulo:** Dashboard / Resumen Financiero
@@ -40,10 +40,10 @@ oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del t
 El formato NumberFormat.getCurrencyInstance(Locale("es", "AR")) posiciona el signo negativo al final del string (ej. $ 6.133.500,00-). Al combinarse con maxLines = 1 en la tarjeta de resumen, el signo se trunca, mostrando visualmente un número positivo incorrecto. Adicionalmente, valores numéricos grandes generan saltos de línea imprevistos, provocando que las tarjetas tengan alturas irregulares y rompan la estética del grid.
 
 **Acceptance Criteria**
-- [ ] El Balance se calcula y muestra correctamente con el signo negativo visible (ej: -.133.500).
-- [ ] Las 3 tarjetas de resumen mantienen siempre la misma altura uniforme.
-- [ ] Para valores iguales o superiores a .000.000, se aplica formato abreviado (ej: $6,3M) o AutoSizeText.
-- [ ] Incluye test unitario verificando cálculos con balance negativo.
+- [x] El Balance se calcula y muestra correctamente con el signo negativo visible (ej: -.133.500).
+- [x] Las 3 tarjetas de resumen mantienen siempre la misma altura uniforme.
+- [x] Para valores iguales o superiores a .000.000, se aplica formato abreviado (ej: $6,3M) o AutoSizeText.
+- [x] Incluye test unitario verificando cálculos con balance negativo.
 
 ---
 
@@ -63,7 +63,7 @@ Cuando un cultivo tiene exactamente una (1) campaña finalizada, la matemática 
 
 ---
 
-## [#441] Issue 441: Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
+## [#441] Issue 441: Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan (Resuelto en PR #443)
 
 **Severidad:** 🟠 Bug Funcional
 **Módulo:** Campañas / Detalle
@@ -76,9 +76,9 @@ Cuando un cultivo tiene exactamente una (1) campaña finalizada, la matemática 
 En el grid de 2 columnas de Detalles de la Campaña, las tarjetas de "Tareas" y "Cosechas" muestran 0 completadas o 0 registradas a pesar de existir datos reales en Room. Esto se debe a una condición de carrera: el StateFlow emite una lista vacía antes de que seleccionarCampania() termine de ejecutar y recupere los datos por campaniaId.
 
 **Acceptance Criteria**
-- [ ] La tarjeta de Tareas muestra dinámicamente N pendientes y M completadas.
-- [ ] La tarjeta de Cosechas totaliza correctamente la cantidad de registros y la suma de kilogramos netos.
-- [ ] La UI reacciona en tiempo real si ocurren cambios (altas/bajas) en tareas o cosechas.
+- [x] La tarjeta de Tareas muestra dinámicamente N pendientes y M completadas.
+- [x] La tarjeta de Cosechas totaliza correctamente la cantidad de registros y la suma de kilogramos netos.
+- [x] La UI reacciona en tiempo real si ocurren cambios (altas/bajas) en tareas o cosechas.
 
 ---
 ---
@@ -126,7 +126,7 @@ Room y la Base de Datos nativa soportan emojis, tal como se verifica con los reg
 
 ---
 
-## [#439] Issue 439: Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania
+## [#439] Issue 439: Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania (Resuelto en PR #445)
 
 **Severidad:** 🔵 Mejora Funcional
 **Módulo:** Insumos / Navegación
@@ -140,10 +140,10 @@ Room y la Base de Datos nativa soportan emojis, tal como se verifica con los reg
 Actualmente, el botón + en el módulo Insumos (dentro de Detalle de Campaña) navega erróneamente a FormularioInsumoScreen, un formulario diseñado para crear nuevos agroquímicos en el catálogo base. El flujo correcto debe invocar una interfaz exclusiva para *vincular* (asignar dosis y costos) un insumo existente a la campaña seleccionada. Esta vista de "vinculación" ya reside como un BottomSheet en InsumosScreen, pero carece de un acceso directo vía URL/NavRoute.
 
 **Acceptance Criteria**
-- [ ] Incorporación de la ruta NavRoutes.VincularInsumo(campaniaId: Int) al NavHost general.
-- [ ] El botón + en DetalleCampaniaScreen redirecciona hacia la vista de Vinculación con el campaniaId pre-cargado.
-- [ ] El formulario despliega el catálogo disponible e incluye los campos "Cantidad Aplicada" y "Costo Unitario".
-- [ ] Se mantiene inalterado el botón flotante (o engranaje) de gestión del catálogo global.
+- [x] Incorporación de la ruta NavRoutes.VincularInsumo(campaniaId: Int) al NavHost general.
+- [x] El botón + en DetalleCampaniaScreen redirecciona hacia la vista de Vinculación con el campaniaId pre-cargado.
+- [x] El formulario despliega el catálogo disponible e incluye los campos "Cantidad Aplicada" y "Costo Unitario".
+- [x] Se mantiene inalterado el botón flotante (o engranaje) de gestión del catálogo global.
 
 ---
 ---
