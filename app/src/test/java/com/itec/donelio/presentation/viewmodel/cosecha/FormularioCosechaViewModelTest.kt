@@ -35,8 +35,10 @@ class FormularioCosechaViewModelTest {
     private lateinit var registrarConVentaUseCase: RegistrarCosechaConVentaUseCase
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
     private lateinit var obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase
-    private lateinit var editarCosechaUseCase: EditarCosechaUseCase
+    private lateinit var editarCosechaConVentaUseCase: com.itec.donelio.domain.use_case.EditarCosechaConVentaUseCase
     private lateinit var validarDatosCosechaUseCase: com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
+    private lateinit var cosechaNoAlmacenadaRepository: com.itec.donelio.domain.repository.CosechaNoAlmacenadaRepository
+    private lateinit var ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
     private lateinit var viewModel: FormularioCosechaViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -48,19 +50,26 @@ class FormularioCosechaViewModelTest {
         registrarConVentaUseCase = mockk()
         obtenerCampaniasUseCase = mockk()
         obtenerCosechaPorIdUseCase = mockk()
-        editarCosechaUseCase = mockk()
+        editarCosechaConVentaUseCase = mockk()
         validarDatosCosechaUseCase = mockk()
+        cosechaNoAlmacenadaRepository = mockk()
+        ultimaSeleccionManager = mockk()
+        
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         coEvery { obtenerCosechaPorIdUseCase(any()) } returns null
         every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Success
+        every { ultimaSeleccionManager.campaniaIdSeleccionada } returns kotlinx.coroutines.flow.MutableStateFlow(null)
+        
         viewModel = FormularioCosechaViewModel(
             savedStateHandle = SavedStateHandle(),
             registrarCosechaUseCase = registrarCosechaUseCase,
             registrarConVentaUseCase = registrarConVentaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
-            editarCosechaUseCase = editarCosechaUseCase,
-            validarDatosCosechaUseCase = validarDatosCosechaUseCase
+            editarCosechaConVentaUseCase = editarCosechaConVentaUseCase,
+            validarDatosCosechaUseCase = validarDatosCosechaUseCase,
+            cosechaNoAlmacenadaRepository = cosechaNoAlmacenadaRepository,
+            ultimaSeleccionManager = ultimaSeleccionManager
         )
     }
 
@@ -192,8 +201,10 @@ class FormularioCosechaViewModelTest {
             registrarConVentaUseCase = registrarConVentaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
-            editarCosechaUseCase = editarCosechaUseCase,
-            validarDatosCosechaUseCase = validarDatosCosechaUseCase
+            editarCosechaConVentaUseCase = editarCosechaConVentaUseCase,
+            validarDatosCosechaUseCase = validarDatosCosechaUseCase,
+            cosechaNoAlmacenadaRepository = cosechaNoAlmacenadaRepository,
+            ultimaSeleccionManager = ultimaSeleccionManager
         )
         advanceUntilIdle()
 
