@@ -358,7 +358,7 @@ fun ReportesRendimientoScreen(
                                 val maxRend = evolucion.maxOfOrNull { it.rendimientoTnHa } ?: 1.0
                                 val paddingLeft = 60f
                                 val paddingTop = 40f
-                                val paddingBottom = 120f
+                                val paddingBottom = 80f
                                 val paddingRight = 40f
                                 val width = size.width - paddingLeft - paddingRight
                                 val height = size.height - paddingTop - paddingBottom
@@ -389,7 +389,7 @@ fun ReportesRendimientoScreen(
                                 // Draw Path and points
                                 val path = androidx.compose.ui.graphics.Path()
                                 evolucion.forEachIndexed { index, punto ->
-                                    val x = paddingLeft + index * stepX
+                                    val x = if (evolucion.size == 1) paddingLeft + width / 2 else paddingLeft + index * stepX
                                     val y = size.height - paddingBottom - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
                                     if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
                                     drawCircle(
