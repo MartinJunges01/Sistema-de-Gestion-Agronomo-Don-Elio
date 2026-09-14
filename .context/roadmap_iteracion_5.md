@@ -47,7 +47,7 @@ El formato NumberFormat.getCurrencyInstance(Locale("es", "AR")) posiciona el sig
 
 ---
 
-## [#438] Issue 438: Gráfico de Evolución Histórica falla visualmente con un solo punto de datos
+## [#438] Issue 438: Gráfico de Evolución Histórica falla visualmente con un solo punto de datos (Resuelto en PR #452)
 
 **Severidad:** 🟠 Bug Funcional
 **Módulo:** Reportes / Gráficos Canvas
@@ -57,9 +57,9 @@ El formato NumberFormat.getCurrencyInstance(Locale("es", "AR")) posiciona el sig
 Cuando un cultivo tiene exactamente una (1) campaña finalizada, la matemática del Canvas divide por (evolucion.size - 1), asignando un stepX igual al ancho total (width). Esto ocasiona que el único punto de datos se dibuje arrinconado en el extremo izquierdo. Además, existe un paddingBottom de 120f que resulta excesivo y desplaza las etiquetas fuera de los límites del Card.
 
 **Acceptance Criteria**
-- [ ] Cuando existe solo 1 campaña, el punto verde se dibuja perfectamente centrado de forma horizontal y vertical.
-- [ ] Las etiquetas del Eje X se mantienen dentro de los bordes visibles del Card.
-- [ ] El comportamiento actual con 2 o más campañas se mantiene sin regresiones.
+- [x] Cuando existe solo 1 campaña, el punto verde se dibuja perfectamente centrado de forma horizontal y vertical.
+- [x] Las etiquetas del Eje X se mantienen dentro de los bordes visibles del Card.
+- [x] El comportamiento actual con 2 o más campañas se mantiene sin regresiones.
 
 ---
 
@@ -87,7 +87,7 @@ En el grid de 2 columnas de Detalles de la Campaña, las tarjetas de "Tareas" y 
 
 ---
 
-## [#434] Issue 434: Truncamiento de nombres largos en eje X del gráfico de evolución
+## [#434] Issue 434: Truncamiento de nombres largos en eje X del gráfico de evolución (Resuelto en PR #457)
 
 **Severidad:** ⚪ UX / Deuda Técnica
 **Módulo:** Reportes / Gráficos Canvas
@@ -97,13 +97,13 @@ En el grid de 2 columnas de Detalles de la Campaña, las tarjetas de "Tareas" y 
 Introducido en el PR #424, el nombre de la campaña se pinta en el eje X usando drawContext.canvas.nativeCanvas con una rotación de -45 grados. Al carecer de lógica de control de longitud, los nombres de campañas muy extensos se superponen entre sí (especialmente con múltiples puntos en la gráfica) y son recortados por el borde inferior del Canvas.
 
 **Acceptance Criteria**
-- [ ] Nombres de campaña que superen los 12 caracteres son truncados con puntos suspensivos ("...").
-- [ ] Se verifica que al mostrar 5+ campañas, las etiquetas no se solapan.
-- [ ] El padding inferior del Canvas se escala inteligentemente según la longitud final del texto a mostrar.
+- [x] Nombres de campaña que superen los 12 caracteres son truncados con puntos suspensivos ("...").
+- [x] Se verifica que al mostrar 5+ campañas, las etiquetas no se solapan.
+- [x] El padding inferior del Canvas se escala inteligentemente según la longitud final del texto a mostrar.
 
 ---
 
-## [#440] Issue 440: Emojis/íconos se ven rotos al ingresarlos en el formulario de nuevo insumo
+## [#440] Issue 440: Emojis/íconos se ven rotos al ingresarlos en el formulario de nuevo insumo (Resuelto en PR #451)
 
 **Severidad:** ⚪ UX / Calidad
 **Módulo:** Insumos / Formularios
@@ -115,9 +115,9 @@ Introducido en el PR #424, el nombre de la campaña se pinta en el eje X usando 
 Room y la Base de Datos nativa soportan emojis, tal como se verifica con los registros del DataSeeder. Sin embargo, al tipear un emoji (especialmente caracteres SMP de Unicode) en el campo "Ícono" del formulario de Nuevo Insumo, este se "rompe" (muestra cuadros vacíos o ??). Esto indica un problema en la captura del estado en el OutlinedTextField, un filtro de expresión regular muy restrictivo, o un maxLength = 1 que recorta a la mitad el Surrogate Pair del emoji.
 
 **Acceptance Criteria**
-- [ ] El teclado permite ingresar caracteres Unicode (emojis) complejos.
-- [ ] Se ajusta la validación de longitud para considerar los Code Points Unicode, permitiendo que un emoji ocupe "1" espacio visual sin importar su peso en bytes.
-- [ ] Al guardar, el emoji se muestra correctamente en el catálogo global.
+- [x] El teclado permite ingresar caracteres Unicode (emojis) complejos.
+- [x] Se ajusta la validación de longitud para considerar los Code Points Unicode, permitiendo que un emoji ocupe "1" espacio visual sin importar su peso en bytes.
+- [x] Al guardar, el emoji se muestra correctamente en el catálogo global.
 
 ---
 ---
