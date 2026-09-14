@@ -27,7 +27,36 @@ Breve descripciÃ³n del problema encontrado...
 
 ## ðŸ”´ DEUDA TÃ‰CNICA PENDIENTE â€” IteraciÃ³n 5
 
-*(Sin deuda tÃ©cnica registrada por el momento)*
+## [PENDIENTE-ID] refactor(reportes): extender FormatUtils a pestaÃ±a de reportes y exportaciÃ³n PDF/Excel
+**Severidad:** ðŸŸ¢ Baja / Consistencia Visual
+**MÃ³dulo:** Reportes
+**DescripciÃ³n:** Se implementÃ³ `FormatUtils` para estandarizar los separadores de miles (punto) y decimales (coma). Sin embargo, aÃºn falta aplicar esta utilidad en las visualizaciones de reportes y en las funciones de exportaciÃ³n (PDF/Excel) para que respeten la misma configuraciÃ³n regional.
+
+## [PENDIENTE-ID] fix(ui): errores de codificaciÃ³n (caracteres especiales/Ã±/tildes) en formularios
+**Severidad:** ðŸŸ¡ Media / UX
+**MÃ³dulo:** UI Global
+**DescripciÃ³n:** En algunos formularios e inputs del sistema los caracteres especiales del espaÃ±ol (como tildes y la letra 'Ã±') se guardan o se visualizan incorrectamente (aparecen como `?` o corrompidos). Es necesario revisar la configuraciÃ³n de encoding (`UTF-8`) tanto en los TextFields como en la persistencia local de Room.
+
+## [PENDIENTE-ID] feat(insumos): acumular cantidad al vincular un insumo repetido en lugar de reemplazarlo
+**Severidad:** ðŸ”µ Feature Faltante / UX
+**MÃ³dulo:** Insumos / CampaniaInsumo
+**DescripciÃ³n:** Actualmente, si se intenta vincular un insumo que ya estÃ¡ asociado a la misma campaÃ±a, el sistema simplemente sobreescribe el registro anterior. El comportamiento esperado deberÃ­a ser que se acumule/sume la nueva cantidad ingresada a la cantidad preexistente.
+
+## [PENDIENTE-ID] feat(insumos): ediciÃ³n de insumos vinculados a campaÃ±a
+
+**Severidad:** ðŸ”µ UX / Feature Faltante
+**MÃ³dulo:** Insumos / CampaniaInsumo
+**Archivo afectado:** `presentation/ui/screen/insumo/InsumosScreen.kt`
+
+**DescripciÃ³n**
+El listado de insumos vinculados a una campaÃ±a solo permite eliminar una vinculaciÃ³n pero no editarla. Si el usuario cometiÃ³ un error de cantidad o precio debe borrar y volver a vincular. No existe UseCase ni pantalla de ediciÃ³n para la entidad `CampaniaInsumo`.
+
+**Criterios de AceptaciÃ³n**
+- [ ] Al presionar el Ã­cono de ediciÃ³n en la card de un insumo vinculado, navegar a un formulario pre-cargado con los datos actuales (cantidad, precio).
+- [ ] El formulario reutiliza (o adapta) `VincularInsumoScreen` con modo ediciÃ³n.
+- [ ] Se crea `EditarCampaniaInsumoUseCase` que llama a `CampaniaInsumoRepository.update(...)`.
+- [ ] Tests unitarios del UseCase y ViewModel para el caso de ediciÃ³n.
+- [ ] Test GWT documentado en `docs/plan_de_pruebas.md`.
 
 ---
 
@@ -177,31 +206,7 @@ val tareaEditada = Tarea(
 
 ---
 
-## [PENDIENTE-ID] ux(observaciones): botÃ³n `+` en card de Observaciones navega al listado en vez de al formulario de alta
 
-**Severidad:** ðŸ”µ UX / Deuda TÃ©cnica
-**MÃ³dulo:** CampaÃ±as / DetalleCampaniaScreen
-**Archivo afectado:** `presentation/ui/screen/campania/DetalleCampaniaScreen.kt`
-
-**DescripciÃ³n**
-En `CardModuloObservaciones`, el parÃ¡metro `onQuickAddClick` recibe el mismo lambda que `onCardClick` (navega al listado de observaciones). Esto rompe la consistencia del grid 2xN del Issue #415, donde el botÃ³n `+` debe navegar directamente al formulario de alta precargado con `campaniaId`.
-
-**Causa RaÃ­z (CÃ³digo)**
-```kotlin
-// DetalleCampaniaScreen.kt
-private fun CardModuloObservaciones(..., onGoToObservaciones: () -> Unit) {
-    ModuloCardBase(
-        onCardClick = onGoToObservaciones,
-        onQuickAddClick = onGoToObservaciones // âŒ Mismo destino que el card principal
-    )
-}
-```
-
-**Criterios de AceptaciÃ³n**
-- [ ] El botÃ³n `+` en la card de Observaciones abre el diÃ¡logo de nueva observaciÃ³n directamente (o navega a la pantalla correspondiente).
-- [ ] El comportamiento es consistente con Tareas, Insumos y Cosechas.
-
----
 
 ## [PENDIENTE-ID] dt(permisos): verificaciÃ³n de permiso de cÃ¡mara hardcodeada en composable
 
@@ -250,3 +255,29 @@ Los Acceptance Criteria de los Issues #403 y #410 definen tests unitarios obliga
 - [ ] Agregar casos de ediciÃ³n y eliminaciÃ³n a `NuevaTareaViewModelTest` / `TareaViewModelTest`.
 - [ ] Documentar los nuevos casos GWT en `docs/plan_de_pruebas.md`.
 - [ ] Todos los tests pasan con `./gradlew test`.
+
+## ?? DEUDA TÉCNICA RESUELTA — Iteración 5
+
+## [RESUELTO-EN-PR-446] fix(dashboard): cálculo de ingresos dependiente de texto libre
+**Severidad:** ?? Bug Funcional
+**Módulo:** Dashboard
+**Descripción:** El dashboard filtraba ingresos buscando la palabra "venta" exacta. Dado que el campo es libre, causaba que ventas reales no se sumaran.
+**Solución:** Se modificó `ObtenerResumenRendimientoUseCase` para sumar cualquier cosecha no almacenada con `precio > 0.0`.
+
+## [RESUELTO-EN-PR-446] fix(ui): formato numérico inconsistente y fallas con decimales
+**Severidad:** ?? Baja / UX
+**Módulo:** UI Global
+**Descripción:** El separador de miles aparecía como coma, y el usuario no podía ingresar comas decimales sin que se borrara el valor.
+**Solución:** Se creó `FormatUtils` con Locale("es", "AR") para toda la UI, y se añadió lógica de reemplazo automático de comas por puntos en los TextFields.
+
+## [RESUELTO-EN-PR-446] fix(campania): contadores de DetalleCampania no incluyen tareas completadas ni todas las cosechas
+**Severidad:** ?? Media / UX
+**Módulo:** Campaña
+**Descripción:** El contador de tareas de la campaña siempre mostraba 0 tareas completadas porque se alimentaba de un flow filtrado. El contador de cosechas solo sumaba las almacenadas e indicaba "Kg".
+**Solución:** Se inyectó el TareaRepository para tener un flow puro `todasLasTareas` y se corrigió el CardModuloCosechas para sumar todas y usar "Tn".
+
+## [RESUELTO-EN-PR-446] feat(cosechas): edición incompleta de ventas
+**Severidad:** ?? Media / UX
+**Módulo:** Cosechas
+**Descripción:** Al editar una cosecha tipo "venta", los campos de tipo y precio no se precargaban ni se guardaban los cambios.
+**Solución:** Se creó `EditarCosechaConVentaUseCase` para recuperar y guardar simultáneamente en ambas tablas.

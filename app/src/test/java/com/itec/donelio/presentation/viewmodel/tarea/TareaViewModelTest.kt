@@ -78,6 +78,8 @@ class TareaViewModelTest {
         }
         val mockManager = mockk<com.itec.donelio.presentation.state.UltimaSeleccionManager>(relaxed = true)
         every { mockManager.campaniaIdSeleccionada } returns managerFlow
+        
+        val mockTareaRepository = mockk<com.itec.donelio.domain.repository.TareaRepository>(relaxed = true)
 
         return TareaViewModel(
             savedStateHandle = handle,
@@ -86,7 +88,8 @@ class TareaViewModelTest {
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             confirmarTareaUseCase = confirmarTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
-            eliminarTareaUseCase = eliminarTareaUseCase
+            eliminarTareaUseCase = eliminarTareaUseCase,
+            tareaRepository = mockTareaRepository
         )
     }
 

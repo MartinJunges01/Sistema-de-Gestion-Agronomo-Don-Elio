@@ -50,7 +50,7 @@ fun DetalleCampaniaScreen(
     onGoToCosechas: (Int) -> Unit,
     onGoToObservaciones: (Int) -> Unit,
     onGoToNuevaTarea: (Int) -> Unit,
-    onGoToNuevoInsumo: (Int) -> Unit,
+    onVincularInsumo: (Int) -> Unit,
     onGoToNuevaCosecha: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -122,7 +122,7 @@ fun DetalleCampaniaScreen(
                         CardModuloTareas(campaniaId = campania.id, onGoToTareas = { onGoToTareas(campania.id) }, onGoToNueva = { onGoToNuevaTarea(campania.id) })
                     }
                     item {
-                        CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onGoToNuevoInsumo(campania.id) })
+                        CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onVincularInsumo(campania.id) })
                     }
                     item {
                         CardModuloCosechas(campaniaId = campania.id, onGoToCosechas = { onGoToCosechas(campania.id) }, onGoToNueva = { onGoToNuevaCosecha(campania.id) })
@@ -260,7 +260,7 @@ private fun ModuloCardBase(
 @Composable
 private fun CardModuloTareas(campaniaId: Int, onGoToTareas: () -> Unit, onGoToNueva: () -> Unit) {
     val vm: TareaViewModel = hiltViewModel(key = "card_tareas_$campaniaId")
-    val tareasUi by vm.tareasUi.collectAsState()
+    val tareasUi by vm.todasLasTareas.collectAsState()
     val tareas = tareasUi.map { it.tarea }
     val pendientes = tareas.count { !it.confirmar }
     val completadas = tareas.count { it.confirmar }
@@ -283,13 +283,13 @@ private fun CardModuloInsumos(campaniaId: Int, onGoToInsumos: () -> Unit, onGoTo
     val vinculados by vm.insumosVinculados.collectAsState()
     val total = vinculados.sumOf { it.cantidad * it.precio }
 
-    LaunchedEffect(campaniaId) { vm.seleccionarCampania(campaniaId) }
+    LaunchedEffect(campaniaId) { vm.sincronizarInsumos(campaniaId) }
 
     ModuloCardBase(
         title = "Insumos",
         icon = Icons.Default.Inventory,
         summary = "${vinculados.size} insumos",
-        subSummary = "$ ${"%,.2f".format(total)}",
+        subSummary = com.itec.donelio.presentation.util.FormatUtils.formatMoneda(total),
         onCardClick = onGoToInsumos,
         onQuickAddClick = onGoToNuevo
     )
@@ -298,16 +298,16 @@ private fun CardModuloInsumos(campaniaId: Int, onGoToInsumos: () -> Unit, onGoTo
 @Composable
 private fun CardModuloCosechas(campaniaId: Int, onGoToCosechas: () -> Unit, onGoToNueva: () -> Unit) {
     val vm: CosechaViewModel = hiltViewModel(key = "card_cosechas_$campaniaId")
-    val almacenadas by vm.almacenadas.collectAsState()
-    val totalAlmacenado = almacenadas.sumOf { it.cantidad }
+    val cosechas by vm.cosechas.collectAsState()
+    val totalCosechado = cosechas.sumOf { it.cantidad }
 
     LaunchedEffect(campaniaId) { vm.sincronizarCampania(campaniaId) }
 
     ModuloCardBase(
         title = "Cosechas",
         icon = Icons.Default.Agriculture,
-        summary = "${almacenadas.size} registradas",
-        subSummary = formatCantidad(totalAlmacenado),
+        summary = "${cosechas.size} registradas",
+        subSummary = com.itec.donelio.presentation.util.FormatUtils.formatCantidad(totalCosechado, "Tn"),
         onCardClick = onGoToCosechas,
         onQuickAddClick = onGoToNueva
     )
@@ -339,10 +339,4 @@ private fun formatFecha(timestamp: Long): String {
     return sdf.format(Date(timestamp))
 }
 
-private fun formatCantidad(cantidad: Double): String {
-    return if (cantidad == cantidad.toLong().toDouble()) {
-        "${cantidad.toLong()} Kg"
-    } else {
-        "%,.2f Kg".format(cantidad)
-    }
-}
+

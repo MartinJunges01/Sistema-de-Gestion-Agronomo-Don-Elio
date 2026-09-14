@@ -159,7 +159,7 @@ private fun CosechaCard(
                 if (esAlmacenada) {
                     Text(cosecha.almacen, color = TextoSecundario)
                 } else if (detalle != null) {
-                    Text("${detalle.tipo} · $ ${"%,.2f".format(detalle.precio)}", color = TextoSecundario)
+                    Text("${detalle.tipo} · ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(detalle.precio)}", color = TextoSecundario)
                 } else {
                     Text(formatFecha(cosecha.fecha), color = TextoSecundario)
                 }
@@ -186,7 +186,7 @@ private fun formatCantidad(cantidad: Double): String {
     return if (cantidad == cantidad.toLong().toDouble()) {
         cantidad.toLong().toString()
     } else {
-        "%,.2f".format(cantidad)
+        com.itec.donelio.presentation.util.FormatUtils.formatCantidad(cantidad)
     }
 }
 

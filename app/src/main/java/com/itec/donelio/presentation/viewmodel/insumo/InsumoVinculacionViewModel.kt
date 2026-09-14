@@ -28,17 +28,21 @@ class InsumoVinculacionViewModel @Inject constructor(
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
-                if (id != null && _campaniaIdSeleccionada.value != id) {
-                    _campaniaIdSeleccionada.value = id
+        val idEnHandle = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+        
+        if (idEnHandle != null) {
+            // Prioridad SavedState: notificar al manager para que otras pantallas (ej. Insumos en BottomNav)
+            // usen este ID, pero NO suscribirse al manager para evitar que un valor obsoleto sobreescriba el actual.
+            ultimaSeleccionManager.seleccionarCampania(idEnHandle)
+        } else {
+            // Fallback: si no hay ID explícito, suscribirse al manager (ej. entrada desde BottomNav)
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _campaniaIdSeleccionada.value != id) {
+                        _campaniaIdSeleccionada.value = id
+                    }
                 }
             }
-        }
-        
-        // Si hay una campania seteada desde el nav arg, actualizamos el manager global
-        _campaniaIdSeleccionada.value?.let { 
-            ultimaSeleccionManager.seleccionarCampania(it) 
         }
     }
 
