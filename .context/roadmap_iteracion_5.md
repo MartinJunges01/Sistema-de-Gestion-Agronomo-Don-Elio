@@ -2,14 +2,15 @@
 
 > **Fuente:** Verificación manual en emulador — 2026-09-09 (post-merge Iteración 4).
 >
-> **Iteración anterior:** Todos los issues del oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del testing manual y la deuda técnica pendiente relevada.
+> **Iteración anterior:** Todos los issues del 
+oadmap_iteracion_4.md fueron completados. Este roadmap cubre los hallazgos del testing manual y la deuda técnica pendiente relevada.
 
 ---
 
 ## Checklist de Progreso
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
+- [x] **[#437] Issue 437:** Balance del Dashboard muestra valor incorrecto y tarjetas tienen overflow de texto
 - [ ] **[#438] Issue 438:** Gráfico de Evolución Histórica falla visualmente con un solo punto de datos (1 campaña)
 - [x] **[#441] Issue 441:** Contadores de Tareas completadas y Cosechas en grid DetalleCampania no se actualizan
 
@@ -17,8 +18,8 @@
 - [ ] **[#434] Issue 434:** Truncamiento de nombres largos en eje X del gráfico de evolución
 - [ ] **[#440] Issue 440:** Emojis/íconos se ven rotos al ingresarlos en el formulario de nuevo insumo
 
-### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
-- [ ] **[#439] Issue 439:** Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania
+### 🔵 NIVEL L5 — NUEVOS REQUERIMIENTOS
+- [x] **[#439] Issue 439:** Formulario dedicado de Vinculación de Insumos a Campaña desde grid DetalleCampania
 
 ---
 ---
@@ -165,7 +166,8 @@ Actualmente, el botón + en el módulo Insumos (dentro de Detalle de Campaña) n
 
 ## 🛠️ Reglas de Desarrollo
 
-1. **Ramas:** Cada issue se trabaja en su propia rama (eature/, ix/, efactor/).
+1. **Ramas:** Cada issue se trabaja en su propia rama (eature/, ix/, 
+efactor/).
 2. **Commits:** Convención de Conventional Commits (ej: ix(dashboard): formato de moneda en balance).
 3. **PRs:** Cada rama se integra vía Pull Request a main.
 4. **Tests:** Cada cambio en UseCase o ViewModel requiere actualizar su test unitario correspondiente.

@@ -1,3 +1,38 @@
+**[2026-09-12] - fix(ui): estandarización de números, contadores de campaña y cálculo de ingresos [out-of-scope]**
+
+> ⚠️ Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
+
+- `ObtenerResumenRendimientoUseCase`: Se cambió el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
+- `TareaViewModel` y `DetalleCampaniaScreen`: El card del menú ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
+- `DetalleCampaniaScreen` (Cosechas): El card ahora contabiliza **todas** las cosechas (almacenadas + ventas/reservas) en lugar de solo las almacenadas. Además, la unidad de medida se cambió de "Kg" a "Tn" para mantener consistencia.
+- `FormatUtils` **[NUEVO]**: Se creó un utilitario centralizado con la configuración `Locale("es", "AR")` para asegurar que en toda la aplicación los miles se separen con punto (`.`) y los decimales con coma (`,`).
+- `DashboardOperacionesScreen`, `CosechasScreen`, `InsumosScreen`: Refactorizados para usar `FormatUtils` en lugar de formatos de texto ad-hoc.
+
+> ⚠️ Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
+
+- `ObtenerResumenRendimientoUseCase`: Corregido el cálculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
+- `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operación la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la edición de cosechas tipo Venta solo actualizaba la tabla base.
+- `FormularioCosechaViewModel`:
+  - Fallback al `UltimaSeleccionManager`: si el formulario se abre sin `campaniaId` explícito (ej. botón FAB global), ahora pre-carga la última campaña seleccionada (homologa comportamiento con Tareas e Insumos — out-of-scope de #441).
+  - Sanitización de decimales: `onCantidadChange` y `onPrecioChange` normalizan coma `,` a punto `.` antes de parsear, evitando que valores como `1234,5` se guarden como `0`.
+  - `cargarCosecha()` ahora también consulta `CosechaNoAlmacenadaRepository` para pre-cargar `tipo` y `precio` al editar cosechas no almacenadas (out-of-scope de #439).
+- `FormularioCosechaScreen`: Label del campo precio cambiado de `"Precio (Opcional)"` a `"Precio Total de Venta ($)"` para claridad del usuario.
+- `VincularInsumoScreen`: Agrega `SelectorCampania` en la parte superior para mostrar y permitir cambiar la campaña destino. Listado de insumos refactorizado a `LazyColumn` para scroll nativo (out-of-scope de #439).
+- `docs/bugs_identificados.md`: Registrada DT [PENDIENTE-ID] para la edición de insumos vinculados (feature no implementada originalmente).
+- `docs/plan_de_pruebas.md`: Agregados casos GWT FC-1 a FC-6 y DR-1, DR-2.
+
+**[2026-09-11] - Formulario dedicado de vinculación de insumos (Pantalla Unificada) [#439]**
+- `VincularInsumoScreen`: Se creó una pantalla nueva independiente para vincular insumos a campañas, unificando la lógica.
+- `InsumosScreen`: Se eliminó el `ModalBottomSheet` interno que tenía duplicada la funcionalidad de vinculación. Ahora se redirige a `VincularInsumoScreen`.
+- `DetalleCampaniaScreen`: En `CardModuloInsumos`, el botón "+" (Nuevo Insumo) ahora navega correctamente al formulario de vinculación `VincularInsumoScreen` de esa campaña (antes navegaba al formulario de crear insumo al catálogo, lo que era un flujo incorrecto).
+- `InsumoVinculacionViewModel`: Actualizado el `init` para que priorice el `campaniaId` de navegación y aplique sincronización segura del manager (evitando posibles race conditions).
+- `InsumoVinculacionViewModelTest`: Agregadas pruebas para verificar que `asignarInsumo` y los UseCases funcionan correctamente con el `campaniaId`.
+
+**[2026-09-11] - Fix balance en Dashboard y overflow de tarjetas [#437]**
+- `DashboardOperacionesScreen`: Se implementó la utilidad `formatearMoneda` para manejar correctamente balances negativos con el signo por delante, utilizando `Locale.US` para el control manual del separador de miles/decimales y formato abreviado (K/M) según magnitud.
+- `CardResumen`: Se aplicó una altura fija de `72.dp` y `TextOverflow.Ellipsis` para garantizar la uniformidad del grid.
+- Se agregaron las pruebas unitarias correspondientes en `FormatearMonedaTest` con 9 casos GWT.
+
 **[2026-09-11] - Fix race condition en contadores de Tareas y Cosechas en DetalleCampaniaScreen [#441]**
 - `TareaViewModel`: el `init{}` ahora prioriza el `campaniaId` del `SavedStateHandle`. Si hay ID explícito, notifica al `UltimaSeleccionManager` pero no suscribe su flow, eliminando la race condition donde un ID obsoleto sobreescribía el correcto.
 - `CosechaViewModel`: mismo patrón de prioridad aplicado. Se agrega `sincronizarCampania(id)` para uso desde `DetalleCampaniaScreen` sin contaminar el manager global.
