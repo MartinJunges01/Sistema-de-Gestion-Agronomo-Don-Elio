@@ -400,10 +400,11 @@ fun ReportesRendimientoScreen(
                                     
                                     // Draw X-axis label (campania nombre)
                                     val campaniaName = punto.campaniaNombre
+                                    val nombreX = if (campaniaName.length > 12) campaniaName.take(10) + "..." else campaniaName
                                     drawContext.canvas.nativeCanvas.apply {
                                         save()
                                         rotate(-45f, x, size.height - paddingBottom + 30f)
-                                        drawText(campaniaName, x, size.height - paddingBottom + 30f, textPaint)
+                                        drawText(nombreX, x, size.height - paddingBottom + 30f, textPaint)
                                         restore()
                                     }
                                 }
