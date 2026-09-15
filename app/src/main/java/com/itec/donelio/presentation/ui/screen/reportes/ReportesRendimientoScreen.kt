@@ -599,7 +599,7 @@ fun ReportesRendimientoScreen(
                                                     Text(slice.label, fontSize = 13.sp, color = TextoPrincipal)
                                                 }
                                                 Text(
-                                                    text = "${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatMoneda(slice.value)}",
+                                                    text = "${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatMoneda(slice.value.toDouble())}",
                                                     fontSize = 13.sp,
                                                     fontWeight = FontWeight.Medium,
                                                     color = TextoPrincipal
@@ -675,7 +675,7 @@ fun ReportesRendimientoScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
-                                                    "${slice.label} (${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatCantidad(slice.value, "Tn")})", 
+                                                    "${slice.label} (${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatCantidad(slice.value.toDouble(), "Tn")})", 
                                                     fontSize = 12.sp, 
                                                     color = TextoPrincipal
                                                 )
@@ -1017,5 +1017,6 @@ private fun PlaceholderSeleccion(mensaje: String) {
         }
     }
 }
+
 
 
