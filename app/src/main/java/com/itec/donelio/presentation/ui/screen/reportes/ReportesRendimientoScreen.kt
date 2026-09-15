@@ -1,4 +1,4 @@
-package com.itec.donelio.presentation.ui.screen.reportes
+﻿package com.itec.donelio.presentation.ui.screen.reportes
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.itec.donelio.presentation.util.FormatUtils
 import androidx.hilt.navigation.compose.hiltViewModel
 import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
@@ -87,7 +88,7 @@ fun ReportesRendimientoScreen(
         var mostrarMenuExportar by remember { mutableStateOf(false) }
 
         TopAppBar(
-            title = { Text("Reportes y Análisis", fontWeight = FontWeight.Bold) },
+            title = { Text("Reportes y AnÃ¡lisis", fontWeight = FontWeight.Bold) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
@@ -104,7 +105,7 @@ fun ReportesRendimientoScreen(
                             onClick = {
                                 mostrarMenuExportar = false
                                 if (campaniaIndividual == null) {
-                                    Toast.makeText(context, "Seleccione una campaña para exportar", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Seleccione una campaÃ±a para exportar", Toast.LENGTH_SHORT).show()
                                 } else {
                                     csvLauncher.launch("Reporte_Insumos_${campaniaIndividual!!.nombre}.csv")
                                 }
@@ -116,7 +117,7 @@ fun ReportesRendimientoScreen(
                             onClick = {
                                 mostrarMenuExportar = false
                                 if (campaniaIndividual == null) {
-                                    Toast.makeText(context, "Seleccione una campaña para exportar", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Seleccione una campaÃ±a para exportar", Toast.LENGTH_SHORT).show()
                                 } else {
                                     pdfLauncher.launch("Reporte_Insumos_${campaniaIndividual!!.nombre}.pdf")
                                 }
@@ -135,9 +136,9 @@ fun ReportesRendimientoScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
-            // ──────────────────────────────────────────────
-            // SECCIÓN 0: Filtros Avanzados y Evolución
-            // ──────────────────────────────────────────────
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // SECCIÃ“N 0: Filtros Avanzados y EvoluciÃ³n
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             
             item {
                 val filtroCampanias by viewModel.filtroCampaniasMulti.collectAsState()
@@ -152,8 +153,8 @@ fun ReportesRendimientoScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                // Filtro Campañas (Multi-select)
-                Text("Filtrar por Campañas:", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                // Filtro CampaÃ±as (Multi-select)
+                Text("Filtrar por CampaÃ±as:", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextoPrincipal)
                 Spacer(modifier = Modifier.height(8.dp))
                 @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
                 androidx.compose.foundation.layout.FlowRow(
@@ -212,12 +213,12 @@ fun ReportesRendimientoScreen(
                     FilterChip(
                         selected = filtroRangoFechas?.first == mesPasadoInicio,
                         onClick = { viewModel.setFiltroRangoFechas(Pair(mesPasadoInicio, mesPasadoFin)) },
-                        label = { Text("Último mes", fontSize = 12.sp) }
+                        label = { Text("Ãšltimo mes", fontSize = 12.sp) }
                     )
                     FilterChip(
                         selected = filtroRangoFechas?.first == anioActualInicio,
                         onClick = { viewModel.setFiltroRangoFechas(Pair(anioActualInicio, hoy)) },
-                        label = { Text("Este año", fontSize = 12.sp) }
+                        label = { Text("Este aÃ±o", fontSize = 12.sp) }
                     )
                     FilterChip(
                         selected = showDateRangePicker,
@@ -275,28 +276,28 @@ fun ReportesRendimientoScreen(
                     ) {
                         TarjetaMetrica(
                             titulo = "Capital Invertido",
-                            valor = "$ %.2f".format(resumenFiltrado!!.capitalInvertido),
+                            valor = FormatUtils.formatMoneda(resumenFiltrado!!.capitalInvertido),
                             icono = Icons.Default.AttachMoney,
                             color = AgriVerde,
                             modifier = Modifier.weight(1f)
                         )
                         TarjetaMetrica(
                             titulo = "Volumen Cosechado",
-                            valor = "%.1f Tn".format(resumenFiltrado!!.totalCosechado),
+                            valor = FormatUtils.formatCantidad(resumenFiltrado!!.totalCosechado, "Tn"),
                             icono = Icons.Default.Grain,
                             color = AgriAzul,
                             modifier = Modifier.weight(1f)
                         )
                         TarjetaMetrica(
                             titulo = "Costo/Tn",
-                            valor = "$ %.2f".format(resumenFiltrado!!.costoPorTonelada),
+                            valor = FormatUtils.formatMoneda(resumenFiltrado!!.costoPorTonelada),
                             icono = Icons.Default.MonetizationOn,
                             color = Color(0xFFb91c1c),
                             modifier = Modifier.weight(1f)
                         )
                     }
                 } else {
-                    PlaceholderSeleccion(mensaje = "Seleccioná filtros para ver el resumen")
+                    PlaceholderSeleccion(mensaje = "SeleccionÃ¡ filtros para ver el resumen")
                 }
             }
 
@@ -307,7 +308,7 @@ fun ReportesRendimientoScreen(
                 val evolucion by viewModel.evolucionCultivo.collectAsState()
 
                 Text(
-                    "Evolución Histórica por Cultivo",
+                    "EvoluciÃ³n HistÃ³rica por Cultivo",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -343,9 +344,9 @@ fun ReportesRendimientoScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (cultivoSeleccionado == null) {
-                    PlaceholderSeleccion(mensaje = "Seleccioná un cultivo para ver su evolución")
+                    PlaceholderSeleccion(mensaje = "SeleccionÃ¡ un cultivo para ver su evoluciÃ³n")
                 } else if (evolucion.isEmpty()) {
-                    PlaceholderSeleccion(mensaje = "Sin datos históricos para este cultivo")
+                    PlaceholderSeleccion(mensaje = "Sin datos histÃ³ricos para este cultivo")
                 } else {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -423,13 +424,13 @@ fun ReportesRendimientoScreen(
                 HorizontalDivider(thickness = 1.dp, color = Color(0xFFE7E5E4))
             }
 
-            // ──────────────────────────────────────────────
-            // SECCIÓN 1: Estadísticas de campaña individual
-            // ──────────────────────────────────────────────
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // SECCIÃ“N 1: EstadÃ­sticas de campaÃ±a individual
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             item {
                 Text(
-                    "Estadísticas de Campaña",
+                    "EstadÃ­sticas de CampaÃ±a",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -437,7 +438,7 @@ fun ReportesRendimientoScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 DropdownCampania(
-                    label = "Seleccionar campaña",
+                    label = "Seleccionar campaÃ±a",
                     campanias = campanias,
                     seleccionada = campaniaIndividual,
                     onSeleccionar = { viewModel.seleccionarCampaniaIndividual(it) }
@@ -446,7 +447,7 @@ fun ReportesRendimientoScreen(
 
             if (campaniaIndividual == null) {
                 item {
-                    PlaceholderSeleccion(mensaje = "Seleccioná una campaña para ver sus estadísticas")
+                    PlaceholderSeleccion(mensaje = "SeleccionÃ¡ una campaÃ±a para ver sus estadÃ­sticas")
                 }
             } else {
                 item {
@@ -460,14 +461,14 @@ fun ReportesRendimientoScreen(
                     ) {
                         TarjetaMetrica(
                             titulo = "Costo de Insumos",
-                            valor = "$ %.2f".format(costoTotalInsumos),
+                            valor = FormatUtils.formatMoneda(costoTotalInsumos),
                             icono = Icons.Default.AttachMoney,
                             color = AgriVerde,
                             modifier = Modifier.weight(1f)
                         )
                         TarjetaMetrica(
                             titulo = "Total Cosechado",
-                            valor = if (totalCosechado > 0) "%.1f %s".format(totalCosechado, unidadCosecha) else "Sin registros",
+                            valor = if (totalCosechado > 0) FormatUtils.formatCantidad(totalCosechado, unidadCosecha) else "Sin registros",
                             icono = Icons.Default.Grain,
                             color = AgriAzul,
                             modifier = Modifier.weight(1f)
@@ -521,7 +522,7 @@ fun ReportesRendimientoScreen(
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Text(insumoGasto.nombre, fontWeight = FontWeight.Medium, color = TextoPrincipal, fontSize = 14.sp)
                                             }
-                                            Text(formatMoneda.format(insumoGasto.costo), fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 14.sp)
+                                            Text(FormatUtils.formatMoneda(insumoGasto.costo), fontWeight = FontWeight.Bold, color = TextoPrincipal, fontSize = 14.sp)
                                         }
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                             LinearProgressIndicator(
@@ -531,7 +532,7 @@ fun ReportesRendimientoScreen(
                                                 trackColor = Color(0xFFE7E5E4),
                                             )
                                             Spacer(modifier = Modifier.width(8.dp))
-                                            Text("${String.format(java.util.Locale("es", "AR"), "%.1f", insumoGasto.porcentaje)}%", color = TextoSecundario, fontSize = 12.sp)
+                                            Text("${FormatUtils.formatDecimal(insumoGasto.porcentaje.toDouble())}%", color = TextoSecundario, fontSize = 12.sp)
                                         }
                                     }
                                 }
@@ -540,10 +541,10 @@ fun ReportesRendimientoScreen(
                     }
                 }
 
-                // PieChart contextual a la campaña seleccionada
+                // PieChart contextual a la campaÃ±a seleccionada
                 item {
                     Text(
-                        "Distribución de Gastos por Insumo",
+                        "DistribuciÃ³n de Gastos por Insumo",
                         fontWeight = FontWeight.Bold,
                         color = TextoPrincipal
                     )
@@ -598,7 +599,7 @@ fun ReportesRendimientoScreen(
                                                     Text(slice.label, fontSize = 13.sp, color = TextoPrincipal)
                                                 }
                                                 Text(
-                                                    text = "${String.format(java.util.Locale.US, "%.1f", porcentaje)}% - ${currencyFormat.format(slice.value)}",
+                                                    text = "${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatMoneda(slice.value)}",
                                                     fontSize = 13.sp,
                                                     fontWeight = FontWeight.Medium,
                                                     color = TextoPrincipal
@@ -611,12 +612,12 @@ fun ReportesRendimientoScreen(
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
                                             Text("Total General:", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
-                                            Text(currencyFormat.format(totalGasto), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                                            Text(FormatUtils.formatMoneda(totalGasto), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                                         }
                                     }
                                 }
                             } else {
-                                PlaceholderSeleccion(mensaje = "Sin insumos registrados en esta campaña")
+                                PlaceholderSeleccion(mensaje = "Sin insumos registrados en esta campaÃ±a")
                             }
                         }
                     }
@@ -626,7 +627,7 @@ fun ReportesRendimientoScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        "Distribución de Destino de Cosecha",
+                        "DistribuciÃ³n de Destino de Cosecha",
                         fontWeight = FontWeight.Bold,
                         color = TextoPrincipal
                     )
@@ -674,7 +675,7 @@ fun ReportesRendimientoScreen(
                                                 )
                                                 Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
-                                                    "${slice.label} (${String.format(java.util.Locale.US, "%.1f", porcentaje)}% - ${String.format(java.util.Locale.US, "%.1f Tn", slice.value)})", 
+                                                    "${slice.label} (${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatCantidad(slice.value, "Tn")})", 
                                                     fontSize = 12.sp, 
                                                     color = TextoPrincipal
                                                 )
@@ -683,7 +684,7 @@ fun ReportesRendimientoScreen(
                                     }
                                 }
                             } else {
-                                PlaceholderSeleccion(mensaje = "Sin cosechas registradas en esta campaña")
+                                PlaceholderSeleccion(mensaje = "Sin cosechas registradas en esta campaÃ±a")
                             }
                         }
                     }
@@ -695,13 +696,13 @@ fun ReportesRendimientoScreen(
                 HorizontalDivider(thickness = 1.dp, color = Color(0xFFE7E5E4))
             }
 
-            // ──────────────────────────────────────────────
-            // SECCIÓN 2: Comparador de campañas [#302]
-            // ──────────────────────────────────────────────
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // SECCIÃ“N 2: Comparador de campaÃ±as [#302]
+            // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
             item {
                 Text(
-                    "Comparar Campañas",
+                    "Comparar CampaÃ±as",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -712,14 +713,14 @@ fun ReportesRendimientoScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     DropdownCampania(
-                        label = "Campaña A",
+                        label = "CampaÃ±a A",
                         campanias = campanias,
                         seleccionada = campaniaA,
                         onSeleccionar = { viewModel.seleccionarCampaniaA(it) },
                         modifier = Modifier.weight(1f)
                     )
                     DropdownCampania(
-                        label = "Campaña B",
+                        label = "CampaÃ±a B",
                         campanias = campanias,
                         seleccionada = campaniaB,
                         onSeleccionar = { viewModel.seleccionarCampaniaB(it) },
@@ -730,7 +731,7 @@ fun ReportesRendimientoScreen(
 
             if (campaniaA == null || campaniaB == null) {
                 item {
-                    PlaceholderSeleccion(mensaje = "Seleccioná dos campañas para comparar sus métricas")
+                    PlaceholderSeleccion(mensaje = "SeleccionÃ¡ dos campaÃ±as para comparar sus mÃ©tricas")
                 }
             } else if (campaniaA?.id == campaniaB?.id) {
                 item {
@@ -751,7 +752,7 @@ fun ReportesRendimientoScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                text = "Las campañas seleccionadas son iguales. Elegí campañas distintas para comparar.",
+                                text = "Las campaÃ±as seleccionadas son iguales. ElegÃ­ campaÃ±as distintas para comparar.",
                                 fontSize = 14.sp,
                                 color = Color(0xFF9A3412),
                                 fontWeight = FontWeight.Medium
@@ -775,10 +776,10 @@ fun ReportesRendimientoScreen(
                     val costoTnA = if (rendimientoA > 0) costoA / rendimientoA else 0.0
                     val costoTnB = if (rendimientoB > 0) costoB / rendimientoB else 0.0
                     
-                    val nombreA = campaniaA?.nombre ?: "Campaña A"
-                    val nombreB = campaniaB?.nombre ?: "Campaña B"
+                    val nombreA = campaniaA?.nombre ?: "CampaÃ±a A"
+                    val nombreB = campaniaB?.nombre ?: "CampaÃ±a B"
 
-                    Text("Métricas Comparativas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
+                    Text("MÃ©tricas Comparativas", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
                     Spacer(modifier = Modifier.height(12.dp))
                     
                     Row(
@@ -793,10 +794,10 @@ fun ReportesRendimientoScreen(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(nombreA, fontWeight = FontWeight.Bold, color = AgriVerde, fontSize = 15.sp)
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriVerde.copy(alpha = 0.3f))
-                                Text("Inversión: $ %.2f".format(costoA), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Cosecha: %.2f Tn".format(rendimientoA), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaA), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Costo/Tn: $ %.2f".format(costoTnA), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("InversiÃ³n: ${FormatUtils.formatMoneda(costoA)}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: ${FormatUtils.formatCantidad(rendimientoA, "Tn")}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: ${FormatUtils.formatCantidad(cosechaHaA, "Tn/Ha")}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: ${FormatUtils.formatMoneda(costoTnA)}", fontSize = 12.sp, color = TextoPrincipal)
                                 Text("Costo: $costoHaStringA", fontSize = 12.sp, color = TextoPrincipal)
                             }
                         }
@@ -808,10 +809,10 @@ fun ReportesRendimientoScreen(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(nombreB, fontWeight = FontWeight.Bold, color = AgriAzul, fontSize = 15.sp)
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = AgriAzul.copy(alpha = 0.3f))
-                                Text("Inversión: $ %.2f".format(costoB), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Cosecha: %.2f Tn".format(rendimientoB), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Rendim: %.2f Tn/Ha".format(cosechaHaB), fontSize = 12.sp, color = TextoPrincipal)
-                                Text("Costo/Tn: $ %.2f".format(costoTnB), fontSize = 12.sp, color = TextoPrincipal)
+                                Text("InversiÃ³n: ${FormatUtils.formatMoneda(costoB)}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Cosecha: ${FormatUtils.formatCantidad(rendimientoB, "Tn")}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Rendim: ${FormatUtils.formatCantidad(cosechaHaB, "Tn/Ha")}", fontSize = 12.sp, color = TextoPrincipal)
+                                Text("Costo/Tn: ${FormatUtils.formatMoneda(costoTnB)}", fontSize = 12.sp, color = TextoPrincipal)
                                 Text("Costo: $costoHaStringB", fontSize = 12.sp, color = TextoPrincipal)
                             }
                         }
@@ -828,10 +829,10 @@ fun ReportesRendimientoScreen(
                     val maxRendimiento = maxOf(rendimientoA, rendimientoB, 1f)
                     val maxCostoHa = maxOf(costoHaFloatA, costoHaFloatB, 1f)
                     
-                    val nombreA = campaniaA?.nombre ?: "Campaña A"
-                    val nombreB = campaniaB?.nombre ?: "Campaña B"
+                    val nombreA = campaniaA?.nombre ?: "CampaÃ±a A"
+                    val nombreB = campaniaB?.nombre ?: "CampaÃ±a B"
 
-                    Text("Gráfico de Comparación", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
+                    Text("GrÃ¡fico de ComparaciÃ³n", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextoPrincipal)
                     Spacer(modifier = Modifier.height(12.dp))
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -854,7 +855,7 @@ fun ReportesRendimientoScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             
                             // Comparacion de Costo/Ha
-                            Text("Costo por Hectárea", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
+                            Text("Costo por HectÃ¡rea", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                             Spacer(modifier = Modifier.height(8.dp))
                             DoubleBarIndicator(nombreA, costoHaFloatA, maxCostoHa, Color(0xFFb91c1c), nombreB, costoHaFloatB, maxCostoHa, Color(0xFFb91c1c).copy(alpha = 0.5f))
                         }
@@ -865,12 +866,12 @@ fun ReportesRendimientoScreen(
     }
 }
 
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Componentes privados
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
- * Dropdown genérico para seleccionar una campaña de una lista real de la BD.
+ * Dropdown genÃ©rico para seleccionar una campaÃ±a de una lista real de la BD.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -900,7 +901,7 @@ private fun DropdownCampania(
         ExposedDropdownMenu(expanded = expandido, onDismissRequest = { expandido = false }) {
             if (campanias.isEmpty()) {
                 DropdownMenuItem(
-                    text = { Text("No hay campañas registradas", color = TextoSecundario) },
+                    text = { Text("No hay campaÃ±as registradas", color = TextoSecundario) },
                     onClick = { expandido = false }
                 )
             } else {
@@ -919,7 +920,7 @@ private fun DropdownCampania(
 }
 
 /**
- * Tarjeta de métrica individual para la Sección 1.
+ * Tarjeta de mÃ©trica individual para la SecciÃ³n 1.
  */
 @Composable
 private fun TarjetaMetrica(
@@ -963,7 +964,7 @@ internal fun DoubleBarIndicator(
                 modifier = Modifier.weight(0.5f).height(12.dp)
             )
             Text(
-                "%.2f".format(valueA),
+                FormatUtils.formatDecimal(valueA.toDouble()),
                 modifier = Modifier.weight(0.2f),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -980,7 +981,7 @@ internal fun DoubleBarIndicator(
                 modifier = Modifier.weight(0.5f).height(12.dp)
             )
             Text(
-                "%.2f".format(valueB),
+                FormatUtils.formatDecimal(valueB.toDouble()),
                 modifier = Modifier.weight(0.2f),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
@@ -991,7 +992,7 @@ internal fun DoubleBarIndicator(
 }
 
 /**
- * Placeholder para las secciones que requieren selección previa de campaña.
+ * Placeholder para las secciones que requieren selecciÃ³n previa de campaÃ±a.
  */
 @Composable
 private fun PlaceholderSeleccion(mensaje: String) {
@@ -1016,4 +1017,5 @@ private fun PlaceholderSeleccion(mensaje: String) {
         }
     }
 }
+
 
