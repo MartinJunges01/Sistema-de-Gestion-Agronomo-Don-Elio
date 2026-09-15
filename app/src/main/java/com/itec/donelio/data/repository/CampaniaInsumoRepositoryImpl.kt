@@ -29,6 +29,10 @@ class CampaniaInsumoRepositoryImpl @Inject constructor(
         campaniaInsumoDao.asignarInsumo(campaniaInsumo.toEntity())
     }
 
+    override suspend fun actualizarInsumo(campaniaInsumo: CampaniaInsumo) {
+        campaniaInsumoDao.actualizarInsumo(campaniaInsumo.toEntity())
+    }
+
     override suspend fun desvincularInsumo(campaniaInsumo: CampaniaInsumo) {
         campaniaInsumoDao.desvincularInsumo(campaniaInsumo.id)
     }
