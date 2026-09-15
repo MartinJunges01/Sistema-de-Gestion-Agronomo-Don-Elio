@@ -3,83 +3,83 @@
 - Se corrigio el renderizado del punto de datos unico en graficos de rendimiento (Issue #438).
 - Se restauraron y corrigieron problemas de encoding con los iconos/emojis del Formulario Insumos (Issue #440).
 
-**[2026-09-12] - fix(ui): estandarizaciÃ³n de nÃºmeros, contadores de campaÃ±a y cÃ¡lculo de ingresos [out-of-scope]**
+**[2026-09-12] - fix(ui): estandarización de números, contadores de campaña y cálculo de ingresos [out-of-scope]**
 
 > âš ï¸ Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
 
-- `ObtenerResumenRendimientoUseCase`: Se cambiÃ³ el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
-- `TareaViewModel` y `DetalleCampaniaScreen`: El card del menÃº ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
-- `DetalleCampaniaScreen` (Cosechas): El card ahora contabiliza **todas** las cosechas (almacenadas + ventas/reservas) en lugar de solo las almacenadas. AdemÃ¡s, la unidad de medida se cambiÃ³ de "Kg" a "Tn" para mantener consistencia.
-- `FormatUtils` **[NUEVO]**: Se creÃ³ un utilitario centralizado con la configuraciÃ³n `Locale("es", "AR")` para asegurar que en toda la aplicaciÃ³n los miles se separen con punto (`.`) y los decimales con coma (`,`).
+- `ObtenerResumenRendimientoUseCase`: Se cambió el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
+- `TareaViewModel` y `DetalleCampaniaScreen`: El card del menú ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
+- `DetalleCampaniaScreen` (Cosechas): El card ahora contabiliza **todas** las cosechas (almacenadas + ventas/reservas) en lugar de solo las almacenadas. Además, la unidad de medida se cambió de "Kg" a "Tn" para mantener consistencia.
+- `FormatUtils` **[NUEVO]**: Se creó un utilitario centralizado con la configuración `Locale("es", "AR")` para asegurar que en toda la aplicación los miles se separen con punto (`.`) y los decimales con coma (`,`).
 - `DashboardOperacionesScreen`, `CosechasScreen`, `InsumosScreen`: Refactorizados para usar `FormatUtils` en lugar de formatos de texto ad-hoc.
 
-> âš ï¸ Estos cambios fueron detectados durante la verificaciÃ³n manual post-merge de las ramas de la iteraciÃ³n 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
+> âš ï¸ Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
 
-- `ObtenerResumenRendimientoUseCase`: Corregido el cÃ¡lculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
-- `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operaciÃ³n la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la ediciÃ³n de cosechas tipo Venta solo actualizaba la tabla base.
+- `ObtenerResumenRendimientoUseCase`: Corregido el cálculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
+- `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operación la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la edición de cosechas tipo Venta solo actualizaba la tabla base.
 - `FormularioCosechaViewModel`:
-  - Fallback al `UltimaSeleccionManager`: si el formulario se abre sin `campaniaId` explÃ­cito (ej. botÃ³n FAB global), ahora pre-carga la Ãºltima campaÃ±a seleccionada (homologa comportamiento con Tareas e Insumos â€” out-of-scope de #441).
-  - SanitizaciÃ³n de decimales: `onCantidadChange` y `onPrecioChange` normalizan coma `,` a punto `.` antes de parsear, evitando que valores como `1234,5` se guarden como `0`.
-  - `cargarCosecha()` ahora tambiÃ©n consulta `CosechaNoAlmacenadaRepository` para pre-cargar `tipo` y `precio` al editar cosechas no almacenadas (out-of-scope de #439).
+  - Fallback al `UltimaSeleccionManager`: si el formulario se abre sin `campaniaId` explícito (ej. botón FAB global), ahora pre-carga la última campaña seleccionada (homologa comportamiento con Tareas e Insumos â€” out-of-scope de #441).
+  - Sanitización de decimales: `onCantidadChange` y `onPrecioChange` normalizan coma `,` a punto `.` antes de parsear, evitando que valores como `1234,5` se guarden como `0`.
+  - `cargarCosecha()` ahora también consulta `CosechaNoAlmacenadaRepository` para pre-cargar `tipo` y `precio` al editar cosechas no almacenadas (out-of-scope de #439).
 - `FormularioCosechaScreen`: Label del campo precio cambiado de `"Precio (Opcional)"` a `"Precio Total de Venta ($)"` para claridad del usuario.
-- `VincularInsumoScreen`: Agrega `SelectorCampania` en la parte superior para mostrar y permitir cambiar la campaÃ±a destino. Listado de insumos refactorizado a `LazyColumn` para scroll nativo (out-of-scope de #439).
-- `docs/bugs_identificados.md`: Registrada DT [PENDIENTE-ID] para la ediciÃ³n de insumos vinculados (feature no implementada originalmente).
+- `VincularInsumoScreen`: Agrega `SelectorCampania` en la parte superior para mostrar y permitir cambiar la campaña destino. Listado de insumos refactorizado a `LazyColumn` para scroll nativo (out-of-scope de #439).
+- `docs/bugs_identificados.md`: Registrada DT [PENDIENTE-ID] para la edición de insumos vinculados (feature no implementada originalmente).
 - `docs/plan_de_pruebas.md`: Agregados casos GWT FC-1 a FC-6 y DR-1, DR-2.
 
-**[2026-09-11] - Formulario dedicado de vinculaciÃ³n de insumos (Pantalla Unificada) [#439]**
-- `VincularInsumoScreen`: Se creÃ³ una pantalla nueva independiente para vincular insumos a campaÃ±as, unificando la lÃ³gica.
-- `InsumosScreen`: Se eliminÃ³ el `ModalBottomSheet` interno que tenÃ­a duplicada la funcionalidad de vinculaciÃ³n. Ahora se redirige a `VincularInsumoScreen`.
-- `DetalleCampaniaScreen`: En `CardModuloInsumos`, el botÃ³n "+" (Nuevo Insumo) ahora navega correctamente al formulario de vinculaciÃ³n `VincularInsumoScreen` de esa campaÃ±a (antes navegaba al formulario de crear insumo al catÃ¡logo, lo que era un flujo incorrecto).
-- `InsumoVinculacionViewModel`: Actualizado el `init` para que priorice el `campaniaId` de navegaciÃ³n y aplique sincronizaciÃ³n segura del manager (evitando posibles race conditions).
+**[2026-09-11] - Formulario dedicado de vinculación de insumos (Pantalla Unificada) [#439]**
+- `VincularInsumoScreen`: Se creó una pantalla nueva independiente para vincular insumos a campañas, unificando la lógica.
+- `InsumosScreen`: Se eliminó el `ModalBottomSheet` interno que tenía duplicada la funcionalidad de vinculación. Ahora se redirige a `VincularInsumoScreen`.
+- `DetalleCampaniaScreen`: En `CardModuloInsumos`, el botón "+" (Nuevo Insumo) ahora navega correctamente al formulario de vinculación `VincularInsumoScreen` de esa campaña (antes navegaba al formulario de crear insumo al catálogo, lo que era un flujo incorrecto).
+- `InsumoVinculacionViewModel`: Actualizado el `init` para que priorice el `campaniaId` de navegación y aplique sincronización segura del manager (evitando posibles race conditions).
 - `InsumoVinculacionViewModelTest`: Agregadas pruebas para verificar que `asignarInsumo` y los UseCases funcionan correctamente con el `campaniaId`.
 
 **[2026-09-11] - Fix balance en Dashboard y overflow de tarjetas [#437]**
-- `DashboardOperacionesScreen`: Se implementÃ³ la utilidad `formatearMoneda` para manejar correctamente balances negativos con el signo por delante, utilizando `Locale.US` para el control manual del separador de miles/decimales y formato abreviado (K/M) segÃºn magnitud.
-- `CardResumen`: Se aplicÃ³ una altura fija de `72.dp` y `TextOverflow.Ellipsis` para garantizar la uniformidad del grid.
+- `DashboardOperacionesScreen`: Se implementó la utilidad `formatearMoneda` para manejar correctamente balances negativos con el signo por delante, utilizando `Locale.US` para el control manual del separador de miles/decimales y formato abreviado (K/M) según magnitud.
+- `CardResumen`: Se aplicó una altura fija de `72.dp` y `TextOverflow.Ellipsis` para garantizar la uniformidad del grid.
 - Se agregaron las pruebas unitarias correspondientes en `FormatearMonedaTest` con 9 casos GWT.
 
 **[2026-09-11] - Fix race condition en contadores de Tareas y Cosechas en DetalleCampaniaScreen [#441]**
-- `TareaViewModel`: el `init{}` ahora prioriza el `campaniaId` del `SavedStateHandle`. Si hay ID explÃ­cito, notifica al `UltimaSeleccionManager` pero no suscribe su flow, eliminando la race condition donde un ID obsoleto sobreescribÃ­a el correcto.
-- `CosechaViewModel`: mismo patrÃ³n de prioridad aplicado. Se agrega `sincronizarCampania(id)` para uso desde `DetalleCampaniaScreen` sin contaminar el manager global.
+- `TareaViewModel`: el `init{}` ahora prioriza el `campaniaId` del `SavedStateHandle`. Si hay ID explícito, notifica al `UltimaSeleccionManager` pero no suscribe su flow, eliminando la race condition donde un ID obsoleto sobreescribía el correcto.
+- `CosechaViewModel`: mismo patrón de prioridad aplicado. Se agrega `sincronizarCampania(id)` para uso desde `DetalleCampaniaScreen` sin contaminar el manager global.
 - `DetalleCampaniaScreen`: `CardModuloCosechas` migra de `seleccionarCampania()` a `sincronizarCampania()`, consistente con `CardModuloTareas`.
-- Se crean tests unitarios GWT en `CosechaViewModelTest` y se amplÃ­a `TareaViewModelTest` con casos de la race condition.
+- Se crean tests unitarios GWT en `CosechaViewModelTest` y se amplía `TareaViewModelTest` con casos de la race condition.
 
 **[2026-09-04] - Persistir seleccion de campania en BottomNav (Issue #416)**
-- Se agregÃ³ UltimaSeleccionManager (Singleton inyectado por Hilt) para mantener en memoria el ID de la campaÃ±a seleccionada.
+- Se agregó UltimaSeleccionManager (Singleton inyectado por Hilt) para mantener en memoria el ID de la campaña seleccionada.
 - Se refactorizaron InsumoVinculacionViewModel, ObservacionViewModel, CosechaViewModel y TareaViewModel para inyectar UltimaSeleccionManager.
 - Se crearon y modificaron las pruebas unitarias para mockear UltimaSeleccionManager.
 
 **[2026-09-03] - Fix metricas financieras Dashboard (Issue #402)**
-- Se agregÃ³ getAllNoAlmacenadas al CosechaNoAlmacenadaRepository.
-- Se modificÃ³ ObtenerResumenRendimientoUseCase para calcular ingresos con precio x cantidad de ventas.
-- Se actualizÃ³ el modelo ResumenRendimiento incluyendo ingresosBrutos y balance.
-- Se modificÃ³ DashboardOperacionesScreen para visualizar Capital Invertido, Ingresos Brutos y Balance con colores dinÃ¡micos.
-- Se creÃ³ ObtenerResumenRendimientoUseCaseTest para validar las reglas matemÃ¡ticas en Domain.
+- Se agregó getAllNoAlmacenadas al CosechaNoAlmacenadaRepository.
+- Se modificó ObtenerResumenRendimientoUseCase para calcular ingresos con precio x cantidad de ventas.
+- Se actualizó el modelo ResumenRendimiento incluyendo ingresosBrutos y balance.
+- Se modificó DashboardOperacionesScreen para visualizar Capital Invertido, Ingresos Brutos y Balance con colores dinámicos.
+- Se creó ObtenerResumenRendimientoUseCaseTest para validar las reglas matemáticas en Domain.
 
 **[2026-09-03] - Fix teclado bloquea scroll en formularios (Issue #409)**
-- Se agregÃ³ el modificador .verticalScroll(rememberScrollState()) y .imePadding() a los contenedores Column principales en Insumo, CampaÃ±a, Tarea, ObservaciÃ³n, y Cosecha.
-- Se reemplazÃ³ .weight(1f) por .height(32.dp) en espaciadores dentro de Columns con scroll para evitar crashes de UI.
+- Se agregó el modificador .verticalScroll(rememberScrollState()) y .imePadding() a los contenedores Column principales en Insumo, Campaña, Tarea, Observación, y Cosecha.
+- Se reemplazó .weight(1f) por .height(32.dp) en espaciadores dentro de Columns con scroll para evitar crashes de UI.
 
 **[2026-09-03] - Fix nombre de usuario tras registro (Issue #413)**
-- Se abstrajo el guardado de sesiÃ³n en un nuevo GuardarSesionUseCase.
-- Se actualizÃ³ el LoginViewModel para invocar este caso de uso tras un registro y login de invitado exitosos.
-- Se aÃ±adieron y ajustaron pruebas unitarias en LoginViewModelTest.
+- Se abstrajo el guardado de sesión en un nuevo GuardarSesionUseCase.
+- Se actualizó el LoginViewModel para invocar este caso de uso tras un registro y login de invitado exitosos.
+- Se añadieron y ajustaron pruebas unitarias en LoginViewModelTest.
 
 **[2026-09-08] - Fix DTs pre-merge: preservar confirmar en edicion, callback observaciones, tests (#403, #410, #415)**
 
-**[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414, #416] IteraciÃ³n 4: Reportes, Auth, Dashboard y UX**
-- **#416 (feat/ux):** UltimaSeleccionManager para persistir campaÃ±a seleccionada al navegar desde BottomNav.
-- **#402 (fix/dashboard):** Reglas de negocio de mÃ©tricas financieras (ingresos, balance) movidas a Domain. Tarjetas actualizadas con colores dinÃ¡micos.
+**[2026-09-01] - [#398, #401, #402, #405, #406, #407, #408, #409, #412, #413, #414, #416] Iteración 4: Reportes, Auth, Dashboard y UX**
+- **#416 (feat/ux):** UltimaSeleccionManager para persistir campaña seleccionada al navegar desde BottomNav.
+- **#402 (fix/dashboard):** Reglas de negocio de métricas financieras (ingresos, balance) movidas a Domain. Tarjetas actualizadas con colores dinámicos.
 - **#409 (fix/ux):** Scroll vertical y imePadding en formularios para que el teclado no tape campos.
 - **#413 (fix/auth):** GuardarSesionUseCase para persistir nombre de usuario tras registro.
-- **#401 (fix/dashboard):** Se conectÃ³ el botÃ³n 'Ver detalle' de rendimiento en el Dashboard con la ruta de Reportes.
-- **#414 (fix/dashboard):** Se corrigiÃ³ el cÃ¡lculo del umbral de inicio del dÃ­a para que las tareas de hoy no aparezcan en rojo.
-- **#408 (fix/reportes):** Se corrigiÃ³ el recorte vertical del PieChart y el desborde de leyendas, forzando aspectRatio(1f).
-- **#407 (fix/pdf):** Solucionado el problema de renderizado de caracteres especiales (Ã‘, tildes) en la exportaciÃ³n a PDF.
-- **#412 (feat/reportes):** Se agregaron etiquetas para el eje X en el grÃ¡fico Canvas de EvoluciÃ³n HistÃ³rica.
-- **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes con DateRangePicker y accesos rÃ¡pidos.
-- **#406 (feat/reportes):** RediseÃ±o del comparador de campaÃ±as con dos tarjetas lado a lado y mÃ©tricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
-- **#398 (refactor/reportes):** Se refactorizÃ³ ReportesViewModel para usar Use Cases en lugar de repositorios directos.
+- **#401 (fix/dashboard):** Se conectó el botón 'Ver detalle' de rendimiento en el Dashboard con la ruta de Reportes.
+- **#414 (fix/dashboard):** Se corrigió el cálculo del umbral de inicio del día para que las tareas de hoy no aparezcan en rojo.
+- **#408 (fix/reportes):** Se corrigió el recorte vertical del PieChart y el desborde de leyendas, forzando aspectRatio(1f).
+- **#407 (fix/pdf):** Solucionado el problema de renderizado de caracteres especiales (Ã‘, tildes) en la exportación a PDF.
+- **#412 (feat/reportes):** Se agregaron etiquetas para el eje X en el gráfico Canvas de Evolución Histórica.
+- **#405 (feat/reportes):** Implementados filtros de tiempo avanzados en Reportes con DateRangePicker y accesos rápidos.
+- **#406 (feat/reportes):** Rediseño del comparador de campañas con dos tarjetas lado a lado y métricas de Cosecha (Tn), Rendimiento (Tn/Ha) y Costo por Tonelada ($/Tn).
+- **#398 (refactor/reportes):** Se refactorizó ReportesViewModel para usar Use Cases en lugar de repositorios directos.
 - **DT/confirmar (#410):** `NuevaTareaViewModel` â€” Agrega campo `confirmar` a `NuevaTareaFormState` y lo carga en `cargarTarea()`. `guardar()` en modo edicion usa `current.confirmar` en lugar del literal `false`, evitando que una tarea completada vuelva a pendiente al ser editada.
 - **DT/observaciones (#415):** `DetalleCampaniaScreen` â€” `CardModuloObservaciones` recibe ahora un callback separado `onGoToNuevaObservacion` para el boton `+`, siendo semanticamente consistente con los otros modulos del grid 2xN.
 - **test(insumos) (#403):** `FormularioInsumoViewModelTest` [NUEVO] â€” 5 casos GWT cubriendo los AC del Issue #403: estado inicial false, solo nombre/categoria no habilitan, nombre+categoria validos habilitan, borrar nombre deshabilita.
@@ -88,56 +88,56 @@
 - **docs(roadmap):** `roadmap_iteracion_4.md` â€” Todos los issues de la Iteracion 4 marcados `[x]` reflejando el estado real de `main`.
 - **docs(bugs):** `bugs_identificados.md` â€” Conflicto de merge resuelto. Nuevas DTs de las PRs #435 y #436 registradas.
 
-**[2026-08-28] - Fix pre-testing: correcciones de UX y validaciÃ³n (#335, #336, #339)**
-- **#335 (fix/cosecha):** Se corrigiÃ³ el flujo de ediciÃ³n de cosechas. `FormularioCosechaScreen` ahora recibe el parÃ¡metro `cosechaId` desde la navegaciÃ³n y muestra el tÃ­tulo dinÃ¡mico \"Editar Cosecha\" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
-**[2026-09-01] - IteraciÃ³n 4 / Bloque 3: ABM de Tareas, EdiciÃ³n de Foto, Fix Insumo y RediseÃ±o CampaÃ±a (#403, #404, #410, #415)**
+**[2026-08-28] - Fix pre-testing: correcciones de UX y validación (#335, #336, #339)**
+- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico \"Editar Cosecha\" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
+**[2026-09-01] - Iteración 4 / Bloque 3: ABM de Tareas, Edición de Foto, Fix Insumo y Rediseño Campaña (#403, #404, #410, #415)**
 
-- **#403 (fix/insumos):** `FormularioInsumoViewModel` â€” `evaluarValidaciones()` ahora se llama dentro de `onNombreChange()` y `onCategoriaChange()`. El estado `isGuardarHabilitado` se actualiza en tiempo real al tipear, habilitando el botÃ³n "Guardar Insumo" en cuanto los campos son vÃ¡lidos.
-- **#404 (fix/observaciones):** `ObservacionesScreen` â€” El `AlertDialog` inline (solo texto) fue reemplazado por el composable `DialogEditarObservacion` existente, que ya soporta reemplazar y eliminar la foto desde cÃ¡mara/galerÃ­a. El callback `onGuardar` conecta directamente con `listViewModel.editarObservacion`.
+- **#403 (fix/insumos):** `FormularioInsumoViewModel` â€” `evaluarValidaciones()` ahora se llama dentro de `onNombreChange()` y `onCategoriaChange()`. El estado `isGuardarHabilitado` se actualiza en tiempo real al tipear, habilitando el botón "Guardar Insumo" en cuanto los campos son válidos.
+- **#404 (fix/observaciones):** `ObservacionesScreen` â€” El `AlertDialog` inline (solo texto) fue reemplazado por el composable `DialogEditarObservacion` existente, que ya soporta reemplazar y eliminar la foto desde cámara/galería. El callback `onGuardar` conecta directamente con `listViewModel.editarObservacion`.
 - **#410 (feat/tareas):** ABM completo de Tareas implementado:
-  - `TareasScreen`: Iconos âœï¸ (Editar) y ðŸ—‘ï¸ (Eliminar) en cada `TarjetaTareaItem` para tareas no completadas. DiÃ¡logo de confirmaciÃ³n antes de eliminar.
-  - `NavRoutes.kt`: Ruta `NuevaTarea` extendida con parÃ¡metro opcional `tareaId`.
+  - `TareasScreen`: Iconos âœï¸ (Editar) y ðŸ—‘ï¸ (Eliminar) en cada `TarjetaTareaItem` para tareas no completadas. Diálogo de confirmación antes de eliminar.
+  - `NavRoutes.kt`: Ruta `NuevaTarea` extendida con parámetro opcional `tareaId`.
   - `NuevaTareaViewModel`: Lee `tareaId` desde `SavedStateHandle`, pre-carga el formulario con los datos existentes y bifurca el guardado entre `CrearTareaUseCase` y `EditarTareaUseCase`.
-  - `NuevaTareaScreen`: TÃ­tulo ("Nueva Tarea" / "Editar Tarea") y texto del botÃ³n ("Guardar Tarea" / "Guardar Cambios") dinÃ¡micos segÃºn el modo.
+  - `NuevaTareaScreen`: Título ("Nueva Tarea" / "Editar Tarea") y texto del botón ("Guardar Tarea" / "Guardar Cambios") dinámicos según el modo.
   - `ObtenerTareaPorIdUseCase` [NUEVO]: Caso de uso para recuperar una tarea por su ID.
-- **#415 (ux/campanias):** `DetalleCampaniaScreen` rediseÃ±ada como Dashboard Grid 2xN:
+- **#415 (ux/campanias):** `DetalleCampaniaScreen` rediseñada como Dashboard Grid 2xN:
   - Eliminado el `ScrollableTabRow` y la variable `selectedTab`.
-  - Reemplazado por `LazyVerticalGrid(GridCells.Fixed(2))` con 4 tarjetas de mÃ³dulo (Tareas, Insumos, Cosechas, Observaciones).
-  - Cada tarjeta (`ModuloCardBase`) muestra: contador de elementos, mÃ©trica principal y botÃ³n `+` verde para acceso rÃ¡pido al formulario de Alta precargado con `campaniaId`.
-  - El toque en el cuerpo de la tarjeta navega al listado completo del mÃ³dulo.
+  - Reemplazado por `LazyVerticalGrid(GridCells.Fixed(2))` con 4 tarjetas de módulo (Tareas, Insumos, Cosechas, Observaciones).
+  - Cada tarjeta (`ModuloCardBase`) muestra: contador de elementos, métrica principal y botón `+` verde para acceso rápido al formulario de Alta precargado con `campaniaId`.
+  - El toque en el cuerpo de la tarjeta navega al listado completo del módulo.
   - Nuevos callbacks `onGoToNuevaTarea`, `onGoToNuevoInsumo` y `onGoToNuevaCosecha` conectados en `screens.kt`.
 
 
-- **#335 (fix/cosecha):** Se corrigiÃ³ el flujo de ediciÃ³n de cosechas. `FormularioCosechaScreen` ahora recibe el parÃ¡metro `cosechaId` desde la navegaciÃ³n y muestra el tÃ­tulo dinÃ¡mico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
-- **#336 (fix/cosecha):** Se agregÃ³ `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) segÃºn el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6â€“9).
-- **#339 (fix/campania):** Se agregÃ³ `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
+- **#335 (fix/cosecha):** Se corrigió el flujo de edición de cosechas. `FormularioCosechaScreen` ahora recibe el parámetro `cosechaId` desde la navegación y muestra el título dinámico "Editar Cosecha" cuando corresponde. `screens.kt` actualizado para pasar `cosechaId` al composable.
+- **#336 (fix/cosecha):** Se agregó `errorFecha` al estado `FormularioCosechaState`. El mapeo de errores en `guardar()` ahora distingue el campo correcto (`errorCantidad` vs `errorFecha` vs `errorGeneral`) según el mensaje del `ValidarDatosCosechaUseCase`. La UI muestra el error en el campo Fecha correspondiente. Se agregaron 4 nuevos casos de test unitario (Tests 6â€“9).
+- **#339 (fix/campania):** Se agregó `horizontalScroll` al `Row` de chips informativos en `HeaderCampania` para evitar cortes en pantallas estrechas. Los textos de totales en `TabInsumos` y `TabCosechas` usan `softWrap = true` y `fontSize` reducido para asegurar renderizado correcto.
 
-**[2026-08-28] - Merge Unificado de IteraciÃƒÂ³n 3 (Issues #352, #353, #354, #360, #373, #374)**
-- **#352 / #353 / #374**: Reportes avanzados, evoluciÃƒÂ³n histÃƒÂ³rica por cultivo con Canvas, filtros multicampaÃƒÂ±a, y leyenda ajustada en el PieChart.
-- **#354**: SincronizaciÃƒÂ³n de insumos tras creaciÃƒÂ³n (InsumoVinculacionViewModel).
-- **#360**: EstandarizaciÃƒÂ³n de UX al validar insumos (Lazy validation on submit).
-- **#373**: ValidaciÃƒÂ³n en capa de dominio y obligatoriedad de almacÃƒÂ©n en cosechas.
-- **Deuda TÃƒÂ©cnica**: CorrecciÃƒÂ³n de firmas redundantes (DT-021), nuevos test de dominio (DT-023) y actualizaciÃƒÂ³n del Plan de Pruebas (DT-024). Refactor de Clean Architecture diferido a Issue #398 (DT-022).
+**[2026-08-28] - Merge Unificado de Iteración 3 (Issues #352, #353, #354, #360, #373, #374)**
+- **#352 / #353 / #374**: Reportes avanzados, evolución histórica por cultivo con Canvas, filtros multicampaña, y leyenda ajustada en el PieChart.
+- **#354**: Sincronización de insumos tras creación (InsumoVinculacionViewModel).
+- **#360**: Estandarización de UX al validar insumos (Lazy validation on submit).
+- **#373**: Validación en capa de dominio y obligatoriedad de almacén en cosechas.
+- **Deuda Técnica**: Corrección de firmas redundantes (DT-021), nuevos test de dominio (DT-023) y actualización del Plan de Pruebas (DT-024). Refactor de Clean Architecture diferido a Issue #398 (DT-022).
 
 
 **[2026-08-25] - [#357] feat(export): implementar paginacion automatica en reportes PDF**
 - Se refactorizo ReportExporter.exportToPdf() para mantener control dinamico de yPosition.
-- Se aÃƒÂ±adio logica de salto de pagina al superar los 800f en el eje Y.
+- Se añadio logica de salto de pagina al superar los 800f en el eje Y.
 - Se extrajo el pintado de cabeceras en funciones internas para re-imprimirlas automaticamente al abrir una nueva pagina.
 
 **[2026-08-25] - [#358] test(reportes): test unitario de DoubleBarIndicator y arreglo de mocks**
 - Se expuso DoubleBarIndicator con @VisibleForTesting e internal.
 - Se agrego el test instrumentado DoubleBarIndicatorTest validando el renderizado cuando max = 0f.
-- Se aÃƒÂ±adieron hectareas por defecto a las entidades mockeadas en DAO.
+- Se añadieron hectareas por defecto a las entidades mockeadas en DAO.
 
 **[2026-08-25] - [#359] test(reportes): implementar tests VM-R8 y VM-R9 de guardia de exportacion**
-- Se implemento validacion para exportarReporteCsv y exportarReportePdf cuando no hay campaÃƒÂ±a seleccionada.
+- Se implemento validacion para exportarReporteCsv y exportarReportePdf cuando no hay campaña seleccionada.
 - Ambos validan que exportStatus emite la cadena correcta.
 
 **[2026-08-25] - [#350] feat(reportes): agregar Costo por Hectarea ($/Ha)**
 - Se agrego CalcularCostoPorHectareaUseCase para aislar la logica.
 - ReportesViewModel inyecta estados transformados a Strings de moneda.
-- Se aÃƒÂ±adio una tarjeta y grafico de barras para visualizar la diferencia de rentabilidad por hectarea entre campaÃƒÂ±as.
+- Se añadio una tarjeta y grafico de barras para visualizar la diferencia de rentabilidad por hectarea entre campañas.
 
 
 **[2026-08-25] - [#351] feat(cultivos): ABM de Cultivos (CatÃƒÆ’Ã‚Â¡logo estandarizado)**
