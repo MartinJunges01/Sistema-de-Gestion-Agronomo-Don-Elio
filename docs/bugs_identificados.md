@@ -178,27 +178,6 @@ Planteamiento estratégico documentado. Con el rediseño del grid 2xN y la persi
 
 ---
 
-## [#450] test(insumos/tareas): tests unitarios faltantes para AC de issues #403 y #410
-
-**Severidad:** Ã°Å¸â€Âµ Deuda Técnica (Testing)
-**Módulo:** Insumos / Tareas
-**Archivos afectados:**
-- `app/src/test/.../insumo/FormularioInsumoViewModelTest.kt` (no existe)
-- `app/src/test/.../tarea/NuevaTareaViewModelTest.kt` (cobertura de edición faltante)
-
-**Descripción**
-Los Acceptance Criteria de los Issues #403 y #410 definen tests unitarios obligatorios que no fueron incluidos en el PR #436:
-- **#403:** Test: formulario nuevo + tipear nombre y categoría válidos Ã¢â€ â€™ `isGuardarHabilitado = true`.
-- **#410:** Tests: edición de tarea Ã¢â€ â€™ datos pre-cargados correctamente; eliminación Ã¢â€ â€™ tarea removida del estado.
-
-**Criterios de Aceptación**
-- [ ] Crear `FormularioInsumoViewModelTest` con caso Given-When-Then para modo creación.
-- [ ] Agregar casos de edición y eliminación a `NuevaTareaViewModelTest` / `TareaViewModelTest`.
-- [ ] Documentar los nuevos casos GWT en `docs/plan_de_pruebas.md`.
-- [ ] Todos los tests pasan con `./gradlew test`.
-
-## ?? DEUDA TÃ‰CNICA RESUELTA â€” Iteración 5
-
 ## [RESUELTO-EN-PR-446] fix(dashboard): cálculo de ingresos dependiente de texto libre
 **Severidad:** ?? Bug Funcional
 **Módulo:** Dashboard
