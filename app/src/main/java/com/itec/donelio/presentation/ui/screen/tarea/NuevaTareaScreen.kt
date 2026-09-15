@@ -60,7 +60,7 @@ fun NuevaTareaScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
-                Text("CampaÃ±a vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 SelectorCampania(
                     campanias = campanias,
                     selectedCampaniaId = state.campaniaId,
@@ -182,7 +182,7 @@ fun NuevaTareaScreen(
                     onCheckedChange = viewModel::onNotificarChange,
                     colors = CheckboxDefaults.colors(checkedColor = AgriVerde)
                 )
-                Text("Activar NotificaciÃ³n de Recordatorio", color = TextoPrincipal)
+                Text("Activar Notificación de Recordatorio", color = TextoPrincipal)
             }
 
             Spacer(modifier = Modifier.height(32.dp))

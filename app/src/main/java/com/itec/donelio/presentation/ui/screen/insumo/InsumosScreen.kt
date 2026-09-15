@@ -51,9 +51,9 @@ fun InsumosScreen(
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
-                    Icon(Icons.Default.Settings, contentDescription = "CatÃ¡logo", modifier = Modifier.size(20.dp), tint = AgriVerde)
+                    Icon(Icons.Default.Settings, contentDescription = "Catálogo", modifier = Modifier.size(20.dp), tint = AgriVerde)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("CatÃ¡logo", color = AgriVerde)
+                    Text("Catálogo", color = AgriVerde)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
@@ -88,7 +88,7 @@ fun InsumosScreen(
 
             if (vinculados.isEmpty()) {
                 item {
-                    Text("No hay insumos vinculados a esta campaÃ±a", color = TextoSecundario, fontSize = 14.sp, modifier = Modifier.padding(vertical = 8.dp))
+                    Text("No hay insumos vinculados a esta campaña", color = TextoSecundario, fontSize = 14.sp, modifier = Modifier.padding(vertical = 8.dp))
                 }
             } else {
                 items(vinculados) { vinculado ->

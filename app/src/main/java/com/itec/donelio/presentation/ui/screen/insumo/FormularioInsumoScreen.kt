@@ -79,7 +79,7 @@ fun FormularioInsumoScreen(
             OutlinedTextField(
                 value = state.categoria,
                 onValueChange = viewModel::onCategoriaChange,
-                label = { Text("CategorÃ­a (Ej: Semilla, Fertilizante)") },
+                label = { Text("Categoría (Ej: Semilla, Fertilizante)") },
                 modifier = Modifier.fillMaxWidth(),
                 isError = state.errorCategoria != null,
                 supportingText = state.errorCategoria?.let { { Text(it, color = MaterialTheme.colorScheme.error) } },
