@@ -1,7 +1,7 @@
 # Bugs Identificados
 
-> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_5.md`).
-> Este archivo registra **deuda técnica nueva** detectada durante las sesiones de desarrollo de la Iteración 5, pendiente de subir a GitHub para obtener su ID.
+> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_6.md`).
+> Este archivo registra **deuda técnica nueva** detectada durante las sesiones de desarrollo de la Iteración 6, pendiente de subir a GitHub para obtener su ID.
 
 ---
 
@@ -25,145 +25,12 @@ Breve descripción del problema encontrado...
 - [ ] Criterio 2
 -->
 
-## 🔴 DEUDA TÉCNICA PENDIENTE — Iteración 5
+## 🔴 DEUDA TÉCNICA PENDIENTE — Iteración 6
 
-## [#455] feat(insumos): acumular cantidad al vincular un insumo repetido en lugar de reemplazarlo
-**Severidad:** 🔵 Feature Faltante / UX
-**Módulo:** Insumos / CampaniaInsumo
-**Descripción:** Actualmente, si se intenta vincular un insumo que ya está asociado a la misma campaña, el sistema simplemente sobreescribe el registro anterior. El comportamiento esperado debería ser que se acumule/sume la nueva cantidad ingresada a la cantidad preexistente.
-
-## [#413] fix(auth): nombre de usuario muestra Invitado tras primer registro
-
-**Severidad:** 🟡 Bug Funcional
-**Módulo:** Autenticación / Sesión
-**Archivo afectado:** `presentation/viewmodel/login/LoginViewModel.kt`
-
-**Descripción**
-En LoginViewModel.registro(), el flujo llama a registroUseCase() y emite registroExitoso = true, pero nunca persiste el nombre en sesión usando sessionManager.saveUserName(nombre). Al ingresar por primera vez, el Dashboard muestra "Invitado".
-
-**Causa Raíz (Código)**
-```kotlin
-fun registro(nombre: String, nombreUsuario: String, contrasena: String) {
-    viewModelScope.launch {
-        registroUseCase(nombre, nombreUsuario, contrasena)
-        _state.update { it.copy(isLoading = false, registroExitoso = true) }
-        // sessionManager.saveUserName(nombre) <-- FALTA
-    }
-}
-```
-
-**Criterios de Aceptación**
-- [ ] Al completar el registro por primera vez, el Dashboard muestra el nombre real del usuario.
-- [ ] El HomeViewModel.userName refleja el nombre sin necesidad de logout/login.
-- [ ] Test unitario: registro() exitoso -> sessionManager.saveUserName() es llamado con el nombre correcto.
-
-## [#414] fix(dashboard): tareas del dia actual se marcan en rojo en el Dashboard
-
-**Severidad:** 🟡 Bug Funcional
-**Módulo:** Dashboard / Tareas
-**Archivo afectado:** `presentation/ui/screen/home/DashboardOperacionesScreen.kt`
-
-**Descripción**
-La comparación usa timestamps exactos en vez de comparar por día calendario. Una tarea de "hoy" que ya pasó en hora pero no en fecha se considera vencida y se marca en rojo.
-
-**Causa Raíz (Código)**
-```kotlin
-// DashboardOperacionesScreen.kt
-val hoy = System.currentTimeMillis() // Timestamp exacto
-val isVencida = tarea.fecha < hoy    // ❌ Tarea de hoy a las 15:30 -> true
-```
-
-**Criterios de Aceptación**
-- [ ] Tarea creada para hoy (cualquier hora) -> NO aparece en rojo en el Dashboard.
-- [ ] Tarea creada para ayer o antes -> SI aparece en rojo.
-- [ ] Tarea creada para mañana -> aparece en blanco.
-- [ ] Test unitario que valide los 3 casos anteriores contra la función de comparación.
-
-## [#415] ux(campanias): rediseño de DetalleCampaniaScreen con grid 2xN y botones de accion rapida
-
-**Severidad:** 🔵 Mejora UX
-**Módulo:** Campañas / Detalle
-**Archivo afectado:** `presentation/ui/screen/campania/DetalleCampaniaScreen.kt`
-
-**Descripción**
-Reemplazar el ScrollableTabRow por un grid de 2 columnas x N filas de botones rectangulares. Cada botón incluye un botón + secundario visible que navega directamente al formulario de esa entidad (pantalla separada) pre-cargado con el campaniaId. Al presionar el botón principal navega a la pantalla de listado.
-
-**Criterios de Aceptación**
-- [ ] El ScrollableTabRow y el contenido embebido de tabs son eliminados.
-- [ ] Grid 2xN con botones visibles en pantalla.
-- [ ] Cada botón muestra un subtexto con el contador correcto.
-- [ ] El botón + navega directamente al formulario con campaniaId.
-- [ ] El tap en el card navega a la pantalla de listado.
-
-## [#416] ux(formularios): conservar campaña seleccionada al acceder desde BottomNav
-
-**Severidad:** 🔵 Mejora UX
-**Módulo:** Formularios / Sesión
-**Archivos afectados:** Formularios de Tarea, Cosecha y Observacion. `core/UltimaSeleccionManager.kt`
-
-**Descripción**
-Cuando el usuario navega desde el BottomNav, no se pasa campaniaId en la ruta. Crear un UltimaSeleccionManager para persistir el campaniaId de la última campaña interactuada para usarla como fallback al navegar desde BottomNav.
-
-**Criterios de Aceptación**
-- [ ] Formularios desde BottomNav muestran preseleccionada la última campaña usada.
-- [ ] Cambio manual de campaña se persiste como la última.
-- [ ] Un chip visible indica la campaña preseleccionada.
-- [ ] Sin interferir con la navegación desde DetalleCampania (campaniaId explícito).
-
-## [#417] ux(navegacion): planteamiento para reducir clics de acceso a cosechas, observaciones y tareas
-
-**Severidad:** 🔵 Mejora UX
-**Módulo:** Navegación / UX Global
-
-**Descripción**
-Planteamiento estratégico documentado. Con el rediseño del grid 2xN y la persistencia de campaña, el flujo de creación baja de 6 clics a 3.
-
-**Criterios de Aceptación**
-- [ ] Flujo de creación desde Detalle de Campaña no supera 3 clics.
-- [ ] Flujo desde BottomNav no requiere re-seleccionar campaña si ya fue usada.
-- [ ] Documentar en docs/plan_de_pruebas.md los flujos GWT de los 3 escenarios.
+<!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
 
 ---
 
-## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 5
+## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
 
-## [RESUELTO-EN-PR-461] fix(ui): correccion de encoding en vistas y graficos con datos historicos vacios (#457)
-**Severidad:** 🔴 Bug Bloqueante / UX
-**Módulo:** UI Global / Reportes
-**Descripción:** Los archivos `.kt` tenían errores de codificación (mojibake) que mostraban caracteres corruptos en toda la UI. Además, el gráfico histórico excluía campañas activas, mostrando un mensaje de error vacío.
-**Solución:** Se sanearon los `.kt` restaurando UTF-8 puro, y se removió el filtro `!estaActiva` en `ObtenerEvolucionCultivoUseCase` para incluir campañas activas.
-
-## [RESUELTO-EN-PR-459] refactor(reportes): extender FormatUtils a pestaña de reportes y exportación PDF/Excel (#453)
-**Severidad:** 🔵 Baja / Consistencia Visual
-**Módulo:** Reportes
-**Descripción:** Se implementó `FormatUtils` para estandarizar los separadores de miles (punto) y decimales (coma) en los reportes y exportaciones.
-
-## [RESUELTO-EN-PR-460] feat(insumos): edición de insumos vinculados a campaña (#456)
-**Severidad:** 🔵 UX / Feature Faltante
-**Módulo:** Insumos / CampaniaInsumo
-**Descripción:** El listado de insumos vinculados a una campaña solo permitía eliminar una vinculación pero no editarla. 
-**Solución:** Se creó UseCase y pantalla de edición reutilizando el modo de vinculación con datos precargados.
-
-## [RESUELTO-EN-PR-446] fix(dashboard): cálculo de ingresos dependiente de texto libre
-**Severidad:** 🟡 Bug Funcional
-**Módulo:** Dashboard
-**Descripción:** El dashboard filtraba ingresos buscando la palabra "venta" exacta. Dado que el campo es libre, causaba que ventas reales no se sumaran.
-**Solución:** Se modificó `ObtenerResumenRendimientoUseCase` para sumar cualquier cosecha no almacenada con `precio > 0.0`.
-
-## [RESUELTO-EN-PR-446] fix(ui): formato numérico inconsistente y fallas con decimales
-**Severidad:** 🔵 Baja / UX
-**Módulo:** UI Global
-**Descripción:** El separador de miles aparecía como coma, y el usuario no podía ingresar comas decimales sin que se borrara el valor.
-**Solución:** Se creó `FormatUtils` con Locale("es", "AR") para toda la UI, y se añadió lógica de reemplazo automático de comas por puntos en los TextFields.
-
-## [RESUELTO-EN-PR-446] fix(campania): contadores de DetalleCampania no incluyen tareas completadas ni todas las cosechas
-**Severidad:** 🟡 Media / UX
-**Módulo:** Campaña
-**Descripción:** El contador de tareas de la campaña siempre mostraba 0 tareas completadas porque se alimentaba de un flow filtrado. El contador de cosechas solo sumaba las almacenadas e indicaba "Kg".
-**Solución:** Se inyectó el TareaRepository para tener un flow puro `todasLasTareas` y se corrigió el CardModuloCosechas para sumar todas y usar "Tn".
-
-## [RESUELTO-EN-PR-446] feat(cosechas): edición incompleta de ventas
-**Severidad:** 🟡 Media / UX
-**Módulo:** Cosechas
-**Descripción:** Al editar una cosecha tipo "venta", los campos de tipo y precio no se precargaban ni se guardaban los cambios.
-**Solución:** Se creó `EditarCosechaConVentaUseCase` para recuperar y guardar simultáneamente en ambas tablas.
+<!-- Mover aquí las deudas técnicas resueltas durante la Iteración 6 -->
