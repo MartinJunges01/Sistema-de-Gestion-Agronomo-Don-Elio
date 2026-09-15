@@ -567,3 +567,6 @@
 
 
 
+
+**[2026-09-15] - Fix Error de compilación en pruebas**
+- Se corrigió el acceso a las propiedades 'nombre' y 'estaActiva' en CampaniaDaoTest.kt que impedían compilar el proyecto y generar el APK debido a referencias desactualizadas tras refactorizar CampaniaConCultivoSchema.
