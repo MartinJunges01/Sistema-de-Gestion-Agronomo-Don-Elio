@@ -70,7 +70,7 @@ fun FormularioCosechaScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
-                Text("CampaÃ±a vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
+                Text("Campaña vinculada", fontWeight = FontWeight.Bold, color = TextoPrincipal, modifier = Modifier.padding(bottom = 8.dp))
                 SelectorCampania(
                     campanias = campanias,
                     selectedCampaniaId = state.campaniaId,
@@ -147,7 +147,7 @@ fun FormularioCosechaScreen(
                 OutlinedTextField(
                     value = state.almacen,
                     onValueChange = viewModel::onAlmacenChange,
-                    label = { Text("AlmacÃ©n (Silo, Silobolsa)") },
+                    label = { Text("Almacén (Silo, Silobolsa)") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )

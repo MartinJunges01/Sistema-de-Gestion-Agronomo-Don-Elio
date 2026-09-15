@@ -84,7 +84,7 @@ class ObtenerEvolucionCultivoUseCaseTest {
     }
 
     @Test
-    fun `invoke excluye campanias activas`() = runTest {
+    fun `invoke incluye campanias activas`() = runTest {
         val campanias = listOf(
             Campania(id = 1, nombre = "Soja Activa", hectareas = 100.0, fechaInicio = 1000, estaActiva = true, cultivoId = 1, cultivoNombre = "")
         )
@@ -93,7 +93,7 @@ class ObtenerEvolucionCultivoUseCaseTest {
 
         useCase(1).test {
             val resultado = awaitItem()
-            assertEquals(0, resultado.size)
+            assertEquals(1, resultado.size)
             cancelAndIgnoreRemainingEvents()
         }
     }
