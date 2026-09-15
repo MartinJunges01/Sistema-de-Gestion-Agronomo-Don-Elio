@@ -42,6 +42,8 @@ fun InsumosScreen(
     val campanias by viewModel.campanias.collectAsState()
     val campaniaIdSeleccionada by viewModel.campaniaIdSeleccionada.collectAsState()
     val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
+    
+    var insumoEditando by remember { mutableStateOf<com.itec.donelio.domain.model.CampaniaInsumo?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -49,9 +51,9 @@ fun InsumosScreen(
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             actions = {
                 TextButton(onClick = onGoToCatalogo) {
-                    Icon(Icons.Default.Settings, contentDescription = "Catálogo", modifier = Modifier.size(20.dp), tint = AgriVerde)
+                    Icon(Icons.Default.Settings, contentDescription = "CatÃ¡logo", modifier = Modifier.size(20.dp), tint = AgriVerde)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Catálogo", color = AgriVerde)
+                    Text("CatÃ¡logo", color = AgriVerde)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
@@ -86,7 +88,7 @@ fun InsumosScreen(
 
             if (vinculados.isEmpty()) {
                 item {
-                    Text("No hay insumos vinculados a esta campaña", color = TextoSecundario, fontSize = 14.sp, modifier = Modifier.padding(vertical = 8.dp))
+                    Text("No hay insumos vinculados a esta campaÃ±a", color = TextoSecundario, fontSize = 14.sp, modifier = Modifier.padding(vertical = 8.dp))
                 }
             } else {
                 items(vinculados) { vinculado ->
@@ -100,10 +102,13 @@ fun InsumosScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(nombreInsumo, fontWeight = FontWeight.Bold, color = if (vinculado.insumoActivo) TextoPrincipal else TextoSecundario)
                                 Text(
-                                    "${com.itec.donelio.presentation.util.FormatUtils.formatCantidad(vinculado.cantidad)} × ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(vinculado.precio)} = ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(total)}",
+                                    "${com.itec.donelio.presentation.util.FormatUtils.formatCantidad(vinculado.cantidad)} Ã— ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(vinculado.precio)} = ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(total)}",
                                     fontSize = 12.sp,
                                     color = if (vinculado.precio > 0) AgriVerde else TextoSecundario
                                 )
+                            }
+                            IconButton(onClick = { insumoEditando = vinculado }) {
+                                Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextoSecundario)
                             }
                             IconButton(onClick = { viewModel.desvincularInsumo(vinculado) }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Desvincular", tint = Color(0xFFDC2626))
@@ -114,4 +119,66 @@ fun InsumosScreen(
             }
         }
     }
+
+    insumoEditando?.let { insumo ->
+        DialogEditarCampaniaInsumo(
+            insumo = insumo,
+            onDismiss = { insumoEditando = null },
+            onConfirm = { cantidad, precio ->
+                viewModel.editarInsumo(insumo, cantidad, precio)
+                insumoEditando = null
+            }
+        )
+    }
 }
+
+
+@Composable
+fun DialogEditarCampaniaInsumo(
+    insumo: com.itec.donelio.domain.model.CampaniaInsumo,
+    onDismiss: () -> Unit,
+    onConfirm: (Double, Double) -> Unit
+) {
+    var cantidadStr by remember { mutableStateOf(insumo.cantidad.toString()) }
+    var precioStr by remember { mutableStateOf(insumo.precio.toString()) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Insumo", fontWeight = FontWeight.Bold, color = TextoPrincipal) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(insumo.nombreInsumo, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                OutlinedTextField(
+                    value = cantidadStr,
+                    onValueChange = { cantidadStr = it },
+                    label = { Text("Cantidad") },
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    value = precioStr,
+                    onValueChange = { precioStr = it },
+                    label = { Text("Precio") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val c = cantidadStr.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    val p = precioStr.replace(",", ".").toDoubleOrNull() ?: 0.0
+                    if (c > 0) {
+                        onConfirm(c, p)
+                    }
+                }
+            ) {
+                Text("Guardar", color = AgriVerde, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancelar", color = TextoSecundario) }
+        },
+        containerColor = Color.White
+    )
+}
+

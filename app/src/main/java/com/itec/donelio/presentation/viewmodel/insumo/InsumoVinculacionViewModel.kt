@@ -21,7 +21,8 @@ class InsumoVinculacionViewModel @Inject constructor(
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase,
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase
 ) : ViewModel() {
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
@@ -84,6 +85,17 @@ class InsumoVinculacionViewModel @Inject constructor(
                 asignarInsumoACampaniaUseCase(campaniaId, idInsumo, cantidad, precio)
             } catch (e: Exception) {
                 _errorMessage.value = "Error al vincular insumo: ${e.message}"
+            }
+        }
+    }
+
+    fun editarInsumo(campaniaInsumo: CampaniaInsumo, nuevaCantidad: Double, nuevoPrecio: Double) {
+        viewModelScope.launch {
+            try {
+                val insumoEditado = campaniaInsumo.copy(cantidad = nuevaCantidad, precio = nuevoPrecio)
+                editarCampaniaInsumoUseCase(insumoEditado)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al editar insumo: ${e.message}"
             }
         }
     }

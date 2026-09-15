@@ -31,6 +31,7 @@ class InsumoVinculacionViewModelTest {
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase = mockk()
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase = mockk()
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase = mockk()
+    private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase = mockk()
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase = mockk()
 
     @Before
@@ -59,7 +60,8 @@ class InsumoVinculacionViewModelTest {
             obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase,
             asignarInsumoACampaniaUseCase = asignarInsumoACampaniaUseCase,
             desvincularInsumoUseCase = desvincularInsumoUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase
+            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            editarCampaniaInsumoUseCase = editarCampaniaInsumoUseCase
         )
     }
 
