@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -275,20 +277,19 @@ fun FilaRegistroIndividual(
  */
 @Composable
 fun IconoInsumo(icono: String?, activo: Boolean) {
-    val color = if (activo) AgriVerde else TextoSecundario
-    val imageVector = when (icono) {
-        "water_drop"      -> Icons.Default.WaterDrop
-        "bug_report"      -> Icons.Default.BugReport
-        "science"         -> Icons.Default.Science
-        "grass"           -> Icons.Default.Grass
-        "compost"         -> Icons.Default.Compost
-        "local_florist"   -> Icons.Default.LocalFlorist
-        "yard"            -> Icons.Default.Yard
-        "eco"             -> Icons.Default.Eco
-        "agriculture"     -> Icons.Default.Agriculture
-        else              -> Icons.Default.Grain
+    val alpha = if (activo) 1f else 0.5f
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .background(Color(0xFFF3F4F6), shape = RoundedCornerShape(8.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = icono ?: "🌾",
+            fontSize = 20.sp,
+            modifier = Modifier.alpha(alpha)
+        )
     }
-    Icon(imageVector, contentDescription = "Insumo", tint = color)
 }
 
 
