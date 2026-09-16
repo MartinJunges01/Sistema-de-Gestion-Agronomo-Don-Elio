@@ -9,6 +9,7 @@
 ## Checklist de Progreso
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
+- [ ] **[#455] Issue 455:** Insumos: Permitir múltiples registros del mismo insumo (con fecha automática) y drill-down expansible en UI
 - [ ] **[#462] Issue 462:** Pantalla Tareas: botón "Programar nueva tarea" siempre activo y precarga de campaña
 - [ ] **[#464] Issue 464:** Formulario "Vincular Insumo": scroll habilitado y botones inferiores con texto completo
 - [ ] **[#465] Issue 465:** Pantalla Detalle Campaña: confirmación al archivar y opción de reactivar campañas del historial
@@ -23,6 +24,28 @@
 ---
 
 # 🟠 NIVEL L2 — BUGS FUNCIONALES
+
+---
+
+## [#455] Issue 455: Insumos: Permitir múltiples registros del mismo insumo y drill-down expansible en UI
+
+**Severidad:** 🟠 Bug Funcional / Mejora
+**Módulo:** Insumos / Reportes
+**Archivos afectados:**
+- `CampaniaInsumoEntity.kt`, `DonElioDatabase.kt`
+- `AsignarInsumoACampaniaUseCase.kt`
+- `InsumosScreen.kt`, `ReportesRendimientoScreen.kt`
+
+**Descripción**
+El índice único actual `(id_campania, id_insumo)` impide cargar más de un registro del mismo insumo para la misma campaña, forzando un comportamiento de reemplazo. Se requiere eliminar esta restricción para mantener historial real (fecha automática, cantidad, precio) por cada aplicación.
+En la UI, en lugar de mostrar una lista plana (en Insumos) o estática (en Reportes), se deben agrupar los registros sumando los totales por insumo, e incluir un mecanismo de drill-down (acordeón expansible inline) para visualizar, editar o borrar cada registro de forma individual. Además, se usará el ícono propio del insumo en lugar del check genérico.
+
+**Acceptance Criteria**
+- [ ] La base de datos permite múltiples registros para el mismo insumo en la misma campaña (índice único eliminado + migración).
+- [ ] `CampaniaInsumoEntity` guarda automáticamente la fecha de registro (`fechaAplicacion`).
+- [ ] Pantalla Insumos agrupa los registros sumando totales y muestra el ícono correspondiente.
+- [ ] Pantalla Reportes agrupa registros y permite expandir (acordeón inline) para ver el detalle.
+- [ ] Dentro del detalle expandido en ambas pantallas, cada registro individual muestra su fecha y opciones de editar/borrar afectando solo ese registro y recalculando los totales.
 
 ---
 
@@ -161,10 +184,11 @@ El gráfico de "Evolución Histórica por Cultivo" debe ser eliminado de la pant
 ## 🗓️ Orden de Ejecución Sugerido
 
 ### Fase 1 — Bugs Funcionales (Sprint 1)
-1. **[#462]** Tareas: botón "Programar nueva tarea" activo
-2. **[#464]** Insumos: scroll y texto en "Vincular Insumo"
-3. **[#465]** Campañas: Confirmación archivar y reactivar
-4. **[#466]** Campañas: Ocultar deshabilitadas en dropdowns
+1. **[#455]** Insumos: Múltiples registros (drill-down en UI) y fecha automática
+2. **[#462]** Tareas: botón "Programar nueva tarea" activo
+3. **[#464]** Insumos: scroll y texto en "Vincular Insumo"
+4. **[#465]** Campañas: Confirmación archivar y reactivar
+5. **[#466]** Campañas: Ocultar deshabilitadas en dropdowns
 
 ### Fase 2 — UI/UX & Refactor (Sprint 1-2)
 5. **[#463]** Insumos: arreglar mojibake en catálogo
