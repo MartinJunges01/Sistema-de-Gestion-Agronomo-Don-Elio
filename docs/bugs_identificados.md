@@ -29,7 +29,13 @@ Breve descripción del problema encontrado...
 
 <!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
 
-## [PENDIENTE-ID] Falta documentación de pruebas para asignación múltiple de insumos (Issue #455)
+---
+
+## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
+
+<!-- Mover aquí las deudas técnicas resueltas durante la Iteración 6 -->
+
+## [RESUELTO - Commit 315b321] Falta documentación (Resuelto) de pruebas para asignación múltiple de insumos (Issue #455)
 
 **Severidad:** 🛠 UX / Deuda Técnica
 **Módulo:** Insumos / Documentación
@@ -42,11 +48,6 @@ Durante la revisión del Issue #455 (permitir agregar el mismo insumo múltiples
 Se modificaron DAOs y el UseCase (`AsignarInsumoACampaniaUseCase`) pero no se documentaron los nuevos escenarios de testing.
 
 **Criterios de Aceptación**
-- [ ] Escribir los escenarios Given-When-Then para la vinculación múltiple de un insumo a una misma campaña.
-- [ ] Verificar que los tests unitarios implementados cubran fielmente esos casos documentados.
+- [x] Escribir los escenarios Given-When-Then para la vinculación múltiple de un insumo a una misma campaña.
+- [x] Verificar que los tests unitarios implementados cubran fielmente esos casos documentados.
 
----
-
-## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
-
-<!-- Mover aquí las deudas técnicas resueltas durante la Iteración 6 -->
