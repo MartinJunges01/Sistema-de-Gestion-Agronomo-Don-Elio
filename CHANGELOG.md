@@ -1,4 +1,11 @@
-﻿**[2026-09-14] - Estabilizacion y correcciones de bugs UI/UX de Iteracion 5 (PRs 451, 452, 457)**
+**[2026-09-16] - feat(insumos): [#455] Multi-registro de Insumos (Acumulación Histórica)**
+- **DB/Domain**: Se eliminó el índice único `(id_campania, id_insumo)` en `CampaniaInsumoEntity`. El conflicto `REPLACE` se cambió a `IGNORE`. Se agregó la propiedad `fechaAplicacion` autogenerada. Version de BD subida a 8.
+- **UI (Insumos)**: `InsumosScreen` se reescribió para agrupar los insumos repetidos usando un acordeón expansible, sumando las cantidades en el resumen, y mostrando registros individuales con fecha y subtotal debajo.
+- **UI (Reportes)**: `ReportesRendimientoScreen` también adoptó el formato de acordeón expansible en la leyenda del gráfico de torta, permitiendo hacer drill-down.
+- **UI**: Se agregó soporte para la edición y eliminación de cada registro individual en ambas pantallas, apoyado en nuevas funciones `editarInsumo()` y `eliminarInsumo()` en el `ReportesViewModel`.
+- **Tests**: Se actualizó `AsignarInsumoACampaniaUseCaseTest` con aserciones automáticas de fechas y pruebas de multi-registro independiente. Se agregó test de integración en `CampaniaInsumoDaoTest`.
+
+**[2026-09-14] - Estabilizacion y correcciones de bugs UI/UX de Iteracion 5 (PRs 451, 452, 457)**
 - Se aplico truncamiento de nombres en eje X del grafico de evolucion (Issue #434).
 - Se corrigio el renderizado del punto de datos unico en graficos de rendimiento (Issue #438).
 - Se restauraron y corrigieron problemas de encoding con los iconos/emojis del Formulario Insumos (Issue #440).
