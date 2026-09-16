@@ -7,6 +7,8 @@ import javax.inject.Inject
 /**
  * Caso de uso para asignar un insumo del catálogo a una campaña.
  * Valida que la cantidad sea positiva antes de persistir.
+ * Permite múltiples aplicaciones del mismo insumo en la misma campaña [#455].
+ * La fecha de aplicación se registra automáticamente en el momento de la llamada.
  */
 class AsignarInsumoACampaniaUseCase @Inject constructor(
     private val campaniaInsumoRepository: CampaniaInsumoRepository
@@ -25,7 +27,8 @@ class AsignarInsumoACampaniaUseCase @Inject constructor(
             idCampania = idCampania,
             idInsumo = idInsumo,
             cantidad = cantidad,
-            precio = precio
+            precio = precio,
+            fechaAplicacion = System.currentTimeMillis()
         )
         campaniaInsumoRepository.asignarInsumo(asignacion)
     }
