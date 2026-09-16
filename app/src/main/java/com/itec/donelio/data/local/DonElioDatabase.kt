@@ -33,7 +33,7 @@ import com.itec.donelio.data.local.entity.CultivoEntity
         UsuarioEntity::class,
         CultivoEntity::class
     ],
-    version = 7, // Subimos a 7 para el ABM de Cultivos
+    version = 8, // [#455] Eliminado índice único (id_campania, id_insumo) y agregada columna fecha_aplicacion
     exportSchema = false
 )
 abstract class DonElioDatabase : RoomDatabase() {
