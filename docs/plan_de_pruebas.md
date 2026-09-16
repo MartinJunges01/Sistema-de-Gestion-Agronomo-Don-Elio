@@ -149,6 +149,17 @@ A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-T
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
 
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
+
 **Test UC-V5: ValidarInsumoUseCase Ã¢Â€Â” Categoría vacía**
 *   **Given:** nombre = "Herbicida", categoria = ""
 *   **When:** invoke(nombre, categoria)
@@ -173,6 +184,17 @@ A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-T
 *   **Given:** El "Glifosato" (activo en el catÃƒÂƒÃ‚Â¡logo) y la campaÃƒÂƒÃ‚Â±a "Trigo de Invierno".
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
 
 **Test UC-V5: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” CategorÃƒÂƒÃ‚Â­a vacÃƒÂƒÃ‚Â­a**
 *   **Given:** nombre = "Herbicida", categoria = ""
@@ -655,6 +677,17 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **Given:** El "Glifosato" (activo en el catálogo) y la campaña "Trigo de Invierno".
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
 
 **Test UC-V5: ValidarInsumoUseCase Ã¢Â€Â” Categoría vacía**
 *   **Given:** nombre = "Herbicida", categoria = ""
@@ -1291,6 +1324,17 @@ A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-T
 *   **Given:** El "Glifosato" (activo en el catÃƒÂƒÃ‚Â¡logo) y la campaÃƒÂƒÃ‚Â±a "Trigo de Invierno".
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
 
 **Test UC-V5: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” CategorÃƒÂƒÃ‚Â­a vacÃƒÂƒÃ‚Â­a**
 *   **Given:** nombre = "Herbicida", categoria = ""
