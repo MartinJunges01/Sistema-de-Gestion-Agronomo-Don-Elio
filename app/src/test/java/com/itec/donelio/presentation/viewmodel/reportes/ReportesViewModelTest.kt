@@ -99,7 +99,9 @@ class ReportesViewModelTest {
         obtenerCultivosUseCase = obtenerCultivosUseCase,
         obtenerEvolucionCultivoUseCase = obtenerEvolucionCultivoUseCase,
         obtenerTodosLosInsumosUtilizadosUseCase = obtenerTodosLosInsumosUtilizadosUseCase,
-        obtenerTodasLasCosechasUseCase = obtenerTodasLasCosechasUseCase
+        obtenerTodasLasCosechasUseCase = obtenerTodasLasCosechasUseCase,
+        editarCampaniaInsumoUseCase = mockk(),
+        desvincularInsumoUseCase = mockk()
     )
 
     // ──────────────────────────────────────────────
