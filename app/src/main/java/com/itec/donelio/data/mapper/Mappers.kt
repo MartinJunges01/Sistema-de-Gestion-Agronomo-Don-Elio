@@ -160,9 +160,11 @@ fun CampaniaInsumoEntity.toDomain(): CampaniaInsumo {
         idCampania = idCampania,
         idInsumo = idInsumo,
         nombreInsumo = "",
+        iconoInsumo = null,
         insumoActivo = true,
         cantidad = cantidad,
-        precio = precio
+        precio = precio,
+        fechaAplicacion = fechaAplicacion
     )
 }
 
@@ -172,7 +174,8 @@ fun CampaniaInsumo.toEntity(): CampaniaInsumoEntity {
         idCampania = idCampania,
         idInsumo = idInsumo,
         cantidad = cantidad,
-        precio = precio
+        precio = precio,
+        fechaAplicacion = fechaAplicacion
     )
 }
 
@@ -182,9 +185,11 @@ fun InsumoUtilizadoRelacion.toDomain(): CampaniaInsumo {
         idCampania = asignacion.idCampania,
         idInsumo = asignacion.idInsumo,
         nombreInsumo = insumoBase.nombre,
+        iconoInsumo = insumoBase.icono,
         insumoActivo = insumoBase.activo,
         cantidad = asignacion.cantidad,
-        precio = asignacion.precio
+        precio = asignacion.precio,
+        fechaAplicacion = asignacion.fechaAplicacion
     )
 }
 

@@ -56,6 +56,53 @@ object DatabaseModule {
         }
     }
 
+    val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `cultivos` (`id_cultivo` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre` TEXT NOT NULL, `activo` INTEGER NOT NULL DEFAULT 1)")
+            database.execSQL("INSERT INTO `cultivos` (`nombre`, `activo`) VALUES ('Soja', 1), ('Maíz', 1), ('Trigo', 1), ('Girasol', 1)")
+            database.execSQL("ALTER TABLE `campanias` ADD COLUMN `id_cultivo` INTEGER NOT NULL DEFAULT 1")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_campanias_id_cultivo` ON `campanias` (`id_cultivo`)")
+        }
+    }
+
+    /**
+     * [#455] Migración 7→8: Permite múltiples registros del mismo insumo en una campaña.
+     * - Elimina el índice único compuesto (id_campania, id_insumo) de la tabla campania_insumo.
+     * - Agrega la columna fecha_aplicacion (INTEGER, timestamp en ms) para registrar automáticamente
+     *   cuándo se hizo cada aplicación. Los registros existentes reciben 0 como valor por defecto.
+     */
+    val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Room no puede borrar índices directamente; hay que recrear la tabla sin el índice único.
+            database.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS `campania_insumo_new` (
+                    `id_campania_insumo` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    `id_campania` INTEGER NOT NULL,
+                    `id_insumo` INTEGER NOT NULL,
+                    `cantidad` REAL NOT NULL,
+                    `precio` REAL NOT NULL,
+                    `fecha_aplicacion` INTEGER NOT NULL DEFAULT 0,
+                    FOREIGN KEY(`id_campania`) REFERENCES `campanias`(`id_campania`) ON DELETE CASCADE,
+                    FOREIGN KEY(`id_insumo`) REFERENCES `insumos`(`id_insumo`) ON DELETE CASCADE
+                )
+                """.trimIndent()
+            )
+            database.execSQL(
+                """
+                INSERT INTO `campania_insumo_new`
+                    (`id_campania_insumo`, `id_campania`, `id_insumo`, `cantidad`, `precio`, `fecha_aplicacion`)
+                SELECT `id_campania_insumo`, `id_campania`, `id_insumo`, `cantidad`, `precio`, 0
+                FROM `campania_insumo`
+                """.trimIndent()
+            )
+            database.execSQL("DROP TABLE `campania_insumo`")
+            database.execSQL("ALTER TABLE `campania_insumo_new` RENAME TO `campania_insumo`")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_campania_insumo_id_campania` ON `campania_insumo` (`id_campania`)")
+            database.execSQL("CREATE INDEX IF NOT EXISTS `index_campania_insumo_id_insumo` ON `campania_insumo` (`id_insumo`)")
+        }
+    }
+
     // 1. Provee la Base de Datos completa
     @Provides
     @Singleton // Asegura que solo exista UNA instancia de la DB en toda la app
@@ -67,8 +114,7 @@ object DatabaseModule {
             DonElioDatabase::class.java,
             "don_elio_db" // Este es el nombre del archivo fisico SQLite en el telefono
         )
-        .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
-        .fallbackToDestructiveMigration() // Agregado para desarrollo: borra y recrea las tablas si cambia la version
+        .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
         .build()
     }
 
