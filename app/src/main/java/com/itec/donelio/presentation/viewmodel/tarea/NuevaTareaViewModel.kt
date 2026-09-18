@@ -37,11 +37,14 @@ class NuevaTareaViewModel @Inject constructor(
     private val crearTareaUseCase: CrearTareaUseCase,
     private val editarTareaUseCase: com.itec.donelio.domain.use_case.EditarTareaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
-    private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase
+    private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
 ) : ViewModel() {
 
-    private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
     private val tareaId = savedStateHandle.get<Int>("tareaId").takeIf { it != -1 }
+    private val idFromNav = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+    private val idFromManager = ultimaSeleccionManager.campaniaIdSeleccionada.value
+    private val initialCampaniaId = idFromNav ?: idFromManager
 
     private val _state = MutableStateFlow(NuevaTareaFormState(campaniaId = initialCampaniaId))
     val state: StateFlow<NuevaTareaFormState> = _state.asStateFlow()

@@ -44,6 +44,7 @@ class NuevaTareaViewModelTest {
     private lateinit var editarTareaUseCase: EditarTareaUseCase
     private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
     private lateinit var obtenerTareaPorIdUseCase: ObtenerTareaPorIdUseCase
+    private lateinit var ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
 
     @Before
     fun setUp() {
@@ -52,8 +53,10 @@ class NuevaTareaViewModelTest {
         editarTareaUseCase = mockk()
         obtenerCampaniasUseCase = mockk()
         obtenerTareaPorIdUseCase = mockk()
+        ultimaSeleccionManager = mockk()
 
         coEvery { obtenerCampaniasUseCase() } returns flowOf(emptyList())
+        every { ultimaSeleccionManager.campaniaIdSeleccionada.value } returns null
     }
 
     @After
@@ -69,7 +72,8 @@ class NuevaTareaViewModelTest {
             crearTareaUseCase = crearTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
-            obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase
+            obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase,
+            ultimaSeleccionManager = ultimaSeleccionManager
         )
     }
 
@@ -81,7 +85,8 @@ class NuevaTareaViewModelTest {
             crearTareaUseCase = crearTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
-            obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase
+            obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase,
+            ultimaSeleccionManager = ultimaSeleccionManager
         )
     }
 
