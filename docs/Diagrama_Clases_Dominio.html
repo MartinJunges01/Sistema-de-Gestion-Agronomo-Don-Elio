@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagrama de Clases del Dominio - Don Elio</title>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f4f7f6; 
+            padding: 40px; 
+            margin: 0; 
+        }
+        .page { 
+            width: 1400px; 
+            min-height: 1000px; 
+            margin: 0 auto; 
+            position: relative;
+        }
+        
+        /* Estilos de Clase UML */
+        .uml-class {
+            border: 2px solid #2b2d42;
+            background: #ffffff;
+            width: 250px;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.15);
+            font-size: 13px;
+            border-radius: 6px;
+            overflow: hidden; /* Para que el header respete el border-radius */
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+        .uml-title {
+            background: #8d99ae;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-bottom: 2px solid #2b2d42;
+            font-size: 15px;
+        }
+        .uml-title i {
+            font-weight: normal;
+            font-size: 11px;
+            display: block;
+            color: #edf2f4;
+        }
+        .uml-attrs {
+            padding: 10px;
+            border-bottom: 1px solid #2b2d42;
+            font-family: 'Consolas', 'Courier New', monospace;
+            line-height: 1.5;
+            background: #edf2f4;
+        }
+        .uml-methods {
+            padding: 10px;
+            min-height: 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #ffffff;
+            color: #8d99ae;
+            font-style: italic;
+        }
+        
+        /* Contenedores y Grid */
+        .canvas { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(4, auto);
+            gap: 70px 90px; /* Reducido para formato A4 */
+            justify-items: center; 
+            align-items: center; 
+        }
+        .cell { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1 style="text-align: center; color: #2b2d42; margin-bottom: 50px;">Diagrama de Clases del Dominio (Model) - Don Elio</h1>
+        
+        <div class="canvas">
+            
+            <!-- FILA 1 -->
+            <div class="cell">
+                <div class="uml-class" id="C_Usuario">
+                    <div class="uml-title">Usuario</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ nombreUsuario: String<br>
++ contrasena: String<br>
++ ultimoAcceso: Long
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_Cultivo">
+                    <div class="uml-title">Cultivo</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ activo: Boolean
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_Insumo">
+                    <div class="uml-title">Insumo</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ categoria: String<br>
++ icono: String?<br>
++ activo: Boolean
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+
+            <!-- FILA 2 -->
+            <div class="cell">
+                <div class="uml-class" id="C_Tarea">
+                    <div class="uml-title">Tarea</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ fecha: Long<br>
++ hora: String<br>
++ notificar: Boolean<br>
++ confirmar: Boolean<br>
++ idCampania: Int
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_Campania">
+                    <div class="uml-title" style="background: #ef233c;">Campania</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ hectareas: Double<br>
++ fechaInicio: Long<br>
++ estaActiva: Boolean<br>
++ cultivoId: Int<br>
++ cultivoNombre: String
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_CampaniaInsumo">
+                    <div class="uml-title">CampaniaInsumo</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ idCampania: Int<br>
++ idInsumo: Int<br>
++ nombreInsumo: String<br>
++ iconoInsumo: String?<br>
++ insumoActivo: Boolean<br>
++ cantidad: Double<br>
++ precio: Double<br>
++ fechaAplicacion: Long
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+
+            <!-- FILA 3 -->
+            <div class="cell">
+                <div class="uml-class" id="C_Observacion">
+                    <div class="uml-title">Observacion</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ texto: String<br>
++ imagenUri: String?<br>
++ idCampania: Int
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_Cosecha">
+                    <div class="uml-title">Cosecha</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ cantidad: Double<br>
++ fecha: Long<br>
++ almacen: String<br>
++ idCampania: Int
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <!-- Vacio (DTO removido) -->
+            </div>
+
+            <!-- FILA 4 -->
+            <div class="cell">
+                <!-- Vacio (DTO removido) -->
+            </div>
+            
+            <div class="cell">
+                <div class="uml-class" id="C_CosechaNoAlmacenada">
+                    <div class="uml-title">CosechaNoAlmacenada</div>
+                    <div class="uml-attrs">
++ id: Int<br>
++ tipo: String<br>
++ precio: Double<br>
++ idCosecha: Int
+                    </div>
+                    <div class="uml-methods"></div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <!-- Vacio -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("load", function() {
+            
+            // Opciones base para asociaciones estándar (línea normal hacia la derecha/arriba/abajo)
+            const assocOpts = { 
+                color: '#2b2d42', 
+                size: 2, 
+                path: 'straight', 
+                startSocket: 'auto', 
+                endSocket: 'auto',
+                endPlug: 'arrow1',
+                endPlugSize: 1.5
+            };
+
+            // Para las líneas que van hacia la izquierda, INVERTIMOS el origen y el destino.
+            // Esto obliga a LeaderLine a dibujar la línea de Izquierda a Derecha, 
+            // lo que garantiza que el "pathLabel" quede derecho (no boca abajo).
+            // Pero para mantener la flecha apuntando a la izquierda, invertimos los "Plugs".
+            const assocOptsReversed = { 
+                color: '#2b2d42', 
+                size: 2, 
+                path: 'straight', 
+                startSocket: 'auto', 
+                endSocket: 'auto',
+                startPlug: 'arrow1', // La flecha ahora va al inicio
+                endPlug: 'behind',   // Sin flecha al final
+                startPlugSize: 1.5
+            };
+
+            // Volvemos a pathLabel que tiene el posicionamiento perfecto automático (no se oculta tras los divs)
+            // Aumentamos el font size a 16 para que sea súper legible en el A4
+            const labelStyle = { color: '#ef233c', outlineColor: '#fff', outline: 2, fontWeight: 'bold', fontSize: 16 };
+            const endLabelOpts = (text) => ({ endLabel: LeaderLine.pathLabel(text, labelStyle) });
+            const startLabelOpts = (text) => ({ startLabel: LeaderLine.pathLabel(text, labelStyle) });
+
+            // 1. Campania --> Cultivo (Hacia arriba)
+            new LeaderLine(
+                document.getElementById('C_Campania'), 
+                document.getElementById('C_Cultivo'), 
+                { ...assocOpts, ...endLabelOpts('1'), ...startLabelOpts('0..*') }
+            );
+
+            // 2. Campania --> Tarea (Hacia la izquierda)
+            // SOLUCIÓN: Trazamos la línea desde Tarea hacia Campania (de Izquierda a Derecha).
+            // Así el texto queda derecho. La flecha se dibuja en Tarea (startPlug).
+            // Los números se invierten en la función (start = 0..*, end = 1)
+            new LeaderLine(
+                document.getElementById('C_Tarea'), 
+                document.getElementById('C_Campania'), 
+                { ...assocOptsReversed, ...startLabelOpts('0..*'), ...endLabelOpts('1') }
+            );
+
+            // 3. Campania --> Observacion (Diagonal hacia abajo a la izquierda)
+            // SOLUCIÓN: Invertimos igual que con Tarea.
+            new LeaderLine(
+                document.getElementById('C_Observacion'), 
+                document.getElementById('C_Campania'), 
+                { ...assocOptsReversed, ...startLabelOpts('0..*'), ...endLabelOpts('1') }
+            );
+
+            // 4. Campania --> Cosecha (Hacia abajo)
+            new LeaderLine(
+                document.getElementById('C_Campania'), 
+                document.getElementById('C_Cosecha'), 
+                { ...assocOpts, ...endLabelOpts('0..*'), ...startLabelOpts('1') }
+            );
+
+            // 5. Cosecha --> CosechaNoAlmacenada (Hacia abajo)
+            new LeaderLine(
+                document.getElementById('C_Cosecha'), 
+                document.getElementById('C_CosechaNoAlmacenada'), 
+                { ...assocOpts, ...endLabelOpts('0..1'), ...startLabelOpts('1') }
+            );
+
+            // 6. Campania --> CampaniaInsumo (Hacia la derecha)
+            new LeaderLine(
+                document.getElementById('C_Campania'), 
+                document.getElementById('C_CampaniaInsumo'), 
+                { ...assocOpts, ...endLabelOpts('0..*'), ...startLabelOpts('1') }
+            );
+
+            // 7. CampaniaInsumo --> Insumo (Hacia arriba)
+            new LeaderLine(
+                document.getElementById('C_CampaniaInsumo'), 
+                document.getElementById('C_Insumo'), 
+                { ...assocOpts, ...endLabelOpts('1'), ...startLabelOpts('0..*') }
+            );
+
+        });
+    </script>
+</body>
+</html>

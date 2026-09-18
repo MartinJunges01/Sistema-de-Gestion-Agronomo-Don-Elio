@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagrama de Arquitectura (Vertical Slice) - Don Elio</title>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f4f7f6; 
+            padding: 20px; 
+            margin: 0; 
+        }
+        .page { 
+            width: 1000px; /* Reducido de 1400px a 1000px */
+            margin: 0 auto; 
+            position: relative;
+        }
+        
+        /* Estilos de Clase UML */
+        .uml-class {
+            border: 2px solid #2b2d42;
+            background: #ffffff;
+            width: 250px; /* Reducido de 280px */
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+            font-size: 11px; /* Fuente más pequeña para que entre en la caja */
+            border-radius: 6px;
+            overflow: hidden; 
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+        .uml-title {
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            padding: 6px; /* Menos relleno */
+            border-bottom: 2px solid #2b2d42;
+            font-size: 13px; /* Título más pequeño */
+        }
+        .uml-title i {
+            font-weight: normal;
+            font-size: 10px;
+            display: block;
+            color: #edf2f4;
+        }
+        .uml-attrs {
+            padding: 6px 8px; /* Menos relleno */
+            border-bottom: 1px solid #2b2d42;
+            font-family: 'Consolas', 'Courier New', monospace;
+            line-height: 1.4;
+            background: #edf2f4;
+            word-wrap: break-word; /* Para que el texto largo se acomode */
+        }
+        .uml-methods {
+            padding: 6px 8px;
+            min-height: 15px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            line-height: 1.4;
+            background: #ffffff;
+            word-wrap: break-word;
+        }
+
+        /* Colores por Capa */
+        .layer-presentation .uml-title { background: #3a86ff; }
+        .layer-domain .uml-title { background: #38b000; }
+        .layer-data .uml-title { background: #e85d04; }
+        
+        /* Contenedores y Grid */
+        .canvas { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: auto repeat(5, auto);
+            gap: 30px 40px; /* Gaps muy reducidos para compactar la altura y anchura */
+            justify-items: center; 
+            align-items: center; 
+            position: relative;
+        }
+        
+        .layer-header {
+            font-size: 16px; /* Más pequeño */
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 3px dashed #ccc;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1 style="text-align: center; color: #2b2d42; margin-bottom: 40px;">Diagrama Arquitectónico de Clases (Vertical Slice: Campaña)</h1>
+        
+        <div class="canvas">
+            
+            <!-- ENCABEZADOS DE CAPA -->
+            <div class="layer-header" style="grid-column: 1; grid-row: 1; color: #3a86ff;">Capa de Presentación (UI)</div>
+            <div class="layer-header" style="grid-column: 2; grid-row: 1; color: #38b000;">Capa de Dominio (Business)</div>
+            <div class="layer-header" style="grid-column: 3; grid-row: 1; color: #e85d04;">Capa de Datos (Data)</div>
+
+            <!-- COLUMNA 1: PRESENTATION -->
+            <div class="uml-class layer-presentation" id="A_Screen" style="grid-column: 1; grid-row: 2;">
+                <div class="uml-title"><i>&lt;&lt;Composable&gt;&gt;</i><br>GestionCampaniasScreen</div>
+                <div class="uml-attrs"></div>
+                <div class="uml-methods">
++ GestionCampaniasScreen()
+                </div>
+            </div>
+
+            <div class="uml-class layer-presentation" id="A_ViewModel" style="grid-column: 1; grid-row: 3;">
+                <div class="uml-title">GestionCampaniasViewModel</div>
+                <div class="uml-attrs">
+- getCampaniasActivasUseCase<br>
+- eliminarCampaniaUseCase<br>
++ campanias: StateFlow&lt;List&lt;Campania&gt;&gt;
+                </div>
+                <div class="uml-methods">
++ eliminarCampania(id: Int)
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: DOMAIN -->
+            <div class="uml-class layer-domain" id="A_UseCase" style="grid-column: 2; grid-row: 3;">
+                <div class="uml-title">ObtenerCampaniasUseCase</div>
+                <div class="uml-attrs">
+- repository: CampaniaRepository
+                </div>
+                <div class="uml-methods">
++ invoke(): Flow&lt;List&lt;Campania&gt;&gt;
+                </div>
+            </div>
+
+            <div class="uml-class layer-domain" id="A_Repository" style="grid-column: 2; grid-row: 4;">
+                <div class="uml-title"><i>&lt;&lt;Interface&gt;&gt;</i><br>CampaniaRepository</div>
+                <div class="uml-attrs"></div>
+                <div class="uml-methods">
++ getCampanias(): Flow&lt;List&lt;Campania&gt;&gt;<br>
++ getCampaniaById(id: Int): Campania?<br>
++ insertCampania(campania: Campania)<br>
++ deleteCampania(campania: Campania)
+                </div>
+            </div>
+
+            <div class="uml-class layer-domain" id="A_Model" style="grid-column: 2; grid-row: 5;">
+                <div class="uml-title"><i>&lt;&lt;Domain Model&gt;&gt;</i><br>Campania</div>
+                <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ hectareas: Double<br>
++ fechaInicio: Long<br>
++ estaActiva: Boolean<br>
++ cultivoId: Int<br>
++ cultivoNombre: String
+                </div>
+                <div class="uml-methods"></div>
+            </div>
+
+            <!-- COLUMNA 3: DATA -->
+            <div class="uml-class layer-data" id="A_RepositoryImpl" style="grid-column: 3; grid-row: 4;">
+                <div class="uml-title">CampaniaRepositoryImpl</div>
+                <div class="uml-attrs">
+- campaniaDao: CampaniaDao
+                </div>
+                <div class="uml-methods">
++ getCampanias(): Flow&lt;List&lt;Campania&gt;&gt;<br>
++ getCampaniaById(id: Int): Campania?<br>
++ insertCampania(campania: Campania)<br>
++ deleteCampania(campania: Campania)
+                </div>
+            </div>
+
+            <div class="uml-class layer-data" id="A_Dao" style="grid-column: 3; grid-row: 5;">
+                <div class="uml-title"><i>&lt;&lt;DAO&gt;&gt;</i><br>CampaniaDao</div>
+                <div class="uml-attrs"></div>
+                <div class="uml-methods">
++ getCampanias(): Flow&lt;List&lt;CampaniaSchema&gt;&gt;<br>
++ getCampaniaById(id: Int): CampaniaEntity?<br>
++ insert(entity: CampaniaEntity)<br>
++ delete(entity: CampaniaEntity)
+                </div>
+            </div>
+
+            <div class="uml-class layer-data" id="A_Entity" style="grid-column: 3; grid-row: 6;">
+                <div class="uml-title"><i>&lt;&lt;Entity&gt;&gt;</i><br>CampaniaEntity</div>
+                <div class="uml-attrs">
++ id: Int<br>
++ nombre: String<br>
++ hectareas: Double<br>
++ fechaInicio: Long<br>
++ estaActiva: Boolean<br>
++ idCultivo: Int
+                </div>
+                <div class="uml-methods"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("load", function() {
+            
+            const depOpts = { 
+                color: '#2b2d42', 
+                size: 2, 
+                path: 'straight', 
+                endPlug: 'arrow1',
+                endPlugSize: 1.5
+            };
+
+            const realizeOpts = { 
+                color: '#2b2d42', 
+                size: 2, 
+                path: 'straight', 
+                dash: { animation: true }, 
+                endPlug: 'arrow1',
+                endPlugOutline: true, /* Triángulo hueco para implementación/herencia */
+                endPlugSize: 2.5
+            };
+
+            const labelStyle = { color: '#8d99ae', outlineColor: '#fff', outline: 2, fontSize: 11, offset: [0, -10] };
+
+            // 1. UI a ViewModel
+            new LeaderLine(
+                document.getElementById('A_Screen'), 
+                document.getElementById('A_ViewModel'), 
+                { ...depOpts, middleLabel: LeaderLine.captionLabel('<<uses>>', labelStyle) }
+            );
+
+            // 2. ViewModel a UseCase
+            new LeaderLine(
+                document.getElementById('A_ViewModel'), 
+                document.getElementById('A_UseCase'), 
+                { ...depOpts, middleLabel: LeaderLine.captionLabel('<<uses>>', labelStyle) }
+            );
+
+            // 3. UseCase a Repository Interface
+            new LeaderLine(
+                document.getElementById('A_UseCase'), 
+                document.getElementById('A_Repository'), 
+                { ...depOpts, middleLabel: LeaderLine.captionLabel('<<uses>>', labelStyle) }
+            );
+
+            // 4. RepositoryImpl implementa Repository Interface
+            // Invertimos el dibujado (Data a Domain) para que la flecha vaya de Derecha a Izquierda.
+            // O podemos trazarlo desde el Impl hacia la Interfaz.
+            new LeaderLine(
+                document.getElementById('A_RepositoryImpl'), 
+                document.getElementById('A_Repository'), 
+                { ...realizeOpts, startSocket: 'left', endSocket: 'right', middleLabel: LeaderLine.captionLabel('<<implements>>', labelStyle) }
+            );
+
+            // 5. RepositoryImpl usa DAO
+            new LeaderLine(
+                document.getElementById('A_RepositoryImpl'), 
+                document.getElementById('A_Dao'), 
+                { ...depOpts, middleLabel: LeaderLine.captionLabel('<<uses>>', labelStyle) }
+            );
+
+            // 6. DAO usa Entity
+            new LeaderLine(
+                document.getElementById('A_Dao'), 
+                document.getElementById('A_Entity'), 
+                { ...depOpts, middleLabel: LeaderLine.captionLabel('<<uses>>', labelStyle) }
+            );
+
+            // 7. Relación de Dependencia: Repository devuelve Domain Model
+            new LeaderLine(
+                document.getElementById('A_Repository'), 
+                document.getElementById('A_Model'), 
+                { ...depOpts, dash: true, middleLabel: LeaderLine.captionLabel('<<returns>>', labelStyle) }
+            );
+
+            // 8. Relación de Dependencia: DAO usa Entity
+            // Ya está cubierta en el paso 6.
+
+        });
+    </script>
+</body>
+</html>

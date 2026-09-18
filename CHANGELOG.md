@@ -577,3 +577,9 @@
 
 **[2026-09-15] - Fix Error de compilación en pruebas**
 - Se corrigió el acceso a las propiedades 'nombre' y 'estaActiva' en CampaniaDaoTest.kt que impedían compilar el proyecto y generar el APK debido a referencias desactualizadas tras refactorizar CampaniaConCultivoSchema.
+
+**[2026-09-18] - docs: Generación de artefactos UML y Arquitectura**
+- **UML**: Se generó Diagrama_UML_Interactivo.html documentando los casos de uso principales.
+- **ER**: Se diseñó el Diagrama_ER_Chen.html modelando la persistencia Room (Campaña, Cosecha, etc.).
+- **Clases**: Se agregó Diagrama_Clases_Dominio.html reflejando las Data Classes anémicas del negocio.
+- **Clean Architecture**: Se sumó Diagrama_Arquitectura_Campania.html con un Vertical Slice detallando Inversión de Dependencias y flujo UI -> ViewModel -> UseCase -> Repo -> DAO.

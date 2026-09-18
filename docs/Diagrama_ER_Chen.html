@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagrama Entidad-Relación - Don Elio (Notación Chen)</title>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #ffffff; 
+            padding: 40px; 
+            margin: 0; 
+        }
+        .page { 
+            width: 1600px; 
+            min-height: 1000px; 
+            margin: 0 auto; 
+            position: relative;
+        }
+        
+        /* Formas Notación Chen */
+        .entity { 
+            border: 2px solid #023e8a; 
+            background: #90e0ef; 
+            padding: 15px 30px; 
+            font-weight: bold; 
+            font-size: 16px;
+            border-radius: 4px; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); 
+            z-index: 10;
+        }
+        
+        .relationship { 
+            width: 70px; 
+            height: 70px; 
+            background: #ffb703; 
+            border: 2px solid #fb8500; 
+            transform: rotate(45deg); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); 
+            z-index: 10;
+        }
+        
+        .rel-text { 
+            transform: rotate(-45deg); 
+            font-weight: bold; 
+            font-size: 12px; 
+            color: #000;
+        }
+        
+        .attr { 
+            border: 1.5px solid #555; 
+            background: #fdfdfd; 
+            padding: 6px 14px; 
+            border-radius: 50%; /* Óvalo */
+            font-size: 11px; 
+            text-align: center; 
+            white-space: nowrap; 
+            z-index: 10;
+        }
+        
+        .pk { 
+            text-decoration: underline; 
+            font-weight: bold; 
+            background: #e9ecef;
+        }
+        
+        /* Contenedores y Grid */
+        .wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            /* GAP AUMENTADO A 35px: Esto expone físicamente la línea entre los elementos para que no quede oculta debajo de los fondos de los óvalos */
+            gap: 35px; 
+        }
+        .attr-row { 
+            display: flex; 
+            gap: 12px; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        
+        .canvas { 
+            display: grid; 
+            grid-template-columns: 1fr 0.5fr 1fr 0.5fr 1fr; 
+            grid-template-rows: repeat(7, auto);
+            gap: 50px 20px; /* Más espacio vertical para que no se pisen */
+            justify-items: center; 
+            align-items: center; 
+        }
+        .cell { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <h1 style="text-align: center; color: #023e8a; margin-bottom: 50px;">Modelo Entidad-Relación (Fidelidad de Código) - Don Elio</h1>
+        
+        <div class="canvas">
+            
+            <!-- FILA 1 -->
+            <div class="cell">
+                <div class="wrapper">
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Usr_ID">id_usuario</div>
+                        <div class="attr" id="A_Usr_Nom">nombre</div>
+                    </div>
+                    <div class="entity" id="E_Usuario">USUARIO</div>
+                    <div class="attr-row">
+                        <div class="attr" id="A_Usr_Usr">nombreUsuario</div>
+                        <div class="attr" id="A_Usr_Pass">contrasena</div>
+                        <div class="attr" id="A_Usr_Ult">ultimo_acceso</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="wrapper">
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Cul_ID">id_cultivo</div>
+                        <div class="attr" id="A_Cul_Nom">nombre</div>
+                        <div class="attr" id="A_Cul_Act">activo</div>
+                    </div>
+                    <div class="entity" id="E_Cultivo">CULTIVO</div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- FILA 2 -->
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="relationship" id="R_Tiene"><div class="rel-text">Tiene</div></div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- FILA 3 (CENTRO NEURÁLGICO) -->
+            <div class="cell">
+                <div class="wrapper">
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Tar_ID">id_tarea</div>
+                        <div class="attr" id="A_Tar_Nom">nombre</div>
+                        <div class="attr" id="A_Tar_Fec">fecha</div>
+                    </div>
+                    <div class="entity" id="E_Tarea">TAREA</div>
+                    <div class="attr-row">
+                        <div class="attr" id="A_Tar_Hor">hora</div>
+                        <div class="attr" id="A_Tar_Not">notificar</div>
+                        <div class="attr" id="A_Tar_Con">confirmar</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="relationship" id="R_Requiere"><div class="rel-text">Requiere</div></div>
+            </div>
+            
+            <div class="cell">
+                <div class="wrapper">
+                    <!-- ATRIBUTOS SEPARADOS: Se agrupan a los costados dejando el centro del eje Y completamente vacío para la línea de las multiplicidades -->
+                    <div class="attr-row" style="width: 380px; justify-content: space-between;">
+                        <div style="display:flex; gap:10px;">
+                            <div class="attr pk" id="A_Cam_ID">id_campania</div>
+                            <div class="attr" id="A_Cam_Nom">nombre</div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="attr" id="A_Cam_Hec">hectareas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="entity" id="E_Campania" style="background: #0077b6; color: white;">CAMPAÑA</div>
+                    
+                    <div class="attr-row" style="width: 380px; justify-content: space-between;">
+                        <div style="display:flex; gap:10px;">
+                            <div class="attr" id="A_Cam_Fec">fecha</div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="attr" id="A_Cam_Act">estaActiva</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cell">
+                <div class="wrapper">
+                    <!-- Los atributos de la entidad asociativa -->
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Asi_ID">idCampaniaInsumo</div>
+                        <div class="attr" id="A_Asi_Can">cantidad</div>
+                    </div>
+                    <div class="relationship" id="R_Asigna"><div class="rel-text">Asigna</div></div>
+                    <div class="attr-row">
+                        <div class="attr" id="A_Asi_Pre">precio</div>
+                        <div class="attr" id="A_Asi_Fec">fechaAplicacion</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell">
+                <div class="wrapper">
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Ins_ID">id_insumo</div>
+                        <div class="attr" id="A_Ins_Nom">nombre</div>
+                        <div class="attr" id="A_Ins_Cat">categoria</div>
+                    </div>
+                    <div class="entity" id="E_Insumo">INSUMO</div>
+                    <div class="attr-row">
+                        <div class="attr" id="A_Ins_Ico">icono</div>
+                        <div class="attr" id="A_Ins_Act">activo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILA 4 -->
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="relationship" id="R_Posee"><div class="rel-text">Posee</div></div>
+            </div>
+            <div class="cell">
+                <div class="relationship" id="R_Obtiene"><div class="rel-text">Obtiene</div></div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- FILA 5 -->
+            <div class="cell">
+                <div class="wrapper">
+                    <!-- Todos abajo para no estorbar la diagonal que sube hacia R_Posee -->
+                    <div class="entity" id="E_Observacion">OBSERVACIÓN</div>
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Obs_ID">id_observacion</div>
+                        <div class="attr" id="A_Obs_Tex">texto</div>
+                        <div class="attr" id="A_Obs_Img">imagenUri</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell">
+                <!-- Flex direction ROW para Cosecha: Atributos a los lados dejando el eje vertical limpio -->
+                <div class="wrapper" style="flex-direction: row; gap: 30px;">
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        <div class="attr pk" id="A_Cos_ID">id_cosecha</div>
+                        <div class="attr" id="A_Cos_Can">cantidad</div>
+                    </div>
+                    
+                    <div class="entity" id="E_Cosecha">COSECHA</div>
+                    
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        <div class="attr" id="A_Cos_Fec">fecha</div>
+                        <div class="attr" id="A_Cos_Alm">almacen</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- FILA 6 -->
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="relationship" id="R_Genera"><div class="rel-text">Genera</div></div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- FILA 7 -->
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell">
+                <div class="wrapper">
+                    <div class="entity" id="E_CosechaNoAlmacenada">COSECHA_NO_ALMACENADA</div>
+                    <div class="attr-row">
+                        <div class="attr pk" id="A_Cna_ID">id_cosecha_no_alm</div>
+                        <div class="attr" id="A_Cna_Tip">tipo</div>
+                        <div class="attr" id="A_Cna_Pre">precio</div>
+                    </div>
+                </div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("load", function() {
+            
+            // Función auxiliar para conectar un elemento (Entidad o Relación) con sus Atributos
+            function linkAttributes(parentId, attrIds) {
+                const parent = document.getElementById(parentId);
+                attrIds.forEach(attrId => {
+                    new LeaderLine(parent, document.getElementById(attrId), {
+                        color: '#666', 
+                        size: 1.5, 
+                        path: 'straight', 
+                        startSocket: 'auto', 
+                        endSocket: 'auto',
+                        endPlug: 'behind', // El behind se ancla al centro, por lo que el "gap: 35px" soluciona que la línea quede visible
+                        startPlug: 'behind'
+                    });
+                });
+            }
+
+            // Conectar atributos
+            linkAttributes('E_Usuario', ['A_Usr_ID', 'A_Usr_Nom', 'A_Usr_Usr', 'A_Usr_Pass', 'A_Usr_Ult']);
+            linkAttributes('E_Cultivo', ['A_Cul_ID', 'A_Cul_Nom', 'A_Cul_Act']);
+            linkAttributes('E_Campania', ['A_Cam_ID', 'A_Cam_Nom', 'A_Cam_Hec', 'A_Cam_Fec', 'A_Cam_Act']);
+            linkAttributes('E_Tarea', ['A_Tar_ID', 'A_Tar_Nom', 'A_Tar_Fec', 'A_Tar_Hor', 'A_Tar_Not', 'A_Tar_Con']);
+            linkAttributes('E_Insumo', ['A_Ins_ID', 'A_Ins_Nom', 'A_Ins_Cat', 'A_Ins_Ico', 'A_Ins_Act']);
+            linkAttributes('E_Observacion', ['A_Obs_ID', 'A_Obs_Tex', 'A_Obs_Img']);
+            linkAttributes('E_Cosecha', ['A_Cos_ID', 'A_Cos_Can', 'A_Cos_Fec', 'A_Cos_Alm']);
+            linkAttributes('E_CosechaNoAlmacenada', ['A_Cna_ID', 'A_Cna_Tip', 'A_Cna_Pre']);
+            
+            // Atributos de la Relación Asociativa
+            linkAttributes('R_Asigna', ['A_Asi_ID', 'A_Asi_Can', 'A_Asi_Pre', 'A_Asi_Fec']);
+
+            // Opciones de estilo para las relaciones (min, max en ambos lados)
+            const lineOpts = { color: '#000', size: 2.5, path: 'straight', endPlug: 'behind', startPlug: 'behind' };
+            const cardOpts = (text) => ({ 
+                middleLabel: LeaderLine.captionLabel(text, { color: '#d90429', outlineColor: '#fff', outline: 2, fontWeight: 'bold', fontSize: 14 }) 
+            });
+
+            // RELACIONES ENTRE ENTIDADES Y ROMBOS
+            
+            // Cultivo - Tiene - Campaña
+            new LeaderLine(document.getElementById('E_Cultivo'), document.getElementById('R_Tiene'), { ...lineOpts, ...cardOpts('(1,1)') });
+            new LeaderLine(document.getElementById('R_Tiene'), document.getElementById('E_Campania'), { ...lineOpts, ...cardOpts('(0,N)') });
+
+            // Campaña - Requiere - Tarea
+            new LeaderLine(document.getElementById('E_Campania'), document.getElementById('R_Requiere'), { ...lineOpts, ...cardOpts('(1,1)') });
+            new LeaderLine(document.getElementById('R_Requiere'), document.getElementById('E_Tarea'), { ...lineOpts, ...cardOpts('(0,N)') });
+
+            // Campaña - Posee - Observacion
+            new LeaderLine(document.getElementById('E_Campania'), document.getElementById('R_Posee'), { ...lineOpts, ...cardOpts('(1,1)') });
+            new LeaderLine(document.getElementById('R_Posee'), document.getElementById('E_Observacion'), { ...lineOpts, ...cardOpts('(0,N)') });
+
+            // Campaña - Obtiene - Cosecha
+            new LeaderLine(document.getElementById('E_Campania'), document.getElementById('R_Obtiene'), { ...lineOpts, ...cardOpts('(1,1)') });
+            new LeaderLine(document.getElementById('R_Obtiene'), document.getElementById('E_Cosecha'), { ...lineOpts, ...cardOpts('(0,N)') });
+
+            // Cosecha - Genera - CosechaNoAlmacenada
+            new LeaderLine(document.getElementById('E_Cosecha'), document.getElementById('R_Genera'), { ...lineOpts, ...cardOpts('(1,1)') });
+            new LeaderLine(document.getElementById('R_Genera'), document.getElementById('E_CosechaNoAlmacenada'), { ...lineOpts, ...cardOpts('(0,1)') });
+
+            // Campaña - Asigna - Insumo
+            new LeaderLine(document.getElementById('E_Campania'), document.getElementById('R_Asigna'), { ...lineOpts, ...cardOpts('(0,N)') });
+            new LeaderLine(document.getElementById('R_Asigna'), document.getElementById('E_Insumo'), { ...lineOpts, ...cardOpts('(0,N)') });
+
+        });
+    </script>
+</body>
+</html>

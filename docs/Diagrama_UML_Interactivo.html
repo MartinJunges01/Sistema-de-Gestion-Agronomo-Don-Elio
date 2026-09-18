@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Diagrama de Casos de Uso - Don Elio</title>
+    <script src="https://cdn.jsdelivr.net/npm/leader-line-new@1.1.9/leader-line.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #ffffff; padding: 40px; margin: 0; }
+        .page { width: 1400px; min-height: 900px; margin: 0 auto; display: flex; gap: 70px; position: relative; }
+        
+        .actor-col { display: flex; flex-direction: column; justify-content: center; width: 100px; z-index: 100; }
+        .actor { text-align: center; font-weight: bold; padding: 10px; z-index: 100; display: flex; flex-direction: column; align-items: center; }
+        .actor-icon { width: 60px; height: 60px; margin-bottom: 5px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 60px; flex-grow: 1; }
+        
+        /* 
+         * TRUCO DE DISEÑO:
+         * Hacemos el paquete ancho y alineamos los Casos de Uso a la izquierda.
+         * Esto dejará un pasillo vacío a la derecha DENTRO del paquete, 
+         * por donde circularán las flechas de herencia.
+         */
+        .package { 
+            border: 2px solid #005f73; 
+            border-radius: 8px; 
+            padding: 20px; 
+            background: transparent; /* TRUCO: transparente para que las líneas SVG que se dibujan en el fondo se vean */
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 10px; 
+            width: 350px; 
+            box-sizing: border-box;
+        }
+        
+        .package-title { 
+            font-weight: bold; 
+            text-align: center; 
+            color: #0a9396; 
+            margin-bottom: 10px; 
+            font-size: 18px; 
+            text-transform: uppercase; 
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 10px;
+            align-self: stretch; /* Toma todo el ancho del paquete */
+        }
+        
+        .usecase { 
+            border: 2px solid #0a9396; 
+            border-radius: 25px; 
+            padding: 12px; 
+            background: #e9d8a6; 
+            text-align: center; 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #001219; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); 
+            z-index: 60; 
+            width: 220px; /* Al ser 220px dentro de un paquete de 350px, quedan ~90px libres a la derecha */
+            box-sizing: border-box;
+        }
+        
+        .signature { position: absolute; bottom: -30px; right: 0; color: #999; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- COLUMNA ACTOR -->
+        <div class="actor-col">
+            <div id="User" class="actor">
+                <svg class="actor-icon" viewBox="0 0 24 24" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="5" r="3"></circle>
+                    <path d="M12 8v7"></path>
+                    <path d="M12 15l-4 6"></path>
+                    <path d="M12 15l4 6"></path>
+                    <path d="M12 10l-5 2"></path>
+                    <path d="M12 10l5 2"></path>
+                </svg>
+                Usuario
+            </div>
+        </div>
+        
+        <!-- MATRIZ DE MÓDULOS -->
+        <div class="grid">
+            <!-- COLUMNA 1 -->
+            <div class="package" id="P_Auth">
+                <div class="package-title">Autenticación</div>
+                <div class="usecase" id="CU01">CU-01 Iniciar Sesión</div>
+                <div class="usecase" id="CU02">CU-02 Registrar Usuario</div>
+                <div class="usecase" id="CU03">CU-03 Cerrar Sesión</div>
+            </div>
+            
+            <div class="package" id="P_Camp">
+                <div class="package-title">Campañas</div>
+                <div class="usecase" id="CU24">CU-24 Consultar Campañas</div>
+                <div class="usecase" id="CU20">CU-20 Crear Campaña</div>
+                <div class="usecase" id="CU21">CU-21 Editar Campaña</div>
+                <div class="usecase" id="CU22">CU-22 Eliminar Campaña</div>
+                <div class="usecase" id="CU23">CU-23 Finalizar Campaña</div>
+            </div>
+            
+            <div class="package" id="P_Cult">
+                <div class="package-title">Cultivos</div>
+                <div class="usecase" id="CU13">CU-13 Consultar Cultivos</div>
+                <div class="usecase" id="CU10">CU-10 Crear Cultivo</div>
+                <div class="usecase" id="CU11">CU-11 Editar Cultivo</div>
+                <div class="usecase" id="CU12">CU-12 Eliminar Cultivo</div>
+            </div>
+
+            <!-- COLUMNA 2 -->
+            <div class="package" id="P_Tar">
+                <div class="package-title">Tareas</div>
+                <div class="usecase" id="CU34">CU-34 Consultar Tareas</div>
+                <div class="usecase" id="CU30">CU-30 Crear Tarea</div>
+                <div class="usecase" id="CU31">CU-31 Editar Tarea</div>
+                <div class="usecase" id="CU32">CU-32 Eliminar Tarea</div>
+                <div class="usecase" id="CU33">CU-33 Confirmar Tarea</div>
+            </div>
+            
+            <div class="package" id="P_Ins">
+                <div class="package-title">Insumos y Catálogo</div>
+                <div class="usecase" id="CU53">CU-53 Consultar Catálogo</div>
+                <div class="usecase" id="CU50">CU-50 Crear Insumo</div>
+                <div class="usecase" id="CU51">CU-51 Editar Insumo</div>
+                <div class="usecase" id="CU52">CU-52 Eliminar Insumo</div>
+                <div style="height: 10px; width: 100%;"></div>
+                <div class="usecase" id="CU57" style="font-size: 11px;">CU-57 Consultar Insumos (Camp.)</div>
+                <div class="usecase" id="CU54">CU-54 Asignar Insumo</div>
+                <div class="usecase" id="CU55">CU-55 Editar Asignado</div>
+                <div class="usecase" id="CU56">CU-56 Desvincular Insumo</div>
+            </div>
+            
+            <div class="package" id="P_Cos">
+                <div class="package-title">Cosechas</div>
+                <div class="usecase" id="CU40">CU-40 Consultar Cosechas</div>
+                <div class="usecase" id="CU41">CU-41 Registrar Cosecha</div>
+                <div class="usecase" id="CU42">CU-42 Editar Cosecha</div>
+                <div class="usecase" id="CU43">CU-43 Eliminar Cosecha</div>
+            </div>
+
+            <!-- COLUMNA 3 -->
+            <div class="package" id="P_Rep">
+                <div class="package-title">Reportes</div>
+                <div class="usecase" id="CU80">CU-80 Estadísticas Campaña</div>
+                <div class="usecase" id="CU81">CU-81 Comparar Campañas</div>
+                <div class="usecase" id="CU82">CU-82 Exportar Resumen</div>
+                <div class="usecase" id="CU83">CU-83 Resumen Financiero</div>
+            </div>
+            
+            <div class="package" id="P_Bac">
+                <div class="package-title">Backups</div>
+                <div class="usecase" id="CU90">CU-90 Crear Backup</div>
+                <div class="usecase" id="CU91">CU-91 Restaurar Backup</div>
+            </div>
+            
+            <div class="package" id="P_Obs">
+                <div class="package-title">Observaciones</div>
+                <div class="usecase" id="CU73">CU-73 Listar Observaciones</div>
+                <div class="usecase" id="CU70">CU-70 Guardar Observación</div>
+                <div class="usecase" id="CU71">CU-71 Editar Observación</div>
+                <div class="usecase" id="CU72">CU-72 Eliminar Observación</div>
+            </div>
+        </div>
+        
+        <div class="signature">Diagrama renderizado vía HTML/CSS + LeaderLine</div>
+    </div>
+
+    <script>
+        window.addEventListener("load", function() {
+            
+            // ESTILO UNIFICADO UML: Línea negra, punta hueca (borde negro, relleno blanco)
+            const umlStyle = {
+                color: '#000000',
+                size: 2,
+                endPlug: 'arrow1',
+                endPlugColor: 'white',
+                endPlugOutline: true,
+                endPlugSize: 2.5
+            };
+
+            // 1. Flechas del Actor (Gris para que no saturen la pantalla principal)
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Auth'), { color: '#888', size: 2, path: 'straight', startSocket: 'right', endSocket: 'left' });
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Tar'), { color: '#888', size: 2, path: 'straight', startSocket: 'right', endSocket: 'left' });
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Rep'), { color: '#888', size: 2, path: 'straight', startSocket: 'right', endSocket: 'left' });
+            
+            // Hacia la Columna 2
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Camp'), { color: '#bbb', size: 2, path: 'fluid', startSocket: 'top', endSocket: 'left' });
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Ins'), { color: '#bbb', size: 2, path: 'fluid', startSocket: 'right', endSocket: 'left' });
+            new LeaderLine(document.getElementById('User'), document.getElementById('P_Bac'), { color: '#bbb', size: 2, path: 'fluid', startSocket: 'bottom', endSocket: 'left' });
+
+            // 2. Relaciones Inter-modulares (Paquete depende de Paquete)
+            const mapMods = [
+                ['P_Camp', 'P_Auth'], ['P_Cult', 'P_Camp'], ['P_Cos', 'P_Camp'], ['P_Obs', 'P_Camp'],
+                ['P_Tar', 'P_Auth'], ['P_Rep', 'P_Auth'], ['P_Bac', 'P_Auth'], ['P_Ins', 'P_Auth']
+            ];
+            
+            mapMods.forEach(pair => {
+                new LeaderLine(document.getElementById(pair[0]), document.getElementById(pair[1]), 
+                    { ...umlStyle, path: 'straight', startSocket: 'left', endSocket: 'right' }
+                );
+            });
+
+            // 3. Relaciones Intra-modulares (Extends internos)
+            const mapExtends = [
+                ['CU03', 'CU01'],
+                ['CU10', 'CU13'], ['CU11', 'CU13'], ['CU12', 'CU13'],
+                ['CU20', 'CU24'], ['CU21', 'CU24'], ['CU22', 'CU24'], ['CU23', 'CU24'],
+                ['CU30', 'CU34'], ['CU31', 'CU34'], ['CU32', 'CU34'], ['CU33', 'CU34'],
+                ['CU41', 'CU40'], ['CU42', 'CU40'], ['CU43', 'CU40'],
+                ['CU50', 'CU53'], ['CU51', 'CU53'], ['CU52', 'CU53'],
+                ['CU54', 'CU57'], ['CU55', 'CU57'], ['CU56', 'CU57'],
+                ['CU70', 'CU73'], ['CU71', 'CU73'], ['CU72', 'CU73'],
+                ['CU82', 'CU80']
+            ];
+
+            mapExtends.forEach(pair => {
+                new LeaderLine(document.getElementById(pair[0]), document.getElementById(pair[1]), 
+                    { ...umlStyle, path: 'fluid', startSocket: 'right', endSocket: 'right', startSocketGravity: 60, endSocketGravity: 60 }
+                );
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2181 @@
+
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+    th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: middle; }
+    .cu-header-label { background-color: #8faadc; font-weight: bold; width: 20%; border: 1px solid black; }
+    .cu-header-title { background-color: #8faadc; font-weight: bold; border: 1px solid black; }
+    .row-label { background-color: #ffe699; font-weight: bold; width: 20%; border: 1px solid black; }
+    .row-content { background-color: #ffffff; border: 1px solid black; }
+    
+    .inner-table { width: 100%; border-collapse: collapse; border: none; margin: 0; }
+    .inner-table th, .inner-table td { border: 1px solid black; padding: 8px; }
+    .inner-table th { background-color: #c5e0b4; font-weight: bold; }
+    /* Remove outer borders of inner table to prevent double borders */
+    .inner-table tr:first-child th { border-top: none; }
+    .inner-table tr:last-child td { border-bottom: none; }
+    .inner-table tr th:first-child, .inner-table tr td:first-child { border-left: none; width: 5%; }
+    .inner-table tr th:last-child, .inner-table tr td:last-child { border-right: none; }
+    .inner-table-wrapper { padding: 0 !important; }
+</style>
+</head>
+<body>
+<div>﻿<h1>Casos de Uso - Sistema de Gestión Agrónomo Don Elio</h1></div>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU01</td>
+    <td class='cu-header-title'>Iniciar Sesión</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario (Propietario/Agrónomo) ingresa al sistema validando sus credenciales para acceder a la funcionalidad principal.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El usuario debe tener una cuenta previamente registrada en el sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El sistema valida las credenciales y guarda la sesión iniciada del usuario.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa su nombre de usuario y contraseña</td><td>Valida que los campos no estén vacíos</td></tr><tr><td>2</td><td>Solicita iniciar sesión</td><td>Cifra la contraseña (SHA-256), busca al usuario en la base de datos y compara el hash</td></tr><tr><td>3</td><td></td><td>Inicia sesión, guarda el nombre de usuario localmente (GuardarSesionUseCase) y redirige a la pantalla principal</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja el nombre de usuario o contraseña vacíos</td><td>Muestra mensaje de error: "El nombre de usuario/contraseña no puede estar vacío"</td></tr><tr><td>2</td><td>Ingresa credenciales incorrectas</td><td>Muestra error de inicio de sesión indicando que no se encontró coincidencia</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Cada vez que el usuario ingresa a la aplicación sin sesión activa.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Utiliza SHA-256 para el hasheo de la contraseña.</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU02</td>
+    <td class='cu-header-title'>Registrar Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>Un nuevo usuario se registra en la aplicación proporcionando su nombre completo, nombre de usuario y una contraseña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario nuevo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre de usuario elegido no debe existir en la base de datos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se crea una nueva cuenta de usuario en el sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa nombre completo, nombre de usuario y contraseña</td><td>Valida que los campos no estén vacíos y que la contraseña tenga al menos 4 caracteres</td></tr><tr><td>2</td><td>Solicita registrarse</td><td>Verifica que el nombre de usuario no exista. Cifra la contraseña (SHA-256)</td></tr><tr><td>3</td><td></td><td>Crea la cuenta guardándola en la base de datos local y notifica el éxito</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja algún campo vacío</td><td>Lanza excepción y muestra: "El nombre completo/usuario no puede estar vacío"</td></tr><tr><td>2</td><td>Ingresa una contraseña menor a 4 caracteres</td><td>Muestra error: "La contraseña debe tener al menos 4 caracteres"</td></tr><tr><td>3</td><td>Ingresa un nombre de usuario ya existente</td><td>Muestra error: "El nombre de usuario ya existe"</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Una vez por cada usuario nuevo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Guarda la contraseña de forma segura usando SHA-256.</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU03</td>
+    <td class='cu-header-title'>Cerrar Sesión</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario cierra su sesión actual por seguridad o para cambiar de cuenta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Debe haber una sesión de usuario activa.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La sesión se elimina localmente y el usuario debe iniciar sesión nuevamente para acceder.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Selecciona la opción de cerrar sesión</td><td>Elimina los datos de la sesión actual del almacenamiento local (SessionManager)</td></tr><tr><td>2</td><td></td><td>Redirige a la pantalla de Inicio de Sesión</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Falla al acceder a las preferencias de sesión</td><td>Muestra error genérico</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>A discreción del usuario.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Se borra el registro de sesión del SessionManager.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU10</td>
+    <td class='cu-header-title'>Crear Cultivo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario registra un nuevo tipo de cultivo en el sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre del cultivo no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El nuevo cultivo es almacenado con estado activo (`activo = true`).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa el nombre del nuevo cultivo</td><td>Valida que el nombre no esté en blanco</td></tr><tr><td>2</td><td>Solicita guardar el cultivo</td><td>Crea la entidad Cultivo, establece activo=true y la guarda en la base de datos</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja el nombre en blanco</td><td>Lanza excepción: "El nombre del cultivo no puede estar vacío" y muestra error</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Los cultivos se crean activos por defecto.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-13 Consultar Cultivos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU11</td>
+    <td class='cu-header-title'>Editar Cultivo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario modifica el nombre de un cultivo existente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El cultivo debe existir en el sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El cultivo se actualiza con el nuevo nombre.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Selecciona un cultivo y edita su nombre</td><td>Valida que el nombre modificado no esté en blanco</td></tr><tr><td>2</td><td>Solicita guardar cambios</td><td>Actualiza el registro en la base de datos con el nuevo nombre</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja el nombre en blanco</td><td>Lanza excepción: "El nombre del cultivo no puede estar vacío"</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Baja.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Solo permite modificar el nombre del cultivo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-13 Consultar Cultivos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU12</td>
+    <td class='cu-header-title'>Eliminar Cultivo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario elimina un cultivo del sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El cultivo debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El cultivo es eliminado.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminar un cultivo específico</td><td>Invoca el borrado del cultivo en la base de datos</td></tr><tr><td>2</td><td>Confirma eliminación</td><td>Elimina el registro físico o lógico (según implementación DAO)</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Intenta eliminar un cultivo asociado a campañas</td><td>Muestra error de clave foránea o dependencia en la interfaz</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Baja.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Elimina el registro utilizando el repositorio. Puede ser Hard o Soft delete dependiendo del backend/DAO, pero se invoca explícitamente `deleteCultivo`.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-13 Consultar Cultivos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU13</td>
+    <td class='cu-header-title'>Consultar Cultivos</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario visualiza la lista de cultivos disponibles.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Ninguna.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se retorna el listado de cultivos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Accede a la pantalla de cultivos</td><td>Consulta la base de datos según el filtro (activos o todos)</td></tr><tr><td>2</td><td></td><td>Retorna un flujo (Flow) con la lista y la muestra en pantalla</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>No hay cultivos registrados</td><td>Muestra la lista vacía o un mensaje indicando que no hay datos</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Alta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Permite filtrar entre cultivos activos (por defecto) o todos (incluyendo inactivos lógicos).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU20</td>
+    <td class='cu-header-title'>Crear Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario registra una nueva campaña agrícola, asignando nombre, hectáreas, fecha de inicio y cultivo asociado.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La campaña se guarda en estado activa y se notifica el resultado.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa nombre, hectáreas, fecha y selecciona el cultivo</td><td>Emite estado de carga (Loading). Valida que el nombre no sea vacío</td></tr><tr><td>2</td><td>Confirma creación</td><td>Persiste la campaña con `estaActiva = true` y emite estado de éxito</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja el nombre en blanco</td><td>Lanza excepción y emite error: "El nombre de la campaña no puede estar vacío"</td></tr><tr><td>2</td><td>Falla la inserción</td><td>Emite estado de Error con el mensaje de la excepción</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Media.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Devuelve un `Flow<Resource<Unit>>` para el manejo reactivo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-24 Consultar Campañas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU21</td>
+    <td class='cu-header-title'>Editar Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario modifica los datos de una campaña existente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se actualiza el registro en la base de datos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Modifica los datos de la campaña</td><td>Emite estado Loading. Valida el nombre</td></tr><tr><td>2</td><td>Guarda los cambios</td><td>Actualiza la campaña en la base de datos y emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>El nuevo nombre está vacío</td><td>Emite estado de Error: "El nombre de la campaña no puede estar vacío"</td></tr><tr><td>2</td><td>Error de persistencia</td><td>Emite estado de Error con el mensaje de excepción</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Media.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Emite estados reactivos hacia la UI.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-24 Consultar Campañas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU22</td>
+    <td class='cu-header-title'>Eliminar Campaña (Física)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario elimina por completo una campaña del sistema (Hard Delete).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La campaña debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La campaña y potencialmente todos sus registros asociados son eliminados físicamente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminar la campaña</td><td>Emite estado Loading</td></tr><tr><td>2</td><td>Confirma la eliminación</td><td>Ejecuta borrado físico (`deleteCampania`) y emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Error de base de datos</td><td>Emite estado de Error detallando el fallo</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Baja.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Esta es una acción destructiva de borrado duro.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-24 Consultar Campañas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU23</td>
+    <td class='cu-header-title'>Finalizar Campaña (Lógica)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario finaliza una campaña. Esta deja de estar activa pero su historial se conserva (Soft Delete).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La campaña debe estar en curso.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La campaña pasa a estado inactivo (`estaActiva = false`).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita finalizar la campaña</td><td>Emite Loading</td></tr><tr><td>2</td><td>Confirma la acción</td><td>Cambia la propiedad `estaActiva` a `false`, actualiza la campaña en BD y emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Falla al guardar</td><td>Emite Error indicando el problema</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Media.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Esta acción representa un Soft Delete o archivado; mantiene el registro para consultas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-24 Consultar Campañas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU24</td>
+    <td class='cu-header-title'>Consultar Campañas</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario consulta el listado de campañas (todas, activas o inactivas) o el detalle de una en particular.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Ninguna.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El sistema retorna los datos solicitados en tiempo real.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Accede a la vista de campañas</td><td>El sistema invoca el caso de uso correspondiente</td></tr><tr><td>2</td><td></td><td>Retorna un Flow con la información y actualiza la UI</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Sin coincidencias</td><td>Muestra una vista vacía o mensaje informativo</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Alta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Agrupa UseCases de lectura.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU30</td>
+    <td class='cu-header-title'>Crear Tarea</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario crea una tarea o recordatorio asociado a una campaña agrícola.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La tarea es guardada y se programa una alarma si fue solicitada.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa nombre, fecha, hora, flag de notificación y selecciona campaña</td><td>Emite Loading. Valida nombre no vacío. Normaliza la fecha a 00:00:00</td></tr><tr><td>2</td><td>Guarda la tarea</td><td>Persiste, obtiene nuevo ID. Si notificar=true, agenda alarma y emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Nombre vacío</td><td>Emite Error: "El nombre de la tarea no puede estar vacío"</td></tr><tr><td>2</td><td>Falla de BD/Scheduler</td><td>Emite Error</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Alta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Las fechas se normalizan para eliminar la hora y facilitar las comparaciones.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-34 Consultar Tareas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU31</td>
+    <td class='cu-header-title'>Editar Tarea</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario modifica la información de una tarea existente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La tarea se actualiza y la alarma se reprograma o cancela.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Modifica los datos de la tarea</td><td>Emite Loading. Valida nombre y normaliza fecha</td></tr><tr><td>2</td><td>Guarda los cambios</td><td>Actualiza en BD. Reprograma o cancela alarma. Emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Nombre vacío</td><td>Emite Error</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Media.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Administra dinámicamente el estado del scheduler de alarmas al editar.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-34 Consultar Tareas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU32</td>
+    <td class='cu-header-title'>Eliminar Tarea</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario elimina una tarea del sistema (Hard Delete).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La tarea debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La tarea es eliminada físicamente y su alarma es cancelada.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminar la tarea</td><td>Emite Loading</td></tr><tr><td>2</td><td>Confirma eliminación</td><td>Borra el registro en BD, cancela su alarma agendada y emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Error de borrado</td><td>Emite Error</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Media.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Es un borrado físico y es crucial cancelar la alarma en el SO.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-34 Consultar Tareas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU33</td>
+    <td class='cu-header-title'>Confirmar Tarea</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario marca una tarea como completada o revierte su estado a pendiente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La tarea debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La tarea cambia su estado y si es completada, su alarma se cancela.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Marca/desmarca la casilla de completado</td><td>Emite Loading</td></tr><tr><td>2</td><td></td><td>Llama a BD actualizando el booleano. Si completada=true, cancela alarma. Emite Success</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Error de conexión</td><td>Emite Error</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Alta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Las alarmas se cancelan de manera definitiva al completar la tarea.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-34 Consultar Tareas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU34</td>
+    <td class='cu-header-title'>Consultar Tareas</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario consulta la lista de tareas aplicando diferentes filtros (del día, filtradas, pendientes, por campaña).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Usuario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Ninguna.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se despliegan las tareas correspondientes.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Accede a las vistas de agenda o detalle de campaña</td><td>Llama al UseCase correspondiente</td></tr><tr><td>2</td><td></td><td>Retorna un Flow de Tareas y las despliega en la UI</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Sin resultados</td><td>Muestra lista vacía</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Muy Alta.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Agrupa varios casos de uso de consulta. # Casos de Uso - Módulos: Cosechas, Insumos, Observaciones, Reportes y Backups ## Cosechas (CU-40 - CU-49)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU40</td>
+    <td class='cu-header-title'>Registrar Cosecha</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario registra una nueva cosecha (cantidad, fecha, almacén) asociada a una campaña para mantener el control del rendimiento.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Debe existir una campaña y los datos de cantidad deben ser mayores a cero.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se guarda un nuevo registro de Cosecha en la base de datos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa cantidad, fecha, almacén y campaña, y solicita guardar.</td><td>Valida datos. Guarda la cosecha en BD y muestra mensaje de éxito.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa cantidad <= 0 o vacía.</td><td>Muestra error indicando que la cantidad debe ser mayor a 0.</td></tr><tr><td>2</td><td>No ingresa nombre del almacén (si es almacenada).</td><td>Muestra error de almacén obligatorio.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Frecuente durante la temporada de cosecha.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>No aplica.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-45 Consultar Cosechas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU41</td>
+    <td class='cu-header-title'>Registrar Cosecha con Venta/Reserva</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario registra una cosecha e inmediatamente asocia una venta o reserva (sin almacenar).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Debe existir una campaña, cantidad > 0, y el tipo de venta no puede estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se guarda un registro de Cosecha (sin almacén) y un registro de CosechaNoAlmacenada con tipo y precio.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa cantidad, fecha, campaña, tipo (venta/reserva) y precio.</td><td>Valida. Guarda Cosecha y luego CosechaNoAlmacenada.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Tipo de venta vacío.</td><td>Muestra error: "El tipo de venta no puede estar vacío".</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Este flujo crea dos registros vinculados lógicamente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-40 Registrar Cosecha</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU42</td>
+    <td class='cu-header-title'>Editar Cosecha</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario edita los detalles de una cosecha previamente registrada.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La cosecha debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Los datos de la cosecha quedan actualizados en BD.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Modifica los datos de la cosecha y guarda.</td><td>Actualiza la entidad Cosecha en BD.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Datos inválidos o vacíos.</td><td>Evita el guardado y muestra error según la validación.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Poco frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Se sobreescriben los campos del registro.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-45 Consultar Cosechas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU43</td>
+    <td class='cu-header-title'>Editar Cosecha con Venta/Reserva</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario edita una cosecha modificando si es almacenada o vendida, afectando los registros relacionados.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La cosecha debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La cosecha se actualiza. Se elimina o crea/actualiza el registro en CosechaNoAlmacenada según corresponda.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Cambia el estado de venta y los datos, solicita guardar.</td><td>Actualiza Cosecha. Si ahora es almacenada, elimina la venta previa (si existe). Si es venta, actualiza o crea el detalle.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Datos de venta incompletos.</td><td>Rechaza la actualización y muestra error.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Poco frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Combina lógica de actualización y posible borrado/creación condicional de detalles.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-42 Editar Cosecha</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU44</td>
+    <td class='cu-header-title'>Eliminar Cosecha</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario elimina una cosecha registrada por error.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La cosecha debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La cosecha y sus detalles vinculados desaparecen.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminar una cosecha.</td><td>Ejecuta la eliminación (Hard Delete) de Cosecha y cascada FK.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Falla en BD.</td><td>Muestra mensaje de error.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Rara vez</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Hard Delete. Elimina en cascada (CASCADE via FK).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-45 Consultar Cosechas</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU45</td>
+    <td class='cu-header-title'>Consultar Cosechas</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario lista y visualiza las cosechas registradas (por campaña, o globales, o ventas).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Administrador</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El sistema debe estar inicializado.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Ninguna (solo lectura).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa a la sección de cosechas o al detalle de campaña.</td><td>Recupera las cosechas desde BD y las muestra en la vista.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>No hay registros.</td><td>Muestra lista vacía o mensaje "Sin cosechas".</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>El sistema deberá realizar la acción de forma inmediata.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Muy frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Incluye múltiples variantes (Todas, Por Campaña, No Almacenadas). --- ## Insumos (CU-50 - CU-69)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU50</td>
+    <td class='cu-header-title'>Crear Insumo en Catálogo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario crea un nuevo insumo genérico en el catálogo para luego utilizarlo en campañas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El nombre no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El insumo queda registrado en el catálogo (BD).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Ingresa nombre, categoría e ícono, y guarda.</td><td>Valida y guarda el Insumo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Nombre vacío.</td><td>Muestra error "El nombre no puede estar vacío".</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional (al adquirir nuevos productos)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-53 Consultar Catálogo de Insumos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU51</td>
+    <td class='cu-header-title'>Editar Insumo en Catálogo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario modifica un insumo existente del catálogo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El insumo debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Insumo actualizado en el catálogo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Modifica datos del insumo y guarda.</td><td>Actualiza el Insumo en BD.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Nombre en blanco.</td><td>Rechaza la edición con mensaje de error.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Rara vez</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Quedaría bien</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-53 Consultar Catálogo de Insumos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU52</td>
+    <td class='cu-header-title'>Eliminar Insumo del Catálogo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario elimina un insumo del catálogo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El insumo existe.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>El insumo se elimina del sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminar el insumo.</td><td>Ejecuta Hard Delete del insumo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Insumo vinculado a campañas.</td><td>Falla por FK (o elimina en cascada según configuración BD).</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Rara vez</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Quedaría bien</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Se realiza Hard Delete desde InsumoRepository.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-53 Consultar Catálogo de Insumos</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU53</td>
+    <td class='cu-header-title'>Consultar Catálogo de Insumos</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>Listar los insumos disponibles en el catálogo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Accede al catálogo de insumos.</td><td>Muestra la lista de insumos.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Catálogo vacío.</td><td>Muestra mensaje pertinente.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU54</td>
+    <td class='cu-header-title'>Asignar Insumo a Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario vincula un insumo del catálogo a una campaña en curso, indicando cantidad y precio.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Encargado</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Cantidad > 0. El insumo y la campaña deben existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se genera un registro de CampaniaInsumo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Selecciona insumo, ingresa cantidad y precio, y asigna.</td><td>Valida cantidad y persiste la asignación en BD.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Cantidad <= 0.</td><td>Muestra error "La cantidad debe ser mayor a cero".</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Muy frecuente (durante aplicaciones agronómicas)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Impacta directamente en el cálculo de costos de la campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-57 Consultar Insumos de Campaña</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU55</td>
+    <td class='cu-header-title'>Editar Insumo Asignado a Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario corrige la cantidad o precio de un insumo ya aplicado a una campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>ID válido, cantidad > 0, precio >= 0.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se actualizan los valores de la asignación.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Modifica los valores y guarda.</td><td>Valida y actualiza CampaniaInsumo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Precio negativo o cantidad <= 0.</td><td>Rechaza con mensaje descriptivo de la validación.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-57 Consultar Insumos de Campaña</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU56</td>
+    <td class='cu-header-title'>Desvincular Insumo de Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario retira un insumo que se asignó por error a una campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La asignación existe.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se elimina el registro de CampaniaInsumo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita desvincular insumo.</td><td>Ejecuta Hard Delete en CampaniaInsumoRepository.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Error de BD.</td><td>Informa al usuario.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Hard Delete de la vinculación.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-57 Consultar Insumos de Campaña</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU57</td>
+    <td class='cu-header-title'>Consultar Insumos de Campaña</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario visualiza los insumos aplicados a una campaña o todos los vinculados globalmente.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Visualiza detalles de una campaña.</td><td>El sistema lista los insumos (Cantidades, Precios).</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Sin insumos.</td><td>Muestra estado vacío.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Usado para revisión de costos y dosis. --- ## Observaciones (CU-70 - CU-79)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU70</td>
+    <td class='cu-header-title'>Guardar Observación</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario añade una nota (y opcionalmente una imagen) sobre el estado del lote en una campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Encargado</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El texto no debe estar vacío.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La observación queda guardada.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Escribe texto, añade imagen y guarda.</td><td>Valida y guarda en BD.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Texto vacío.</td><td>Muestra "El texto no puede estar vacío".</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato (puede demorar si procesa imagen grande)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Frecuente (durante recorridas de campo)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-73 Listar Observaciones</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU71</td>
+    <td class='cu-header-title'>Editar Observación</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario corrige el texto o imagen de una observación.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Encargado</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La observación debe tener texto o una foto.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Observación actualizada.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Cambia texto/foto y guarda.</td><td>El sistema limpia el texto, valida y actualiza vía Flow en BD. Emite Resource.Success.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Deja texto y foto vacíos.</td><td>Emite Resource.Error("La observación debe tener texto o una foto").</td></tr><tr><td>2</td><td>Error en BD.</td><td>Emite Resource.Error con el mensaje del fallo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Poco frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Quedaría bien</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Esta funcionalidad se agregó como mejora (originalmente no contemplada pero implementada).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-73 Listar Observaciones</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU72</td>
+    <td class='cu-header-title'>Eliminar Observación</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario descarta una observación.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario / Encargado</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La observación existe.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Observación removida del sistema.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Solicita eliminación.</td><td>El sistema borra el registro (Hard Delete) y emite Success.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Error de borrado.</td><td>Emite Resource.Error.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Quedaría bien</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Se realiza Hard Delete.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<extend>> a CU-73 Listar Observaciones</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU73</td>
+    <td class='cu-header-title'>Listar Observaciones</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario ve el historial de anotaciones de una campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>-</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Abre la pestaña de observaciones de la campaña.</td><td>Muestra el listado de notas e imágenes asociadas.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Sin datos.</td><td>Muestra aviso correspondiente.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Frecuente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>- --- ## Reportes y Backups (CU-80 - CU-89)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU80</td>
+    <td class='cu-header-title'>Calcular Costo por Hectárea</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El sistema calcula cuánto se ha gastado en insumos por cada hectárea de la campaña.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario (Sistema)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Campaña con hectáreas > 0.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Devuelve el valor numérico (double) del costo/Ha.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Visualiza detalles financieros de la campaña.</td><td>Suma (cantidad * precio) de insumos y divide por hectáreas. Muestra el resultado.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Hectáreas <= 0 o nulas.</td><td>Devuelve 0.0 sin error.</td></tr><tr><td>2</td><td>Sin insumos.</td><td>Devuelve 0.0.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Muy frecuente (consulta en tiempo real)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Lógica en memoria a partir de los datos proveídos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU81</td>
+    <td class='cu-header-title'>Obtener Evolución de Cultivo</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario visualiza la evolución del rendimiento (Tn/Ha) histórico de un cultivo a lo largo del tiempo (todas sus campañas).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>El cultivo debe tener campañas y cosechas asociadas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Genera una lista de `PuntoCultivo`.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Selecciona un cultivo para ver su historial.</td><td>Cruza datos de Campañas y Cosechas, calcula rendimiento (Tn/Ha) ordenado por fecha de inicio y lo devuelve como flujo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Hectáreas de campaña = 0.</td><td>El rendimiento para esa campaña se calcula como 0.0.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Inmediato</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Ocasional (al planificar o analizar fin de ciclo)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Importante</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Puede esperar</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Toma en cuenta tanto campañas activas como finalizadas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU82</td>
+    <td class='cu-header-title'>Obtener Resumen de Rendimiento (Mensual)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario visualiza un panel de resumen con capital invertido, ingresos brutos, balance, total cosechado y costo por tonelada de las campañas activas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Debe haber campañas activas.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Devuelve objeto `ResumenRendimiento`.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Accede al dashboard de la app.</td><td>Suma insumos de campañas activas (total). Suma cosechas y ventas *solo del mes actual*. Calcula balance y costos. Muestra dashboard.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Sin campañas activas.</td><td>Devuelve `null`, la UI mostrará estado vacío.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Rápido (combinación de flujos reactivos)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Muy frecuente (al abrir la app)</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Tiene la particularidad de cruzar Insumos (todo el historial de la campaña activa) vs Cosechas/Ventas (filtrado por el mes y año actual).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU83</td>
+    <td class='cu-header-title'>Crear Backup de Base de Datos</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario exporta la base de datos local de la aplicación a un archivo seguro en su dispositivo o nube.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>La base de datos local debe existir.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>Se escribe una copia física del archivo `don_elio_db` en la URI destino.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Elige ubicación en el explorador de archivos (SAF) y confirma.</td><td>Lee la BD local y la copia al OutputStream de la URI seleccionada.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>No se encuentra BD local.</td><td>Retorna fallo "No se encontró la base de datos local".</td></tr><tr><td>2</td><td>No se puede abrir destino.</td><td>Retorna fallo indicando que no se pudo abrir el archivo.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Unos pocos segundos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Periódica (semanal/mensual recomendada).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Hay presión (para evitar pérdida de datos).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Utiliza el ContentResolver para escribir el archivo.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td class='cu-header-label'>CU84</td>
+    <td class='cu-header-title'>Restaurar Backup de Base de Datos</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Descripción</td>
+    <td class='row-content'>El usuario importa un archivo de backup previamente creado para recuperar sus datos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Actores</td>
+    <td class='row-content'>Propietario</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Pre condiciones</td>
+    <td class='row-content'>Archivo seleccionado debe ser válido (SQLite 3).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Post condiciones</td>
+    <td class='row-content'>La base de datos local se sobreescribe con la del backup.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Secuencia Normal</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Selecciona el archivo de backup a restaurar.</td><td>Lee los primeros 16 bytes. Valida la firma "SQLite format 3". Cierra la BD actual. Sobreescribe la BD local.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Excepciones</td>
+    <td class='row-content inner-table-wrapper'><table class='inner-table'><tr><th>#</th><th>Acción (actor)</th><th>Reacción (sistema)</th></tr><tr><td>1</td><td>Archivo no es SQLite.</td><td>Retorna fallo "Archivo inválido: no es una base de datos SQLite".</td></tr><tr><td>2</td><td>No se puede leer.</td><td>Retorna fallo por error de lectura.</td></tr></table></td>
+  </tr>
+  <tr>
+    <td class='row-label'>Rendimiento</td>
+    <td class='row-content'>Unos pocos segundos.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Frecuencia</td>
+    <td class='row-content'>Rara vez (ante cambio de celular o pérdida de datos).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Importancia</td>
+    <td class='row-content'>Vital</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Urgencia</td>
+    <td class='row-content'>Inmediatamente (si se perdieron datos).</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Comentarios</td>
+    <td class='row-content'>Es un proceso delicado, sobreescribe totalmente los datos actuales.</td>
+  </tr>
+  <tr>
+    <td class='row-label'>Relaciones</td>
+    <td class='row-content'><<include>> a CU-01 Iniciar Sesión</td>
+  </tr>
+</table>
+
+</body>
+</html>
