@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCampaniasInactivasUseCase
+import com.itec.donelio.domain.use_case.ReactivarCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 class GestionCampaniasViewModel @Inject constructor(
     private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerCampaniasInactivasUseCase: ObtenerCampaniasInactivasUseCase,
-    private val eliminarCampaniaUseCase: EliminarCampaniaUseCase
+    private val eliminarCampaniaUseCase: EliminarCampaniaUseCase,
+    private val reactivarCampaniaUseCase: ReactivarCampaniaUseCase
 ) : ViewModel() {
 
     private val _errorMessage = MutableSharedFlow<String>()
@@ -39,6 +41,16 @@ class GestionCampaniasViewModel @Inject constructor(
             eliminarCampaniaUseCase(campania).collectLatest { result ->
                 if (result is Resource.Error) {
                     _errorMessage.emit(result.message ?: "Ocurrió un error al eliminar la campaña")
+                }
+            }
+        }
+    }
+
+    fun reactivarCampania(campania: Campania) {
+        viewModelScope.launch {
+            reactivarCampaniaUseCase(campania).collectLatest { result ->
+                if (result is Resource.Error) {
+                    _errorMessage.emit(result.message ?: "Ocurrió un error al reactivar la campaña")
                 }
             }
         }
