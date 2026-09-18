@@ -13,6 +13,10 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
+sealed class TareaUiEvent {
+    object NavigateToNuevaTarea : TareaUiEvent()
+}
+
 @HiltViewModel
 class TareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -24,6 +28,9 @@ class TareaViewModel @Inject constructor(
     private val eliminarTareaUseCase: EliminarTareaUseCase,
     private val tareaRepository: com.itec.donelio.domain.repository.TareaRepository
 ) : ViewModel() {
+
+    private val _uiEvent = kotlinx.coroutines.channels.Channel<TareaUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _filtroCampania = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val filtroCampania = _filtroCampania.asStateFlow()
@@ -155,6 +162,17 @@ class TareaViewModel @Inject constructor(
             eliminarTareaUseCase(tarea)
                 .catch { _errorMessage.value = "Error al eliminar tarea" }
                 .collect()
+        }
+    }
+
+    /**
+     * Valida la selección y emite el evento de navegación o un error reactivo.
+     */
+    fun onNuevaTareaClick() {
+        if (_filtroCampania.value != null) {
+            viewModelScope.launch { _uiEvent.send(TareaUiEvent.NavigateToNuevaTarea) }
+        } else {
+            _errorMessage.value = "Debes marcar una campaña para programar una tarea"
         }
     }
 }
