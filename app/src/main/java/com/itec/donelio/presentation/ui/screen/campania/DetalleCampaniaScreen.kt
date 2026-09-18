@@ -54,6 +54,7 @@ fun DetalleCampaniaScreen(
     onGoToNuevaCosecha: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    var showArchivarDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.finishSuccess) {
         if (state.finishSuccess) onBack()
@@ -84,12 +85,32 @@ fun DetalleCampaniaScreen(
                     }
                 }
                 if (state.campania?.estaActiva == true) {
-                    IconButton(onClick = { viewModel.finalizarCampania() }) { 
-                        Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White) 
+                    IconButton(onClick = { showArchivarDialog = true }) {
+                        Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White)
                     }
                 }
             }
         )
+
+        // Diálogo de confirmación para archivar campaña
+        if (showArchivarDialog) {
+            AlertDialog(
+                onDismissRequest = { showArchivarDialog = false },
+                title = { Text("¿Finalizar campaña?", fontWeight = FontWeight.Bold) },
+                text = { Text("La campaña pasará al historial y ya no aparecerá en los selectores activos.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.finalizarCampania()
+                        showArchivarDialog = false
+                    }) { Text("Confirmar", color = AgriVerde) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showArchivarDialog = false }) {
+                        Text("Cancelar", color = TextoSecundario)
+                    }
+                }
+            )
+        }
 
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
