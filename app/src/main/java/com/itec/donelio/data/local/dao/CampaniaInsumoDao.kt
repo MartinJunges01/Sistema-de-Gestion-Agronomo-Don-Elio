@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CampaniaInsumoDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumoEntity): Long
 
     @androidx.room.Update

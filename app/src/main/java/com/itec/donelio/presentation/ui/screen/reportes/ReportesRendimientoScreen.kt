@@ -1,11 +1,15 @@
-﻿package com.itec.donelio.presentation.ui.screen.reportes
+package com.itec.donelio.presentation.ui.screen.reportes
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -574,36 +578,93 @@ fun ReportesRendimientoScreen(
                                         )
                                     )
                                     Spacer(modifier = Modifier.height(16.dp))
+
+                                    // Leyenda con drill-down expansible por insumo [#455]
                                     val totalGasto = pieChartData!!.slices.sumOf { it.value.toDouble() }
-                                    val currencyFormat = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
-                                    
+                                    val expandidosPorInsumo = remember { mutableStateMapOf<String, Boolean>() }
+                                    var insumoEditandoReportes by remember { mutableStateOf<com.itec.donelio.domain.model.CampaniaInsumo?>(null) }
+
                                     Column(
                                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
                                     ) {
                                         pieChartData!!.slices.forEach { slice ->
                                             val porcentaje = if (totalGasto > 0) (slice.value / totalGasto) * 100 else 0.0
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            val estaExpandido = expandidosPorInsumo[slice.label] == true
+                                            // Registros individuales de este insumo
+                                            val registrosDeEsteInsumo = insumosIndividual.filter { it.nombreInsumo == slice.label }
+
+                                            Card(
+                                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
+                                                border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
+                                                modifier = Modifier.fillMaxWidth()
                                             ) {
-                                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Box(
+                                                Column {
+                                                    // Fila de resumen (clickeable para expandir)
+                                                    Row(
                                                         modifier = Modifier
-                                                            .size(12.dp)
-                                                            .clip(androidx.compose.foundation.shape.CircleShape)
-                                                            .background(slice.color)
-                                                    )
-                                                    Spacer(modifier = Modifier.width(8.dp))
-                                                    Text(slice.label, fontSize = 13.sp, color = TextoPrincipal)
+                                                            .fillMaxWidth()
+                                                            .clickable { expandidosPorInsumo[slice.label] = !estaExpandido }
+                                                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceBetween
+                                                    ) {
+                                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .size(12.dp)
+                                                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                                                    .background(slice.color)
+                                                            )
+                                                            Spacer(modifier = Modifier.width(8.dp))
+                                                            Column {
+                                                                Text(slice.label, fontSize = 13.sp, color = TextoPrincipal, fontWeight = FontWeight.Medium)
+                                                                Text(
+                                                                    "${FormatUtils.formatDecimal(porcentaje.toDouble())}% — ${registrosDeEsteInsumo.size} registro(s)",
+                                                                    fontSize = 11.sp, color = TextoSecundario
+                                                                )
+                                                            }
+                                                        }
+                                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                                            Text(
+                                                                FormatUtils.formatMoneda(slice.value.toDouble()),
+                                                                fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal
+                                                            )
+                                                            Spacer(modifier = Modifier.width(4.dp))
+                                                            Icon(
+                                                                imageVector = if (estaExpandido) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                                                                contentDescription = null,
+                                                                tint = TextoSecundario,
+                                                                modifier = Modifier.size(16.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                    // Registros individuales (acordeón)
+                                                    AnimatedVisibility(
+                                                        visible = estaExpandido,
+                                                        enter = expandVertically(),
+                                                        exit = shrinkVertically()
+                                                    ) {
+                                                        Column {
+                                                            HorizontalDivider(color = Color(0xFFE7E5E4))
+                                                            if (registrosDeEsteInsumo.isEmpty()) {
+                                                                Text(
+                                                                    "Sin registros individuales disponibles",
+                                                                    fontSize = 12.sp, color = TextoSecundario,
+                                                                    modifier = Modifier.padding(12.dp)
+                                                                )
+                                                            } else {
+                                                                registrosDeEsteInsumo.forEach { registro ->
+                                                                    FilaRegistroReporte(
+                                                                        registro = registro,
+                                                                        onEditar = { insumoEditandoReportes = registro },
+                                                                        onEliminar = { viewModel.eliminarInsumo(registro) }
+                                                                    )
+                                                                }
+                                                            }
+                                                        }
+                                                    }
                                                 }
-                                                Text(
-                                                    text = "${FormatUtils.formatDecimal(porcentaje.toDouble())}% - ${FormatUtils.formatMoneda(slice.value.toDouble())}",
-                                                    fontSize = 13.sp,
-                                                    fontWeight = FontWeight.Medium,
-                                                    color = TextoPrincipal
-                                                )
                                             }
                                         }
                                         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp), color = Color(0xFFE7E5E4))
@@ -614,6 +675,18 @@ fun ReportesRendimientoScreen(
                                             Text("Total General:", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                                             Text(FormatUtils.formatMoneda(totalGasto), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextoPrincipal)
                                         }
+                                    }
+
+                                    // Diálogo de edición individual desde Reportes
+                                    insumoEditandoReportes?.let { insumo ->
+                                        DialogEditarInsumoReporte(
+                                            insumo = insumo,
+                                            onDismiss = { insumoEditandoReportes = null },
+                                            onConfirm = { cantidad, precio ->
+                                                viewModel.editarInsumo(insumo, cantidad, precio)
+                                                insumoEditandoReportes = null
+                                            }
+                                        )
                                     }
                                 }
                             } else {
@@ -1018,5 +1091,73 @@ private fun PlaceholderSeleccion(mensaje: String) {
     }
 }
 
+/**
+ * Fila de un registro individual de insumo dentro del drill-down de Reportes [#455].
+ */
+@Composable
+fun FilaRegistroReporte(
+    registro: com.itec.donelio.domain.model.CampaniaInsumo,
+    onEditar: () -> Unit,
+    onEliminar: () -> Unit
+) {
+    val fechaFormateada = remember(registro.fechaAplicacion) {
+        if (registro.fechaAplicacion > 0L) {
+            java.text.SimpleDateFormat("dd/MM/yy", java.util.Locale.getDefault())
+                .format(java.util.Date(registro.fechaAplicacion))
+        } else "—"
+    }
+    val costoParcial = registro.cantidad * registro.precio
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                "${com.itec.donelio.presentation.util.FormatUtils.formatCantidad(registro.cantidad)} × ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(registro.precio)} = ${com.itec.donelio.presentation.util.FormatUtils.formatMoneda(costoParcial)}",
+                fontSize = 13.sp, color = TextoPrincipal
+            )
+            Text(fechaFormateada, fontSize = 11.sp, color = TextoSecundario)
+        }
+        IconButton(onClick = onEditar, modifier = Modifier.size(36.dp)) {
+            Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextoSecundario, modifier = Modifier.size(18.dp))
+        }
+        IconButton(onClick = onEliminar, modifier = Modifier.size(36.dp)) {
+            Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color(0xFFDC2626), modifier = Modifier.size(18.dp))
+        }
+    }
+}
 
-
+/**
+ * Diálogo de edición de un registro individual de insumo desde la pantalla de Reportes [#455].
+ */
+@Composable
+fun DialogEditarInsumoReporte(
+    insumo: com.itec.donelio.domain.model.CampaniaInsumo,
+    onDismiss: () -> Unit,
+    onConfirm: (Double, Double) -> Unit
+) {
+    var cantidadStr by remember { mutableStateOf(insumo.cantidad.toString()) }
+    var precioStr by remember { mutableStateOf(insumo.precio.toString()) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Registro", fontWeight = FontWeight.Bold, color = TextoPrincipal) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(insumo.nombreInsumo, fontWeight = FontWeight.Medium, color = TextoPrincipal)
+                OutlinedTextField(value = cantidadStr, onValueChange = { cantidadStr = it }, label = { Text("Cantidad") }, singleLine = true)
+                OutlinedTextField(value = precioStr, onValueChange = { precioStr = it }, label = { Text("Precio") }, singleLine = true)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val c = cantidadStr.replace(",", ".").toDoubleOrNull() ?: 0.0
+                val p = precioStr.replace(",", ".").toDoubleOrNull() ?: 0.0
+                if (c > 0) onConfirm(c, p)
+            }) { Text("Guardar", color = AgriVerde, fontWeight = FontWeight.Bold) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = TextoSecundario) } },
+        containerColor = Color.White
+    )
+}

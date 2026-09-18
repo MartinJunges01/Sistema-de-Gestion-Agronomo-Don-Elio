@@ -25,7 +25,7 @@ Breve descripción del problema encontrado...
 - [ ] Criterio 2
 -->
 
-## 🔴 DEUDA TÉCNICA PENDIENTE — Iteración 6
+## 🛠 DEUDA TÉCNICA PENDIENTE — Iteración 6
 
 <!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
 
@@ -34,3 +34,20 @@ Breve descripción del problema encontrado...
 ## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
 
 <!-- Mover aquí las deudas técnicas resueltas durante la Iteración 6 -->
+
+## [RESUELTO - Commit 315b321] Falta documentación (Resuelto) de pruebas para asignación múltiple de insumos (Issue #455)
+
+**Severidad:** 🛠 UX / Deuda Técnica
+**Módulo:** Insumos / Documentación
+**Archivo afectado:** `docs/plan_de_pruebas.md`
+
+**Descripción**
+Durante la revisión del Issue #455 (permitir agregar el mismo insumo múltiples veces a una campaña con fechas independientes), se detectó que el archivo `plan_de_pruebas.md` no fue actualizado con los nuevos casos `Given-When-Then` correspondientes al cambio en la lógica de negocio, violando el prompt operativo.
+
+**Causa Raíz (Código)**
+Se modificaron DAOs y el UseCase (`AsignarInsumoACampaniaUseCase`) pero no se documentaron los nuevos escenarios de testing.
+
+**Criterios de Aceptación**
+- [x] Escribir los escenarios Given-When-Then para la vinculación múltiple de un insumo a una misma campaña.
+- [x] Verificar que los tests unitarios implementados cubran fielmente esos casos documentados.
+

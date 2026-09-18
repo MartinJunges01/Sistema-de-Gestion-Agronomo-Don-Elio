@@ -9,7 +9,7 @@
 ## Checklist de Progreso
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#462] Issue 462:** Pantalla Tareas: botón "Programar nueva tarea" siempre activo y precarga de campaña
+- [x] **[#462] Issue 462:** Pantalla Tareas: botón "Programar nueva tarea" siempre activo y precarga de campaña
 - [ ] **[#464] Issue 464:** Formulario "Vincular Insumo": scroll habilitado y botones inferiores con texto completo
 - [ ] **[#465] Issue 465:** Pantalla Detalle Campaña: confirmación al archivar y opción de reactivar campañas del historial
 - [ ] **[#466] Issue 466:** Campañas deshabilitadas: excluirlas de selectores de campaña pero accesibles desde Reportes
@@ -38,9 +38,9 @@
 Al ingresar a la pantalla de Tareas sin tener una campaña seleccionada, el botón de "Programar nueva tarea" está deshabilitado o ausente, impidiendo al usuario abrir el formulario. Adicionalmente, si el usuario tiene una campaña seleccionada (ya sea por sesión previa o por el filtro activo de la pantalla de tareas), el formulario de nueva tarea debería recibirla como valor precargado en el campo correspondiente.
 
 **Acceptance Criteria**
-- [ ] El botón "Programar nueva tarea" permanece activo e interactuable independientemente de si hay campaña seleccionada.
-- [ ] Si el filtro de tareas tiene una campaña seleccionada, al abrir el formulario de nueva tarea, el campo de campaña viene precargado con esa campaña.
-- [ ] Si no hay campaña en el filtro, el campo de campaña del formulario aparece vacío pero seleccionable.
+- [x] El botón "Programar nueva tarea" permanece activo e interactuable independientemente de si hay campaña seleccionada.
+- [x] Si el filtro de tareas tiene una campaña seleccionada, al abrir el formulario de nueva tarea, el campo de campaña viene precargado con esa campaña.
+- [x] Si no hay campaña en el filtro, el campo de campaña del formulario aparece vacío pero seleccionable.
 
 ---
 

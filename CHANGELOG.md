@@ -1,11 +1,23 @@
-﻿**[2026-09-14] - Estabilizacion y correcciones de bugs UI/UX de Iteracion 5 (PRs 451, 452, 457)**
+**[2026-09-18] - fix(tareas): always enable fab and use reactive ui events for navigation (Closes #462)**
+- Se modificó TareasScreen.kt para que el botón de nueva tarea siempre esté activo.
+- Se implementó un flujo reactivo (Channel/Flow) en TareaViewModel para disparar la navegación solo si hay una campaña seleccionada, o mostrar un error en la UI de lo contrario (Issue #462).
+- Se inyectó el UltimaSeleccionManager en NuevaTareaViewModel para pre-seleccionar la campaña activa.
+
+**[2026-09-16] - feat(insumos): [#455] Multi-registro de Insumos (AcumulaciÃ³n HistÃ³rica)**
+- **DB/Domain**: Se eliminÃ³ el Ã­ndice Ãºnico `(id_campania, id_insumo)` en `CampaniaInsumoEntity`. El conflicto `REPLACE` se cambiÃ³ a `IGNORE`. Se agregÃ³ la propiedad `fechaAplicacion` autogenerada. Version de BD subida a 8.
+- **UI (Insumos)**: `InsumosScreen` se reescribiÃ³ para agrupar los insumos repetidos usando un acordeÃ³n expansible, sumando las cantidades en el resumen, y mostrando registros individuales con fecha y subtotal debajo.
+- **UI (Reportes)**: `ReportesRendimientoScreen` tambiÃ©n adoptÃ³ el formato de acordeÃ³n expansible en la leyenda del grÃ¡fico de torta, permitiendo hacer drill-down.
+- **UI**: Se agregÃ³ soporte para la ediciÃ³n y eliminaciÃ³n de cada registro individual en ambas pantallas, apoyado en nuevas funciones `editarInsumo()` y `eliminarInsumo()` en el `ReportesViewModel`.
+- **Tests**: Se actualizÃ³ `AsignarInsumoACampaniaUseCaseTest` con aserciones automÃ¡ticas de fechas y pruebas de multi-registro independiente. Se agregÃ³ test de integraciÃ³n en `CampaniaInsumoDaoTest`.
+
+**[2026-09-14] - Estabilizacion y correcciones de bugs UI/UX de Iteracion 5 (PRs 451, 452, 457)**
 - Se aplico truncamiento de nombres en eje X del grafico de evolucion (Issue #434).
 - Se corrigio el renderizado del punto de datos unico en graficos de rendimiento (Issue #438).
 - Se restauraron y corrigieron problemas de encoding con los iconos/emojis del Formulario Insumos (Issue #440).
 
 **[2026-09-12] - fix(ui): estandarización de números, contadores de campaña y cálculo de ingresos [out-of-scope]**
 
-> âš ï¸ Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
+> âš ï¸� Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
 
 - `ObtenerResumenRendimientoUseCase`: Se cambió el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
 - `TareaViewModel` y `DetalleCampaniaScreen`: El card del menú ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
@@ -13,7 +25,7 @@
 - `FormatUtils` **[NUEVO]**: Se creó un utilitario centralizado con la configuración `Locale("es", "AR")` para asegurar que en toda la aplicación los miles se separen con punto (`.`) y los decimales con coma (`,`).
 - `DashboardOperacionesScreen`, `CosechasScreen`, `InsumosScreen`: Refactorizados para usar `FormatUtils` en lugar de formatos de texto ad-hoc.
 
-> âš ï¸ Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
+> âš ï¸� Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
 
 - `ObtenerResumenRendimientoUseCase`: Corregido el cálculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
 - `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operación la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la edición de cosechas tipo Venta solo actualizaba la tabla base.
@@ -95,7 +107,7 @@
 - **#403 (fix/insumos):** `FormularioInsumoViewModel` â€” `evaluarValidaciones()` ahora se llama dentro de `onNombreChange()` y `onCategoriaChange()`. El estado `isGuardarHabilitado` se actualiza en tiempo real al tipear, habilitando el botón "Guardar Insumo" en cuanto los campos son válidos.
 - **#404 (fix/observaciones):** `ObservacionesScreen` â€” El `AlertDialog` inline (solo texto) fue reemplazado por el composable `DialogEditarObservacion` existente, que ya soporta reemplazar y eliminar la foto desde cámara/galería. El callback `onGuardar` conecta directamente con `listViewModel.editarObservacion`.
 - **#410 (feat/tareas):** ABM completo de Tareas implementado:
-  - `TareasScreen`: Iconos âœï¸ (Editar) y ðŸ—‘ï¸ (Eliminar) en cada `TarjetaTareaItem` para tareas no completadas. Diálogo de confirmación antes de eliminar.
+  - `TareasScreen`: Iconos âœ�ï¸� (Editar) y ðŸ—‘ï¸� (Eliminar) en cada `TarjetaTareaItem` para tareas no completadas. Diálogo de confirmación antes de eliminar.
   - `NavRoutes.kt`: Ruta `NuevaTarea` extendida con parámetro opcional `tareaId`.
   - `NuevaTareaViewModel`: Lee `tareaId` desde `SavedStateHandle`, pre-carga el formulario con los datos existentes y bifurca el guardado entre `CrearTareaUseCase` y `EditarTareaUseCase`.
   - `NuevaTareaScreen`: Título ("Nueva Tarea" / "Editar Tarea") y texto del botón ("Guardar Tarea" / "Guardar Cambios") dinámicos según el modo.
@@ -452,7 +464,7 @@
 - CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `InsumoCatalogoViewModel` e `InsumoVinculacionViewModel` con carga reactiva desde BD.
 - ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CatalogoInsumosScreen` al catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo real con `ObtenerCatalogoInsumosUseCase`.
 - ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioInsumoScreen` a `CrearInsumoCatalogoUseCase` con validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y spinner.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `InsumosScreen` (vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n) con datos reales, cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lculo `cantidad ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â precio` formateado y atajo "Crear nuevo insumo" si no existe en catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo.
+- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `InsumosScreen` (vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n) con datos reales, cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lculo `cantidad ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â� precio` formateado y atajo "Crear nuevo insumo" si no existe en catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo.
 - CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioInsumoViewModel` con estado reactivo.
 - ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TabInsumos` en `DetalleCampaniaScreen` con conteo real y total estimado.
 
@@ -570,3 +582,4 @@
 
 **[2026-09-15] - Fix Error de compilación en pruebas**
 - Se corrigió el acceso a las propiedades 'nombre' y 'estaActiva' en CampaniaDaoTest.kt que impedían compilar el proyecto y generar el APK debido a referencias desactualizadas tras refactorizar CampaniaConCultivoSchema.
+

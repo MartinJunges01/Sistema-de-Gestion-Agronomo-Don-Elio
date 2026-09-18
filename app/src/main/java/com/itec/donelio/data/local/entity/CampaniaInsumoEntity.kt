@@ -6,6 +6,11 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+/**
+ * Entidad de vinculación entre una Campaña y un Insumo del catálogo.
+ * Permite múltiples registros del mismo insumo en la misma campaña,
+ * manteniendo historial real de cada aplicación con su fecha automática.
+ */
 @Entity(
     tableName = "campania_insumo",
     foreignKeys = [
@@ -14,7 +19,7 @@ import androidx.room.PrimaryKey
             entity = CampaniaEntity::class,
             parentColumns = ["id_campania"],
             childColumns = ["id_campania"],
-            onDelete = ForeignKey.CASCADE // Si borras la campaña, se borran sus registros de insumos utilizados
+            onDelete = ForeignKey.CASCADE // Si borras la campaña, se borran sus registros de insumos
         ),
         // Relación con el Catálogo de Insumos
         ForeignKey(
@@ -24,12 +29,11 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE // Si borras el insumo del catálogo, se borra de las campañas
         )
     ],
-    // Los índices son OBLIGATORIOS en Room para columnas que son Foreign Keys,
-    // de lo contrario el compilador arrojará advertencias de rendimiento.
+    // Índices simples para las FK (rendimiento de Room).
+    // El índice único compuesto fue eliminado para permitir múltiples aplicaciones del mismo insumo.
     indices = [
         Index(value = ["id_campania"]),
-        Index(value = ["id_insumo"]),
-        Index(value = ["id_campania", "id_insumo"], unique = true)
+        Index(value = ["id_insumo"])
     ]
 )
 data class CampaniaInsumoEntity(
@@ -47,5 +51,9 @@ data class CampaniaInsumoEntity(
     val cantidad: Double,
 
     @ColumnInfo(name = "precio")
-    val precio: Double
+    val precio: Double,
+
+    /** Timestamp en milisegundos de cuando se registró esta aplicación. Se asigna automáticamente. */
+    @ColumnInfo(name = "fecha_aplicacion")
+    val fechaAplicacion: Long = 0L
 )
