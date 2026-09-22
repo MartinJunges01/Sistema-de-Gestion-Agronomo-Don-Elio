@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+    th { background-color: #f2f2f2; }
+    pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: Consolas, monospace; border: 1px solid #e0e0e0; }
+    code { font-family: Consolas, monospace; }
+    blockquote { border-left: 4px solid #ccc; margin-left: 0; padding-left: 15px; color: #555; }
+</style>
+</head>
+<body>
+<h1>Documentación Técnica (Fases 1 a 5)</h1>
+<h1>FASE 1 — Documentación Técnica: Login / Autenticación + Dashboard</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>7.5 Descripción Técnica de Funcionalidades</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Copiar el contenido de este archivo dentro de la sección 7.5, respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h2>7.5 Descripción Técnica de Funcionalidades</h2>
+<h3>7.5.1 Módulo: Login / Autenticación</h3>
+<h4>Descripción General</h4>
+<p>El módulo de autenticación es el punto de entrada a la aplicación. Implementa un flujo de <strong>inicio de sesión local</strong> y <strong>registro de usuario</strong> sin dependencia de servicios externos. Las credenciales se almacenan en la base de datos SQLite local de Room, con la contraseña protegida mediante hash SHA-256.</p>
+<p>Existen dos pantallas que componen este módulo:</p>
+<ul>
+<li><strong><code>LoginScreen</code></strong>: Pantalla de ingreso con usuario y contraseña.</li>
+<li><strong><code>RegistroScreen</code></strong>: Pantalla para crear una cuenta nueva (nombre completo, nombre de usuario y contraseña).</li>
+</ul>
+<h4>Interacciones de Clean Architecture</h4>
+<p><strong>Capa Presentation</strong></p>
+<p>El <code>LoginViewModel</code> es compartido por ambas pantallas (<code>LoginScreen</code> y <code>RegistroScreen</code>), inyectado por Hilt mediante <code>hiltViewModel()</code>. Expone un único estado reactivo de tipo <code>LoginUiState</code> a través de un <code>StateFlow</code>:</p>
+<pre><code class="language-kotlin">data class LoginUiState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val loginExitoso: Boolean = false,
+    val registroExitoso: Boolean = false
+)
+</code></pre>
+<ul>
+<li>Cuando <code>loginExitoso</code> o <code>registroExitoso</code> cambian a <code>true</code>, un <code>LaunchedEffect</code> en la pantalla navega automáticamente al Dashboard, sin lógica de navegación dentro del ViewModel.</li>
+<li>El botón "Ingresar" / "Registrarse" se deshabilita mientras <code>isLoading</code> es <code>true</code>, mostrando un <code>CircularProgressIndicator</code> en su lugar.</li>
+<li>Cualquier error de credenciales o validación se muestra en pantalla a través del campo <code>error</code> del estado.</li>
+<li>En compilaciones de <strong>debug</strong>, se expone un botón "Entrar como Invitado" que omite la validación de credenciales, útil para pruebas rápidas del equipo.</li>
+</ul>
+<p><strong>Capa Domain</strong></p>
+<p>Tres casos de uso orquestan la lógica de negocio:</p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LoginUseCase</code></td>
+<td>Valida que los campos no estén vacíos, genera el hash SHA-256 de la contraseña ingresada y la compara contra el hash almacenado en la base de datos. Retorna el objeto <code>Usuario</code> de dominio si las credenciales coinciden, o <code>null</code> si no.</td>
+</tr>
+<tr>
+<td><code>RegistroUseCase</code></td>
+<td>Crea un nuevo registro de usuario. Hashea la contraseña antes de persistirla.</td>
+</tr>
+<tr>
+<td><code>GuardarSesionUseCase</code></td>
+<td>Persiste el nombre del usuario autenticado en <code>SessionManager</code> (DataStore Preferences). Esto permite que el Dashboard muestre el saludo personalizado sin consultar la base de datos.</td>
+</tr>
+</tbody>
+</table>
+<p>El hasheo se realiza en la capa Domain (no en Data) para garantizar la independencia del algoritmo respecto al mecanismo de almacenamiento:</p>
+<pre><code class="language-kotlin">fun hashContrasena(contrasena: String): String {
+    val digest = MessageDigest.getInstance(&quot;SHA-256&quot;)
+    val bytes = digest.digest(contrasena.toByteArray(Charsets.UTF_8))
+    return bytes.joinToString(&quot;&quot;) { &quot;%02x&quot;.format(it) }
+}
+</code></pre>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li><code>UsuarioDao</code> (Room) expone <code>getUsuarioByNombre(nombre: String): UsuarioEntity?</code>, operación de lectura de tipo <code>suspend</code> que se ejecuta en el hilo de IO.</li>
+<li>El mapper <code>toDomain()</code> convierte la entidad Room (<code>UsuarioEntity</code>) al modelo de dominio (<code>Usuario</code>), separando la representación de persistencia de la lógica de negocio.</li>
+<li><code>SessionManager</code> es una clase singleton basada en <strong>DataStore Preferences</strong> que persiste el nombre de sesión entre reinicios de la app.</li>
+</ul>
+<h4>Diagrama de flujo de Login</h4>
+<pre><code>LoginScreen
+   │
+   ├─[usuario, password]──► LoginViewModel.login()
+   │                              │
+   │                         LoginUseCase.invoke()
+   │                              │
+   │                         UsuarioDao.getUsuarioByNombre()
+   │                              │
+   │                    ┌─────────┴────────────┐
+   │                    │ Hash coincide         │ No coincide
+   │                    ▼                       ▼
+   │              toDomain()           state.error = &quot;Credenciales inválidas&quot;
+   │                    │
+   │              GuardarSesionUseCase
+   │                    │
+   │              state.loginExitoso = true
+   │                    │
+   └──────────── LaunchedEffect → navegar al Dashboard
+</code></pre>
+<hr />
+<h3>7.5.2 Módulo: Home / Dashboard de Operaciones</h3>
+<h4>Descripción General</h4>
+<p>El <code>DashboardOperacionesScreen</code> es la pantalla central de la aplicación, visible inmediatamente después de autenticarse. Actúa como <strong>panel de control</strong> en tiempo real: muestra el resumen financiero del mes en curso, el indicador de cumplimiento de tareas semanales, las tareas pendientes próximas y la lista de campañas activas. Todo el contenido se actualiza automáticamente mediante flujos reactivos (<code>StateFlow</code>) sin necesidad de que el usuario refresque la pantalla manualmente.</p>
+<h4>Composición visual</h4>
+<p>La pantalla implementa un <code>LazyColumn</code> con las siguientes secciones en orden vertical:</p>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Componente</th>
+<th>Datos mostrados</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Encabezado</td>
+<td><code>HeaderSectionAgriCore</code></td>
+<td>Nombre del usuario, acceso a Configuración y botón Cerrar Sesión</td>
+</tr>
+<tr>
+<td>Resumen Financiero</td>
+<td><code>SeccionResumenRendimiento</code></td>
+<td>Capital Invertido, Ingresos Brutos y Balance del mes actual (campaña activa)</td>
+</tr>
+<tr>
+<td>Cumplimiento Semanal</td>
+<td><code>GraficoCumplimientoCircular</code></td>
+<td>Gráfico circular Canvas + porcentaje de tareas completadas en la semana</td>
+</tr>
+<tr>
+<td>Tareas Próximas</td>
+<td>Cards (<code>LazyColumn items</code>)</td>
+<td>Hasta 5 tareas pendientes; las vencidas se resaltan en rojo</td>
+</tr>
+<tr>
+<td>Campañas Activas</td>
+<td><code>CampaniaCard</code></td>
+<td>Lista de campañas con nombre, cultivo, fecha de inicio y estado (Activa/Inactiva)</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>HomeViewModel</code> orquesta cuatro flujos de datos reactivos, todos convertidos a <code>StateFlow</code> con <code>stateIn(SharingStarted.WhileSubscribed(5_000))</code>. Esto significa que el flujo upstream (Room) se activa cuando al menos un colector está suscripto, y se cancela 5 segundos después de que el último colector desaparece (por ejemplo, al salir de la pantalla):</p>
+<pre><code class="language-kotlin">val campanias: StateFlow&lt;List&lt;Campania&gt;&gt;
+val tareasPendientes: StateFlow&lt;List&lt;Tarea&gt;&gt;
+val resumenMensual: StateFlow&lt;ResumenRendimiento?&gt;
+val cumplimientoSemanal: StateFlow&lt;CumplimientoTareas?&gt;
+val userName: StateFlow&lt;String&gt;  // Proviene del SessionManager
+</code></pre>
+<p>La función <code>cerrarSesion()</code> invoca <code>CerrarSesionUseCase</code> en una corrutina del <code>viewModelScope</code>, limpiando los datos de sesión de DataStore, y la pantalla reacciona navegando a <code>LoginScreen</code>.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCampaniasActivasUseCase</code></td>
+<td>Retorna un <code>Flow&lt;List&lt;Campania&gt;&gt;</code> con campañas cuyo campo <code>estaActiva</code> es <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>ObtenerTareasPendientesUseCase</code></td>
+<td>Retorna un <code>Flow&lt;List&lt;Tarea&gt;&gt;</code> con hasta <code>limite</code> tareas pendientes cuya fecha sea mayor a <code>fechaLimite</code> (últimos 7 días), ordenadas cronológicamente.</td>
+</tr>
+<tr>
+<td><code>ObtenerResumenRendimientoUseCase</code></td>
+<td>Combina cuatro flujos (campañas activas, insumos utilizados, cosechas y ventas) con el operador <code>combine</code>. Calcula el <strong>Capital Invertido</strong> (suma de <code>cantidad × precio</code> de todos los insumos de campañas activas), los <strong>Ingresos Brutos</strong> (ventas del mes actual) y el <strong>Balance</strong> (ingresos − capital). Si no hay campañas activas, emite <code>null</code> y el widget no se renderiza.</td>
+</tr>
+<tr>
+<td><code>ObtenerCumplimientoTareasUseCase</code></td>
+<td>Filtra todas las tareas cuya fecha cae dentro de la semana actual (lunes a domingo) y calcula el porcentaje de completadas (<code>confirmar == true</code>). Emite <code>null</code> si no hay tareas en la semana.</td>
+</tr>
+<tr>
+<td><code>CerrarSesionUseCase</code></td>
+<td>Delega en <code>SessionManager.logout()</code> para limpiar el nombre de usuario persistido en DataStore.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li><code>CampaniaRepository</code>, <code>TareaRepository</code>, <code>CampaniaInsumoRepository</code>, <code>CosechaRepository</code> y <code>CosechaNoAlmacenadaRepository</code> exponen sus datos como <code>Flow&lt;List&lt;...&gt;&gt;</code> backed por Room. Cada vez que se escribe en las tablas subyacentes, Room re-emite la lista actualizada automáticamente, propagando el cambio hasta la UI.</li>
+<li><code>SessionManager</code> (DataStore) provee el nombre del usuario autenticado como un <code>Flow&lt;String&gt;</code>, el cual es observado directamente por el ViewModel.</li>
+</ul>
+<h4>Formateo de moneda</h4>
+<p>El Dashboard implementa una función utilitaria <code>formatearMoneda(valor: Double): String</code> que adapta el formato para la locale argentina:
+- Valores ≥ 1.000.000 → abreviados como <code>$X,XM</code> (ej: <code>$6,1M</code>)
+- Valores ≥ 1.000 → abreviados como <code>$XXXk</code> (ej: <code>$250K</code>)
+- Valores negativos → el signo <code>-</code> siempre precede al símbolo <code>$</code> (ej: <code>-$1.500</code>), corrigiendo el comportamiento incorrecto de <code>NumberFormat.getCurrencyInstance</code> con la locale <code>es_AR</code>.</p>
+<h4>Navegación saliente</h4>
+<p>Desde el Dashboard el usuario puede navegar a:
+- <strong>Detalle de Campaña</strong> (<code>onGoToDetalle(campaniaId)</code>) — al tocar una card de campaña o una tarea.
+- <strong>Tareas</strong> (<code>onGoToTareas()</code>) — al tocar "Ver todas →".
+- <strong>Reportes</strong> (<code>onGoToReportes()</code>) — al tocar "Ver detalle →" en la sección de rendimiento.
+- <strong>Configuración</strong> (<code>onGoToConfig()</code>) — desde el encabezado.
+- <strong>Login</strong> (<code>onLogoutSuccess()</code>) — al confirmar el cierre de sesión.</p>
+<hr />
+<p><em>[FIN_FASE_1]</em></p>
+<h1>FASE 2 — Documentación Técnica: Campañas + Tareas</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>7.5 Descripción Técnica de Funcionalidades</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Pegar el contenido de este archivo a continuación del [FIN_FASE_1], respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h3>7.5.3 Módulo: Gestión de Campañas</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Campañas es el eje central del sistema. Una <strong>campaña</strong> representa un ciclo agrícola completo (siembra, insumos, cosecha) asociado a un cultivo y a un período de tiempo. Todos los demás módulos (Tareas, Insumos, Cosechas, Observaciones) se vinculan siempre a una campaña.</p>
+<p>El módulo está compuesto por tres pantallas y tres ViewModels especializados:</p>
+<table>
+<thead>
+<tr>
+<th>Pantalla</th>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GestionCampaniasScreen</code></td>
+<td><code>GestionCampaniasViewModel</code></td>
+<td>Listado de campañas activas e historial de inactivas</td>
+</tr>
+<tr>
+<td><code>DetalleCampaniaScreen</code></td>
+<td><code>CampaniaDetailViewModel</code></td>
+<td>Hub de navegación hacia los sub-módulos de la campaña</td>
+</tr>
+<tr>
+<td><code>FormularioCampaniaScreen</code></td>
+<td><code>CampaniaFormViewModel</code></td>
+<td>Alta y edición de una campaña</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Listado (<code>GestionCampaniasScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>GestionCampaniasViewModel</code> expone dos <code>StateFlow</code> reactivos separados: <code>campaniasActivas</code> y <code>campaniasInactivas</code>. La pantalla los observa de forma independiente para renderizar dos secciones diferenciadas:</p>
+<ul>
+<li><strong>Activas:</strong> siempre visibles, sin opción de eliminación (solo se accede al detalle).</li>
+<li><strong>Historial:</strong> colapsable mediante un estado local <code>showHistorial</code>. Solo las campañas inactivas pueden eliminarse, operación que requiere confirmación del usuario a través de un <code>AlertDialog</code>.</li>
+</ul>
+<p>Los errores de operaciones asíncronas (por ejemplo, fallo al eliminar) se emiten a través de un <code>MutableSharedFlow&lt;String&gt;</code> llamado <code>errorMessage</code>. La pantalla lo recolecta con un <code>LaunchedEffect</code> y lo muestra en un <code>SnackbarHost</code>, sin necesidad de bloquear el estado principal de la UI.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCampaniasActivasUseCase</code></td>
+<td>Retorna un <code>Flow&lt;List&lt;Campania&gt;&gt;</code> filtrado por <code>estaActiva == true</code>. Room lo re-emite automáticamente ante cualquier cambio en la tabla.</td>
+</tr>
+<tr>
+<td><code>ObtenerCampaniasInactivasUseCase</code></td>
+<td>Ídem para <code>estaActiva == false</code>. Representa el historial completo de campañas finalizadas.</td>
+</tr>
+<tr>
+<td><code>EliminarCampaniaUseCase</code></td>
+<td>Elimina permanentemente una campaña de la base de datos. Retorna un <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code> para informar el resultado (<code>Loading</code>, <code>Success</code>, <code>Error</code>) a la capa Presentation. La eliminación tiene efecto cascada: Room elimina automáticamente todas las entidades asociadas (tareas, insumos, cosechas, observaciones) gracias a la restricción <code>CASCADE</code> definida en las entidades.</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Detalle (<code>DetalleCampaniaScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>CampaniaDetailViewModel</code> implementa un patrón de <strong>estado unificado</strong> con <code>CampaniaDetailState</code>:</p>
+<pre><code class="language-kotlin">data class CampaniaDetailState(
+    val campania: Campania? = null,
+    val isLoading: Boolean = true,
+    val error: String? = null,
+    val finishSuccess: Boolean = false,
+    val idAnterior: Int? = null,
+    val idSiguiente: Int? = null
+)
+</code></pre>
+<p>El ID de la campaña a mostrar se extrae de <code>SavedStateHandle</code>, garantizando que sobreviva a la recreación del proceso de la app (rotación de pantalla, memoria baja). El ViewModel calcula los IDs de navegación anterior/siguiente (<code>idAnterior</code>, <code>idSiguiente</code>) comparando la campaña actual contra el listado completo de campañas, habilitando botones de navegación directa en la TopAppBar.</p>
+<p>La pantalla usa un <code>LazyVerticalGrid</code> de 2 columnas donde cada celda es una <code>ModuloCardBase</code> —componente reutilizable—  que muestra un contador en tiempo real de los ítems de ese sub-módulo. Cada tarjeta instancia su propio ViewModel (con una clave <code>hiltViewModel(key = "card_&lt;modulo&gt;_$campaniaId")</code>) para evitar colisiones entre campañas distintas, y lanza un <code>LaunchedEffect</code> para sincronizar el ID de campaña correcto al momento de la composición.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCampaniaPorIdUseCase</code></td>
+<td>Retorna un <code>Flow&lt;Campania?&gt;</code> para un ID específico. El ViewModel lo recolecta en una corrutina del <code>viewModelScope</code>. Si la campaña no existe, emite <code>null</code> y el ViewModel actualiza el estado de error.</td>
+</tr>
+<tr>
+<td><code>FinalizarCampaniaUseCase</code></td>
+<td>Implementa un <strong>soft-delete</strong>: en lugar de eliminar el registro, realiza una copia de la campaña con <code>estaActiva = false</code> y la actualiza en el repositorio. Esto preserva todo el historial vinculado (cosechas, insumos) en la base de datos. El flujo emite <code>Resource.Loading</code> → <code>Resource.Success</code> y la UI reacciona navegando hacia atrás cuando <code>finishSuccess</code> es <code>true</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Formulario (<code>FormularioCampaniaScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>CampaniaFormViewModel</code> es un ViewModel de doble modo: <strong>creación</strong> y <strong>edición</strong>. El modo se detecta automáticamente en el <code>init</code>: si <code>SavedStateHandle</code> contiene un <code>campaniaId</code> válido, carga los datos existentes y activa <code>isEditMode = true</code>. La pantalla adapta su título y el texto del botón de acuerdo a este flag.</p>
+<p>El formulario implementa validación <strong>en tiempo real</strong> mediante <code>ValidarDatosCampaniaUseCase</code>: cada campo limpia su propio error cuando el usuario comienza a escribir (<code>errorNombre = null</code>, etc.) y el ViewModel ejecuta la validación completa antes de intentar persistir.</p>
+<p>Incluye una funcionalidad especial de <strong>creación rápida de cultivo</strong>: desde el mismo formulario de campaña, el usuario puede crear un cultivo nuevo mediante un <code>AlertDialog</code> sin salir de la pantalla. El método <code>crearYSeleccionarNuevoCultivo()</code> persiste el cultivo, obtiene su ID generado por Room y lo selecciona automáticamente en el formulario, todo en una sola acción del usuario.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ValidarDatosCampaniaUseCase</code></td>
+<td>Centraliza todas las reglas de negocio de validación (nombre no vacío, hectáreas como número positivo, cultivo seleccionado, fecha no pasada en modo creación). Devuelve un objeto <code>ResultadoValidacion</code> con los errores específicos de cada campo, en lugar de lanzar excepciones.</td>
+</tr>
+<tr>
+<td><code>CrearCampaniaUseCase</code></td>
+<td>Persiste una nueva campaña con <code>estaActiva = true</code>. Retorna <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>EditarCampaniaUseCase</code></td>
+<td>Actualiza una campaña existente en Room. Retorna <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>7.5.4 Módulo: Gestión de Tareas</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Tareas funciona como una <strong>agenda de actividades</strong> asociadas a campañas. Permite programar, filtrar, confirmar y eliminar tareas. Cada tarea tiene nombre, fecha, hora, estado de completitud y un flag de notificación que dispara recordatorios del sistema operativo.</p>
+<p>El módulo comprende dos pantallas y dos ViewModels:</p>
+<table>
+<thead>
+<tr>
+<th>Pantalla</th>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TareasScreen</code></td>
+<td><code>TareaViewModel</code></td>
+<td>Listado filtrable de tareas pendientes y completadas</td>
+</tr>
+<tr>
+<td><code>NuevaTareaScreen</code></td>
+<td><code>NuevaTareaViewModel</code></td>
+<td>Alta y edición de una tarea</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Listado (<code>TareasScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>TareaViewModel</code> es el ViewModel más sofisticado del proyecto. Su estado principal, <code>tareasUi: StateFlow&lt;List&lt;TareaUiModel&gt;&gt;</code>, se construye mediante una <strong>cadena de operadores reactivos</strong>:</p>
+<pre><code class="language-kotlin">val tareasUi = combine(_filtroCampania, _filtroFechas, campanias) { id, fechas, campaniasList -&gt;
+    Triple(id, fechas, campaniasList)
+}.flatMapLatest { (id, fechas, campaniasList) -&gt;
+    obtenerTareasFiltradasUseCase(id, fechas).map { tareas -&gt;
+        tareas.map { tarea -&gt;
+            val nombreCampania = campaniasList.find { it.id == tarea.idCampania }?.nombre ?: &quot;Sin Campaña&quot;
+            val isVencida = tarea.fecha &lt; hoy
+            TareaUiModel(tarea, isVencida, nombreCampania)
+        }
+    }
+}.stateIn(...)
+</code></pre>
+<p>El operador <code>combine</code> fusiona los dos filtros activos (campaña y rango de fechas) con el listado de campañas disponibles. Al cambiar cualquiera de ellos, <code>flatMapLatest</code> cancela la suscripción al <code>Flow</code> anterior y abre una nueva con los parámetros actualizados, garantizando que nunca se procesen resultados de una búsqueda obsoleta. El resultado final es una lista de <code>TareaUiModel</code>, un modelo de UI enriquecido que incluye:</p>
+<ul>
+<li><code>tarea</code>: el objeto de dominio.</li>
+<li><code>isVencida</code>: calculado comparando <code>tarea.fecha</code> contra el inicio del día actual.</li>
+<li><code>campaniaNombre</code>: nombre de la campaña asociada, resuelto localmente sin una consulta extra a la base de datos.</li>
+</ul>
+<p>La pantalla renderiza dos sublistas diferenciadas: <strong>Pendientes</strong> (resaltando en rojo las vencidas) y <strong>Completadas</strong> (con texto tachado y fondo grisado). El botón "Programar Nueva Tarea" aplica un <strong>guardián de navegación</strong>: invoca <code>viewModel.onNuevaTareaClick()</code>, que verifica si hay una campaña seleccionada antes de emitir el evento de navegación; si no la hay, emite un mensaje de error reactivo en lugar de navegar.</p>
+<p>El ViewModel también integra <code>UltimaSeleccionManager</code>, un singleton que recuerda la última campaña seleccionada por el usuario. Cuando <code>TareasScreen</code> se abre desde la barra de navegación inferior (sin <code>campaniaId</code> explícito), el ViewModel usa el manager como fuente de verdad; si se abre desde <code>DetalleCampaniaScreen</code> (con <code>campaniaId</code> explícito en <code>SavedStateHandle</code>), ese ID tiene precedencia.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerTareasFiltradasUseCase</code></td>
+<td>Retorna un <code>Flow&lt;List&lt;Tarea&gt;&gt;</code> cuya consulta SQL varía según los filtros activos: sin filtros (todas las tareas), solo campaña, solo rango de fechas, o ambos combinados. La lógica de construcción de la consulta está aislada en esta capa, no en el DAO ni en el ViewModel.</td>
+</tr>
+<tr>
+<td><code>ConfirmarTareaUseCase</code></td>
+<td>Actualiza el campo <code>confirmar</code> de la tarea en Room. Si la tarea se marca como completada, invoca <code>TaskReminderScheduler.cancel(tareaId)</code> para cancelar la alarma del sistema operativo asociada, evitando notificaciones innecesarias.</td>
+</tr>
+<tr>
+<td><code>EliminarTareaUseCase</code></td>
+<td>Elimina permanentemente la tarea de la base de datos.</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Formulario (<code>NuevaTareaScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>NuevaTareaViewModel</code> opera en modo <strong>creación</strong> o <strong>edición</strong> según si recibe un <code>tareaId</code> en <code>SavedStateHandle</code>. En modo edición, carga los datos existentes usando <code>ObtenerTareaPorIdUseCase</code>. El campo <code>confirmar</code> de la tarea se <strong>preserva</strong> en la edición: si el usuario modifica la hora de una tarea que ya estaba completada, no se revierte accidentalmente su estado de completitud.</p>
+<p>La pantalla ofrece:
+- <strong>Selector de campaña</strong> (<code>SelectorCampania</code>): componente reutilizable compartido con otros formularios del proyecto.
+- <strong>DatePicker de Material3</strong>: para seleccionar la fecha en formato de calendario nativo.
+- <strong>TimePicker de Material3</strong>: para la hora en formato <code>HH:mm</code> con formato 24 horas. El ViewModel valida el formato con una expresión regular (<code>^([01]\d|2[0-3]):[0-5]\d$</code>) antes de persistir.
+- <strong>Checkbox de notificación</strong>: cuando está activo, el sistema programa una alarma vía <code>AlarmManager</code> al guardar la tarea.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CrearTareaUseCase</code></td>
+<td>Persiste una nueva tarea. Si <code>notificar == true</code>, programa una alarma del sistema operativo vía <code>TaskReminderScheduler</code> en el momento del guardado.</td>
+</tr>
+<tr>
+<td><code>EditarTareaUseCase</code></td>
+<td>Actualiza una tarea existente. Reprograma la alarma si corresponde.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li><code>TareaRepository</code> (Room) expone <code>getTareasByCampania(campaniaId)</code> y <code>getAllTareas()</code> como <code>Flow&lt;List&lt;TareaEntity&gt;&gt;</code>, habilitando la reactividad automática ante inserciones, actualizaciones o eliminaciones.</li>
+<li>El mapper <code>toDomain()</code> traduce <code>TareaEntity</code> (con todos los campos de SQLite) al modelo limpio <code>Tarea</code> (dominio), separando el modelo de persistencia del modelo de negocio.</li>
+<li><code>TaskReminderScheduler</code> (capa Core) abstrae la interacción con <code>AlarmManager</code> del sistema operativo. Esta clase es inyectada en los casos de uso mediante Hilt, manteniendo la capa Domain libre de dependencias de Android.</li>
+</ul>
+<hr />
+<p><em>[FIN_FASE_2]</em></p>
+<h1>FASE 3 — Documentación Técnica: Insumos + Cosechas + Cultivos</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>7.5 Descripción Técnica de Funcionalidades</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Pegar el contenido de este archivo a continuación del [FIN_FASE_2], respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h3>7.5.5 Módulo: Gestión de Insumos</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Insumos maneja dos capas bien diferenciadas que trabajan en conjunto:</p>
+<ul>
+<li><strong>Catálogo de Insumos</strong> (<code>CatalogoInsumosScreen</code>): Repositorio global de tipos de insumos disponibles en la empresa (semillas, herbicidas, combustibles, etc.), independiente de cualquier campaña.</li>
+<li><strong>Insumos Vinculados</strong> (<code>InsumosScreen</code> + <code>VincularInsumoScreen</code>): Registro de qué insumos, en qué cantidades y a qué precio se aplicaron en una campaña específica. Un mismo insumo del catálogo puede vincularse múltiples veces a la misma campaña (por ejemplo, aplicaciones en diferentes fechas).</li>
+</ul>
+<p>El módulo utiliza dos ViewModels especializados:</p>
+<table>
+<thead>
+<tr>
+<th>Pantalla</th>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CatalogoInsumosScreen</code></td>
+<td><code>InsumoCatalogoViewModel</code></td>
+<td>CRUD del catálogo global de tipos de insumos</td>
+</tr>
+<tr>
+<td><code>InsumosScreen</code> + <code>VincularInsumoScreen</code></td>
+<td><code>InsumoVinculacionViewModel</code></td>
+<td>Vinculación, edición y desvinculación de insumos por campaña</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Catálogo (<code>CatalogoInsumosScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>InsumoCatalogoViewModel</code> expone el catálogo completo de insumos como un <code>StateFlow&lt;List&lt;Insumo&gt;&gt;</code> alimentado reactivamente por Room. La pantalla lista cada insumo con su nombre, categoría e ícono emoji seleccionable.</p>
+<p>La edición se realiza a través de un <code>AlertDialog</code> inline (<code>DialogEditarInsumo</code>) que incluye una cuadrícula (<code>LazyVerticalGrid</code>) para seleccionar visualmente uno de los diez íconos emoji predefinidos (🌱, 💧, 💊, ⛽, etc.). El botón "Guardar" del diálogo se activa únicamente si <code>validarEdicion(nombre, categoria)</code> retorna <code>true</code>, delegando la validación al <code>ValidarInsumoUseCase</code> de la capa Domain antes de permitir el guardado.</p>
+<p>Los errores de operaciones (editar, eliminar) se exponen como <code>StateFlow&lt;String?&gt;</code> y se recolectan con un <code>LaunchedEffect</code> para mostrarse en un <code>SnackbarHost</code>, desapareciendo automáticamente sin intervención adicional del usuario.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCatalogoInsumosUseCase</code></td>
+<td>Retorna un <code>Flow&lt;List&lt;Insumo&gt;&gt;</code> con todos los insumos activos del catálogo. Room re-emite el listado ante cualquier cambio.</td>
+</tr>
+<tr>
+<td><code>EditarInsumoCatalogoUseCase</code></td>
+<td>Actualiza nombre, categoría e ícono de un insumo. Los registros de <code>CampaniaInsumo</code> que ya usan este insumo quedan automáticamente actualizados gracias a la relación de Room.</td>
+</tr>
+<tr>
+<td><code>EliminarInsumoCatalogoUseCase</code></td>
+<td>Elimina el insumo del catálogo. Los registros vinculados en campañas <strong>no se borran</strong> (no hay cascada), pero pasan a mostrarse como "Eliminado" en la UI mediante el campo <code>insumoActivo</code>.</td>
+</tr>
+<tr>
+<td><code>ValidarInsumoUseCase</code></td>
+<td>Valida que nombre y categoría no estén vacíos. Retorna un resultado booleano usado directamente por la UI para habilitar/deshabilitar el botón de guardado.</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Vinculación (<code>InsumosScreen</code> + <code>VincularInsumoScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>InsumoVinculacionViewModel</code> implementa el mismo patrón de <code>UltimaSeleccionManager</code> visto en Tareas y Cosechas: prioriza el <code>campaniaId</code> de <code>SavedStateHandle</code> (navegación desde Detalle de Campaña) y hace fallback al manager global cuando se accede desde la barra de navegación inferior.</p>
+<p>El flujo reactivo principal usa <code>flatMapLatest</code> sobre <code>_campaniaIdSeleccionada</code>: cuando cambia la campaña seleccionada, cancela la suscripción anterior y abre una nueva consulta a <code>ObtenerInsumosVinculadosUseCase(id)</code>, garantizando que no queden datos cacheados de una campaña anterior en pantalla.</p>
+<p><code>InsumosScreen</code> implementa una vista de <strong>acordeón agrupado</strong> (<code>InsumoAgrupado</code>): los registros de <code>CampaniaInsumo</code> se agrupan por <code>idInsumo</code> usando <code>groupBy</code> sobre la lista reactiva. Cada grupo muestra:
+- Totales acumulados (cantidad y costo) de todas las aplicaciones de ese insumo.
+- Un <code>Badge</code> con la cantidad de aplicaciones si hay más de una.
+- Expansión animada (<code>AnimatedVisibility</code> con <code>expandVertically</code>/<code>shrinkVertically</code>) para ver y operar sobre cada aplicación individual.</p>
+<p>La edición de un registro vinculado se realiza mediante <code>DialogEditarCampaniaInsumo</code>, un diálogo inline que permite modificar cantidad y precio sin salir de la pantalla.</p>
+<p><code>VincularInsumoScreen</code> implementa una <strong>búsqueda en tiempo real</strong> sobre el catálogo: el campo de texto filtra la lista localmente (<code>catalogo.filter { it.nombre.contains(busqueda, ignoreCase = true) }</code>) sin necesidad de consultas adicionales a la base de datos. Si el insumo buscado no existe, la pantalla ofrece un botón directo para crear uno nuevo en el catálogo. El botón "Vincular a Campaña" se activa solo cuando hay campaña válida, insumo seleccionado y cantidad ingresada.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerInsumosVinculadosUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;CampaniaInsumo&gt;&gt;</code> con todos los registros de aplicación de insumos para la campaña indicada, enriquecidos con el nombre e ícono del insumo correspondiente.</td>
+</tr>
+<tr>
+<td><code>AsignarInsumoACampaniaUseCase</code></td>
+<td>Crea un nuevo registro en la tabla <code>CampaniaInsumo</code> (relación campaña ↔ insumo) con cantidad, precio y timestamp de aplicación automático.</td>
+</tr>
+<tr>
+<td><code>EditarCampaniaInsumoUseCase</code></td>
+<td>Actualiza cantidad y precio de un registro de vinculación específico sin alterar los demás registros del mismo insumo.</td>
+</tr>
+<tr>
+<td><code>DesvincularInsumoUseCase</code></td>
+<td>Elimina un registro individual de <code>CampaniaInsumo</code>. No afecta al insumo en el catálogo global.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li><code>CampaniaInsumo</code> es un modelo de dominio enriquecido que combina datos de la tabla <code>campania_insumo</code> (cantidad, precio, fechaAplicación) con datos del catálogo (nombreInsumo, iconoInsumo, insumoActivo). Esta unión se realiza mediante un <code>JOIN</code> en el DAO de Room, evitando múltiples consultas separadas.</li>
+<li>La desvinculación no tiene efecto cascada sobre el catálogo: si se elimina el insumo del catálogo después, los registros históricos de <code>CampaniaInsumo</code> quedan con <code>insumoActivo = false</code>, permitiendo que la UI muestre el nombre histórico con la etiqueta "(Eliminado)" para preservar la trazabilidad del gasto.</li>
+</ul>
+<hr />
+<h3>7.5.6 Módulo: Gestión de Cosechas</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Cosechas registra la producción obtenida en cada campaña. Maneja una distinción de negocio fundamental: una cosecha puede ser <strong>almacenada</strong> (queda en un silo o silobolsa del establecimiento) o <strong>no almacenada</strong> (se vende, se destina a alimento vacuno u otro uso). Esta distinción determina qué datos adicionales se guardan y cómo se calcula el balance en el Dashboard.</p>
+<table>
+<thead>
+<tr>
+<th>Pantalla</th>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CosechasScreen</code></td>
+<td><code>CosechaViewModel</code></td>
+<td>Listado de cosechas por campaña, separadas por tipo</td>
+</tr>
+<tr>
+<td><code>FormularioCosechaScreen</code></td>
+<td><code>FormularioCosechaViewModel</code></td>
+<td>Alta y edición de una cosecha (almacenada o con venta)</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Listado (<code>CosechasScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>CosechaViewModel</code> expone dos flujos reactivos derivados del mismo <code>_campaniaIdSeleccionada</code>:</p>
+<pre><code class="language-kotlin">val cosechas: StateFlow&lt;List&lt;Cosecha&gt;&gt;  // Todas las cosechas de la campaña
+val noAlmacenadasDetalle: StateFlow&lt;Map&lt;Int, CosechaNoAlmacenada&gt;&gt;  // Detalles de ventas
+</code></pre>
+<p>El segundo flujo (<code>noAlmacenadasDetalle</code>) provee un <code>Map&lt;cosechaId, CosechaNoAlmacenada&gt;</code> que la pantalla usa para enriquecer las tarjetas de cosechas no almacenadas sin hacer consultas adicionales: <code>val detalle = noAlmacenadasDetalle[cosecha.id]</code>.</p>
+<p>La eliminación implementa un <strong>patrón de confirmación en dos pasos</strong> mediante estado reactivo:
+1. <code>solicitarEliminacion(cosecha)</code> → emite la cosecha en <code>cosechaAEliminar</code> y la pantalla muestra un <code>AlertDialog</code>.
+2. <code>confirmarEliminacion()</code> → ejecuta la eliminación real y limpia <code>cosechaAEliminar</code>.
+3. <code>cancelarEliminacion()</code> → limpia el estado sin eliminar nada.</p>
+<p>Esto mantiene la lógica de confirmación completamente en el ViewModel, sin estado local en la UI.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCosechasPorCampaniaUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;Cosecha&gt;&gt;</code> filtrado por campaña. Reactivo ante nuevas inserciones.</td>
+</tr>
+<tr>
+<td><code>ObtenerCosechasNoAlmacenadasUseCase</code></td>
+<td>Retorna <code>Flow&lt;Map&lt;Int, CosechaNoAlmacenada&gt;&gt;</code> con los detalles de venta indexados por <code>cosechaId</code>.</td>
+</tr>
+<tr>
+<td><code>EliminarCosechaUseCase</code></td>
+<td>Elimina la cosecha. Gracias a la restricción <code>CASCADE</code> de Room, el registro en <code>CosechaNoAlmacenada</code> se elimina automáticamente si existía.</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Formulario (<code>FormularioCosechaScreen</code>)</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>FormularioCosechaViewModel</code> es el ViewModel de mayor complejidad de persistencia del proyecto porque debe coordinar <strong>dos tablas</strong> de Room en una sola operación:
+- <code>Cosecha</code>: tabla principal con cantidad, fecha y nombre de almacén.
+- <code>CosechaNoAlmacenada</code>: tabla secundaria con tipo de destino y precio de venta (solo cuando <code>almacenado == false</code>).</p>
+<p>El formulario adapta su interfaz dinámicamente según el <code>Checkbox</code> de almacenamiento:
+- <code>almacenado = true</code> → muestra campo "Almacén (Silo, Silobolsa)".
+- <code>almacenado = false</code> → muestra campos "Tipo (Venta, Alimento Vacuno, Reserva)" y "Precio Total de Venta".</p>
+<p>En modo <strong>edición</strong>, el ViewModel carga simultáneamente los datos de ambas tablas:</p>
+<pre><code class="language-kotlin">val cosecha = obtenerCosechaPorIdUseCase(id)
+val detalle = if (!esAlmacenada) cosechaNoAlmacenadaRepository.getPorCosechaId(cosecha.id) else null
+</code></pre>
+<p>El campo de cantidad acepta tanto punto (<code>.</code>) como coma (<code>,</code>) como separador decimal, normalizando el input en <code>onCantidadChange</code>: <code>value.replace(",", ".")</code>. Lo mismo aplica al campo precio. Esto garantiza compatibilidad con el teclado numérico argentino.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ValidarDatosCosechaUseCase</code></td>
+<td>Centraliza las reglas de negocio: cantidad positiva, fecha no futura, almacén requerido si <code>isAlmacenada</code>. Retorna <code>ValidationResult.Success</code> o <code>ValidationResult.Error(message)</code>.</td>
+</tr>
+<tr>
+<td><code>RegistrarCosechaUseCase</code></td>
+<td>Inserta una cosecha almacenada (solo tabla <code>Cosecha</code>).</td>
+</tr>
+<tr>
+<td><code>RegistrarCosechaConVentaUseCase</code></td>
+<td>Inserta en tabla <code>Cosecha</code> y luego en <code>CosechaNoAlmacenada</code> con los datos de venta, en una transacción Room.</td>
+</tr>
+<tr>
+<td><code>EditarCosechaConVentaUseCase</code></td>
+<td>Actualiza la tabla <code>Cosecha</code> y el registro relacionado en <code>CosechaNoAlmacenada</code>. Si el tipo cambió de almacenada a venta o viceversa, crea o elimina el registro secundario según corresponda.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>7.5.7 Módulo: Catálogo de Cultivos</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Cultivos es el más compacto del sistema. Provee un catálogo global de tipos de cultivo (soja, maíz, trigo, etc.) que se referencia desde el formulario de Campaña. A diferencia de los insumos, los cultivos son datos de referencia simples: solo tienen nombre y un ID generado por Room.</p>
+<p>Está compuesto por una única pantalla:</p>
+<table>
+<thead>
+<tr>
+<th>Pantalla</th>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CatalogoCultivosScreen</code></td>
+<td><code>CultivoCatalogoViewModel</code></td>
+<td>CRUD completo de tipos de cultivo</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture</h4>
+<p><strong>Capa Presentation</strong></p>
+<p><code>CultivoCatalogoViewModel</code> es el ViewModel más simple del proyecto. Expone el catálogo como <code>StateFlow&lt;List&lt;Cultivo&gt;&gt;</code> con <code>soloActivos = true</code> y delega todas las operaciones directamente a sus casos de uso correspondientes.</p>
+<p>La pantalla implementa las operaciones de alta y edición mediante <code>AlertDialog</code> inline, sin pantalla dedicada. La función <code>validarCultivo(nombre: String): Boolean</code> es invocada directamente desde el botón "Guardar" del diálogo para mantenerlo deshabilitado mientras el campo está vacío, sin necesidad de estado adicional en el ViewModel.</p>
+<p>Los errores de operaciones (por ejemplo, intentar eliminar un cultivo referenciado en una campaña activa) se capturan con un bloque <code>try-catch</code> en el ViewModel y se exponen como <code>StateFlow&lt;String?&gt;</code>, recolectándolos en la pantalla con un <code>LaunchedEffect</code> que los muestra en <code>SnackbarHost</code> y luego los limpia con <code>viewModel.limpiarError()</code>.</p>
+<p>El botón "Agregar Nuevo Cultivo" se posiciona en la parte <strong>inferior fija</strong> de la pantalla (fuera del <code>LazyColumn</code>), garantizando acceso inmediato al usuario independientemente del scroll.</p>
+<p><strong>Capa Domain</strong></p>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerCultivosUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;Cultivo&gt;&gt;</code> filtrable por <code>soloActivos</code>. En el catálogo y en el selector de campañas siempre se usa <code>soloActivos = true</code>.</td>
+</tr>
+<tr>
+<td><code>CrearCultivoUseCase</code></td>
+<td>Inserta un nuevo cultivo en Room y retorna el <code>Long</code> del ID generado, permitiendo seleccionarlo inmediatamente después de crearlo (usado también en <code>CampaniaFormViewModel.crearYSeleccionarNuevoCultivo()</code>).</td>
+</tr>
+<tr>
+<td><code>EditarCultivoUseCase</code></td>
+<td>Actualiza el nombre del cultivo. Las campañas que lo referencian no requieren actualización ya que Room une por ID, no por nombre.</td>
+</tr>
+<tr>
+<td><code>EliminarCultivoUseCase</code></td>
+<td>Elimina el cultivo. Room rechazará la operación (excepción <code>SQLiteConstraintException</code>) si hay campañas activas que lo referencian, lo que el ViewModel captura y re-emite como mensaje de error amigable.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li><code>CultivoDao</code> expone todas las operaciones con funciones <code>suspend</code> para inserciones/actualizaciones/eliminaciones, y <code>Flow&lt;List&lt;CultivoEntity&gt;&gt;</code> para la consulta reactiva.</li>
+<li>El modelo de dominio <code>Cultivo</code> es idéntico en estructura a <code>CultivoEntity</code> (solo <code>id</code> y <code>nombre</code>), pero el mapper <code>toDomain()</code> lo mantiene separado para respetar los límites de capa: si en el futuro se agregan metadatos a la entidad (por ejemplo, fecha de creación), el modelo de dominio no se modifica hasta que la lógica de negocio lo requiera.</li>
+</ul>
+<hr />
+<p><em>[FIN_FASE_3]</em></p>
+<h1>FASE 4 — Documentación Técnica: Observaciones + Reportes + Configuración y Backup</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>7.5 Descripción Técnica de Funcionalidades</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Pegar el contenido de este archivo a continuación del [FIN_FASE_3], respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h3>7.5.8 Módulo: Observaciones</h3>
+<h4>Descripción General</h4>
+<p>El módulo de Observaciones permite registrar notas de campo asociadas a campañas, con soporte opcional de imágenes fotográficas tomadas desde la cámara del dispositivo o seleccionadas desde la galería. Es el módulo con mayor interacción con el sistema operativo de Android debido a la gestión de permisos de cámara, URIs de contenido y almacenamiento persistente de archivos.</p>
+<p>La pantalla <code>ObservacionesScreen</code> integra dos ViewModels simultáneamente:</p>
+<table>
+<thead>
+<tr>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObservacionViewModel</code></td>
+<td>Listado reactivo de observaciones, edición y eliminación</td>
+</tr>
+<tr>
+<td><code>FormularioObservacionViewModel</code></td>
+<td>Estado del formulario de alta (texto + imagen), guardado</td>
+</tr>
+</tbody>
+</table>
+<p>Esta separación de responsabilidades dentro de una misma pantalla evita que el estado del formulario de alta se reinicie al recargar el listado, y permite que cada ViewModel sea testeado de forma independiente.</p>
+<h4>Interacciones de Clean Architecture — Presentation</h4>
+<p><strong>Gestión de permisos de cámara</strong></p>
+<p>La pantalla implementa un flujo completo de tres estados para el permiso <code>CAMERA</code> a través de <code>recordarPermisoCamara()</code>, una función <code>@Composable</code> de la capa de utilidades que encapsula el launcher de permisos:</p>
+<ol>
+<li><strong>Permiso ya concedido:</strong> el launcher de cámara (<code>ActivityResultContracts.TakePicture</code>) se lanza directamente.</li>
+<li><strong>Permiso denegado una vez:</strong> se muestra <code>DialogoRazonPermisoCamara</code> explicando por qué se necesita el permiso antes de volver a solicitarlo.</li>
+<li><strong>Permiso denegado permanentemente:</strong> se muestra un <code>Snackbar</code> con acción "Abrir Ajustes" que invoca <code>abrirAjustesPermiso(context)</code>, llevando al usuario a la pantalla de configuración de la app en el sistema operativo.</li>
+</ol>
+<p>Para la sincronización entre el resultado del permiso y la apertura de la cámara, se utiliza un patrón de <strong>acción diferida</strong>: cuando el usuario pulsa "Cámara" sin permiso concedido, la acción de lanzar la cámara se almacena en <code>accionPendiente</code> (estado local). Un <code>LaunchedEffect</code> observa <code>controlPermiso.permisoConcedido</code> y, cuando cambia a <code>true</code>, ejecuta y limpia la acción pendiente.</p>
+<pre><code class="language-kotlin">var accionPendiente by remember { mutableStateOf&lt;(() -&gt; Unit)?&gt;(null) }
+
+// Al pulsar Cámara sin permiso:
+accionPendiente = { cameraLauncher.launch(uri) }
+controlPermiso.solicitar()
+
+// Cuando el permiso es concedido:
+LaunchedEffect(controlPermiso.permisoConcedido) {
+    if (controlPermiso.permisoConcedido) {
+        accionPendiente?.invoke()
+        accionPendiente = null
+    }
+}
+</code></pre>
+<p><strong>Persistencia de imágenes</strong></p>
+<p>La galería devuelve URIs de contenido (<code>content://</code>) que son válidas solo mientras la app tiene acceso temporal. <code>FormularioObservacionViewModel.guardar()</code> invoca <code>copyImageToInternalStorage(uri)</code> <strong>antes</strong> de persistir la observación: copia el archivo a <code>context.filesDir</code> con un nombre único basado en el timestamp (<code>obs_&lt;timestamp&gt;.jpg</code>) y guarda la ruta absoluta interna. Esta ruta es permanente y sobrevive reinicios de la app, a diferencia del URI de contenido original.</p>
+<p><strong>Interacción entre ViewModels en pantalla</strong></p>
+<p><code>ObservacionViewModel</code> (listado) y <code>FormularioObservacionViewModel</code> (formulario) comparten la pantalla pero son independientes. El botón "Guardar observación" invoca <code>formViewModel.guardar()</code> y un <code>LaunchedEffect</code> sobre <code>formState.guardadoExitoso</code> resetea el formulario al completarse (<code>formViewModel.resetGuardadoExitoso()</code>), sin afectar al listado que se actualiza automáticamente via Room.</p>
+<h4>Interacciones de Clean Architecture — Domain</h4>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerObservacionesPorCampaniaUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;Observacion&gt;&gt;</code> para la campaña seleccionada, reactivo ante cambios.</td>
+</tr>
+<tr>
+<td><code>GuardarObservacionUseCase</code></td>
+<td>Inserta una nueva observación con texto y ruta de imagen (ya copiada al almacenamiento interno).</td>
+</tr>
+<tr>
+<td><code>EditarObservacionUseCase</code></td>
+<td>Actualiza texto y/o imagen de una observación existente. Retorna <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>EliminarObservacionUseCase</code></td>
+<td>Elimina la observación de Room. La imagen almacenada en <code>filesDir</code> <strong>no se elimina automáticamente</strong> (limpieza diferida).</td>
+</tr>
+<tr>
+<td><code>ValidarObservacionUseCase</code></td>
+<td>Verifica que al menos uno de los dos campos (texto o imagen) esté presente antes de habilitar el guardado.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>7.5.9 Módulo: Reportes y Análisis</h3>
+<h4>Descripción General</h4>
+<p><code>ReportesRendimientoScreen</code> es la pantalla analítica central del sistema. Está compuesta por tres secciones diferenciadas, todas gestionadas por un único <code>ReportesViewModel</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Resumen Productivo-Financiero</strong></td>
+<td>Filtros multi-campaña y por rango de fechas, con métricas agregadas (capital invertido, toneladas cosechadas, costo por tonelada) y evolución histórica por tipo de cultivo mediante gráfico de línea</td>
+</tr>
+<tr>
+<td><strong>Estadísticas de Campaña</strong></td>
+<td>Análisis individual de una campaña seleccionada: costo de insumos, cosecha total, rendimiento (Tn/Ha), costo/Ha, Top 3 insumos de mayor gasto con barra de progreso, y dos gráficos de torta (distribución de gastos por insumo y distribución de destino de cosecha)</td>
+</tr>
+<tr>
+<td><strong>Comparador de Campañas</strong></td>
+<td>Comparación lado a lado de dos campañas seleccionadas independientemente (Campaña A vs Campaña B) en costo total de insumos, volumen cosechado y costo/Ha</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Presentation</h4>
+<p><strong>ReportesViewModel</strong> es el ViewModel con mayor cantidad de <code>StateFlow</code> del proyecto (más de 20). Su arquitectura interna sigue el principio de <strong>derivación reactiva en cadena</strong>: los datos base (campañas, insumos, cosechas) se obtienen como <code>Flow</code> de Room, y las métricas derivadas se calculan mediante <code>combine</code> y <code>map</code> sobre esos flows, sin cálculos imperativos en funciones separadas.</p>
+<p>Ejemplo representativo — cálculo de rendimiento Tn/Ha:</p>
+<pre><code class="language-kotlin">val rendimientoTnHa: StateFlow&lt;String&gt; = combine(
+    campaniaIndividual,
+    cosechasIndividual
+) { campania, cosechas -&gt;
+    if (campania == null || campania.hectareas &lt;= 0) return@combine &quot;N/A&quot;
+    val totalCosechado = cosechas.sumOf { it.cantidad }
+    val rendimiento = totalCosechado / campania.hectareas
+    String.format(Locale(&quot;es&quot;, &quot;AR&quot;), &quot;%.2f Tn/Ha&quot;, rendimiento)
+}.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), &quot;N/A&quot;)
+</code></pre>
+<p><strong>Gráficos de torta (PieChart)</strong></p>
+<p>Se utilizan dos instancias del componente <code>PieChart</code> de la biblioteca <code>co.yml.charts</code>:
+- <strong>PieChart de insumos:</strong> cada slice representa un tipo de insumo, con su costo total como valor y un color asignado cíclicamente desde una paleta de 7 colores.
+- <strong>PieChart de cosechas:</strong> dos slices fijos: "Almacenada" (verde) y "Vendida" (ámbar), calculados sumando toneladas por destino.</p>
+<p>Ambos gráficos se alimentan de <code>StateFlow&lt;PieChartData?&gt;</code> emitidos como <code>null</code> cuando no hay datos, lo que permite que la UI muestre un placeholder en lugar de un gráfico vacío.</p>
+<p><strong>Gráfico de línea de evolución histórica</strong></p>
+<p>El gráfico de línea se implementa <strong>sin biblioteca externa</strong>, usando directamente <code>Canvas</code> de Compose con la API de dibujo de bajo nivel. Calcula los ejes, coordenadas y etiquetas (rotadas 45° para evitar solapamiento) manualmente. Esto lo hace completamente personalizable y sin dependencias adicionales.</p>
+<p><strong>Leyenda con drill-down de insumos</strong></p>
+<p>La leyenda del PieChart de insumos implementa un acordeón expansible (mismo patrón que <code>InsumosScreen</code>): cada ítem de la leyenda es clickeable, se expande con <code>AnimatedVisibility</code> y muestra los registros individuales de ese insumo. Desde esta vista el usuario puede editar o eliminar un registro sin salir de la pantalla de reportes, operaciones delegadas a <code>viewModel.editarInsumo()</code> y <code>viewModel.eliminarInsumo()</code>.</p>
+<p><strong>Filtro multi-campaña con <code>FlowRow</code></strong></p>
+<p>El filtro de campañas utiliza <code>FlowRow</code> (API experimental de <code>ExperimentalLayoutApi</code>) para mostrar chips de filtro que se redistribuyen automáticamente en múltiples filas si no caben en una sola. La selección múltiple se maneja con <code>toggleFiltroCampania(campaniaId)</code> que agrega o quita el ID de la lista <code>_filtroCampaniasMulti</code>.</p>
+<p><strong>Exportación de reportes</strong></p>
+<p>El ViewModel coordina la exportación mediante <code>ActivityResultContracts.CreateDocument</code>, que abre el selector de archivos del sistema operativo y devuelve una URI donde escribir. El ViewModel llama a <code>ReportExporter.exportToCsv()</code> o <code>ReportExporter.exportToPdf()</code> (clase utilitaria en <code>core/utils</code>) con los datos actuales de la campaña seleccionada. El resultado se emite como <code>_exportStatus: StateFlow&lt;String?&gt;</code> y la pantalla lo muestra con <code>Toast</code>.</p>
+<h4>Interacciones de Clean Architecture — Domain</h4>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ObtenerTodosLosInsumosUtilizadosUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;CampaniaInsumo&gt;&gt;</code> con <strong>todos</strong> los registros de insumos de todas las campañas, para el resumen global.</td>
+</tr>
+<tr>
+<td><code>ObtenerTodasLasCosechasUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;Cosecha&gt;&gt;</code> con todas las cosechas de todas las campañas.</td>
+</tr>
+<tr>
+<td><code>CalcularCostoPorHectareaUseCase</code></td>
+<td>Recibe una <code>Campania</code> y su lista de <code>CampaniaInsumo</code>, calcula la suma de gastos y la divide por las hectáreas. Retorna <code>0.0</code> si la campaña es nula o tiene <code>hectareas &lt;= 0</code>.</td>
+</tr>
+<tr>
+<td><code>ObtenerEvolucionCultivoUseCase</code></td>
+<td>Retorna <code>Flow&lt;List&lt;PuntoCultivo&gt;&gt;</code> con el rendimiento Tn/Ha histórico de cada campaña que utilizó ese tipo de cultivo, ordenado cronológicamente.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>7.5.10 Módulo: Configuración y Backup</h3>
+<h4>Descripción General</h4>
+<p><code>ConfiguracionDBScreen</code> centraliza las operaciones de mantenimiento de la base de datos SQLite de la aplicación. Gestiona dos funcionalidades críticas de seguridad de datos: <strong>backup</strong> (copia de seguridad) y <strong>restauración</strong> de la base de datos, con un mecanismo adicional de seed de datos de prueba disponible solo en builds de desarrollo.</p>
+<p>La pantalla instancia dos ViewModels:</p>
+<table>
+<thead>
+<tr>
+<th>ViewModel</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BackupViewModel</code></td>
+<td>Exportación e importación del archivo SQLite</td>
+</tr>
+<tr>
+<td><code>ConfiguracionDBViewModel</code></td>
+<td>Carga de datos de prueba (seed) — solo en builds DEBUG</td>
+</tr>
+</tbody>
+</table>
+<h4>Interacciones de Clean Architecture — Presentation</h4>
+<p><strong>Backup (exportación)</strong></p>
+<p>El botón "Exportar Base de Datos" lanza <code>ActivityResultContracts.CreateDocument("application/octet-stream")</code> que abre el selector de archivos del sistema operativo, permitiendo al usuario elegir destino y nombre. Al confirmar, el sistema devuelve una URI y el ViewModel invoca <code>crearBackupUseCase(uri)</code>. El estado <code>BackupUiState</code> (interfaz sellada con <code>Idle</code>, <code>Loading</code>, <code>Success</code>, <code>Error</code>) controla la visibilidad del <code>CircularProgressIndicator</code> y el mensaje de resultado en <code>Snackbar</code>.</p>
+<p><strong>Restauración (importación)</strong></p>
+<p>La restauración implementa un <strong>flujo de dos pasos</strong> para prevenir la pérdida accidental de datos:
+1. El launcher <code>ActivityResultContracts.OpenDocument()</code> devuelve la URI del archivo seleccionado.
+2. La URI se almacena en <code>pendingRestoreUri</code> (estado local) y se muestra un <code>AlertDialog</code> de confirmación con advertencia explícita: <em>"Se sobrescribirán TODOS los datos actuales"</em>.
+3. Solo si el usuario confirma, se invoca <code>backupViewModel.restaurarBackup(uri)</code>.</p>
+<p>Tras una restauración exitosa, <code>restoreCompleted</code> cambia a <code>true</code> y el <code>LaunchedEffect</code> que lo observa <strong>reinicia la aplicación completa</strong> mediante un intent de relanzamiento seguido de <code>Runtime.getRuntime().exit(0)</code>. Este reinicio forzado es necesario porque Room mantiene la base de datos en caché en memoria, y sin reiniciar el proceso la app continuaría usando los datos anteriores.</p>
+<p><strong>Seed de datos de prueba</strong></p>
+<p>El botón "Cargar datos de prueba" solo es visible cuando <code>BuildConfig.DEBUG == true</code>, garantizando que no aparezca en producción. <code>ConfiguracionDBViewModel.cargarDatosPrueba()</code> ejecuta un conjunto predefinido de inserciones que poblan todas las entidades del esquema, permitiendo demostrar la aplicación sin datos reales.</p>
+<h4>Interacciones de Clean Architecture — Domain</h4>
+<table>
+<thead>
+<tr>
+<th>Caso de Uso</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CrearBackupUseCase</code></td>
+<td>Abre un stream de escritura sobre la URI proporcionada por el selector del sistema, copia el archivo <code>.db</code> de Room desde <code>context.getDatabasePath()</code> y cierra el stream. Retorna <code>Result&lt;Unit&gt;</code> (éxito o excepción).</td>
+</tr>
+<tr>
+<td><code>RestaurarBackupUseCase</code></td>
+<td>Cierra la conexión de Room a la base de datos, copia el archivo seleccionado sobre el archivo <code>.db</code> interno, y delega al ViewModel el reinicio de la aplicación. Opera en <code>Dispatchers.IO</code> para no bloquear el hilo principal durante la copia de archivos.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Capa Data</strong></p>
+<ul>
+<li>El archivo de base de datos de Room se ubica en <code>context.getDatabasePath("don_elio_db.db")</code>. El backup es una copia binaria directa del archivo SQLite, lo que garantiza compatibilidad con cualquier versión futura que mantenga la misma versión de esquema.</li>
+<li>No hay migración de esquema durante la restauración: si se intenta importar un backup de una versión anterior del esquema, Room lanzará <code>IllegalStateException</code> y el ViewModel lo capturará como <code>BackupUiState.Error</code>.</li>
+</ul>
+<hr />
+<p><em>[FIN_FASE_4]</em></p>
+<h1>FASE 5 — Documentación Técnica: Arquitectura Transversal</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>7.5 Descripción Técnica de Funcionalidades</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Pegar el contenido de este archivo a continuación del [FIN_FASE_4], respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h3>7.5.11 Arquitectura General y Decisiones de Diseño Transversales</h3>
+<p>Esta sección documenta los elementos de infraestructura que atraviesan todos los módulos del sistema: la arquitectura de capas, el grafo de navegación, la inyección de dependencias, el esquema de base de datos, y los patrones de diseño reutilizados en toda la aplicación.</p>
+<h4>7.5.11.1 Arquitectura de Capas (Clean Architecture + MVVM)</h4>
+<p>La aplicación implementa <strong>Clean Architecture</strong> organizada en tres capas con dependencias unidireccionales:</p>
+<pre><code>Presentation  →  Domain  →  Data
+(UI + ViewModels)  (UseCases + Models)  (Room + Repositories)
+</code></pre>
+<p><strong>Regla fundamental:</strong> ninguna capa interna conoce a la externa. El dominio define interfaces de repositorio (<code>CampaniaRepository</code>, <code>TareaRepository</code>, etc.) que la capa Data implementa (<code>CampaniaRepositoryImpl</code>). Hilt inyecta la implementación concreta en tiempo de compilación sin que el dominio dependa de Room directamente.</p>
+<table>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Paquete</th>
+<th>Responsabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Presentation</strong></td>
+<td><code>presentation/</code></td>
+<td>ViewModels, pantallas Compose, componentes UI, navegación</td>
+</tr>
+<tr>
+<td><strong>Domain</strong></td>
+<td><code>domain/</code></td>
+<td>Modelos de negocio, interfaces de repositorio, casos de uso</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td><code>data/</code></td>
+<td>Entidades Room, DAOs, implementaciones de repositorio, mappers</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td><code>core/</code></td>
+<td>Utilidades transversales: <code>SessionManager</code>, <code>TaskReminderScheduler</code>, <code>ReportExporter</code></td>
+</tr>
+</tbody>
+</table>
+<h4>7.5.11.2 Esquema de Base de Datos (Room, versión 8)</h4>
+<p>La base de datos <code>DonElioDatabase</code> está declarada en <code>DonElioDatabase.kt</code> y contiene <strong>9 entidades</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Tabla SQLite</th>
+<th>Entidad Room</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>campanias</code></td>
+<td><code>CampaniaEntity</code></td>
+<td>Campañas agrícolas. Columnas clave: <code>id_campania</code>, <code>nombre</code>, <code>hectareas</code>, <code>fecha</code>, <code>esta_activa</code>, <code>id_cultivo</code>.</td>
+</tr>
+<tr>
+<td><code>tareas</code></td>
+<td><code>TareaEntity</code></td>
+<td>Tareas programadas. FK → <code>campanias</code>. Columnas: <code>fecha</code> (Long, ms), <code>hora</code> (String "HH:mm"), <code>notificar</code>, <code>confirmar</code>.</td>
+</tr>
+<tr>
+<td><code>cosechas</code></td>
+<td><code>CosechaEntity</code></td>
+<td>Registros de cosecha. FK → <code>campanias</code> con <code>ON DELETE CASCADE</code>. Columna <code>almacen</code> vacía indica cosecha no almacenada.</td>
+</tr>
+<tr>
+<td><code>cosechas_no_almacenadas</code></td>
+<td><code>CosechaNoAlmacenadaEntity</code></td>
+<td>Detalles de venta/destino de cosechas. FK → <code>cosechas</code> con <code>ON DELETE CASCADE</code>.</td>
+</tr>
+<tr>
+<td><code>insumos</code></td>
+<td><code>InsumoEntity</code></td>
+<td>Catálogo global de tipos de insumos. Campos: <code>nombre</code>, <code>categoria</code>, <code>icono</code> (emoji), <code>activo</code>.</td>
+</tr>
+<tr>
+<td><code>campania_insumo</code></td>
+<td><code>CampaniaInsumoEntity</code></td>
+<td>Tabla de unión campaña ↔ insumo. FK doble con <code>ON DELETE CASCADE</code>. Columnas: <code>cantidad</code>, <code>precio</code>, <code>fecha_aplicacion</code>.</td>
+</tr>
+<tr>
+<td><code>observaciones</code></td>
+<td><code>ObservacionEntity</code></td>
+<td>Notas de campo. FK → <code>campanias</code>. Campo <code>imagen_uri</code> guarda ruta absoluta en <code>filesDir</code>.</td>
+</tr>
+<tr>
+<td><code>usuarios</code></td>
+<td><code>UsuarioEntity</code></td>
+<td>Usuarios locales. Contraseña almacenada como hash SHA-256.</td>
+</tr>
+<tr>
+<td><code>cultivos</code></td>
+<td><code>CultivoEntity</code></td>
+<td>Catálogo de tipos de cultivo. Campo <code>activo</code> para soft-delete.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Historial de migraciones relevantes:</strong></p>
+<p>La base de datos evolucionó de la versión 4 a la 8 durante el desarrollo del proyecto. Las migraciones más significativas fueron:</p>
+<ul>
+<li><strong>v5→v6:</strong> Se agregó la columna <code>hectareas</code> a <code>campanias</code> para habilitar el cálculo de rendimiento Tn/Ha y costo/Ha.</li>
+<li><strong>v6→v7:</strong> Se creó la tabla <code>cultivos</code> con 4 cultivos predefinidos (Soja, Maíz, Trigo, Girasol) y se vinculó a <code>campanias</code> mediante <code>id_cultivo</code>.</li>
+<li><strong>v7→v8 (#455):</strong> Se eliminó el índice único compuesto <code>(id_campania, id_insumo)</code> de <code>campania_insumo</code> y se agregó <code>fecha_aplicacion</code>. Esta migración habilitó que un mismo insumo pueda vincularse múltiples veces a la misma campaña, cada registro representando una aplicación diferente.</li>
+</ul>
+<p>Todas las migraciones se declaran en <code>DatabaseModule.kt</code> y se registran al construir la base de datos con <code>.addMigrations(...)</code>, garantizando que los usuarios con versiones anteriores instaladas no pierdan sus datos al actualizar la app.</p>
+<h4>7.5.11.3 Inyección de Dependencias (Hilt)</h4>
+<p>La aplicación usa <strong>Hilt</strong> (Dagger 2 simplificado) para inyección de dependencias. Todos los módulos están instalados en <code>SingletonComponent</code>, lo que significa que sus instancias viven durante todo el ciclo de vida de la aplicación.</p>
+<p><strong>Módulos de Hilt:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Tipo</th>
+<th>Provee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DatabaseModule</code></td>
+<td><code>@Module @object</code></td>
+<td><code>DonElioDatabase</code> y los 9 DAOs individuales</td>
+</tr>
+<tr>
+<td><code>RepositoryModule</code></td>
+<td><code>@Module abstract class</code></td>
+<td>Binding de interfaces de repositorio a sus implementaciones</td>
+</tr>
+<tr>
+<td><code>SessionModule</code></td>
+<td><code>@Module @object</code></td>
+<td><code>SessionManager</code> (DataStore Preferences)</td>
+</tr>
+<tr>
+<td><code>AlarmModule</code></td>
+<td><code>@Module @object</code></td>
+<td><code>TaskReminderScheduler</code> (WorkManager)</td>
+</tr>
+</tbody>
+</table>
+<p><code>RepositoryModule</code> utiliza <code>@Binds</code> en lugar de <code>@Provides</code>. Esta diferencia es importante: <code>@Binds</code> le indica a Hilt que, cuando se pida una <code>CampaniaRepository</code> (interfaz de dominio), debe entregar una <code>CampaniaRepositoryImpl</code> (implementación de la capa Data), sin necesitar código de instanciación manual. Hilt resuelve el constructor de <code>CampaniaRepositoryImpl</code> automáticamente porque está anotado con <code>@Inject constructor</code>.</p>
+<p><strong>Flujo de inyección en un ViewModel típico:</strong></p>
+<pre><code>Hilt → CampaniaRepositoryImpl(@Inject) 
+     ← CampaniaDao (@Singleton desde DatabaseModule)
+     ← DonElioDatabase (@Singleton desde DatabaseModule)
+
+→ CampaniaRepository (binding desde RepositoryModule)
+→ ObtenerCampaniasActivasUseCase(@Inject constructor(CampaniaRepository))
+→ GestionCampaniasViewModel(@HiltViewModel @Inject constructor(ObtenerCampaniasActivasUseCase, ...))
+</code></pre>
+<h4>7.5.11.4 Sistema de Navegación (Jetpack Navigation Compose)</h4>
+<p>La navegación usa <strong>Jetpack Navigation Compose</strong> con rutas tipadas definidas en <code>NavRoutes.kt</code>. Todas las rutas son subclases <code>sealed</code> de <code>NavRoute(val route: String)</code>, lo que garantiza exhaustividad en tiempo de compilación.</p>
+<p><strong>Patrón de rutas con parámetros opcionales:</strong></p>
+<p>Las rutas que pueden recibir un <code>campaniaId</code> (o <code>tareaId</code>, <code>cosechaId</code>) usan query parameters opcionales en lugar de segmentos de ruta obligatorios:</p>
+<pre><code class="language-kotlin">// Ruta con parámetro opcional
+data object Tareas : NavRoute(&quot;tareas?campaniaId={campaniaId}&quot;) {
+    fun createRoute(campaniaId: Int? = null): String =
+        if (campaniaId != null) &quot;tareas?campaniaId=$campaniaId&quot; else &quot;tareas&quot;
+}
+</code></pre>
+<p>Este diseño permite que la misma pantalla se abra desde dos contextos:
+- Desde la <strong>barra de navegación inferior</strong> (sin ID → usa <code>UltimaSeleccionManager</code>).
+- Desde <strong>Detalle de Campaña</strong> (con ID explícito → tiene prioridad sobre el manager).</p>
+<p><strong>Rutas del sistema:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Pantalla</th>
+<th>Parámetros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>login</code></td>
+<td>LoginScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>registro</code></td>
+<td>RegistroScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>home</code></td>
+<td>DashboardOperacionesScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>campanias?campaniaId={id}</code></td>
+<td>GestionCampaniasScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>detalle_campania/{campaniaId}</code></td>
+<td>DetalleCampaniaScreen</td>
+<td><code>campaniaId</code> (obligatorio)</td>
+</tr>
+<tr>
+<td><code>formulario_campania?campaniaId={id}</code></td>
+<td>FormularioCampaniaScreen</td>
+<td><code>campaniaId</code> (opcional, activa modo edición)</td>
+</tr>
+<tr>
+<td><code>tareas?campaniaId={id}</code></td>
+<td>TareasScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>nueva_tarea?campaniaId={id}&amp;tareaId={id}</code></td>
+<td>NuevaTareaScreen</td>
+<td><code>campaniaId</code>, <code>tareaId</code> (ambos opcionales)</td>
+</tr>
+<tr>
+<td><code>insumos?campaniaId={id}</code></td>
+<td>InsumosScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>vincular_insumo?campaniaId={id}</code></td>
+<td>VincularInsumoScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>catalogo_insumos</code></td>
+<td>CatalogoInsumosScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>catalogo_cultivos</code></td>
+<td>CatalogoCultivosScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>cosechas?campaniaId={id}</code></td>
+<td>CosechasScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>formulario_cosecha?campaniaId={id}&amp;cosechaId={id}</code></td>
+<td>FormularioCosechaScreen</td>
+<td>ambos opcionales</td>
+</tr>
+<tr>
+<td><code>observaciones?campaniaId={id}</code></td>
+<td>ObservacionesScreen</td>
+<td><code>campaniaId</code> (opcional)</td>
+</tr>
+<tr>
+<td><code>reportes</code></td>
+<td>ReportesRendimientoScreen</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>configuracion_db</code></td>
+<td>ConfiguracionDBScreen</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>La barra de navegación inferior (<code>BottomNavBar</code>) incluye las 5 rutas definidas en <code>NavRoute.bottomNavRoutes</code>: <code>Home</code>, <code>Campanias</code>, <code>Tareas</code>, <code>Insumos</code>, <code>Reportes</code>.</p>
+<h4>7.5.11.5 Patrón de Estado: <code>Resource&lt;T&gt;</code></h4>
+<p>Para las operaciones asíncronas que requieren comunicar estados intermedios (carga, éxito, error) desde los casos de uso hacia los ViewModels, la aplicación define una clase sellada genérica:</p>
+<pre><code class="language-kotlin">sealed class Resource&lt;out T&gt; {
+    data class Success&lt;T&gt;(val data: T) : Resource&lt;T&gt;()
+    data class Error(val message: String, val exception: Throwable? = null) : Resource&lt;Nothing&gt;()
+    object Loading : Resource&lt;Nothing&gt;()
+}
+</code></pre>
+<p>Los casos de uso que realizan operaciones de escritura (crear, editar, eliminar) retornan <code>Flow&lt;Resource&lt;Unit&gt;&gt;</code> emitiendo la secuencia <code>Loading → Success</code> o <code>Loading → Error</code>. Los ViewModels reaccionan actualizando su <code>MutableStateFlow</code> de estado con <code>when(resource)</code>.</p>
+<p>La clase además provee extensiones de conveniencia: <code>onSuccess {}</code>, <code>onError {}</code>, <code>isSuccess()</code>, <code>isError()</code>, permitiendo un consumo fluido en cadena cuando el ViewModel no necesita manejar el estado de carga.</p>
+<h4>7.5.11.6 Patrón de Estado Global: <code>UltimaSeleccionManager</code></h4>
+<p><code>UltimaSeleccionManager</code> es un singleton inyectado por Hilt (<code>@Singleton</code>) que mantiene en memoria el ID de la última campaña seleccionada por el usuario:</p>
+<pre><code class="language-kotlin">@Singleton
+class UltimaSeleccionManager @Inject constructor() {
+    private val _campaniaIdSeleccionada = MutableStateFlow&lt;Int?&gt;(null)
+    val campaniaIdSeleccionada: StateFlow&lt;Int?&gt; = _campaniaIdSeleccionada.asStateFlow()
+
+    fun seleccionarCampania(id: Int) {
+        _campaniaIdSeleccionada.value = id
+    }
+}
+</code></pre>
+<p>Este singleton resuelve un problema de UX: cuando el usuario navega desde <strong>Detalle de Campaña X</strong> hacia Tareas (o Insumos, Cosechas), la pantalla destino debe mostrar directamente los datos de la Campaña X sin que el usuario tenga que volver a seleccionarla. Al mismo tiempo, si navega desde la barra de navegación inferior, la pantalla debe mostrar la última campaña usada.</p>
+<p>La lógica de prioridad implementada en <strong>todos</strong> los ViewModels que lo consumen es idéntica:</p>
+<pre><code class="language-kotlin">// init del ViewModel
+val idExplicito = savedStateHandle.get&lt;Int&gt;(&quot;campaniaId&quot;).takeIf { it != -1 }
+if (idExplicito != null) {
+    ultimaSeleccionManager.seleccionarCampania(idExplicito)  // notifica pero no suscribe
+} else {
+    viewModelScope.launch {
+        ultimaSeleccionManager.campaniaIdSeleccionada.collect { id -&gt;
+            if (id != null &amp;&amp; _campaniaIdSeleccionada.value != id) {
+                _campaniaIdSeleccionada.value = id  // suscripción al manager global
+            }
+        }
+    }
+}
+</code></pre>
+<h4>7.5.11.7 Capa Data: Repositorios y Mappers</h4>
+<p>Todos los repositorios siguen la misma estructura. Tomando <code>CampaniaRepositoryImpl</code> como representativo:</p>
+<pre><code class="language-kotlin">class CampaniaRepositoryImpl @Inject constructor(
+    private val campaniaDao: CampaniaDao
+) : CampaniaRepository {
+
+    override fun getCampanias(): Flow&lt;List&lt;Campania&gt;&gt; {
+        return campaniaDao.getCampanias().map { entities -&gt;
+            entities.map { it.toDomain() }
+        }
+    }
+
+    override suspend fun updateCampania(campania: Campania) {
+        campaniaDao.updateCampania(campania.toEntity())
+    }
+}
+</code></pre>
+<p><strong>Convención de traducción de tipos:</strong>
+- <strong>Lecturas (Flow):</strong> DAO retorna <code>Flow&lt;List&lt;XEntity&gt;&gt;</code> → el repositorio lo transforma con <code>.map { it.toDomain() }</code> → el caso de uso lo expone a la capa Presentation.
+- <strong>Escrituras (suspend):</strong> el caso de uso recibe un modelo de dominio → el repositorio llama a <code>.toEntity()</code> → el DAO persiste en SQLite.</p>
+<p>Los <strong>mappers</strong> viven en <code>data/mapper/Mappers.kt</code> como funciones de extensión, sin clases adicionales. Por ejemplo <code>CampaniaEntity.toDomain()</code> y <code>Campania.toEntity()</code>. Esto mantiene la lógica de traducción colocada y visible.</p>
+<p>El caso especial de <code>InsumoUtilizadoRelacion.toDomain()</code> demuestra cómo Room resuelve JOINs: la clase <code>InsumoUtilizadoRelacion</code> combina <code>CampaniaInsumoEntity</code> (datos de la vinculación) con <code>InsumoEntity</code> (datos del catálogo) en una sola proyección de consulta. El mapper extrae ambos y construye el modelo de dominio enriquecido <code>CampaniaInsumo</code> con nombre e ícono del insumo incluidos, sin necesidad de una segunda consulta al DAO.</p>
+<h4>7.5.11.8 Persistencia de Sesión: DataStore Preferences</h4>
+<p>La sesión del usuario se persiste mediante <strong>Jetpack DataStore Preferences</strong>, no con SharedPreferences, para garantizar acceso asíncrono seguro sin bloquear el hilo principal. <code>SessionManagerImpl</code> (provisto por <code>SessionModule</code>) expone:</p>
+<ul>
+<li><code>usuarioLogueadoFlow: Flow&lt;Int?&gt;</code> — ID del usuario activo. <code>null</code> indica que no hay sesión.</li>
+<li><code>guardarSesion(usuarioId: Int)</code> — graba el ID tras login exitoso.</li>
+<li><code>cerrarSesion()</code> — limpia el ID del DataStore.</li>
+</ul>
+<p><code>LoginViewModel</code> lee este flow en su <code>init</code> para determinar si el usuario ya tiene sesión activa y navegar directamente al Dashboard sin mostrar la pantalla de login. Esta verificación es asíncrona y no bloquea el splash de la aplicación.</p>
+<h4>7.5.11.9 Sistema de Notificaciones: <code>TaskReminderScheduler</code></h4>
+<p>Las notificaciones de tareas se programan mediante <strong>WorkManager</strong>, abstrayendo la interacción con <code>AlarmManager</code> detrás de la interfaz <code>TaskReminderScheduler</code> (capa Core). Hilt inyecta <code>WorkManagerTaskReminderScheduler</code> como implementación concreta (declarado en <code>AlarmModule</code>).</p>
+<p>La interfaz tiene dos métodos:
+- <code>schedule(tareaId, fechaHora)</code> — programa un <code>OneTimeWorkRequest</code> que disparará la notificación en el momento indicado.
+- <code>cancel(tareaId)</code> — cancela la alarma usando el <code>tareaId</code> como <code>uniqueWorkName</code>.</p>
+<p><code>ConfirmarTareaUseCase</code> llama a <code>taskReminderScheduler.cancel(tareaId)</code> cuando una tarea se marca como completada, evitando que aparezca la notificación de una tarea ya finalizada. <code>CrearTareaUseCase</code> llama a <code>schedule(...)</code> al crear una tarea con <code>notificar = true</code>.</p>
+<hr />
+<p><em>[FIN_FASE_5]</em></p>
+</body>
+</html>

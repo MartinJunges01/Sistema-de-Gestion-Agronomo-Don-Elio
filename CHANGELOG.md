@@ -1,3 +1,17 @@
+**[2026-09-22] - fix(campanas): [#465] Confirmación al archivar campaña y opción de reactivar desde historial (PR #474)**
+- `DetalleCampaniaScreen`: El `IconButton` de archivar ya no ejecuta la acción directamente. Ahora abre un `AlertDialog` de confirmación (Confirmar / Cancelar) con el mismo estilo que el de eliminación definitiva.
+- `GestionCampaniasScreen`: `CampaniaCard` para campañas archivadas ahora muestra dos botones: 🟢 Restore (reactivar) y 🔴 Delete (eliminar definitivamente), cada uno con su propio `AlertDialog`.
+- `ReactivarCampaniaUseCase` **[NUEVO]**: Caso de uso en domain que reactiva una campaña siguiendo la misma estructura que `FinalizarCampaniaUseCase`. La UI se actualiza en tiempo real gracias al `Flow` de Room.
+- `GestionCampaniasViewModel`: Inyectado `ReactivarCampaniaUseCase` y expuesta la función `reactivarCampania()`.
+- `GestionCampaniasViewModelTest`: Actualizado con el helper `crearViewModel()` y nuevo test BDD `dadaCampaniaInactiva_cuandoSeReactiva_entoncesSeInvocaElUseCase`.
+- `docs/plan_de_pruebas.md`: Agregados casos VM-GC-1, VM-GC-2 y VM-GC-3 (Given-When-Then) para `reactivarCampania()`.
+
+**[2026-09-22] - fix(insumos): [#464] Reemplazar Nested Scroll por LazyColumn único en formulario Vincular Insumo (PR #473)**
+- `VincularInsumoScreen`: Se eliminó el anti-patrón de Nested Scrolling (`Column { verticalScroll() } + LazyColumn` anidado). Se refactorizó a un único `LazyColumn` con `weight(1f)` como cuerpo del formulario.
+- Los campos del formulario (título, selector de campaña, búsqueda, cantidad/precio) se envolvieron en bloques `item {}`.
+- Los resultados de búsqueda se renderizan con `items(filtrados)` al mismo nivel del `LazyColumn` padre. Con campo vacío se muestran todos los insumos del catálogo (modo browse — comportamiento intencional).
+- La `Row` de botones se ubica fuera del `LazyColumn`, fija en la parte inferior, siempre visible.
+
 **[2026-09-16] - feat(insumos): [#455] Multi-registro de Insumos (Acumulación Histórica)**
 - **DB/Domain**: Se eliminó el índice único `(id_campania, id_insumo)` en `CampaniaInsumoEntity`. El conflicto `REPLACE` se cambió a `IGNORE`. Se agregó la propiedad `fechaAplicacion` autogenerada. Version de BD subida a 8.
 - **UI (Insumos)**: `InsumosScreen` se reescribió para agrupar los insumos repetidos usando un acordeón expansible, sumando las cantidades en el resumen, y mostrando registros individuales con fecha y subtotal debajo.

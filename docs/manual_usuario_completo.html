@@ -1,0 +1,1135 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        color: #2c3e50;
+        margin-top: 24px;
+        margin-bottom: 16px;
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    code {
+        background-color: #f4f4f4;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-family: Consolas, monospace;
+    }
+    pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+    }
+    blockquote {
+        border-left: 4px solid #4CAF50;
+        margin: 0;
+        padding-left: 16px;
+        color: #555;
+    }
+</style>
+</head>
+<body>
+<h1>Manual de Usuario — Fase 1: Instalación + Autenticación + Dashboard</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>8. Manual de Usuario</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Copiar el contenido de este archivo dentro de la sección 8, respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h2>8. Manual de Usuario</h2>
+<h3>8.1 Guía de Instalación y Ejecución</h3>
+<p>La aplicación <strong>Don Elio</strong> es una app Android que funciona completamente sin conexión a internet. Todos los datos se guardan de forma local en el dispositivo. A continuación se detallan los dos métodos de instalación disponibles.</p>
+<hr />
+<h4>8.1.1 Instalación desde el archivo APK (Usuarios finales)</h4>
+<p>Este es el método recomendado para usuarios que sólo quieren usar la aplicación, sin necesidad de modificar el código.</p>
+<p><strong>Requisitos del dispositivo:</strong>
+- Teléfono o tablet con sistema operativo <strong>Android 8.0 (Oreo) o superior</strong>.
+- Al menos <strong>50 MB de espacio de almacenamiento libre</strong>.</p>
+<p><strong>Pasos:</strong></p>
+<ol>
+<li>Recibir el archivo <code>don-elio.apk</code> (puede enviarse por correo electrónico, WhatsApp, o copiarse desde una PC mediante un cable USB).</li>
+<li>En el dispositivo Android, abrir el explorador de archivos y ubicar el archivo <code>.apk</code> descargado.</li>
+<li>Tocar el archivo para iniciar la instalación. Si el sistema pide permiso para <strong>"instalar aplicaciones de fuentes desconocidas"</strong>, aceptar la advertencia (es normal para aplicaciones que no provienen de la Play Store).</li>
+<li>Tocar <strong>"Instalar"</strong> en la pantalla de confirmación.</li>
+<li>Una vez instalada, tocar <strong>"Abrir"</strong> o buscar el ícono de Don Elio en la lista de aplicaciones.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> La primera vez que la aplicación se ejecuta, crea automáticamente la base de datos local con las tablas vacías. Esto puede tomar 1 o 2 segundos adicionales en el primer arranque.</p>
+</blockquote>
+<hr />
+<h4>8.1.2 Ejecución desde Android Studio (Desarrolladores)</h4>
+<p>Para ejecutar la aplicación desde el entorno de desarrollo:</p>
+<p><strong>Requisitos previos:</strong>
+- <strong>Android Studio</strong> (versión "Iguana" o superior).
+- <strong>JDK 17</strong> (Java Development Kit).
+- Un dispositivo físico Android con <strong>depuración USB activada</strong>, o un emulador configurado.</p>
+<p><strong>Pasos:</strong></p>
+<ol>
+<li>Clonar el repositorio del proyecto y abrirlo en Android Studio.</li>
+<li>Esperar a que finalice la <strong>sincronización de Gradle</strong> (la barra de progreso en la parte inferior del IDE).</li>
+<li>Conectar el dispositivo físico por USB o iniciar un emulador desde el <strong>AVD Manager</strong>.</li>
+<li>Presionar el botón <strong>"Run"</strong> (triángulo verde) o usar el atajo <code>Shift + F10</code>.</li>
+<li>La aplicación se compilará e instalará automáticamente en el dispositivo seleccionado.</li>
+</ol>
+<hr />
+<h3>8.2 Guía de Uso de la Aplicación</h3>
+<hr />
+<h4>8.2.1 Pantalla de Inicio de Sesión</h4>
+<p>Al abrir la aplicación por primera vez (o luego de cerrar sesión), se muestra la pantalla de acceso al sistema.</p>
+<p>[INSERTAR CAPTURA PANTALLA LOGIN]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Permite ingresar al sistema con las credenciales de un usuario ya registrado. La aplicación no requiere internet: el nombre de usuario y la contraseña se verifican contra la base de datos local del dispositivo.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ícono de agricultura y título "Don Elio"</td>
+<td>Identifica la aplicación</td>
+</tr>
+<tr>
+<td>Campo "Nombre de usuario"</td>
+<td>Ingresar el nombre de usuario registrado</td>
+</tr>
+<tr>
+<td>Campo "Contraseña"</td>
+<td>Ingresar la contraseña (los caracteres se muestran ocultos con puntos)</td>
+</tr>
+<tr>
+<td>Botón <strong>"Ingresar"</strong></td>
+<td>Valida las credenciales e ingresa al sistema</td>
+</tr>
+<tr>
+<td>Enlace <strong>"¿No tienes cuenta? Regístrate aquí"</strong></td>
+<td>Navega a la pantalla de registro</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para iniciar sesión:</strong></p>
+<ol>
+<li>Ingresar el <strong>nombre de usuario</strong> en el primer campo.</li>
+<li>Ingresar la <strong>contraseña</strong> en el segundo campo.</li>
+<li>Tocar el botón <strong>"Ingresar"</strong>.</li>
+<li>Si las credenciales son correctas, la aplicación navegará automáticamente al <strong>Dashboard principal</strong>.</li>
+</ol>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>"Credenciales inválidas"</em> → Verificar que el nombre de usuario y la contraseña sean correctos. Recordar que distinguen entre mayúsculas y minúsculas.</li>
+<li><em>El botón "Ingresar" no responde</em> → Esperar a que desaparezca el indicador de carga circular; la app está verificando las credenciales.</li>
+<li><em>No recuerdo mi contraseña</em> → La aplicación no tiene recuperación de contraseña por correo electrónico dado que funciona sin internet. Si no se recuerda la contraseña, contactar al administrador del sistema para que genere un nuevo usuario.</li>
+</ul>
+<hr />
+<h4>8.2.2 Pantalla de Registro de Usuario</h4>
+<p>Permite crear una cuenta nueva para acceder a la aplicación. Esta pantalla se usa únicamente la primera vez, o cuando se quiere agregar un nuevo usuario al sistema.</p>
+<p>[INSERTAR CAPTURA PANTALLA REGISTRO]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Registra un nuevo usuario en la base de datos local del dispositivo. Una vez registrado, el usuario puede ingresar desde la pantalla de inicio de sesión.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Campo "Nombre Completo"</td>
+<td>Nombre para el saludo personalizado en el Dashboard</td>
+</tr>
+<tr>
+<td>Campo "Nombre de usuario"</td>
+<td>Identificador único para iniciar sesión</td>
+</tr>
+<tr>
+<td>Campo "Contraseña"</td>
+<td>Clave de acceso personal</td>
+</tr>
+<tr>
+<td>Botón <strong>"Registrarse"</strong></td>
+<td>Crea la cuenta y accede automáticamente al sistema</td>
+</tr>
+<tr>
+<td>Enlace <strong>"¿Ya tienes cuenta? Inicia sesión"</strong></td>
+<td>Regresa a la pantalla de inicio de sesión</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para registrarse:</strong></p>
+<ol>
+<li>Ingresar el <strong>nombre completo</strong> (por ejemplo: <em>Juan Pérez</em>). Este nombre aparecerá como saludo en el Dashboard.</li>
+<li>Elegir un <strong>nombre de usuario</strong> corto y fácil de recordar (por ejemplo: <em>juan</em>).</li>
+<li>Ingresar una <strong>contraseña</strong>.</li>
+<li>Tocar el botón <strong>"Registrarse"</strong>.</li>
+<li>Si el registro es exitoso, la aplicación ingresará automáticamente al Dashboard.</li>
+</ol>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>Mensaje de error al registrarse</em> → Verificar que ninguno de los tres campos esté vacío.</li>
+<li><em>El nombre de usuario ya existe</em> → El sistema no permite dos usuarios con el mismo nombre de usuario. Elegir uno diferente.</li>
+</ul>
+<hr />
+<h4>8.2.3 Dashboard Principal (Panel de Control)</h4>
+<p>Es la pantalla central de la aplicación. Se muestra inmediatamente después de iniciar sesión y presenta un resumen de todas las operaciones activas en tiempo real.</p>
+<p>[INSERTAR CAPTURA PANTALLA DASHBOARD COMPLETO]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Ofrece una vista de alto nivel del estado del establecimiento: el rendimiento económico del mes, el cumplimiento de tareas de la semana, las tareas próximas y las campañas en curso. Todos los datos se actualizan automáticamente cuando se realizan cambios en cualquier parte de la aplicación.</p>
+<hr />
+<p><strong>Sección: Encabezado superior</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA HEADER DASHBOARD]</p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Saludo con nombre del usuario</td>
+<td>Muestra el nombre completo ingresado al registrarse</td>
+</tr>
+<tr>
+<td>Ícono de configuración (engranaje)</td>
+<td>Navega a la pantalla de Configuración y Backup</td>
+</tr>
+<tr>
+<td>Ícono de cerrar sesión</td>
+<td>Cierra la sesión activa y regresa a la pantalla de Login</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo cerrar sesión:</strong></p>
+<ol>
+<li>Tocar el ícono de salida ubicado en el encabezado superior derecho.</li>
+<li>Confirmar la acción si se solicita.</li>
+<li>La aplicación regresará a la pantalla de inicio de sesión.</li>
+</ol>
+<hr />
+<p><strong>Sección: Rendimiento Global (Mes Actual)</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA SECCION RENDIMIENTO]</p>
+<p>Muestra tres tarjetas con los indicadores financieros del mes en curso, calculados a partir de las campañas activas:</p>
+<table>
+<thead>
+<tr>
+<th>Tarjeta</th>
+<th>Qué muestra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Capital Invertido</strong></td>
+<td>Suma total del costo de todos los insumos aplicados en campañas activas</td>
+</tr>
+<tr>
+<td><strong>Ingresos Brutos</strong></td>
+<td>Total de ventas de cosechas registradas en el mes actual</td>
+</tr>
+<tr>
+<td><strong>Balance</strong></td>
+<td>Diferencia entre Ingresos y Capital. Se muestra en verde si es positivo, en rojo si es negativo</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Nota:</strong> Esta sección solo aparece si hay al menos una campaña activa con datos. Si no hay campañas activas, la sección no se muestra.</p>
+</blockquote>
+<ul>
+<li>Tocar <strong>"Ver detalle →"</strong> para ir a la pantalla de Reportes con el análisis completo.</li>
+</ul>
+<hr />
+<p><strong>Sección: Cumplimiento Semanal</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA CUMPLIMIENTO]</p>
+<p>Muestra un gráfico circular que indica qué porcentaje de las tareas programadas para la semana actual (de lunes a domingo) ya fueron completadas.</p>
+<ul>
+<li>El arco <strong>verde</strong> representa las tareas completadas.</li>
+<li>El fondo <strong>gris</strong> representa las tareas pendientes.</li>
+<li>El porcentaje se muestra en el centro del gráfico.</li>
+<li>Debajo del gráfico se indica: <em>"X de Y tareas completadas"</em>.</li>
+</ul>
+<blockquote>
+<p><strong>Nota:</strong> Si no hay tareas programadas para la semana actual, aparece el mensaje <em>"Sin tareas esta semana"</em> en lugar del gráfico.</p>
+</blockquote>
+<hr />
+<p><strong>Sección: Tareas Próximas</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA TAREAS PROXIMAS]</p>
+<p>Lista las tareas pendientes más cercanas en el tiempo. Cada tarjeta muestra:
+- <strong>Nombre de la tarea</strong> en negrita.
+- <strong>Fecha y hora</strong> programada.
+- Las tareas cuya fecha ya pasó se resaltan con <strong>fondo rojo</strong> para indicar que están vencidas.</p>
+<p><strong>Acciones disponibles:</strong></p>
+<ul>
+<li>Tocar una tarjeta de tarea para ir directamente al <strong>Detalle de la Campaña</strong> a la que pertenece.</li>
+<li>Tocar <strong>"Ver todas →"</strong> para ir a la pantalla completa de <strong>Gestión de Tareas</strong>.</li>
+</ul>
+<hr />
+<p><strong>Sección: Campañas Activas</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA CAMPANIAS DASHBOARD]</p>
+<p>Lista todas las campañas marcadas como activas. Cada tarjeta muestra:
+- <strong>Nombre de la campaña</strong>.
+- <strong>Tipo de cultivo</strong> (Soja, Maíz, Trigo, etc.).
+- <strong>Fecha de inicio</strong>.
+- Etiqueta <strong>"Activa"</strong> en verde.</p>
+<p><strong>Acciones disponibles:</strong></p>
+<ul>
+<li>Tocar una tarjeta de campaña para ir al <strong>Detalle de esa Campaña</strong>, donde se pueden gestionar sus tareas, insumos, cosechas y observaciones.</li>
+</ul>
+<blockquote>
+<p><strong>Nota:</strong> Si no hay campañas creadas, la pantalla muestra el mensaje <em>"No hay campañas — Presiona + para crear una"</em>. En ese caso, navegar a la sección <strong>Campañas</strong> desde la barra de navegación inferior para crear la primera campaña.</p>
+</blockquote>
+<hr />
+<p><strong>Barra de navegación inferior</strong></p>
+<p>[INSERTAR CAPTURA PANTALLA BARRA NAVEGACION]</p>
+<p>La barra fija en la parte inferior de la pantalla permite acceder rápidamente a las secciones principales de la aplicación:</p>
+<table>
+<thead>
+<tr>
+<th>Ícono</th>
+<th>Sección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🏠 Inicio</td>
+<td>Dashboard (pantalla actual)</td>
+</tr>
+<tr>
+<td>🌾 Campañas</td>
+<td>Gestión de Campañas</td>
+</tr>
+<tr>
+<td>✅ Tareas</td>
+<td>Gestión de Tareas</td>
+</tr>
+<tr>
+<td>🧪 Insumos</td>
+<td>Gestión de Insumos</td>
+</tr>
+<tr>
+<td>📊 Reportes</td>
+<td>Reportes de Rendimiento</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>[FIN_FASE_MANUAL_1]</em></p>
+<h1>Manual de Usuario — Fase 2: Campañas + Tareas + Insumos</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>8.2 (continuación)</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Copiar el contenido de este archivo a continuación del [FIN_FASE_MANUAL_1], respetando los subtítulos indicados.</p>
+</blockquote>
+<hr />
+<h4>8.2.4 Gestión de Campañas</h4>
+<p>Una campaña es el eje central de la aplicación. Representa un ciclo agrícola completo (siembra, insumos, cosecha) asociado a un cultivo y a un período de tiempo. Todas las tareas, insumos, cosechas y observaciones se registran siempre dentro de una campaña.</p>
+<hr />
+<h5>8.2.4.1 Pantalla: Listado de Campañas</h5>
+<p>[INSERTAR CAPTURA PANTALLA GESTION CAMPANIAS]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Muestra todas las campañas organizadas en dos secciones: las campañas <strong>activas</strong> (en curso) y el <strong>historial</strong> de campañas finalizadas. Desde aquí se accede al detalle de cualquier campaña y se eliminan las finalizadas.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sección "Activas"</td>
+<td>Lista las campañas en curso. Fondo blanco, etiqueta verde "Activa"</td>
+</tr>
+<tr>
+<td>Sección "Historial (N)"</td>
+<td>Lista las campañas finalizadas. Fondo grisado. Se expande/colapsa tocando el encabezado</td>
+</tr>
+<tr>
+<td>Ícono ▼ / ▲</td>
+<td>Indica si el historial está colapsado o expandido</td>
+</tr>
+<tr>
+<td>Ícono 🗑️ (Eliminar)</td>
+<td>Solo aparece en campañas del historial. Permite eliminarlas permanentemente</td>
+</tr>
+<tr>
+<td>Mensaje "No hay campañas"</td>
+<td>Se muestra cuando no existe ninguna campaña aún</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo ver el detalle de una campaña:</strong></p>
+<ol>
+<li>Tocar la tarjeta de cualquier campaña activa.</li>
+<li>La aplicación navegará al <strong>Detalle de Campaña</strong>.</li>
+</ol>
+<p><strong>Cómo ver el historial:</strong></p>
+<ol>
+<li>Tocar el encabezado <strong>"Historial (N)"</strong> para expandirlo.</li>
+<li>Tocar nuevamente para colapsarlo.</li>
+</ol>
+<p><strong>Cómo eliminar una campaña del historial:</strong></p>
+<ol>
+<li>Expandir la sección <strong>"Historial"</strong>.</li>
+<li>Tocar el ícono de 🗑️ en la campaña que se desea eliminar.</li>
+<li>Leer la advertencia en el diálogo de confirmación: <em>"Esta acción eliminará todos los datos asociados (cosechas, insumos, observaciones, tareas) y no se puede deshacer."</em></li>
+<li>Tocar <strong>"Eliminar"</strong> para confirmar, o <strong>"Cancelar"</strong> para abortar.</li>
+</ol>
+<blockquote>
+<p><strong>Advertencia:</strong> La eliminación es permanente. Los insumos, cosechas, tareas y observaciones vinculadas a esa campaña se eliminan también. No hay forma de recuperarlos.</p>
+</blockquote>
+<hr />
+<h5>8.2.4.2 Pantalla: Crear / Editar Campaña</h5>
+<p>[INSERTAR CAPTURA PANTALLA FORMULARIO CAMPANIA]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Permite crear una nueva campaña o editar los datos de una existente. El título de la pantalla cambia entre "Crear Campaña" y "Editar Campaña" según el contexto.</p>
+<p><strong>Elementos del formulario:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nombre de la Campaña</strong></td>
+<td>Nombre identificador (obligatorio)</td>
+</tr>
+<tr>
+<td><strong>Cultivo</strong></td>
+<td>Selector desplegable del tipo de cultivo (obligatorio). Incluye la opción "+ Agregar nuevo cultivo..."</td>
+</tr>
+<tr>
+<td>Ícono de configuración ⚙️ junto al cultivo</td>
+<td>Navega al Catálogo de Cultivos para gestionar los tipos disponibles</td>
+</tr>
+<tr>
+<td><strong>Hectáreas</strong></td>
+<td>Número de hectáreas (obligatorio). Acepta valores decimales</td>
+</tr>
+<tr>
+<td><strong>Fecha de Inicio</strong></td>
+<td>Campo de solo lectura. Se abre un calendario al tocar el ícono 📅</td>
+</tr>
+<tr>
+<td>Botón <strong>"Guardar Campaña"</strong> / <strong>"Actualizar Campaña"</strong></td>
+<td>Guarda los datos. Se deshabilita durante la operación de guardado</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para crear una campaña:</strong></p>
+<ol>
+<li>Ingresar el <strong>nombre</strong> de la campaña (ej: <em>Soja 2026</em>).</li>
+<li>Tocar el campo <strong>"Cultivo"</strong> y seleccionar el tipo de cultivo de la lista desplegable.</li>
+<li>Si el cultivo no existe en la lista, seleccionar <strong>"+ Agregar nuevo cultivo..."</strong>, ingresar el nombre en el diálogo emergente y tocar <strong>"Guardar"</strong>. El nuevo cultivo quedará seleccionado automáticamente.</li>
+<li>Ingresar la cantidad de <strong>hectáreas</strong>.</li>
+<li>Tocar el ícono 📅 en el campo <strong>"Fecha de Inicio"</strong> y seleccionar la fecha en el calendario.</li>
+<li>Tocar <strong>"Guardar Campaña"</strong>.</li>
+</ol>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>El campo "Cultivo" no tiene opciones</em> → Ir al Catálogo de Cultivos (ícono ⚙️) y crear al menos un cultivo.</li>
+<li><em>Error en "Fecha de Inicio"</em> → En modo creación, no se permite seleccionar una fecha pasada. Elegir la fecha de hoy o una futura.</li>
+<li><em>Error en "Hectáreas"</em> → El campo acepta únicamente números positivos.</li>
+</ul>
+<hr />
+<h5>8.2.4.3 Pantalla: Detalle de Campaña</h5>
+<p>[INSERTAR CAPTURA PANTALLA DETALLE CAMPANIA]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Es el panel de control de una campaña individual. Muestra un resumen de la campaña y brinda acceso rápido a sus cuatro módulos asociados: <strong>Tareas</strong>, <strong>Insumos</strong>, <strong>Cosechas</strong> y <strong>Observaciones</strong>, cada uno con un contador de registros en tiempo real.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Encabezado (barra verde)</td>
+<td>Nombre de la campaña, botón Volver (←) y botón Finalizar (📦)</td>
+</tr>
+<tr>
+<td>Botones ◄ ► en la barra</td>
+<td>Navegan a la campaña anterior o siguiente sin tener que volver al listado</td>
+</tr>
+<tr>
+<td>Chips de información (Cultivo, Inicio, Estado)</td>
+<td>Datos resumidos de la campaña, desplazables horizontalmente</td>
+</tr>
+<tr>
+<td>Card de datos + botón "Editar Datos"</td>
+<td>Muestra nombre, cultivo, fecha y estado. Permite editar la campaña</td>
+</tr>
+<tr>
+<td>Tarjeta <strong>Tareas</strong></td>
+<td>Cantidad de tareas pendientes y completadas. Botón "+" para crear tarea rápida</td>
+</tr>
+<tr>
+<td>Tarjeta <strong>Insumos</strong></td>
+<td>Cantidad de registros de insumos y costo total. Botón "+" para vincular insumo</td>
+</tr>
+<tr>
+<td>Tarjeta <strong>Cosechas</strong></td>
+<td>Cantidad de cosechas y toneladas totales. Botón "+" para registrar cosecha</td>
+</tr>
+<tr>
+<td>Tarjeta <strong>Observaciones</strong></td>
+<td>Cantidad de notas de campo. Botón "+" para agregar observación</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo finalizar una campaña:</strong></p>
+<ol>
+<li>Tocar el ícono de archivo 📦 en la barra superior derecha.</li>
+<li>La campaña pasará al estado <strong>"Inactiva"</strong> y se moverá al historial.</li>
+<li>Todos sus datos (tareas, insumos, cosechas) quedan preservados para consulta futura.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> Finalizar una campaña no elimina ningún dato. Es equivalente a "archivarla". Si se necesita eliminarla permanentemente, hacerlo desde el Listado de Campañas en la sección Historial.</p>
+</blockquote>
+<hr />
+<h4>8.2.5 Gestión de Tareas</h4>
+<p>El módulo de Tareas funciona como una <strong>agenda de actividades</strong> del establecimiento. Permite programar, filtrar, completar y eliminar tareas asociadas a campañas, con la opción de recibir notificaciones de recordatorio en el dispositivo.</p>
+<hr />
+<h5>8.2.5.1 Pantalla: Listado de Tareas (Agenda)</h5>
+<p>[INSERTAR CAPTURA PANTALLA TAREAS SCREEN]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Muestra todas las tareas organizadas en dos grupos: <strong>Pendientes</strong> y <strong>Completadas</strong>. Incluye filtros para ver solo las tareas de una campaña específica o de un rango de fechas determinado.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chip "Todas las Campañas"</td>
+<td>Filtra las tareas por campaña. Al tocarlo, aparece el listado de campañas disponibles</td>
+</tr>
+<tr>
+<td>Chip "Fechas"</td>
+<td>Abre el selector de rango de fechas para filtrar por período</td>
+</tr>
+<tr>
+<td>Ícono ✕ rojo</td>
+<td>Limpia todos los filtros activos</td>
+</tr>
+<tr>
+<td>Sección "Próximas y Pendientes"</td>
+<td>Tareas no completadas. Las vencidas tienen fondo rojo y texto rojo</td>
+</tr>
+<tr>
+<td>Sección "Completadas"</td>
+<td>Tareas confirmadas, con texto tachado y fondo grisado</td>
+</tr>
+<tr>
+<td>Checkbox ○ / ✓</td>
+<td>A la izquierda de cada tarea. Tocarlo marca o desmarca la tarea como completada</td>
+</tr>
+<tr>
+<td>Ícono ✏️ (Editar)</td>
+<td>Solo en tareas pendientes. Abre el formulario de edición</td>
+</tr>
+<tr>
+<td>Ícono 🗑️ (Eliminar)</td>
+<td>Solo en tareas pendientes. Solicita confirmación antes de eliminar</td>
+</tr>
+<tr>
+<td>Botón <strong>"Programar Nueva Tarea"</strong></td>
+<td>Al pie de la pantalla. Requiere tener una campaña seleccionada</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo marcar una tarea como completada:</strong></p>
+<ol>
+<li>Tocar el <strong>checkbox</strong> (círculo) a la izquierda del nombre de la tarea.</li>
+<li>La tarea se moverá a la sección <strong>"Completadas"</strong> con el texto tachado.</li>
+<li>Si la tarea tenía un recordatorio programado, la notificación se cancela automáticamente.</li>
+</ol>
+<p><strong>Cómo filtrar tareas:</strong></p>
+<ol>
+<li>Tocar el chip <strong>"Todas las Campañas"</strong> y seleccionar una campaña de la lista.</li>
+<li>Opcionalmente, tocar el chip <strong>"Fechas"</strong> para abrir el selector de rango de fechas.</li>
+<li>Para quitar todos los filtros, tocar el ícono ✕ rojo.</li>
+</ol>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>El botón "Programar Nueva Tarea" está deshabilitado</em> → Seleccionar una campaña en el filtro de campañas antes de crear la tarea.</li>
+<li><em>No se ven tareas</em> → Verificar que no haya filtros activos (chip "Campaña" o "Fechas" seleccionados). Tocar el ícono ✕ para limpiarlos.</li>
+</ul>
+<hr />
+<h5>8.2.5.2 Pantalla: Nueva Tarea / Editar Tarea</h5>
+<p>[INSERTAR CAPTURA PANTALLA NUEVA TAREA]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Permite crear una tarea nueva o editar una existente. El título cambia entre "Nueva Tarea" y "Editar Tarea" según el contexto.</p>
+<p><strong>Elementos del formulario:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Campaña vinculada</strong></td>
+<td>Selector desplegable de la campaña a la que pertenece la tarea (obligatorio)</td>
+</tr>
+<tr>
+<td><strong>Nombre de la Tarea</strong></td>
+<td>Descripción breve de la actividad (obligatorio)</td>
+</tr>
+<tr>
+<td><strong>Fecha</strong></td>
+<td>Campo de solo lectura. Se abre calendario al tocar ícono 📅</td>
+</tr>
+<tr>
+<td><strong>Hora</strong></td>
+<td>Campo de solo lectura. Se abre selector de hora al tocar ícono 🕐. Formato 24 horas (HH:mm)</td>
+</tr>
+<tr>
+<td><strong>Activar Notificación de Recordatorio</strong></td>
+<td>Checkbox. Si está activo, el sistema enviará una notificación al dispositivo en la fecha y hora indicadas</td>
+</tr>
+<tr>
+<td>Botón <strong>"Guardar Tarea"</strong> / <strong>"Guardar Cambios"</strong></td>
+<td>Guarda la tarea</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para programar una tarea:</strong></p>
+<ol>
+<li>Seleccionar la <strong>campaña</strong> en el selector desplegable.</li>
+<li>Ingresar el <strong>nombre</strong> de la tarea (ej: <em>Aplicación de herbicida</em>).</li>
+<li>Tocar el ícono 📅 y seleccionar la <strong>fecha</strong> en el calendario.</li>
+<li>Tocar el ícono 🕐 y seleccionar la <strong>hora</strong> en el selector (formato 24 horas).</li>
+<li>Si se desea recibir una notificación de recordatorio, activar el <strong>checkbox</strong> correspondiente.</li>
+<li>Tocar <strong>"Guardar Tarea"</strong>.</li>
+</ol>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>No llega la notificación de recordatorio</em> → Verificar que la aplicación tenga permiso de notificaciones en los ajustes del dispositivo (Ajustes → Aplicaciones → Don Elio → Notificaciones).</li>
+<li><em>Error en el campo "Hora"</em> → La hora debe tener el formato <code>HH:mm</code> con valores válidos (00:00 a 23:59).</li>
+</ul>
+<hr />
+<h4>8.2.6 Gestión de Insumos</h4>
+<p>El módulo de Insumos maneja dos conceptos separados que trabajan en conjunto: el <strong>catálogo global</strong> de tipos de insumos disponibles y los <strong>insumos vinculados</strong> a cada campaña con sus cantidades y costos.</p>
+<hr />
+<h5>8.2.6.1 Pantalla: Insumos de una Campaña</h5>
+<p>[INSERTAR CAPTURA PANTALLA INSUMOS SCREEN]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Muestra todos los insumos aplicados en la campaña seleccionada, agrupados por tipo. Permite vincular nuevos insumos, editar cantidades y precios, y desvincular registros.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selector de Campaña</td>
+<td>Desplegable en la parte superior. Permite cambiar la campaña activa</td>
+</tr>
+<tr>
+<td>Botón "Catálogo" (esquina superior derecha)</td>
+<td>Navega al Catálogo Global de Insumos para agregar o editar tipos</td>
+</tr>
+<tr>
+<td>Botón <strong>"Vincular Nuevo Insumo"</strong></td>
+<td>Navega a la pantalla de vinculación. Requiere tener una campaña seleccionada</td>
+</tr>
+<tr>
+<td>Tarjeta agrupada por insumo</td>
+<td>Muestra nombre, ícono emoji, cantidad total y costo total de todas las aplicaciones</td>
+</tr>
+<tr>
+<td>Badge "xN"</td>
+<td>Aparece cuando un mismo insumo tiene N aplicaciones registradas</td>
+</tr>
+<tr>
+<td>Ícono ▼ (Expandir)</td>
+<td>Despliega las aplicaciones individuales del insumo</td>
+</tr>
+<tr>
+<td>Fila individual</td>
+<td>Muestra cantidad × precio = costo parcial y fecha de aplicación</td>
+</tr>
+<tr>
+<td>Ícono ✏️ (Editar fila)</td>
+<td>Abre un diálogo para modificar cantidad y precio de esa aplicación</td>
+</tr>
+<tr>
+<td>Ícono 🗑️ (Eliminar fila)</td>
+<td>Elimina esa aplicación específica sin afectar el catálogo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo ver los registros individuales de un insumo:</strong></p>
+<ol>
+<li>Tocar la tarjeta del insumo agrupado para expandirla.</li>
+<li>Se mostrarán todas las aplicaciones de ese insumo con su cantidad, precio y fecha.</li>
+<li>Tocar nuevamente la tarjeta para colapsar.</li>
+</ol>
+<p><strong>Cómo editar la cantidad o precio de una aplicación:</strong></p>
+<ol>
+<li>Expandir el insumo correspondiente.</li>
+<li>Tocar el ícono ✏️ de la fila a modificar.</li>
+<li>Ingresar los nuevos valores en el diálogo emergente.</li>
+<li>Tocar <strong>"Guardar"</strong>.</li>
+</ol>
+<hr />
+<h5>8.2.6.2 Pantalla: Vincular Insumo a Campaña</h5>
+<p>[INSERTAR CAPTURA PANTALLA VINCULAR INSUMO]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Permite buscar un insumo del catálogo global y registrar su aplicación en la campaña seleccionada, indicando cantidad y precio.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selector de Campaña</td>
+<td>Permite confirmar o cambiar la campaña de destino</td>
+</tr>
+<tr>
+<td>Campo "Buscar insumo en catálogo"</td>
+<td>Búsqueda en tiempo real sobre el catálogo. Filtra mientras se escribe</td>
+</tr>
+<tr>
+<td>Lista de resultados</td>
+<td>Muestra los insumos coincidentes. Tocar uno para seleccionarlo (se resalta en verde)</td>
+</tr>
+<tr>
+<td>Mensaje "El insumo no existe en el catálogo"</td>
+<td>Aparece cuando la búsqueda no tiene resultados</td>
+</tr>
+<tr>
+<td>Botón "Crear nuevo insumo"</td>
+<td>Solo aparece cuando no hay resultados. Navega al Catálogo para crear el insumo</td>
+</tr>
+<tr>
+<td>Campo <strong>"Cantidad"</strong></td>
+<td>Cantidad aplicada. Acepta punto (.) o coma (,) como separador decimal</td>
+</tr>
+<tr>
+<td>Campo <strong>"Precio (opcional)"</strong></td>
+<td>Precio unitario. Opcional si aún no se conoce</td>
+</tr>
+<tr>
+<td>Botón <strong>"Vincular a Campaña"</strong></td>
+<td>Guarda el registro. Se habilita solo cuando hay campaña, insumo y cantidad</td>
+</tr>
+<tr>
+<td>Botón "Agregar al catálogo"</td>
+<td>Navega al Catálogo para crear un tipo de insumo nuevo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para vincular un insumo:</strong></p>
+<ol>
+<li>Confirmar que la <strong>campaña</strong> correcta está seleccionada en el selector.</li>
+<li>Escribir el nombre del insumo en el campo de búsqueda (ej: <em>Glifosato</em>).</li>
+<li>Tocar el insumo en la lista de resultados para seleccionarlo. El ítem se resaltará en verde.</li>
+<li>Ingresar la <strong>cantidad</strong> aplicada.</li>
+<li>Ingresar el <strong>precio</strong> unitario (opcional).</li>
+<li>Tocar <strong>"Vincular a Campaña"</strong>.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> Un mismo insumo puede vincularse múltiples veces a la misma campaña. Cada vinculación queda como un registro independiente con su propia fecha de aplicación automática. Esto permite registrar, por ejemplo, dos aplicaciones de herbicida en fechas distintas.</p>
+</blockquote>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>El insumo buscado no aparece en la lista</em> → El insumo no existe en el catálogo. Tocar "Crear nuevo insumo" para agregarlo.</li>
+<li><em>El botón "Vincular a Campaña" está deshabilitado</em> → Verificar que haya una campaña seleccionada, un insumo seleccionado (resaltado en verde) y una cantidad ingresada.</li>
+</ul>
+<hr />
+<p><em>[FIN_FASE_MANUAL_2]</em></p>
+<h1>Manual de Usuario — Fase 3: Cosechas + Catálogo de Cultivos + Observaciones + Reportes + Configuración</h1>
+<blockquote>
+<p><strong>Destino en el documento principal:</strong> <code>docs/documentacion_tpi_2da_entrega.md</code> → Sección <strong>8.2 (continuación) y 8.3</strong></p>
+<p><strong>Instrucción para el equipo:</strong> Copiar el contenido de este archivo a continuación del [FIN_FASE_MANUAL_2].</p>
+</blockquote>
+<hr />
+<h4>8.2.7 Gestión de Cosechas</h4>
+<p>El módulo de Cosechas permite registrar la producción obtenida en cada campaña, distinguiendo entre dos destinos: la cosecha que se <strong>almacena en el establecimiento</strong> (silo, silobolsa) y la que se <strong>destina directamente a venta o consumo</strong>.</p>
+<hr />
+<h5>8.2.7.1 Pantalla: Listado de Cosechas</h5>
+<p>[INSERTAR CAPTURA PANTALLA COSECHAS SCREEN]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Muestra todos los registros de cosechas de la campaña seleccionada, organizados en dos grupos según su destino.</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selector de Campaña</td>
+<td>Desplegable en la parte superior para elegir la campaña activa</td>
+</tr>
+<tr>
+<td>Sección <strong>"Cosechas Almacenadas"</strong></td>
+<td>Registros con borde verde. Indica cantidad en Tn y nombre del almacén (silo/silobolsa)</td>
+</tr>
+<tr>
+<td>Sección <strong>"Cosechas No Almacenadas (Venta/Reserva)"</strong></td>
+<td>Registros con borde naranja. Indica cantidad, tipo (Venta, Alimento Vacuno, Reserva) y precio total</td>
+</tr>
+<tr>
+<td>Fecha de registro</td>
+<td>Mostrada en el extremo derecho de cada tarjeta</td>
+</tr>
+<tr>
+<td>Ícono ✏️ (Editar)</td>
+<td>Abre el formulario de edición de esa cosecha</td>
+</tr>
+<tr>
+<td>Ícono 🗑️ (Eliminar)</td>
+<td>Solicita confirmación antes de eliminar el registro</td>
+</tr>
+<tr>
+<td>Mensaje "Sin cosechas registradas"</td>
+<td>Aparece cuando no hay registros para la campaña seleccionada</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h5>8.2.7.2 Pantalla: Registrar / Editar Cosecha</h5>
+<p>[INSERTAR CAPTURA PANTALLA FORMULARIO COSECHA]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Permite registrar una nueva cosecha o editar una existente. El título cambia entre "Registrar Cosecha" y "Editar Cosecha".</p>
+<p><strong>Elementos del formulario:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Campaña vinculada</strong></td>
+<td>Selector de la campaña a la que pertenece la cosecha (obligatorio)</td>
+</tr>
+<tr>
+<td><strong>Cantidad (Tn)</strong></td>
+<td>Toneladas cosechadas. Acepta valores decimales (obligatorio)</td>
+</tr>
+<tr>
+<td><strong>Fecha</strong></td>
+<td>Fecha de la cosecha. Se selecciona con el calendario 📅</td>
+</tr>
+<tr>
+<td><strong>Checkbox "Almacenar en el establecimiento"</strong></td>
+<td>Define el destino de la cosecha</td>
+</tr>
+<tr>
+<td><strong>Almacén</strong></td>
+<td>Solo visible si el checkbox está activo. Nombre del silo o silobolsa</td>
+</tr>
+<tr>
+<td><strong>Tipo</strong></td>
+<td>Solo visible si el checkbox está inactivo. Destino: <em>Venta</em>, <em>Alimento Vacuno</em>, <em>Reserva</em>, etc.</td>
+</tr>
+<tr>
+<td><strong>Precio Total de Venta (\$)</strong></td>
+<td>Solo visible si el checkbox está inactivo. Monto total recibido por la venta</td>
+</tr>
+<tr>
+<td>Botón <strong>"Guardar Registro"</strong></td>
+<td>Guarda la cosecha. Se habilita cuando hay campaña y cantidad</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para registrar una cosecha almacenada:</strong></p>
+<ol>
+<li>Seleccionar la <strong>campaña</strong> en el selector.</li>
+<li>Ingresar la <strong>cantidad</strong> en toneladas (ej: <em>25</em>).</li>
+<li>Seleccionar la <strong>fecha</strong> tocando el ícono 📅.</li>
+<li>Activar el checkbox <strong>"Almacenar en el establecimiento"</strong>.</li>
+<li>Ingresar el nombre del <strong>almacén</strong> (ej: <em>Silo N°1</em>, <em>Silobolsa Lote 3</em>).</li>
+<li>Tocar <strong>"Guardar Registro"</strong>.</li>
+</ol>
+<p><strong>Pasos para registrar una cosecha destinada a venta:</strong></p>
+<ol>
+<li>Seleccionar la <strong>campaña</strong> en el selector.</li>
+<li>Ingresar la <strong>cantidad</strong> en toneladas.</li>
+<li>Seleccionar la <strong>fecha</strong>.</li>
+<li>Dejar el checkbox <strong>desactivado</strong> (fondo blanco).</li>
+<li>Ingresar el <strong>tipo</strong> (ej: <em>Venta</em>).</li>
+<li>Ingresar el <strong>precio total de venta</strong> recibido.</li>
+<li>Tocar <strong>"Guardar Registro"</strong>.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> El precio registrado aquí es el que se utiliza para calcular los <strong>Ingresos Brutos</strong> que aparecen en el Dashboard y en los Reportes.</p>
+</blockquote>
+<hr />
+<h4>8.2.8 Catálogo de Cultivos</h4>
+<p>El Catálogo de Cultivos es la lista maestra de tipos de cultivos disponibles para asignar a las campañas. Es una pantalla administrativa que permite crear, renombrar y eliminar tipos de cultivo.</p>
+<p>[INSERTAR CAPTURA PANTALLA CATALOGO CULTIVOS]</p>
+<p><strong>Elementos de la pantalla:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lista de cultivos</td>
+<td>Cada cultivo muestra su nombre con ícono de hoja 🌿</td>
+</tr>
+<tr>
+<td>Ícono ✏️ (Editar)</td>
+<td>Abre un diálogo para renombrar el cultivo</td>
+</tr>
+<tr>
+<td>Ícono 🗑️ (Eliminar)</td>
+<td>Elimina el cultivo del catálogo</td>
+</tr>
+<tr>
+<td>Botón <strong>"Agregar Nuevo Cultivo"</strong></td>
+<td>Al pie de la pantalla. Abre un diálogo para ingresar el nombre</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo acceder al catálogo:</strong></p>
+<ul>
+<li>Desde el formulario de <strong>Crear/Editar Campaña</strong>, tocando el ícono ⚙️ junto al selector de cultivo.</li>
+<li>Desde la pantalla de <strong>Insumos</strong>, tocando <strong>"Catálogo"</strong> en la barra superior.</li>
+</ul>
+<p><strong>Cómo agregar un cultivo:</strong></p>
+<ol>
+<li>Tocar <strong>"Agregar Nuevo Cultivo"</strong>.</li>
+<li>Ingresar el nombre en el diálogo (ej: <em>Trigo</em>, <em>Soja</em>, <em>Maíz</em>).</li>
+<li>Tocar <strong>"Guardar"</strong>.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> Si se elimina un cultivo que ya está asignado a campañas existentes, las campañas no pierden su información. El cultivo eliminado deja de estar disponible para nuevas campañas.</p>
+</blockquote>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>No se puede guardar un cultivo</em> → El nombre del cultivo no puede estar vacío ni repetirse en el catálogo.</li>
+</ul>
+<hr />
+<h4>8.2.9 Observaciones de Campo</h4>
+<p>El módulo de Observaciones permite registrar notas de campo asociadas a una campaña: anotaciones sobre el estado del cultivo, condiciones climáticas, eventos inesperados, etc. Cada observación puede incluir texto, una foto tomada con la cámara o elegida desde la galería.</p>
+<p>[INSERTAR CAPTURA PANTALLA OBSERVACIONES SCREEN]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Combina en una sola vista el formulario para crear nuevas observaciones y el historial de las observaciones ya registradas.</p>
+<p><strong>Sección superior: Formulario de nueva observación</strong></p>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Selector de Campaña</td>
+<td>Desplegable para elegir la campaña activa</td>
+</tr>
+<tr>
+<td>Campo de texto "Escribe una nota..."</td>
+<td>Área de texto libre. Mínimo una línea, máximo 5 líneas visibles</td>
+</tr>
+<tr>
+<td>Vista previa de imagen</td>
+<td>Aparece cuando se adjunta una foto. Tiene botón ✕ para quitarla</td>
+</tr>
+<tr>
+<td>Botón <strong>"Cámara"</strong></td>
+<td>Abre la cámara del dispositivo para tomar una foto nueva</td>
+</tr>
+<tr>
+<td>Botón <strong>"Galería"</strong></td>
+<td>Abre la galería de fotos del dispositivo para seleccionar una imagen existente</td>
+</tr>
+<tr>
+<td>Botón <strong>"Guardar observación"</strong></td>
+<td>Guarda la nota. Se habilita cuando hay campaña seleccionada y texto o imagen</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pasos para agregar una observación con texto:</strong></p>
+<ol>
+<li>Seleccionar la <strong>campaña</strong> en el selector.</li>
+<li>Escribir el texto de la nota en el campo "Escribe una nota...".</li>
+<li>Opcionalmente, adjuntar una imagen tocando <strong>"Cámara"</strong> o <strong>"Galería"</strong>.</li>
+<li>Tocar <strong>"Guardar observación"</strong>.</li>
+</ol>
+<p><strong>Gestión de permisos de cámara:</strong></p>
+<p>La primera vez que se use el botón <strong>"Cámara"</strong>, el sistema solicitará permiso para acceder a la cámara del dispositivo. Aceptar para poder tomar fotos. Si el permiso fue rechazado permanentemente, aparecerá un mensaje con un botón <strong>"Abrir Ajustes"</strong> para habilitarlo manualmente.</p>
+<p><strong>Sección inferior: Historial de observaciones</strong></p>
+<p>Muestra todas las observaciones guardadas para la campaña seleccionada, de más reciente a más antigua.</p>
+<p>Cada tarjeta muestra:
+- El <strong>texto</strong> de la nota.
+- La <strong>imagen adjunta</strong> (si tiene), en miniatura dentro de la tarjeta.
+- Ícono ✏️ para editar el texto o cambiar la foto.
+- Ícono 🗑️ para eliminar la observación (solicita confirmación).</p>
+<p><strong>Resolución de problemas comunes:</strong></p>
+<ul>
+<li><em>El botón "Guardar observación" está deshabilitado</em> → Seleccionar una campaña y escribir al menos algo en el campo de texto, o adjuntar una imagen.</li>
+<li><em>La cámara no abre</em> → Verificar que la app tenga permiso de cámara en Ajustes del dispositivo.</li>
+</ul>
+<hr />
+<h4>8.2.10 Reportes y Análisis</h4>
+<p>La pantalla de Reportes es la herramienta de análisis financiero y productivo del establecimiento. Permite visualizar el rendimiento de las campañas de múltiples formas y exportar la información a archivo.</p>
+<p>[INSERTAR CAPTURA PANTALLA REPORTES]</p>
+<p><strong>¿Qué hace esta pantalla?</strong></p>
+<p>Ofrece cuatro tipos de análisis:</p>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Qué muestra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Resumen Productivo-Financiero</strong></td>
+<td>Métricas globales filtradas por campaña y rango de fechas. Muestra capital invertido, ingresos brutos y balance</td>
+</tr>
+<tr>
+<td><strong>Análisis Individual por Campaña</strong></td>
+<td>Desglose completo de una sola campaña: distribución de insumos (gráfico de torta), top 3 insumos por costo, rendimiento en Tn/ha, cosechas almacenadas vs. vendidas</td>
+</tr>
+<tr>
+<td><strong>Comparativa entre Campañas</strong></td>
+<td>Confronta dos campañas seleccionables: costo por hectárea, insumos y cosechas de cada una</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Filtros del Resumen Productivo-Financiero:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Filtro</th>
+<th>Opciones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Por Campaña</strong></td>
+<td>Chips seleccionables. Se pueden activar múltiples campañas simultáneamente</td>
+</tr>
+<tr>
+<td><strong>Por Fecha</strong></td>
+<td>"Este mes", "Último mes", "Este año", o rango personalizado con selector de calendario</td>
+</tr>
+<tr>
+<td><strong>Limpiar</strong></td>
+<td>Chip para quitar el filtro de fecha activo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cómo usar el análisis individual:</strong></p>
+<ol>
+<li>Desplazar hacia abajo hasta la sección <strong>"Análisis Individual"</strong>.</li>
+<li>Seleccionar una campaña en el desplegable.</li>
+<li>El sistema mostrará automáticamente:</li>
+<li>Gráfico de torta con la distribución del gasto en insumos por tipo.</li>
+<li>Los 3 insumos de mayor costo.</li>
+<li>El rendimiento expresado en toneladas por hectárea (Tn/ha).</li>
+<li>La proporción de cosecha almacenada vs. cosecha vendida.</li>
+</ol>
+<p><strong>Cómo comparar dos campañas:</strong></p>
+<ol>
+<li>Desplazar hasta la sección <strong>"Comparativa"</strong>.</li>
+<li>Seleccionar <strong>Campaña A</strong> y <strong>Campaña B</strong> en los desplegables.</li>
+<li>Se mostrarán tarjetas comparativas de costo por hectárea, insumos y cosechas entre las dos campañas seleccionadas.</li>
+</ol>
+<p><strong>Exportar el reporte:</strong></p>
+<ol>
+<li>Tocar el ícono de descarga (↓) en la barra superior derecha.</li>
+<li>Seleccionar el formato de exportación:</li>
+<li><strong>"Exportar a Excel"</strong> → Genera un archivo <code>.csv</code> con el detalle de insumos de la campaña seleccionada.</li>
+<li><strong>"Exportar a PDF"</strong> → Genera un PDF con el reporte completo de la campaña seleccionada.</li>
+<li>Elegir la carpeta de destino en el explorador de archivos del dispositivo.</li>
+<li>El archivo se guardará y aparecerá un mensaje de confirmación.</li>
+</ol>
+<blockquote>
+<p><strong>Nota:</strong> Para poder exportar, primero debe seleccionarse una campaña en el <strong>Análisis Individual</strong>. Si no hay ninguna seleccionada, aparecerá un aviso solicitando que se elija una.</p>
+</blockquote>
+<hr />
+<h3>8.3 Configuración y Respaldo de Datos</h3>
+<p>La pantalla de Configuración es accesible desde el ícono de engranaje ⚙️ del encabezado del Dashboard. Permite realizar copias de seguridad de toda la base de datos y restaurarla desde un archivo.</p>
+<p>[INSERTAR CAPTURA PANTALLA CONFIGURACION DB]</p>
+<blockquote>
+<p><strong>Esta pantalla es crítica.</strong> Las operaciones de respaldo y restauración afectan a todos los datos de la aplicación. Se recomienda realizar respaldos periódicos, especialmente antes de actualizar o cambiar el dispositivo.</p>
+</blockquote>
+<hr />
+<h4>8.3.1 Exportar Base de Datos (Respaldo)</h4>
+<p>Crea una copia completa de toda la base de datos local (campañas, insumos, tareas, cosechas, observaciones, usuarios) y la guarda en el dispositivo como un archivo <code>.db</code>.</p>
+<p><strong>Pasos:</strong></p>
+<ol>
+<li>Tocar el botón <strong>"Exportar Base de Datos (Respaldo)"</strong>.</li>
+<li>El explorador de archivos se abrirá con el nombre sugerido <code>don_elio_backup.db</code>.</li>
+<li>Elegir la carpeta de destino (se recomienda guardar en el almacenamiento interno o en una unidad USB/nube).</li>
+<li>Tocar <strong>"Guardar"</strong>.</li>
+<li>Aparecerá un mensaje de confirmación cuando el archivo se haya guardado correctamente.</li>
+</ol>
+<blockquote>
+<p><strong>Recomendación:</strong> Realizar un respaldo antes de cada operación de restauración y periódicamente (por ejemplo, una vez por semana o al finalizar cada campaña importante).</p>
+</blockquote>
+<hr />
+<h4>8.3.2 Importar Base de Datos (Restaurar)</h4>
+<p>Reemplaza toda la base de datos actual con los datos de un archivo de respaldo previamente exportado.</p>
+<p><strong>Pasos:</strong></p>
+<ol>
+<li>Tocar el botón <strong>"Importar Base de Datos"</strong>.</li>
+<li>El explorador de archivos se abrirá. Navegar y seleccionar el archivo <code>.db</code> del respaldo.</li>
+<li>Leer el diálogo de advertencia: <em>"Se sobrescribirán TODOS los datos actuales. Esta acción no se puede deshacer. ¿Desea continuar?"</em></li>
+<li>Tocar <strong>"Restaurar"</strong> para confirmar, o <strong>"Cancelar"</strong> para abortar.</li>
+<li>La aplicación se <strong>cerrará y reiniciará automáticamente</strong> para cargar los datos restaurados.</li>
+</ol>
+<blockquote>
+<p><strong>Advertencia:</strong> Esta operación es <strong>irreversible</strong>. Todos los datos actuales serán reemplazados por los del archivo importado. Si los datos actuales son importantes, exportar un respaldo primero.</p>
+</blockquote>
+<hr />
+<p><em>[FIN_FASE_MANUAL_3 — FIN MANUAL DE USUARIO]</em></p>
+</body>
+</html>

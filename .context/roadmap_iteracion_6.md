@@ -10,8 +10,8 @@
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
 - [ ] **[#462] Issue 462:** Pantalla Tareas: botón "Programar nueva tarea" siempre activo y precarga de campaña
-- [ ] **[#464] Issue 464:** Formulario "Vincular Insumo": scroll habilitado y botones inferiores con texto completo
-- [ ] **[#465] Issue 465:** Pantalla Detalle Campaña: confirmación al archivar y opción de reactivar campañas del historial
+- [x] **[#464] Issue 464:** Formulario "Vincular Insumo": scroll habilitado y botones inferiores con texto completo
+- [x] **[#465] Issue 465:** Pantalla Detalle Campaña: confirmación al archivar y opción de reactivar campañas del historial
 - [ ] **[#466] Issue 466:** Campañas deshabilitadas: excluirlas de selectores de campaña pero accesibles desde Reportes
 - [ ] **[#467] Issue 467:** Pantalla Reportes: reemplazar "Resumen Productivo-Financiero" por panel solo financiero alineado al Dashboard
 

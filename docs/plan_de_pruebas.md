@@ -1,4 +1,4 @@
-﻿# Plan Estratégico y Casos de Prueba (Living Documentation)
+# Plan Estratégico y Casos de Prueba (Living Documentation)
 
 Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
 
@@ -582,6 +582,22 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 * **Cuando** se modifica el nombre y se llama a guardar().
 * **Entonces** editarTareaUseCase recibe una Tarea con confirmar=true (no reseteado a false).
 
+## GestionCampaniasViewModel — reactivarCampania() [#465]
+
+**VM-GC-1: Reactivar campaña inactiva invoca el UseCase correctamente**
+* **Dado** el `GestionCampaniasViewModel` está inicializado y existe una `Campania` con `id=2`, `estaActiva=false`.
+* **Cuando** se llama a `viewModel.reactivarCampania(campaniaInactiva)`.
+* **Entonces** `reactivarCampaniaUseCase(campaniaInactiva)` es invocado exactamente 1 vez.
+
+**VM-GC-2: Reactivar campaña exitosa no emite mensaje de error**
+* **Dado** `reactivarCampaniaUseCase` retorna `flowOf(Resource.Success(Unit))`.
+* **Cuando** se llama a `viewModel.reactivarCampania(campaniaInactiva)`.
+* **Entonces** el flujo `errorMessage` no emite ningún valor (sin error propagado a la UI).
+
+**VM-GC-3: Reactivar campaña con error emite mensaje de error al ViewModel**
+* **Dado** `reactivarCampaniaUseCase` retorna `flowOf(Resource.Error("Ocurrió un error al reactivar la campaña"))`.
+* **Cuando** se llama a `viewModel.reactivarCampania(campaniaInactiva)`.
+* **Entonces** `errorMessage` emite el string `"Ocurrió un error al reactivar la campaña"`.
 
 
 # Plan Estratégico y Casos de Prueba (Living Documentation)

@@ -136,12 +136,12 @@ La función `cerrarSesion()` invoca `CerrarSesionUseCase` en una corrutina del `
 
 **Capa Data**
 
-- `CampaniaRepository`, `TareaRepository`, `CampaniaInsumoRepository`, `CosechaRepository` y `CosechaNoAlmacenadaRepository` exponen sus datos como `Flow<List<...>>` backed por Room. Cada vez que se escribe en las tablas subyacentes, Room re-emite la lista actualizada automáticamente, propagando el cambio hasta la UI.
+- `CampaniaRepository`, `TareaRepository`, `CampaniaInsumoRepository`, `CosechaRepository` y `CosechaNoAlmacenadaRepository` exponen sus datos como `Flow<List<...>>` respaldados por Room. Cada vez que se escribe en las tablas subyacentes, Room re-emite la lista actualizada automáticamente, propagando el cambio hasta la UI.
 - `SessionManager` (DataStore) provee el nombre del usuario autenticado como un `Flow<String>`, el cual es observado directamente por el ViewModel.
 
 #### Formateo de moneda
 
-El Dashboard implementa una función utilitaria `formatearMoneda(valor: Double): String` que adapta el formato para la locale argentina:
+El Dashboard implementa una función utilitaria `formatearMoneda(valor: Double): String` que adapta el formato para la configuración regional argentina:
 - Valores ≥ 1.000.000 → abreviados como `$X,XM` (ej: `$6,1M`)
 - Valores ≥ 1.000 → abreviados como `$XXXk` (ej: `$250K`)
 - Valores negativos → el signo `-` siempre precede al símbolo `$` (ej: `-$1.500`), corrigiendo el comportamiento incorrecto de `NumberFormat.getCurrencyInstance` con la locale `es_AR`.
