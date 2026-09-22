@@ -64,47 +64,72 @@ fun VincularInsumoScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Vincular Insumo a Campaña", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextoPrincipal)
+            // Único LazyColumn como cuerpo del formulario — sin Nested Scrolling
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(vertical = 16.dp)
+            ) {
+                item {
+                    Text(
+                        "Vincular Insumo a Campaña",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = TextoPrincipal
+                    )
+                }
 
-            // Selector de campaña — muestra la campaña actual y permite cambiarla
-            Column {
-                Text("Campaña", fontWeight = FontWeight.Medium, color = TextoPrincipal, fontSize = 14.sp,
-                    modifier = Modifier.padding(bottom = 4.dp))
-                SelectorCampania(
-                    campanias = campanias,
-                    selectedCampaniaId = campaniaIdSeleccionada,
-                    onCampaniaSelected = { viewModel.seleccionarCampania(it) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+                // Selector de campaña
+                item {
+                    Column {
+                        Text(
+                            "Campaña",
+                            fontWeight = FontWeight.Medium,
+                            color = TextoPrincipal,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(bottom = 4.dp)
+                        )
+                        SelectorCampania(
+                            campanias = campanias,
+                            selectedCampaniaId = campaniaIdSeleccionada,
+                            onCampaniaSelected = { viewModel.seleccionarCampania(it) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
 
-            OutlinedTextField(
-                value = busqueda,
-                onValueChange = { busqueda = it },
-                label = { Text("Buscar insumo en catálogo") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-            )
+                // Campo de búsqueda
+                item {
+                    OutlinedTextField(
+                        value = busqueda,
+                        onValueChange = { busqueda = it },
+                        label = { Text("Buscar insumo en catálogo") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
+                    )
+                }
 
-            // Listado de resultados con LazyColumn para permitir scroll nativo
-            if (filtrados.isEmpty() && busqueda.isNotBlank()) {
-                Text("El insumo no existe en el catálogo", color = TextoSecundario, fontSize = 14.sp)
-                OutlinedButton(
-                    onClick = onGoToCatalogo,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text("Crear nuevo insumo") }
-            } else if (filtrados.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 200.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
+                // Resultados de búsqueda directamente en el mismo LazyColumn
+                if (filtrados.isEmpty() && busqueda.isNotBlank()) {
+                    item {
+                        Text(
+                            "El insumo no existe en el catálogo",
+                            color = TextoSecundario,
+                            fontSize = 14.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedButton(
+                            onClick = onGoToCatalogo,
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) { Text("Crear nuevo insumo") }
+                    }
+                } else {
                     items(filtrados) { insumo ->
                         Surface(
                             modifier = Modifier
@@ -121,27 +146,39 @@ fun VincularInsumoScreen(
                         }
                     }
                 }
+
+                // Campos de cantidad y precio
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = cantidad,
+                            onValueChange = { cantidad = it },
+                            label = { Text("Cantidad") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true
+                        )
+                        OutlinedTextField(
+                            value = precio,
+                            onValueChange = { precio = it },
+                            label = { Text("Precio (opcional)") },
+                            modifier = Modifier.weight(1f),
+                            singleLine = true,
+                            leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
+                        )
+                    }
+                }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = cantidad,
-                    onValueChange = { cantidad = it },
-                    label = { Text("Cantidad") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    value = precio,
-                    onValueChange = { precio = it },
-                    label = { Text("Precio (opcional)") },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) }
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+            // Botones fijos fuera del LazyColumn — siempre visibles en la parte inferior
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+            ) {
                 Button(
                     onClick = {
                         if (insumoSeleccionado != null) {
