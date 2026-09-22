@@ -1,54 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    h1, h2, h3, h4, h5, h6 {
-        color: #2c3e50;
-        margin-top: 24px;
-        margin-bottom: 16px;
-    }
-    table {
-        border-collapse: collapse;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-    th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }
-    code {
-        background-color: #f4f4f4;
-        padding: 2px 4px;
-        border-radius: 4px;
-        font-family: Consolas, monospace;
-    }
-    pre {
-        background-color: #f4f4f4;
-        padding: 10px;
-        border-radius: 4px;
-        overflow-x: auto;
-    }
-    blockquote {
-        border-left: 4px solid #4CAF50;
-        margin: 0;
-        padding-left: 16px;
-        color: #555;
-    }
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+    h1, h2, h3, h4, h5, h6 { color: #2c3e50; margin-top: 24px; margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+    th { background-color: #f8f9fa; font-weight: bold; }
+    img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 20px 0; }
+    code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; font-family: Consolas, monospace; }
+    blockquote { border-left: 4px solid #4CAF50; margin: 0; padding-left: 16px; color: #555; background-color: #f9f9f9; padding: 10px; }
 </style>
 </head>
 <body>
@@ -98,7 +60,7 @@
 <hr />
 <h4>8.2.1 Pantalla de Inicio de Sesión</h4>
 <p>Al abrir la aplicación por primera vez (o luego de cerrar sesión), se muestra la pantalla de acceso al sistema.</p>
-<p>[INSERTAR CAPTURA PANTALLA LOGIN]</p>
+<p><img alt="Login" src="./capturas_manual/login.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Permite ingresar al sistema con las credenciales de un usuario ya registrado. La aplicación no requiere internet: el nombre de usuario y la contraseña se verifican contra la base de datos local del dispositivo.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -148,7 +110,7 @@
 <hr />
 <h4>8.2.2 Pantalla de Registro de Usuario</h4>
 <p>Permite crear una cuenta nueva para acceder a la aplicación. Esta pantalla se usa únicamente la primera vez, o cuando se quiere agregar un nuevo usuario al sistema.</p>
-<p>[INSERTAR CAPTURA PANTALLA REGISTRO]</p>
+<p><img alt="Registro" src="./capturas_manual/registro.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Registra un nuevo usuario en la base de datos local del dispositivo. Una vez registrado, el usuario puede ingresar desde la pantalla de inicio de sesión.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -198,12 +160,12 @@
 <hr />
 <h4>8.2.3 Dashboard Principal (Panel de Control)</h4>
 <p>Es la pantalla central de la aplicación. Se muestra inmediatamente después de iniciar sesión y presenta un resumen de todas las operaciones activas en tiempo real.</p>
-<p>[INSERTAR CAPTURA PANTALLA DASHBOARD COMPLETO]</p>
+<p><img alt="Dashboard" src="./capturas_manual/dashboard.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Ofrece una vista de alto nivel del estado del establecimiento: el rendimiento económico del mes, el cumplimiento de tareas de la semana, las tareas próximas y las campañas en curso. Todos los datos se actualizan automáticamente cuando se realizan cambios en cualquier parte de la aplicación.</p>
 <hr />
 <p><strong>Sección: Encabezado superior</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA HEADER DASHBOARD]</p>
+<p><img alt="Cabecera Dashboard" src="./capturas_manual/dashboard.png" /></p>
 <table>
 <thead>
 <tr>
@@ -234,7 +196,7 @@
 </ol>
 <hr />
 <p><strong>Sección: Rendimiento Global (Mes Actual)</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA SECCION RENDIMIENTO]</p>
+<p><img alt="Rendimiento" src="./capturas_manual/dashboard.png" /></p>
 <p>Muestra tres tarjetas con los indicadores financieros del mes en curso, calculados a partir de las campañas activas:</p>
 <table>
 <thead>
@@ -266,7 +228,7 @@
 </ul>
 <hr />
 <p><strong>Sección: Cumplimiento Semanal</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA CUMPLIMIENTO]</p>
+<p><img alt="Cumplimiento" src="./capturas_manual/dashboard.png" /></p>
 <p>Muestra un gráfico circular que indica qué porcentaje de las tareas programadas para la semana actual (de lunes a domingo) ya fueron completadas.</p>
 <ul>
 <li>El arco <strong>verde</strong> representa las tareas completadas.</li>
@@ -279,7 +241,7 @@
 </blockquote>
 <hr />
 <p><strong>Sección: Tareas Próximas</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA TAREAS PROXIMAS]</p>
+<p><img alt="Tareas Próximas" src="./capturas_manual/dashboard.png" /></p>
 <p>Lista las tareas pendientes más cercanas en el tiempo. Cada tarjeta muestra:
 - <strong>Nombre de la tarea</strong> en negrita.
 - <strong>Fecha y hora</strong> programada.
@@ -291,7 +253,7 @@
 </ul>
 <hr />
 <p><strong>Sección: Campañas Activas</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA CAMPANIAS DASHBOARD]</p>
+<p><img alt="Campañas Activas" src="./capturas_manual/dashboard.png" /></p>
 <p>Lista todas las campañas marcadas como activas. Cada tarjeta muestra:
 - <strong>Nombre de la campaña</strong>.
 - <strong>Tipo de cultivo</strong> (Soja, Maíz, Trigo, etc.).
@@ -306,7 +268,7 @@
 </blockquote>
 <hr />
 <p><strong>Barra de navegación inferior</strong></p>
-<p>[INSERTAR CAPTURA PANTALLA BARRA NAVEGACION]</p>
+<p><img alt="Barra de Navegación" src="./capturas_manual/dashboard.png" /></p>
 <p>La barra fija en la parte inferior de la pantalla permite acceder rápidamente a las secciones principales de la aplicación:</p>
 <table>
 <thead>
@@ -350,7 +312,7 @@
 <p>Una campaña es el eje central de la aplicación. Representa un ciclo agrícola completo (siembra, insumos, cosecha) asociado a un cultivo y a un período de tiempo. Todas las tareas, insumos, cosechas y observaciones se registran siempre dentro de una campaña.</p>
 <hr />
 <h5>8.2.4.1 Pantalla: Listado de Campañas</h5>
-<p>[INSERTAR CAPTURA PANTALLA GESTION CAMPANIAS]</p>
+<p><img alt="Listado de Campañas" src="./capturas_manual/listado_campania.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Muestra todas las campañas organizadas en dos secciones: las campañas <strong>activas</strong> (en curso) y el <strong>historial</strong> de campañas finalizadas. Desde aquí se accede al detalle de cualquier campaña y se eliminan las finalizadas.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -406,7 +368,7 @@
 </blockquote>
 <hr />
 <h5>8.2.4.2 Pantalla: Crear / Editar Campaña</h5>
-<p>[INSERTAR CAPTURA PANTALLA FORMULARIO CAMPANIA]</p>
+<p><img alt="Crear Campaña" src="./capturas_manual/crear_campania.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Permite crear una nueva campaña o editar los datos de una existente. El título de la pantalla cambia entre "Crear Campaña" y "Editar Campaña" según el contexto.</p>
 <p><strong>Elementos del formulario:</strong></p>
@@ -461,7 +423,7 @@
 </ul>
 <hr />
 <h5>8.2.4.3 Pantalla: Detalle de Campaña</h5>
-<p>[INSERTAR CAPTURA PANTALLA DETALLE CAMPANIA]</p>
+<p><img alt="Detalle Campaña" src="./capturas_manual/detalle_campania.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Es el panel de control de una campaña individual. Muestra un resumen de la campaña y brinda acceso rápido a sus cuatro módulos asociados: <strong>Tareas</strong>, <strong>Insumos</strong>, <strong>Cosechas</strong> y <strong>Observaciones</strong>, cada uno con un contador de registros en tiempo real.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -521,7 +483,7 @@
 <p>El módulo de Tareas funciona como una <strong>agenda de actividades</strong> del establecimiento. Permite programar, filtrar, completar y eliminar tareas asociadas a campañas, con la opción de recibir notificaciones de recordatorio en el dispositivo.</p>
 <hr />
 <h5>8.2.5.1 Pantalla: Listado de Tareas (Agenda)</h5>
-<p>[INSERTAR CAPTURA PANTALLA TAREAS SCREEN]</p>
+<p><img alt="Gestión de Tareas" src="./capturas_manual/tareas.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Muestra todas las tareas organizadas en dos grupos: <strong>Pendientes</strong> y <strong>Completadas</strong>. Incluye filtros para ver solo las tareas de una campaña específica o de un rango de fechas determinado.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -590,7 +552,7 @@
 </ul>
 <hr />
 <h5>8.2.5.2 Pantalla: Nueva Tarea / Editar Tarea</h5>
-<p>[INSERTAR CAPTURA PANTALLA NUEVA TAREA]</p>
+<p><img alt="Formulario Nueva Tarea" src="./capturas_manual/formulario_tareas.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Permite crear una tarea nueva o editar una existente. El título cambia entre "Nueva Tarea" y "Editar Tarea" según el contexto.</p>
 <p><strong>Elementos del formulario:</strong></p>
@@ -647,7 +609,7 @@
 <p>El módulo de Insumos maneja dos conceptos separados que trabajan en conjunto: el <strong>catálogo global</strong> de tipos de insumos disponibles y los <strong>insumos vinculados</strong> a cada campaña con sus cantidades y costos.</p>
 <hr />
 <h5>8.2.6.1 Pantalla: Insumos de una Campaña</h5>
-<p>[INSERTAR CAPTURA PANTALLA INSUMOS SCREEN]</p>
+<p><img alt="Listado Insumos" src="./capturas_manual/catalogo_insumo.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Muestra todos los insumos aplicados en la campaña seleccionada, agrupados por tipo. Permite vincular nuevos insumos, editar cantidades y precios, y desvincular registros.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -712,7 +674,7 @@
 </ol>
 <hr />
 <h5>8.2.6.2 Pantalla: Vincular Insumo a Campaña</h5>
-<p>[INSERTAR CAPTURA PANTALLA VINCULAR INSUMO]</p>
+<p><img alt="Vincular Insumo" src="./capturas_manual/formulario_vincular_insumo.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Permite buscar un insumo del catálogo global y registrar su aplicación en la campaña seleccionada, indicando cantidad y precio.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -791,7 +753,7 @@
 <p>El módulo de Cosechas permite registrar la producción obtenida en cada campaña, distinguiendo entre dos destinos: la cosecha que se <strong>almacena en el establecimiento</strong> (silo, silobolsa) y la que se <strong>destina directamente a venta o consumo</strong>.</p>
 <hr />
 <h5>8.2.7.1 Pantalla: Listado de Cosechas</h5>
-<p>[INSERTAR CAPTURA PANTALLA COSECHAS SCREEN]</p>
+<p><img alt="Listado Cosechas" src="./capturas_manual/listado_cosechas.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Muestra todos los registros de cosechas de la campaña seleccionada, organizados en dos grupos según su destino.</p>
 <p><strong>Elementos de la pantalla:</strong></p>
@@ -835,7 +797,7 @@
 </table>
 <hr />
 <h5>8.2.7.2 Pantalla: Registrar / Editar Cosecha</h5>
-<p>[INSERTAR CAPTURA PANTALLA FORMULARIO COSECHA]</p>
+<p><img alt="Formulario Cosecha" src="./capturas_manual/formulario_cosechas.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Permite registrar una nueva cosecha o editar una existente. El título cambia entre "Registrar Cosecha" y "Editar Cosecha".</p>
 <p><strong>Elementos del formulario:</strong></p>
@@ -906,7 +868,7 @@
 <hr />
 <h4>8.2.8 Catálogo de Cultivos</h4>
 <p>El Catálogo de Cultivos es la lista maestra de tipos de cultivos disponibles para asignar a las campañas. Es una pantalla administrativa que permite crear, renombrar y eliminar tipos de cultivo.</p>
-<p>[INSERTAR CAPTURA PANTALLA CATALOGO CULTIVOS]</p>
+<p><img alt="Catálogo Cultivos" src="./capturas_manual/catalogo_cultivo.png" /></p>
 <p><strong>Elementos de la pantalla:</strong></p>
 <table>
 <thead>
@@ -955,7 +917,7 @@
 <hr />
 <h4>8.2.9 Observaciones de Campo</h4>
 <p>El módulo de Observaciones permite registrar notas de campo asociadas a una campaña: anotaciones sobre el estado del cultivo, condiciones climáticas, eventos inesperados, etc. Cada observación puede incluir texto, una foto tomada con la cámara o elegida desde la galería.</p>
-<p>[INSERTAR CAPTURA PANTALLA OBSERVACIONES SCREEN]</p>
+<p><img alt="Observaciones" src="./capturas_manual/observaciones.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Combina en una sola vista el formulario para crear nuevas observaciones y el historial de las observaciones ya registradas.</p>
 <p><strong>Sección superior: Formulario de nueva observación</strong></p>
@@ -1017,7 +979,8 @@
 <hr />
 <h4>8.2.10 Reportes y Análisis</h4>
 <p>La pantalla de Reportes es la herramienta de análisis financiero y productivo del establecimiento. Permite visualizar el rendimiento de las campañas de múltiples formas y exportar la información a archivo.</p>
-<p>[INSERTAR CAPTURA PANTALLA REPORTES]</p>
+<p><img alt="Reportes de Rendimiento" src="./capturas_manual/reportes_1.png" /></p>
+<p><img alt="Desglose de Costos e Ingresos" src="./capturas_manual/reportes_2.png" /></p>
 <p><strong>¿Qué hace esta pantalla?</strong></p>
 <p>Ofrece cuatro tipos de análisis:</p>
 <table>
@@ -1097,7 +1060,7 @@
 <hr />
 <h3>8.3 Configuración y Respaldo de Datos</h3>
 <p>La pantalla de Configuración es accesible desde el ícono de engranaje ⚙️ del encabezado del Dashboard. Permite realizar copias de seguridad de toda la base de datos y restaurarla desde un archivo.</p>
-<p>[INSERTAR CAPTURA PANTALLA CONFIGURACION DB]</p>
+<p><img alt="Configuración y Respaldo" src="./capturas_manual/backup.png" /></p>
 <blockquote>
 <p><strong>Esta pantalla es crítica.</strong> Las operaciones de respaldo y restauración afectan a todos los datos de la aplicación. Se recomienda realizar respaldos periódicos, especialmente antes de actualizar o cambiar el dispositivo.</p>
 </blockquote>
