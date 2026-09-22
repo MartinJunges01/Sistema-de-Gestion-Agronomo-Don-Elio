@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -302,125 +301,6 @@ fun ReportesRendimientoScreen(
                     }
                 } else {
                     PlaceholderSeleccion(mensaje = "Seleccioná filtros para ver el resumen")
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                val cultivos by viewModel.cultivos.collectAsState()
-                val cultivoSeleccionado by viewModel.cultivoSeleccionado.collectAsState()
-                val evolucion by viewModel.evolucionCultivo.collectAsState()
-
-                Text(
-                    "Evolución Histórica por Cultivo",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = TextoPrincipal
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                var expandidoCultivos by remember { mutableStateOf(false) }
-                ExposedDropdownMenuBox(
-                    expanded = expandidoCultivos,
-                    onExpandedChange = { expandidoCultivos = it }
-                ) {
-                    OutlinedTextField(
-                        value = cultivoSeleccionado?.nombre ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Seleccionar Cultivo") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandidoCultivos) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(expanded = expandidoCultivos, onDismissRequest = { expandidoCultivos = false }) {
-                        cultivos.forEach { cult ->
-                            DropdownMenuItem(
-                                text = { Text(cult.nombre) },
-                                onClick = {
-                                    viewModel.seleccionarCultivo(cult)
-                                    expandidoCultivos = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (cultivoSeleccionado == null) {
-                    PlaceholderSeleccion(mensaje = "Seleccioná un cultivo para ver su evolución")
-                } else if (evolucion.isEmpty()) {
-                    PlaceholderSeleccion(mensaje = "Sin datos históricos para este cultivo")
-                } else {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        border = BorderStroke(1.dp, Color(0xFFE7E5E4)),
-                        modifier = Modifier.fillMaxWidth().height(250.dp)
-                    ) {
-                        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                            // Simple Canvas Line Chart implementation
-                            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-                                val maxRend = evolucion.maxOfOrNull { it.rendimientoTnHa } ?: 1.0
-                                val paddingLeft = 60f
-                                val paddingTop = 40f
-                                val paddingBottom = 80f
-                                val paddingRight = 40f
-                                val width = size.width - paddingLeft - paddingRight
-                                val height = size.height - paddingTop - paddingBottom
-                                val stepX = if (evolucion.size > 1) width / (evolucion.size - 1) else width
-
-                                // Text paint configuration
-                                val textPaint = android.graphics.Paint().apply {
-                                    color = android.graphics.Color.DKGRAY
-                                    textSize = 28f
-                                    isAntiAlias = true
-                                    textAlign = android.graphics.Paint.Align.RIGHT
-                                }
-
-                                // Draw Axes
-                                drawLine(
-                                    color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, paddingTop),
-                                    end = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
-                                    strokeWidth = 2f
-                                )
-                                drawLine(
-                                    color = Color.LightGray,
-                                    start = androidx.compose.ui.geometry.Offset(paddingLeft, size.height - paddingBottom),
-                                    end = androidx.compose.ui.geometry.Offset(size.width - paddingRight, size.height - paddingBottom),
-                                    strokeWidth = 2f
-                                )
-
-                                // Draw Path and points
-                                val path = androidx.compose.ui.graphics.Path()
-                                evolucion.forEachIndexed { index, punto ->
-                                    val x = if (evolucion.size == 1) paddingLeft + width / 2 else paddingLeft + index * stepX
-                                    val y = size.height - paddingBottom - ((punto.rendimientoTnHa / maxRend) * height).toFloat()
-                                    if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
-                                    drawCircle(
-                                        color = AgriVerde,
-                                        radius = 6f,
-                                        center = androidx.compose.ui.geometry.Offset(x, y)
-                                    )
-                                    
-                                    // Draw X-axis label (campania nombre)
-                                    val campaniaName = punto.campaniaNombre
-                                    val nombreX = if (campaniaName.length > 12) campaniaName.take(10) + "..." else campaniaName
-                                    drawContext.canvas.nativeCanvas.apply {
-                                        save()
-                                        rotate(-45f, x, size.height - paddingBottom + 30f)
-                                        drawText(nombreX, x, size.height - paddingBottom + 30f, textPaint)
-                                        restore()
-                                    }
-                                }
-                                drawPath(
-                                    path = path,
-                                    color = AgriVerde,
-                                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 4f)
-                                )
-                            }
-                        }
-                    }
                 }
             }
 
