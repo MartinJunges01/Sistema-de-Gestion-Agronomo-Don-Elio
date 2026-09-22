@@ -1,7 +1,7 @@
 # Bugs Identificados
 
-> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_4.md`).
-> Este archivo registra **deuda técnica nueva** detectada durante sesiones de desarrollo de la Iteración 4, pendiente de subir a GitHub para obtener su ID.
+> Los issues con ID oficial se encuentran en el Roadmap (`.context/roadmap_iteracion_6.md`).
+> Este archivo registra **deuda técnica nueva** detectada durante las sesiones de desarrollo de la Iteración 6, pendiente de subir a GitHub para obtener su ID.
 
 ---
 
@@ -10,7 +10,7 @@
 
 **Severidad:** 🔴 Bug Bloqueante | 🟡 Bug Funcional | 🔵 UX / Deuda Técnica
 **Módulo:** [Ej: Insumos / Tareas / Sincronización]
-**Archivo afectado:** \ruta/del/archivo.kt
+**Archivo afectado:** `ruta/del/archivo.kt`
 
 **Descripción**
 Breve descripción del problema encontrado...
@@ -25,71 +25,33 @@ Breve descripción del problema encontrado...
 - [ ] Criterio 2
 -->
 
-## [#413] fix(auth): nombre de usuario muestra Invitado tras primer registro
+## 🛠 DEUDA TÉCNICA PENDIENTE — Iteración 6
 
-**Severidad:** 🟠 Bug Funcional
-**Módulo:** Autenticación / Sesión
-**Archivo afectado:** presentation/viewmodel/login/LoginViewModel.kt
+<!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
+
+---
+
+## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
+
+<!-- Mover aquí las deudas técnicas resueltas durante la Iteración 6 -->
+
+## [RESUELTO - Commit 315b321] Falta documentación (Resuelto) de pruebas para asignación múltiple de insumos (Issue #455)
+
+**Severidad:** 🛠 UX / Deuda Técnica
+**Módulo:** Insumos / Documentación
+**Archivo afectado:** `docs/plan_de_pruebas.md`
 
 **Descripción**
-En LoginViewModel.registro(), el flujo llama a registroUseCase() y emite registroExitoso = true, pero nunca persiste el nombre en sesión usando sessionManager.saveUserName(nombre). Al ingresar por primera vez, el Dashboard muestra "Invitado".
+Durante la revisión del Issue #455 (permitir agregar el mismo insumo múltiples veces a una campaña con fechas independientes), se detectó que el archivo `plan_de_pruebas.md` no fue actualizado con los nuevos casos `Given-When-Then` correspondientes al cambio en la lógica de negocio, violando el prompt operativo.
 
 **Causa Raíz (Código)**
-`kotlin
-fun registro(nombre: String, nombreUsuario: String, contrasena: String) {
-    viewModelScope.launch {
-        registroUseCase(nombre, nombreUsuario, contrasena)
-        _state.update { it.copy(isLoading = false, registroExitoso = true) }
-        // sessionManager.saveUserName(nombre) <-- FALTA
-    }
-}
-`
+Se modificaron DAOs y el UseCase (`AsignarInsumoACampaniaUseCase`) pero no se documentaron los nuevos escenarios de testing.
 
 **Criterios de Aceptación**
-- [ ] Al completar el registro por primera vez, el Dashboard muestra el nombre real del usuario.
-- [ ] El HomeViewModel.userName refleja el nombre sin necesidad de logout/login.
-- [ ] Test unitario: registro() exitoso -> sessionManager.saveUserName() es llamado con el nombre correcto.
+- [x] Escribir los escenarios Given-When-Then para la vinculación múltiple de un insumo a una misma campaña.
+- [x] Verificar que los tests unitarios implementados cubran fielmente esos casos documentados.
 
-## [#414] fix(dashboard): tareas del dia actual se marcan en rojo en el Dashboard
-
-**Severidad:** 🟠 Bug Funcional
-**Módulo:** Dashboard / Tareas
-**Archivo afectado:** presentation/ui/screen/home/DashboardOperacionesScreen.kt
-
-**Descripción**
-La comparación usa timestamps exactos en vez de comparar por día calendario. Una tarea de "hoy" que ya pasó en hora pero no en fecha se considera vencida y se marca en rojo.
-
-**Causa Raíz (Código)**
-`kotlin
-// DashboardOperacionesScreen.kt
-val hoy = System.currentTimeMillis() // Timestamp exacto
-val isVencida = tarea.fecha < hoy    // ❌ Tarea de hoy a las 15:30 -> true
-`
-
-**Criterios de Aceptación**
-- [ ] Tarea creada para hoy (cualquier hora) -> NO aparece en rojo en el Dashboard.
-- [ ] Tarea creada para ayer o antes -> SI aparece en rojo.
-- [ ] Tarea creada para mañana -> aparece en blanco.
-- [ ] Test unitario que valide los 3 casos anteriores contra la función de comparación.
-
-## [#415] ux(campanias): rediseño de DetalleCampaniaScreen con grid 2xN y botones de accion rapida
-
-**Severidad:** 🔵 Mejora UX
-**Módulo:** Campañas / Detalle
-**Archivo afectado:** presentation/ui/screen/campania/DetalleCampaniaScreen.kt
-
-**Descripción**
-Reemplazar el ScrollableTabRow por un grid de 2 columnas x N filas de botones rectangulares. Cada botón incluye un botón + secundario visible que navega directamente al formulario de esa entidad (pantalla separada) pre-cargado con el campaniaId. Al presionar el botón principal navega a la pantalla de listado.
-
-**Criterios de Aceptación**
-- [ ] El ScrollableTabRow y el contenido embebido de tabs son eliminados.
-- [ ] Grid 2xN con botones visibles en pantalla.
-- [ ] Cada botón muestra un subtexto con el contador correcto.
-- [ ] El botón + navega directamente al formulario con campaniaId.
-- [ ] El tap en el card navega a la pantalla de listado.
-
-## [#416] ux(formularios): conservar campaña seleccionada al acceder desde BottomNav
-
+ feature/issues-466-467-468
 **Severidad:** 🔵 Mejora UX
 **Módulo:** Formularios / Sesión
 **Archivos afectados:** Formularios de Tarea, Cosecha y Observacion. core/UltimaSeleccionManager.kt
@@ -232,3 +194,5 @@ El `resumenFiltrado` se calcula directamente en el ViewModel inyectando reposito
 Al eliminar el gráfico de Evolución Histórica de la UI (Issue #468), los states correspondientes (`cultivos`, `cultivoSeleccionado`, `evolucionCultivo`) y dependencias de UseCase quedan huérfanos.
 **Criterios de Aceptación**
 - [ ] Eliminar los states y el UseCase inyectado del ViewModel.
+
+ main

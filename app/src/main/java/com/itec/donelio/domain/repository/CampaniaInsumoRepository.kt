@@ -10,5 +10,7 @@ interface CampaniaInsumoRepository {
 
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumo)
 
+    suspend fun actualizarInsumo(campaniaInsumo: CampaniaInsumo)
+
     suspend fun desvincularInsumo(campaniaInsumo: CampaniaInsumo)
 }

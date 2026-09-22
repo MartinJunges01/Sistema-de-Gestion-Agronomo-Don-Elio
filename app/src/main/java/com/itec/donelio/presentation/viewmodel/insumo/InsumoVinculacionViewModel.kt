@@ -16,15 +16,36 @@ import javax.inject.Inject
 @HiltViewModel
 class InsumoVinculacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerInsumosVinculadosUseCase: ObtenerInsumosVinculadosUseCase,
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase,
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase
 ) : ViewModel() {
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+
+    init {
+        val idEnHandle = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+        
+        if (idEnHandle != null) {
+            // Prioridad SavedState: notificar al manager para que otras pantallas (ej. Insumos en BottomNav)
+            // usen este ID, pero NO suscribirse al manager para evitar que un valor obsoleto sobreescriba el actual.
+            ultimaSeleccionManager.seleccionarCampania(idEnHandle)
+        } else {
+            // Fallback: si no hay ID explícito, suscribirse al manager (ej. entrada desde BottomNav)
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _campaniaIdSeleccionada.value != id) {
+                        _campaniaIdSeleccionada.value = id
+                    }
+                }
+            }
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -46,6 +67,7 @@ class InsumoVinculacionViewModel @Inject constructor(
 
     fun seleccionarCampania(id: Int) {
         _campaniaIdSeleccionada.value = id
+        ultimaSeleccionManager.seleccionarCampania(id)
     }
 
     fun sincronizarInsumos(campaniaId: Int) {
@@ -63,6 +85,17 @@ class InsumoVinculacionViewModel @Inject constructor(
                 asignarInsumoACampaniaUseCase(campaniaId, idInsumo, cantidad, precio)
             } catch (e: Exception) {
                 _errorMessage.value = "Error al vincular insumo: ${e.message}"
+            }
+        }
+    }
+
+    fun editarInsumo(campaniaInsumo: CampaniaInsumo, nuevaCantidad: Double, nuevoPrecio: Double) {
+        viewModelScope.launch {
+            try {
+                val insumoEditado = campaniaInsumo.copy(cantidad = nuevaCantidad, precio = nuevoPrecio)
+                editarCampaniaInsumoUseCase(insumoEditado)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error al editar insumo: ${e.message}"
             }
         }
     }

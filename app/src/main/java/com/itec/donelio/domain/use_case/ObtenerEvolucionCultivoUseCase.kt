@@ -14,8 +14,8 @@ class ObtenerEvolucionCultivoUseCase @Inject constructor(
 ) {
     operator fun invoke(cultivoId: Int): Flow<List<PuntoCultivo>> {
         return campaniaRepository.getCampanias().map { campanias ->
-            // Filtramos las campañas que pertenezcan a este cultivo (solo finalizadas o todas? El historial es sobre finalizadas o en general. Asumimos finalizadas)
-            campanias.filter { it.cultivoId == cultivoId && !it.estaActiva }.sortedBy { it.fechaInicio }
+            // Filtramos las campañas que pertenezcan a este cultivo (se incluyen todas, tanto activas como finalizadas, según requerimiento)
+            campanias.filter { it.cultivoId == cultivoId }.sortedBy { it.fechaInicio }
         }.combine(cosechaRepository.getAllCosechas()) { campaniasFiltradas, todasCosechas ->
             campaniasFiltradas.map { campania ->
                 val cosechasCampania = todasCosechas.filter { it.idCampania == campania.id }

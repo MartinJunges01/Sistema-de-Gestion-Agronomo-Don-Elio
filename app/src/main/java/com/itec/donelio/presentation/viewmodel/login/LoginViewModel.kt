@@ -2,9 +2,9 @@ package com.itec.donelio.presentation.viewmodel.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.itec.donelio.core.SessionManager
 import com.itec.donelio.domain.use_case.LoginUseCase
 import com.itec.donelio.domain.use_case.RegistroUseCase
+import com.itec.donelio.domain.use_case.GuardarSesionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,7 @@ data class LoginUiState(
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val registroUseCase: RegistroUseCase,
-    private val sessionManager: SessionManager
+    private val guardarSesionUseCase: GuardarSesionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginUiState())
@@ -37,7 +37,7 @@ class LoginViewModel @Inject constructor(
                 val usuario = loginUseCase(nombreUsuario, contrasena)
                 if (usuario != null) {
                     // Persistir el nombre del usuario en la sesion para mostrarlo en el Dashboard
-                    sessionManager.saveUserName(usuario.nombre)
+                    guardarSesionUseCase(usuario.nombre)
                     _state.update { it.copy(isLoading = false, loginExitoso = true) }
                 } else {
                     _state.update { it.copy(isLoading = false, error = "Credenciales inválidas") }
@@ -53,6 +53,7 @@ class LoginViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             try {
                 registroUseCase(nombre, nombreUsuario, contrasena)
+                guardarSesionUseCase(nombre)
                 _state.update { it.copy(isLoading = false, registroExitoso = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Error de registro") }
@@ -64,7 +65,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                sessionManager.saveUserName("Invitado")
+                guardarSesionUseCase("Invitado")
                 _state.update { it.copy(isLoading = false, loginExitoso = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = "Error al iniciar sesión como invitado") }

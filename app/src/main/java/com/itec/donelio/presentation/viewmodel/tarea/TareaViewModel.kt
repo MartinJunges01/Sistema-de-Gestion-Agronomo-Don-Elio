@@ -13,18 +13,45 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
 
+sealed class TareaUiEvent {
+    object NavigateToNuevaTarea : TareaUiEvent()
+}
+
 @HiltViewModel
 class TareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val confirmarTareaUseCase: ConfirmarTareaUseCase,
     private val editarTareaUseCase: EditarTareaUseCase,
-    private val eliminarTareaUseCase: EliminarTareaUseCase
+    private val eliminarTareaUseCase: EliminarTareaUseCase,
+    private val tareaRepository: com.itec.donelio.domain.repository.TareaRepository
 ) : ViewModel() {
+
+    private val _uiEvent = kotlinx.coroutines.channels.Channel<TareaUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     private val _filtroCampania = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val filtroCampania = _filtroCampania.asStateFlow()
+
+    init {
+        val idExplicito = _filtroCampania.value
+        if (idExplicito != null) {
+            // Hay un campaniaId explícito en SavedState: notificar al manager pero
+            // NO suscribir al flow para evitar que un ID obsoleto lo sobreescriba.
+            ultimaSeleccionManager.seleccionarCampania(idExplicito)
+        } else {
+            // Sin ID explícito: usar el manager como fuente de verdad (fallback BottomNav).
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _filtroCampania.value != id) {
+                        _filtroCampania.value = id
+                    }
+                }
+            }
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -63,7 +90,36 @@ class TareaViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int?) { _filtroCampania.value = id }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val todasLasTareas: StateFlow<List<TareaUiModel>> = combine(
+        _filtroCampania,
+        campanias
+    ) { id, campaniasList -> Pair(id, campaniasList) }
+    .flatMapLatest { (id, campaniasList) ->
+        val flowTareas = if (id != null && id != -1) {
+            tareaRepository.getTareasByCampania(id)
+        } else {
+            tareaRepository.getAllTareas()
+        }
+        flowTareas.map { tareas ->
+            val hoy = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }.timeInMillis
+            tareas.map { tarea ->
+                val nombreCampania = campaniasList.find { it.id == tarea.idCampania }?.nombre ?: "Sin Campaña"
+                val isVencida = tarea.fecha < hoy
+                TareaUiModel(tarea, isVencida, nombreCampania)
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun seleccionarCampania(id: Int?) { 
+        _filtroCampania.value = id 
+        id?.let { ultimaSeleccionManager.seleccionarCampania(it) }
+    }
     fun seleccionarFechas(rango: Pair<Long, Long>?) { _filtroFechas.value = rango }
     fun limpiarFiltros() {
         _filtroCampania.value = null
@@ -106,6 +162,17 @@ class TareaViewModel @Inject constructor(
             eliminarTareaUseCase(tarea)
                 .catch { _errorMessage.value = "Error al eliminar tarea" }
                 .collect()
+        }
+    }
+
+    /**
+     * Valida la selección y emite el evento de navegación o un error reactivo.
+     */
+    fun onNuevaTareaClick() {
+        if (_filtroCampania.value != null) {
+            viewModelScope.launch { _uiEvent.send(TareaUiEvent.NavigateToNuevaTarea) }
+        } else {
+            _errorMessage.value = "Debes marcar una campaña para programar una tarea"
         }
     }
 }

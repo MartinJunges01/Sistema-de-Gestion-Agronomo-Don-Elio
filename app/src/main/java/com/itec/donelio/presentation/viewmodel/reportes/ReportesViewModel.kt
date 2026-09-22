@@ -31,6 +31,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.itec.donelio.domain.use_case.EditarCampaniaInsumoUseCase
+import com.itec.donelio.domain.use_case.DesvincularInsumoUseCase
+
+import com.itec.donelio.domain.use_case.ObtenerTodosLosInsumosUtilizadosUseCase
+import com.itec.donelio.domain.use_case.ObtenerTodasLasCosechasUseCase
+
 /**
  * ViewModel de la pantalla de Reportes y Análisis.
  *
@@ -42,6 +48,7 @@ import javax.inject.Inject
  *   el costo total de insumos y el rendimiento total de cosechas entre ellas.
  *
  * La exportación (CSV/PDF) usa los datos de la campaña seleccionada en Sección 1.
+ * El drill-down de insumos [#455] permite editar y eliminar registros individuales.
  */
 @HiltViewModel
 class ReportesViewModel @Inject constructor(
@@ -52,8 +59,10 @@ class ReportesViewModel @Inject constructor(
     private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase,
     private val obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase,
     private val obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase,
-    private val campaniaInsumoRepository: com.itec.donelio.domain.repository.CampaniaInsumoRepository,
-    private val cosechaRepository: com.itec.donelio.domain.repository.CosechaRepository
+    private val obtenerTodosLosInsumosUtilizadosUseCase: ObtenerTodosLosInsumosUtilizadosUseCase,
+    private val obtenerTodasLasCosechasUseCase: ObtenerTodasLasCosechasUseCase,
+    private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase,
+    private val desvincularInsumoUseCase: DesvincularInsumoUseCase
 ) : ViewModel() {
 
     // ──────────────────────────────────────────────
@@ -93,8 +102,8 @@ class ReportesViewModel @Inject constructor(
     val resumenFiltrado: StateFlow<com.itec.donelio.domain.use_case.ResumenRendimiento?> = combine(
         _filtroCampaniasMulti,
         _filtroRangoFechas,
-        campaniaInsumoRepository.getAllInsumosUtilizados(),
-        cosechaRepository.getAllCosechas()
+        obtenerTodosLosInsumosUtilizadosUseCase(),
+        obtenerTodasLasCosechasUseCase()
     ) { filtroCamps, filtroFechas, todosInsumos, todasCosechas ->
         
         // Filtrar insumos
@@ -418,4 +427,42 @@ class ReportesViewModel @Inject constructor(
             _exportStatus.value = if (success) "Reporte PDF exportado exitosamente" else "Error al exportar reporte PDF"
         }
     }
+
+    // ──────────────────────────────────────────────
+    // Drill-down de insumos individuales [#455]
+    // ──────────────────────────────────────────────
+
+    private val _errorDrillDown = MutableStateFlow<String?>(null)
+    val errorDrillDown: StateFlow<String?> = _errorDrillDown.asStateFlow()
+
+    fun clearErrorDrillDown() { _errorDrillDown.value = null }
+
+    /**
+     * Edita un registro individual de insumo desde la pantalla de Reportes.
+     * La campaña se recarga reactivamente por el Flow existente.
+     */
+    fun editarInsumo(campaniaInsumo: CampaniaInsumo, nuevaCantidad: Double, nuevoPrecio: Double) {
+        viewModelScope.launch {
+            try {
+                val editado = campaniaInsumo.copy(cantidad = nuevaCantidad, precio = nuevoPrecio)
+                editarCampaniaInsumoUseCase(editado)
+            } catch (e: Exception) {
+                _errorDrillDown.value = "Error al editar insumo: ${e.message}"
+            }
+        }
+    }
+
+    /**
+     * Elimina un registro individual de insumo desde la pantalla de Reportes.
+     */
+    fun eliminarInsumo(campaniaInsumo: CampaniaInsumo) {
+        viewModelScope.launch {
+            try {
+                desvincularInsumoUseCase(campaniaInsumo)
+            } catch (e: Exception) {
+                _errorDrillDown.value = "Error al eliminar insumo: ${e.message}"
+            }
+        }
+    }
 }
+

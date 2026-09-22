@@ -1,3 +1,589 @@
+﻿# Plan Estratégico y Casos de Prueba (Living Documentation)
+
+Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
+
+## 1. Stack Tecnológico de Testing
+*   **Unit Testing (Casos de Uso, ViewModels, Mappers):** `JUnit 4`, `MockK` (Mocks nativos Kotlin) y `Turbine` (Pruebas de flujos/Flows). 
+    *   *Importante:* Para validar excepciones dentro de corrutinas (`runTest`), no se debe usar `assertThrows` de JUnit (ya que pierde el contexto suspendido), sino bloques nativos `try-catch` o `runCatching`.
+*   **Pruebas de Integración/Base de Datos (DAOs):** `AndroidX Test`, `Room Testing` (con `inMemoryDatabaseBuilder`) ejecutado en Emulador (Pruebas Instrumentadas).
+# Plan EstratÃƒÂƒÃ‚Â©gico y Casos de Prueba (Living Documentation)
+
+Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actÃƒÂƒÃ‚Âºa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el cÃƒÂƒÃ‚Â³digo o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentaciÃƒÂƒÃ‚Â³n no se desfasen.
+
+## 1. Stack TecnolÃƒÂƒÃ‚Â³gico de Testing
+*   **Unit Testing (Casos de Uso, ViewModels, Mappers):** `JUnit 4`, `MockK` (Mocks nativos Kotlin) y `Turbine` (Pruebas de flujos/Flows). 
+    *   *Importante:* Para validar excepciones dentro de corrutinas (`runTest`), no se debe usar `assertThrows` de JUnit (ya que pierde el contexto suspendido), sino bloques nativos `try-catch` o `runCatching`.
+*   **Pruebas de IntegraciÃƒÂƒÃ‚Â³n/Base de Datos (DAOs):** `AndroidX Test`, `Room Testing` (con `inMemoryDatabaseBuilder`) ejecutado en Emulador (Pruebas Instrumentadas).
+*   **Pruebas de Interfaz de Usuario (UI):** `Compose Test Rule` nativo.
+
+---
+
+## 2. Análisis de Discrepancias (Documento 2025 vs Realidad 2026)
+
+Al contrastar la propuesta del año 2025 con la arquitectura real implementada en la App, detectamos e implementamos mejoras significativas que impactan la forma en que escribiremos los tests:
+
+1.  **Redundancia de Edición (Campañas - CU2 y CU4):**
+    *   *En 2025:* Se separaba "Entrar al menú" (CU2) de "Editar los campos" (CU4).
+    *   *Realidad:* La arquitectura moderna expone un solo `EditarCampaniaUseCase`. Además, se agregó el campo **`estaActiva`** a la entidad `Campania` para controlar estados (por ejemplo, si está terminada o en curso). Testearemos directamente la actualización de este estado en BD.
+2.  **Arquitectura de Notificaciones (Tareas - CU5):**
+    *   *En 2025:* Dependía de un "Actor Externo".
+    *   *Realidad:* Reemplazado internamente por `WorkManagerTaskReminderScheduler`. Los tests de tareas deberán validar (vía `MockK`) que el scheduler se mande a llamar o se cancele (ej. al completar o borrar una tarea).
+3.  **Unificación de Módulo de Cosechas (CU6 y CU7):**
+    *   *En 2025:* "Cosecha" (CU6) y "Datos no almacenados" (CU7) corrían por caminos distintos.
+    *   *Realidad:* Bifurcamos la lógica limpiamente en `RegistrarCosechaUseCase` (para silos) y `RegistrarCosechaConVentaUseCase` (Venta o Reserva como alimento). Los tests cubrirán ambas variantes de inserción.
+4.  **Refactor Total del Módulo de Insumos (CU9):**
+    *   *En 2025:* Los insumos se creaban directamente vinculados a una campaña.
+    *   *Realidad:* **Un cambio vital.** Ahora existe un Catálogo Global (`CrearInsumoCatalogoUseCase`) y posteriormente una vinculación a la campaña (`AsignarInsumoACampaniaUseCase`). Además, el catálogo tiene la columna **`activo`**. Si el usuario elimina un insumo del catálogo (`EliminarInsumoCatalogoUseCase`), el test deberá corroborar que **NO se hace un `DELETE` en la DB**, sino un `UPDATE activo = false` (Soft-Delete) para no corromper los históricos de campañas pasadas.
+5.  **Módulos Nuevos (No previstos en 2025):**
+    *   *Autenticación:* `LoginUseCase` (SHA-256) y `RegistroUseCase`.
+## 2. AnÃƒÂƒÃ‚Â¡lisis de Discrepancias (Documento 2025 vs Realidad 2026)
+
+Al contrastar la propuesta del aÃƒÂƒÃ‚Â±o 2025 con la arquitectura real implementada en la App, detectamos e implementamos mejoras significativas que impactan la forma en que escribiremos los tests:
+
+1.  **Redundancia de EdiciÃƒÂƒÃ‚Â³n (CampaÃƒÂƒÃ‚Â±as - CU2 y CU4):**
+    *   *En 2025:* Se separaba "Entrar al menÃƒÂƒÃ‚Âº" (CU2) de "Editar los campos" (CU4).
+    *   *Realidad:* La arquitectura moderna expone un solo `EditarCampaniaUseCase`. AdemÃƒÂƒÃ‚Â¡s, se agregÃƒÂƒÃ‚Â³ el campo **`estaActiva`** a la entidad `Campania` para controlar estados (por ejemplo, si estÃƒÂƒÃ‚Â¡ terminada o en curso). Testearemos directamente la actualizaciÃƒÂƒÃ‚Â³n de este estado en BD.
+2.  **Arquitectura de Notificaciones (Tareas - CU5):**
+    *   *En 2025:* DependÃƒÂƒÃ‚Â­a de un "Actor Externo".
+    *   *Realidad:* Reemplazado internamente por `WorkManagerTaskReminderScheduler`. Los tests de tareas deberÃƒÂƒÃ‚Â¡n validar (vÃƒÂƒÃ‚Â­a `MockK`) que el scheduler se mande a llamar o se cancele (ej. al completar o borrar una tarea).
+3.  **UnificaciÃƒÂƒÃ‚Â³n de MÃƒÂƒÃ‚Â³dulo de Cosechas (CU6 y CU7):**
+    *   *En 2025:* "Cosecha" (CU6) y "Datos no almacenados" (CU7) corrÃƒÂƒÃ‚Â­an por caminos distintos.
+    *   *Realidad:* Bifurcamos la lÃƒÂƒÃ‚Â³gica limpiamente en `RegistrarCosechaUseCase` (para silos) y `RegistrarCosechaConVentaUseCase` (Venta o Reserva como alimento). Los tests cubrirÃƒÂƒÃ‚Â¡n ambas variantes de inserciÃƒÂƒÃ‚Â³n.
+4.  **Refactor Total del MÃƒÂƒÃ‚Â³dulo de Insumos (CU9):**
+    *   *En 2025:* Los insumos se creaban directamente vinculados a una campaÃƒÂƒÃ‚Â±a.
+    *   *Realidad:* **Un cambio vital.** Ahora existe un CatÃƒÂƒÃ‚Â¡logo Global (`CrearInsumoCatalogoUseCase`) y posteriormente una vinculaciÃƒÂƒÃ‚Â³n a la campaÃƒÂƒÃ‚Â±a (`AsignarInsumoACampaniaUseCase`). AdemÃƒÂƒÃ‚Â¡s, el catÃƒÂƒÃ‚Â¡logo tiene la columna **`activo`**. Si el usuario elimina un insumo del catÃƒÂƒÃ‚Â¡logo (`EliminarInsumoCatalogoUseCase`), el test deberÃƒÂƒÃ‚Â¡ corroborar que **NO se hace un `DELETE` en la DB**, sino un `UPDATE activo = false` (Soft-Delete) para no corromper los histÃƒÂƒÃ‚Â³ricos de campaÃƒÂƒÃ‚Â±as pasadas.
+5.  **MÃƒÂƒÃ‚Â³dulos Nuevos (No previstos en 2025):**
+    *   *AutenticaciÃƒÂƒÃ‚Â³n:* `LoginUseCase` (SHA-256) y `RegistroUseCase`.
+    *   *Backups:* `CrearBackupUseCase` y `RestaurarBackupUseCase` usando SAF de Android.
+
+---
+
+## 3. Pruebas Fuera de los Casos de Uso (Out of Scope Tests)
+
+No toda la app es Casos de Uso. Existen componentes de bajo nivel y de infraestructura que testearemos independientemente:
+*   **DAOs (Data Access Objects):** 
+    Pruebas instrumentadas sobre `UsuarioDao`, `CampaniaDao`, `CampaniaInsumoDao` (validando foreign keys, borrados en cascada físicos, y los queries filtrados por `activo = 1`).
+*   **Mappers (Data <-> Domain):** 
+    Pruebas unitarias para validar que al pasar de Entity a Domain Model no se pierda información y viceversa.
+*   **ViewModels (Presentation):** 
+    Validar la emisión correcta de los estados (`Loading`, `Success`, `Error`) hacia Jetpack Compose usando `Turbine` (ej: `LoginViewModelTest` verifica la transición a `isLoading = true` y luego `loginExitoso = true` o la asignación de mensajes de error).
+    Pruebas instrumentadas sobre `UsuarioDao`, `CampaniaDao`, `CampaniaInsumoDao` (validando foreign keys, borrados en cascada fÃƒÂƒÃ‚Â­sicos, y los queries filtrados por `activo = 1`).
+*   **Mappers (Data <-> Domain):** 
+    Pruebas unitarias para validar que al pasar de Entity a Domain Model no se pierda informaciÃƒÂƒÃ‚Â³n y viceversa.
+*   **ViewModels (Presentation):** 
+    Validar la emisiÃƒÂƒÃ‚Â³n correcta de los estados (`Loading`, `Success`, `Error`) hacia Jetpack Compose usando `Turbine` (ej: `LoginViewModelTest` verifica la transiciÃƒÂƒÃ‚Â³n a `isLoading = true` y luego `loginExitoso = true` o la asignaciÃƒÂƒÃ‚Â³n de mensajes de error).
+
+---
+
+## 4. Escenarios de Pruebas (Behavior-Driven Development - BDD)
+
+A continuación, estructuramos los tests en formato `Given-When-Then` por módulo, respetando el orden lógico de los Casos de Uso.
+
+### Módulo de Campañas (CU1 - CU4)
+
+**Test 1: Crear Campaña Exitosa**
+*   **Given:** Un nombre válido "Trigo de Invierno", cultivo "Trigo" y una fecha correcta.
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe insertar el registro en el repositorio y emitir el estado `Resource.Success`.
+
+**Test 2: Crear Campaña con Errores**
+*   **Given:** Un nombre vacío "".
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe emitir `Resource.Error` con mensaje "El nombre no puede estar vacío" y NO llamar al repositorio.
+
+**Test UC-V1: ValidarDatosCampaniaUseCase Ã¢Â€Â” Nombre vacío**
+A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-Then` por mÃƒÂƒÃ‚Â³dulo, respetando el orden lÃƒÂƒÃ‚Â³gico de los Casos de Uso.
+
+### MÃƒÂƒÃ‚Â³dulo de CampaÃƒÂƒÃ‚Â±as (CU1 - CU4)
+
+**Test 1: Crear CampaÃƒÂƒÃ‚Â±a Exitosa**
+*   **Given:** Un nombre vÃƒÂƒÃ‚Â¡lido "Trigo de Invierno", cultivo "Trigo" y una fecha correcta.
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe insertar el registro en el repositorio y emitir el estado `Resource.Success`.
+
+**Test 2: Crear CampaÃƒÂƒÃ‚Â±a con Errores**
+*   **Given:** Un nombre vacÃƒÂƒÃ‚Â­o "".
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe emitir `Resource.Error` con mensaje "El nombre no puede estar vacÃƒÂƒÃ‚Â­o" y NO llamar al repositorio.
+
+**Test UC-V1: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Nombre vacÃƒÂƒÃ‚Â­o**
+*   **Given:** nombre = "", cultivo = "Soja", fechaInicio = <fecha futura>, isEditMode = false
+*   **When:** invoke(nombre, cultivo, fechaInicio, isEditMode)
+*   **Then:** esValido = false, errorNombre = "El nombre es obligatorio"
+
+**Test UC-V2: ValidarDatosCampaniaUseCase Ã¢Â€Â” Fecha pasada en creación**
+*   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = false, errorFecha = "La fecha no puede ser anterior a hoy"
+
+**Test UC-V3: ValidarDatosCampaniaUseCase Ã¢Â€Â” Fecha pasada permitida en edición**
+*   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = true
+*   **When:** invoke(...)
+*   **Then:** esValido = true, errorFecha = null
+
+**Test UC-V4: ValidarDatosCampaniaUseCase Ã¢Â€Â” Todos los campos válidos**
+**Test UC-V2: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Fecha pasada en creaciÃƒÂƒÃ‚Â³n**
+*   **Given:** nombre = "CampaÃƒÂƒÃ‚Â±a", cultivo = "MaÃƒÂƒÃ‚Â­z", fechaInicio = <ayer en millis>, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = false, errorFecha = "La fecha no puede ser anterior a hoy"
+
+**Test UC-V3: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Fecha pasada permitida en ediciÃƒÂƒÃ‚Â³n**
+*   **Given:** nombre = "CampaÃƒÂƒÃ‚Â±a", cultivo = "MaÃƒÂƒÃ‚Â­z", fechaInicio = <ayer en millis>, isEditMode = true
+*   **When:** invoke(...)
+*   **Then:** esValido = true, errorFecha = null
+
+**Test UC-V4: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Todos los campos vÃƒÂƒÃ‚Â¡lidos**
+*   **Given:** Todos los campos correctos, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = true, todos los errores = null
+
+### Módulo de Insumos (CU9 - CU9.4)
+
+**Test 3: Eliminación Lógica (Soft-Delete) de Insumo del Catálogo**
+*   **Given:** Que el insumo "Glifosato" existe en el catálogo con `activo = true` y ya fue utilizado en 2 campañas.
+*   **When:** Invoco `EliminarInsumoCatalogoUseCase` pasando ese insumo.
+*   **Then:** El repositorio debe realizar un `UPDATE` (cambiando `activo` a `false`) y NO un `DELETE` físico. Las llamadas a `ObtenerCatalogoInsumosUseCase` ya no deben retornarlo.
+
+**Test 4: Asignación de Insumo a Campaña**
+*   **Given:** El "Glifosato" (activo en el catálogo) y la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
+*   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
+
+**Test UC-V5: ValidarInsumoUseCase Ã¢Â€Â” Categoría vacía**
+*   **Given:** nombre = "Herbicida", categoria = ""
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = false, errorCategoria = "La categoría es obligatoria"
+
+**Test UC-V6: ValidarInsumoUseCase Ã¢Â€Â” Ambos campos válidos**
+*   **Given:** nombre = "Herbicida", categoria = "Químico"
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = true, errorNombre = null, errorCategoria = null
+
+### Módulo de Tareas (CU5 - CU5.4)
+
+#### TareaViewModel Ã¢Â€Â” sincronizarCampania() [#292]
+### MÃƒÂƒÃ‚Â³dulo de Insumos (CU9 - CU9.4)
+
+**Test 3: EliminaciÃƒÂƒÃ‚Â³n LÃƒÂƒÃ‚Â³gica (Soft-Delete) de Insumo del CatÃƒÂƒÃ‚Â¡logo**
+*   **Given:** Que el insumo "Glifosato" existe en el catÃƒÂƒÃ‚Â¡logo con `activo = true` y ya fue utilizado en 2 campaÃƒÂƒÃ‚Â±as.
+*   **When:** Invoco `EliminarInsumoCatalogoUseCase` pasando ese insumo.
+*   **Then:** El repositorio debe realizar un `UPDATE` (cambiando `activo` a `false`) y NO un `DELETE` fÃƒÂƒÃ‚Â­sico. Las llamadas a `ObtenerCatalogoInsumosUseCase` ya no deben retornarlo.
+
+**Test 4: AsignaciÃƒÂƒÃ‚Â³n de Insumo a CampaÃƒÂƒÃ‚Â±a**
+*   **Given:** El "Glifosato" (activo en el catÃƒÂƒÃ‚Â¡logo) y la campaÃƒÂƒÃ‚Â±a "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
+*   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
+
+**Test UC-V5: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” CategorÃƒÂƒÃ‚Â­a vacÃƒÂƒÃ‚Â­a**
+*   **Given:** nombre = "Herbicida", categoria = ""
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = false, errorCategoria = "La categorÃƒÂƒÃ‚Â­a es obligatoria"
+
+**Test UC-V6: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Ambos campos vÃƒÂƒÃ‚Â¡lidos**
+*   **Given:** nombre = "Herbicida", categoria = "QuÃƒÂƒÃ‚Â­mico"
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = true, errorNombre = null, errorCategoria = null
+
+### MÃƒÂƒÃ‚Â³dulo de Tareas (CU5 - CU5.4)
+
+#### TareaViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” sincronizarCampania() [#292]
+
+**Test VM-T1: sincronizarCampania actualiza el id cuando difiere del actual**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` en el `SavedStateHandle` (estado inicial `null`).
+*   **When:** Se llama a `sincronizarCampania(5)`.
+*   **Then:** El StateFlow `campaniaIdSeleccionada` debe emitir el valor `5`.
+
+**Test VM-T2: sincronizarCampania no emite si el id es igual al actual**
+*   **Given:** El `TareaViewModel` ya tiene `campaniaIdSeleccionada = 5`.
+*   **When:** Se llama a `sincronizarCampania(5)` con el mismo valor.
+*   **Then:** El StateFlow **no** debe emitir un nuevo evento (idempotencia garantizada).
+
+**Test VM-T3: tareas emite lista vacía si no hay campaniaId válido**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` válido.
+*   **When:** Se observa el StateFlow `tareas`.
+*   **Then:** Debe emitir inmediatamente una lista vacía, sin llamar al repositorio.
+**Test VM-T3: tareas emite lista vacÃƒÂƒÃ‚Â­a si no hay campaniaId vÃƒÂƒÃ‚Â¡lido**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` vÃƒÂƒÃ‚Â¡lido.
+*   **When:** Se observa el StateFlow `tareas`.
+*   **Then:** Debe emitir inmediatamente una lista vacÃƒÂƒÃ‚Â­a, sin llamar al repositorio.
+
+**Test VM-T4: isCampaniaValid emite false cuando campaniaId es nulo**
+*   **Given:** `campaniaIdSeleccionada` es `null`.
+*   **When:** Se observa `isCampaniaValid`.
+*   **Then:** Debe emitir `false`.
+
+**Test VM-T5: isCampaniaValid emite true tras sincronizarCampania con id válido**
+**Test VM-T5: isCampaniaValid emite true tras sincronizarCampania con id vÃƒÂƒÃ‚Â¡lido**
+*   **Given:** El ViewModel inicia con `campaniaId = null`.
+*   **When:** Se llama a `sincronizarCampania(3)`.
+*   **Then:** `isCampaniaValid` debe emitir `true`.
+
+
+**Test 5: Agendar tarea con recordatorio activado**
+*   **Given:** Una nueva tarea "Revisar fertilizante" con el switch `notificar = true`.
+*   **When:** Invoco `CrearTareaUseCase`.
+*   **Then:** El sistema guarda la tarea en BD y, posteriormente, invoca `taskReminderScheduler.schedule(tarea)`.
+
+**Test 6: Completar tarea programada (Cancelación de Alerta)**
+**Test 6: Completar tarea programada (CancelaciÃƒÂƒÃ‚Â³n de Alerta)**
+*   **Given:** La tarea anterior, que actualmente tiene notificaciones encoladas.
+*   **When:** Invoco `ConfirmarTareaUseCase` seteando la tarea como `completada = true`.
+*   **Then:** El estado de la tarea cambia en BD, y obligatoriamente se invoca `taskReminderScheduler.cancel(tarea.id)` para evitar alertas fantasma.
+
+### Módulo de Cosechas (CU6 - CU7)
+### MÃƒÂƒÃ‚Â³dulo de Cosechas (CU6 - CU7)
+
+**Test 7: Registrar Cosecha No Almacenada (Venta/Reserva)**
+*   **Given:** Una cosecha de "Soja" que no va al silo, sino que se vende (`venta = true`) a $100.
+*   **When:** Invoco `RegistrarCosechaConVentaUseCase`.
+*   **Then:** El sistema inserta el registro base en la tabla Cosechas, toma el ID generado, e inserta un segundo registro en `CosechaNoAlmacenadaEntity` vinculando la venta y el precio.
+
+**Test 8: Listar Cosechas de una Campaña**
+*   **Given:** Una campaña con cosechas mixtas (en silo y vendidas).
+*   **When:** Invoco `ObtenerCosechasPorCampaniaUseCase` y `ObtenerCosechasNoAlmacenadasUseCase`.
+*   **Then:** El repositorio debe devolver dos flujos distintos. El ViewModel debe ser capaz de fusionarlos para mostrar qué fracción de la cosecha total fue vendida.
+
+**Test 8.1: Formulario de Cosecha - Sin Campaña Seleccionada (Issue 7)**
+*   **Given:** Un `FormularioCosechaViewModel` creado sin `campaniaId` en el `SavedStateHandle` (acceso vía navegación global).
+*   **When:** El usuario ingresa una cantidad válida y presiona "Guardar Registro".
+*   **Then:** Se setea `errorCampania = "Debe seleccionar una campaña"` y no se llama a ningún use case de registro.
+
+**Test 8.2: Formulario de Cosecha - Cantidad Obligatoria (Issue 12)**
+*   **Given:** Una campaña seleccionada y el campo `cantidad` vacío.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorCantidad = "La cantidad es obligatoria"` y no se llama a ningún use case de registro.
+
+**Test 8.3: Formulario de Cosecha - Precio Inválido**
+*   **Given:** Una campaña y una `cantidad` válidas, con `almacenado = false`, `tipo = "Venta"` y un precio no numérico (ej. "abc").
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorPrecio = "Precio inválido"` y no se llama a ningún use case de registro.
+
+**Test 8.4: Formulario de Cosecha - Registro Exitoso (Almacenado)**
+*   **Given:** Una campaña, `cantidad = 100`, y `almacen = "Silo 1"` válidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaUseCase` con los parámetros correctos y se emite `guardadoExitoso = true`.
+
+**Test 8.5: Formulario de Cosecha - Registro Exitoso (Venta)**
+*   **Given:** Una campaña, `cantidad = 100`, `almacenado = false`, `tipo = "Venta"` y `precio = 500` válidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaConVentaUseCase` con los parámetros correctos y se emite `guardadoExitoso = true`.
+
+### Módulo de Observaciones (CU8)
+
+**Test 9: Guardar Observación con Imagen Adjunta**
+**Test 8: Listar Cosechas de una CampaÃƒÂƒÃ‚Â±a**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a con cosechas mixtas (en silo y vendidas).
+*   **When:** Invoco `ObtenerCosechasPorCampaniaUseCase` y `ObtenerCosechasNoAlmacenadasUseCase`.
+*   **Then:** El repositorio debe devolver dos flujos distintos. El ViewModel debe ser capaz de fusionarlos para mostrar quÃƒÂƒÃ‚Â© fracciÃƒÂƒÃ‚Â³n de la cosecha total fue vendida.
+
+**Test 8.1: Formulario de Cosecha - Sin CampaÃƒÂƒÃ‚Â±a Seleccionada (Issue 7)**
+*   **Given:** Un `FormularioCosechaViewModel` creado sin `campaniaId` en el `SavedStateHandle` (acceso vÃƒÂƒÃ‚Â­a navegaciÃƒÂƒÃ‚Â³n global).
+*   **When:** El usuario ingresa una cantidad vÃƒÂƒÃ‚Â¡lida y presiona "Guardar Registro".
+*   **Then:** Se setea `errorCampania = "Debe seleccionar una campaÃƒÂƒÃ‚Â±a"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.2: Formulario de Cosecha - Cantidad Obligatoria (Issue 12)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a seleccionada y el campo `cantidad` vacÃƒÂƒÃ‚Â­o.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorCantidad = "La cantidad es obligatoria"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.3: Formulario de Cosecha - Precio InvÃƒÂƒÃ‚Â¡lido**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a y una `cantidad` vÃƒÂƒÃ‚Â¡lidas, con `almacenado = false`, `tipo = "Venta"` y un precio no numÃƒÂƒÃ‚Â©rico (ej. "abc").
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorPrecio = "Precio invÃƒÂƒÃ‚Â¡lido"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.4: Formulario de Cosecha - Registro Exitoso (Almacenado)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a, `cantidad = 100`, y `almacen = "Silo 1"` vÃƒÂƒÃ‚Â¡lidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaUseCase` con los parÃƒÂƒÃ‚Â¡metros correctos y se emite `guardadoExitoso = true`.
+
+**Test 8.5: Formulario de Cosecha - Registro Exitoso (Venta)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a, `cantidad = 100`, `almacenado = false`, `tipo = "Venta"` y `precio = 500` vÃƒÂƒÃ‚Â¡lidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaConVentaUseCase` con los parÃƒÂƒÃ‚Â¡metros correctos y se emite `guardadoExitoso = true`.
+
+### MÃƒÂƒÃ‚Â³dulo de Observaciones (CU8)
+
+**Test 9: Guardar ObservaciÃƒÂƒÃ‚Â³n con Imagen Adjunta**
+*   **Given:** Una nota de texto y una URI local que apunta a una foto en el dispositivo.
+*   **When:** Invoco `GuardarObservacionUseCase`.
+*   **Then:** El sistema guarda correctamente el string de la URI en la entidad para que luego Coil pueda renderizarla en la UI.
+
+### Módulo de Autenticación (Extra 1)
+
+**Test 10: Login Exitoso con Hash SHA-256**
+*   **Given:** Un usuario "DonElio" registrado en la base de datos con contraseña hasheada.
+*   **When:** El usuario ingresa la contraseña en texto plano y se invoca `LoginUseCase`.
+### MÃƒÂƒÃ‚Â³dulo de AutenticaciÃƒÂƒÃ‚Â³n (Extra 1)
+
+**Test 10: Login Exitoso con Hash SHA-256**
+*   **Given:** Un usuario "DonElio" registrado en la base de datos con contraseÃƒÂƒÃ‚Â±a hasheada.
+*   **When:** El usuario ingresa la contraseÃƒÂƒÃ‚Â±a en texto plano y se invoca `LoginUseCase`.
+*   **Then:** El Use Case encripta el texto plano ingresado, lo compara con la BD, coincide, y emite `Resource.Success`.
+
+**Test 11: Login Fallido (Usuario no existe)**
+*   **Given:** Un intento de acceso con el nombre "Intruso".
+*   **When:** Invoco `LoginUseCase`.
+*   **Then:** Retorna `Resource.Error("Usuario no encontrado")`.
+
+### Módulo de Backups (Extra 2)
+
+**Test 12: Generación de Backup Exitoso**
+### MÃƒÂƒÃ‚Â³dulo de Backups (Extra 2)
+
+**Test 12: GeneraciÃƒÂƒÃ‚Â³n de Backup Exitoso**
+*   **Given:** Una ruta URI proporcionada por el SAF (Storage Access Framework) donde el usuario tiene permisos de escritura.
+*   **When:** Invoco `CrearBackupUseCase`.
+*   **Then:** El archivo `.db` se copia exitosamente al destino y emite `Resource.Success`.
+
+---
+
+## 5. Casos de Borde (Edge Cases) a Testear
+*   **Campañas:** Intentar crear una campaña con nombre vacío (Debería fallar con `Resource.Error`).
+*   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaña (Lanza `IllegalArgumentException`).
+*   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no debería encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
+*   **Observaciones:** Intentar guardar una observación con el campo de texto vacío (Lanza `IllegalArgumentException`).
+*   **Cosechas (Formulario):** Guardar sin campaña seleccionada (Issue 7) Ã¢Â€Â” Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacías (Issue 12) Ã¢Â€Â” Debe emitir el error visual correspondiente y deshabilitar el botón "Guardar".
+*   **Autenticación:** Iniciar sesión con un usuario inexistente o con credenciales vacías (El ViewModel debe capturar la excepción o el `null` y emitir el estado de `error` correspondiente).
+
+---
+
+## 6. Cobertura y Ejecución de Tests
+
+Para garantizar que nuestros tests efectivamente cubren la lógica de negocio, implementaremos las siguientes estrategias:
+
+### A. Ejecución de Pruebas (Comandos)
+1.  **Pruebas Unitarias (JVM Locales):**
+    *   Comando: `./gradlew testDebugUnitTest`
+    *   *Propósito:* Ejecutar todas las pruebas de Use Cases y ViewModels de manera ultra rápida sin necesidad de un emulador.
+2.  **Pruebas Instrumentadas (Base de Datos):**
+    *   Comando: `./gradlew connectedDebugAndroidTest`
+    *   *Propósito:* Ejecutar las pruebas sobre los DAOs. Requiere que un dispositivo físico o emulador esté encendido y conectado.
+
+### B. Medición de Cobertura (Code Coverage)
+Utilizaremos **KoverX** (o JaCoCo configurado para Kotlin) para generar reportes HTML visuales sobre qué porcentaje de nuestro código está siendo probado.
+*   **Comando de Cobertura (Android):** `./gradlew koverHtmlReportDebug` (Es fundamental usar la variante `Debug` para que Kover analice correctamente las clases instrumentadas de Android).
+*   **Meta de Cobertura:**
+    *   `domain` (Reglas de negocio y Use Cases): **Mínimo 80%**. Esta capa es crítica.
+    *   `data` (DAOs y Repositorios): **Mínimo 70%**.
+    *   `presentation` (UI): No requerirá cobertura estricta en la fase inicial para priorizar velocidad.
+
+### C. Automatización Continua (CI/CD) con GitHub Actions
+Para asegurar que no se introduzcan regresiones al proyecto, hemos configurado un flujo de trabajo (Workflow) en GitHub Actions (`.github/workflows/pr_tests.yml`). 
+
+**Ã‚Â¿Qué hace automáticamente?**
+*   **CampaÃƒÂƒÃ‚Â±as:** Intentar crear una campaÃƒÂƒÃ‚Â±a con nombre vacÃƒÂƒÃ‚Â­o (DeberÃƒÂƒÃ‚Â­a fallar con `Resource.Error`).
+*   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaÃƒÂƒÃ‚Â±a (Lanza `IllegalArgumentException`).
+*   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no deberÃƒÂƒÃ‚Â­a encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
+*   **Observaciones:** Intentar guardar una observaciÃƒÂƒÃ‚Â³n con el campo de texto vacÃƒÂƒÃ‚Â­o (Lanza `IllegalArgumentException`).
+*   **Cosechas (Formulario):** Guardar sin campaÃƒÂƒÃ‚Â±a seleccionada (Issue 7) ÃƒÂ¢Ã‚Â€Ã‚Â” Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacÃƒÂƒÃ‚Â­as (Issue 12) ÃƒÂ¢Ã‚Â€Ã‚Â” Debe emitir el error visual correspondiente y deshabilitar el botÃƒÂƒÃ‚Â³n "Guardar".
+*   **AutenticaciÃƒÂƒÃ‚Â³n:** Iniciar sesiÃƒÂƒÃ‚Â³n con un usuario inexistente o con credenciales vacÃƒÂƒÃ‚Â­as (El ViewModel debe capturar la excepciÃƒÂƒÃ‚Â³n o el `null` y emitir el estado de `error` correspondiente).
+
+---
+
+## 6. Cobertura y EjecuciÃƒÂƒÃ‚Â³n de Tests
+
+Para garantizar que nuestros tests efectivamente cubren la lÃƒÂƒÃ‚Â³gica de negocio, implementaremos las siguientes estrategias:
+
+### A. EjecuciÃƒÂƒÃ‚Â³n de Pruebas (Comandos)
+1.  **Pruebas Unitarias (JVM Locales):**
+    *   Comando: `./gradlew testDebugUnitTest`
+    *   *PropÃƒÂƒÃ‚Â³sito:* Ejecutar todas las pruebas de Use Cases y ViewModels de manera ultra rÃƒÂƒÃ‚Â¡pida sin necesidad de un emulador.
+2.  **Pruebas Instrumentadas (Base de Datos):**
+    *   Comando: `./gradlew connectedDebugAndroidTest`
+    *   *PropÃƒÂƒÃ‚Â³sito:* Ejecutar las pruebas sobre los DAOs. Requiere que un dispositivo fÃƒÂƒÃ‚Â­sico o emulador estÃƒÂƒÃ‚Â© encendido y conectado.
+
+### B. MediciÃƒÂƒÃ‚Â³n de Cobertura (Code Coverage)
+Utilizaremos **KoverX** (o JaCoCo configurado para Kotlin) para generar reportes HTML visuales sobre quÃƒÂƒÃ‚Â© porcentaje de nuestro cÃƒÂƒÃ‚Â³digo estÃƒÂƒÃ‚Â¡ siendo probado.
+*   **Comando de Cobertura (Android):** `./gradlew koverHtmlReportDebug` (Es fundamental usar la variante `Debug` para que Kover analice correctamente las clases instrumentadas de Android).
+*   **Meta de Cobertura:**
+    *   `domain` (Reglas de negocio y Use Cases): **MÃƒÂƒÃ‚Â­nimo 80%**. Esta capa es crÃƒÂƒÃ‚Â­tica.
+    *   `data` (DAOs y Repositorios): **MÃƒÂƒÃ‚Â­nimo 70%**.
+    *   `presentation` (UI): No requerirÃƒÂƒÃ‚Â¡ cobertura estricta en la fase inicial para priorizar velocidad.
+
+### C. AutomatizaciÃƒÂƒÃ‚Â³n Continua (CI/CD) con GitHub Actions
+Para asegurar que no se introduzcan regresiones al proyecto, hemos configurado un flujo de trabajo (Workflow) en GitHub Actions (`.github/workflows/pr_tests.yml`). 
+
+**ÃƒÂ‚Ã‚Â¿QuÃƒÂƒÃ‚Â© hace automÃƒÂƒÃ‚Â¡ticamente?**
+Cada vez que un desarrollador hace un *Push* o crea un *Pull Request* hacia las ramas `main` o `develop`:
+1. El servidor de GitHub arranca un entorno virtual Linux con Java 17.
+2. Ejecuta `./gradlew testDebugUnitTest` para validar todas nuestras pruebas de Use Cases y ViewModels.
+3. Genera y sube el reporte de cobertura HTML (`koverHtmlReportDebug`) como un artefacto descargable.
+
+**Nota sobre Tests Instrumentados:**
+Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluidos de momento en el flujo básico para evitar tiempos muertos en la validación rápida del PR, pero deben ejecutarse localmente antes de solicitar el PR.
+
+---
+*(Este documento se mantendrá sincronizado con el código. Cualquier bug detectado en producción en el futuro se traducirá en un nuevo escenario "Given-When-Then" aquí antes de escribir el parche).*
+
+---
+
+## Módulo de Reportes
+
+#### ReportesViewModel Ã¢Â€Â” StateFlows contextuales [#299]
+
+**Test VM-R1: campanias emite lista vacía cuando la BD está vacía**
+*   **Given:** El `ReportesViewModel` inicia con BD sin campañas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir una lista vacía.
+
+**Test VM-R2: campanias emite la lista real cuando la BD tiene registros**
+*   **Given:** La BD tiene 2 campañas registradas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir exactamente esas 2 campañas.
+
+**Test VM-R3: seleccionarCampaniaIndividual actualiza campaniaIndividual**
+*   **Given:** El ViewModel está inicializado sin selección (campaniaIndividual = null).
+*   **When:** Se llama a `seleccionarCampaniaIndividual(campania)`.
+*   **Then:** `campaniaIndividual` debe emitir la campaña elegida.
+
+**Test VM-R4: insumosIndividual emite lista vacía cuando no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada.
+*   **When:** Se observa `insumosIndividual`.
+*   **Then:** Debe emitir lista vacía sin consultar la BD.
+
+**Test VM-R5: pieChartData emite null cuando no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada (insumosIndividual vacío).
+*   **When:** Se observa `pieChartData`.
+*   **Then:** Debe emitir `null` (el gráfico no debe mostrarse).
+
+#### ReportesViewModel Ã¢Â€Â” desglose cosechas por destino [#301]
+
+**Test VM-R6: desgloseCosechasData agrupa por almacén y venta correctamente**
+*   **Given:** Una campaña con cosechas mixtas (algunas con `almacen` no vacío, otras con `almacen` en blanco).
+*   **When:** Se selecciona esa campaña con `seleccionarCampaniaIndividual()`.
+*   **Then:** `desgloseCosechasData` debe emitir un `PieChartData` con 2 slices:
+    - Slice "Almacenada": suma de cantidades con `almacen.isNotBlank()`.
+    - Slice "Vendida": suma de cantidades con `almacen.isBlank()`.
+
+**Test VM-R7: desgloseCosechasData emite null cuando no hay cosechas**
+*   **Given:** Una campaña seleccionada pero sin cosechas en la BD.
+*   **When:** Se observa `desgloseCosechasData`.
+*   **Then:** Debe emitir `null` (sin gráfico).
+
+#### ReportesViewModel Ã¢Â€Â” guardia de exportación [#300]
+
+**Test VM-R8: exportarReporteCsv emite error si no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada (`campaniaIndividual = null`).
+*   **When:** Se llama a `exportarReporteCsv(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaña para exportar"` y no debe invocarse `ReportExporter`.
+
+**Test VM-R9: exportarReportePdf emite error si no hay campaña seleccionada**
+*   **Given:** No hay campaña seleccionada.
+*   **When:** Se llama a `exportarReportePdf(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaña para exportar"`.
+
+#### ReportesViewModel Ã¢Â€Â” comparación real entre campañas [#302]
+
+**Test VM-R10: cosechasA emite la lista de cosechas de la campaña A seleccionada**
+*   **Given:** La BD tiene cosechas asociadas a la campaña con `id = 1`.
+*   **When:** Se llama a `seleccionarCampaniaA(campaniaSoja)` donde `campaniaSoja.id = 1`.
+*   **Then:** `cosechasA` debe emitir la lista real de cosechas de esa campaña.
+
+**Test VM-R11: cosechasA emite lista vacía cuando no hay campaña A seleccionada**
+*   **Given:** No hay campaña seleccionada en el comparador (campaniaA = null).
+*   **When:** Se observa `cosechasA`.
+*   **Then:** Debe emitir una lista vacía.
+
+
+### ReportesViewModel
+- **VM-R12:** Given misma campaña en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
+
+## ValidarDatosCosechaUseCase
+- **Dado** cantidad = null -> **Cuando** invoke() -> **Entonces** retorna Error("La cantidad debe ser mayor a 0.")
+- **Dado** fecha = null -> **Cuando** invoke() -> **Entonces** retorna Error("La fecha es obligatoria.")
+- **Dado** isAlmacenada=true y almacen en blanco -> **Cuando** invoke() -> **Entonces** retorna Error("El nombre del almacen o silo es obligatorio.")
+- **Dado** todos los campos son válidos -> **Cuando** invoke() -> **Entonces** retorna Success
+
+## FormularioInsumoViewModel Â— Validación al guardar
+- **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
+- **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
+- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
+
+
+## FormularioCosechaViewModel - Edición y validación por campo (#335 / #336)
+
+**Test VM-C6: Init con cosechaId válido carga la cosecha en el estado**
+*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almacén "Silo A".
+*   **When:** Se inicializa el ViewModel.
+*   **Then:** state.cosechaId == 7, state.cantidad == "55.0", state.almacen == "Silo A", state.almacenado == true.
+
+**Test VM-C7: Error de cantidad va a errorCantidad, no a errorFecha**
+*   **Given:** Campaña seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorCantidad != null, errorFecha == null.
+
+**Test VM-C8: Error de fecha va a errorFecha, no a errorCantidad**
+*   **Given:** Campaña y cantidad válidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorFecha != null, errorCantidad == null.
+
+**Test VM-C9: onFechaChange limpia errorFecha**
+*   **Given:** Existe errorFecha en el state (provocado por un guardar fallido).
+*   **When:** Se llama a onFechaChange(timestamp).
+*   **Then:** errorFecha == null.
+## FormularioInsumoViewModel - Habilitacion de boton guardar en tiempo real (#403)
+
+**VM-I-1: Estado inicial en modo Alta tiene isGuardarHabilitado = false**
+* **Dado** el ViewModel se inicializa sin insumoId (modo Alta).
+* **Cuando** se observa el state.isGuardarHabilitado.
+* **Entonces** debe ser false.
+
+**VM-I-2: Tipear solo nombre no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida") y categoria esta vacia.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-3: Tipear solo categoria no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onCategoriaChange("Pesticidas") y nombre esta vacio.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-4: Tipear nombre y categoria validos habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida Total") y luego onCategoriaChange("Pesticidas").
+* **Entonces** isGuardarHabilitado = true, errorNombre = null, errorCategoria = null.
+
+**VM-I-5: Borrar nombre deshabilita el boton guardar**
+* **Dado** el formulario tiene nombre y categoria validos (isGuardarHabilitado = true).
+* **Cuando** se llama a onNombreChange("") vaciando el nombre.
+* **Entonces** isGuardarHabilitado vuelve a false.
+
+## NuevaTareaViewModel - Modo Edicion y preservacion de confirmar (#410)
+
+**VM-T-E1: Modo edicion precarga datos de la tarea existente incluyendo confirmar**
+* **Dado** existe una Tarea con id=5, nombre="Tarea Completada", confirmar=true en la BD.
+* **Cuando** el ViewModel inicia con tareaId=5 en el SavedStateHandle.
+* **Entonces** state.nombre = "Tarea Completada", state.confirmar = true, state.hora = "09:00".
+
+**VM-T-E2: Editar tarea completada preserva confirmar=true al guardar**
+* **Dado** una Tarea con confirmar=true esta cargada en modo edicion.
+* **Cuando** se modifica el nombre y se llama a guardar().
+* **Entonces** editarTareaUseCase recibe una Tarea con confirmar=true (no reseteado a false).
+
+
+
 # Plan Estratégico y Casos de Prueba (Living Documentation)
 
 Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
@@ -60,22 +646,22 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **When:** Invoco `CrearCampaniaUseCase`.
 *   **Then:** El sistema debe emitir `Resource.Error` con mensaje "El nombre no puede estar vacío" y NO llamar al repositorio.
 
-**Test UC-V1: ValidarDatosCampaniaUseCase — Nombre vacío**
+**Test UC-V1: ValidarDatosCampaniaUseCase Ã¢Â€Â” Nombre vacío**
 *   **Given:** nombre = "", cultivo = "Soja", fechaInicio = <fecha futura>, isEditMode = false
 *   **When:** invoke(nombre, cultivo, fechaInicio, isEditMode)
 *   **Then:** esValido = false, errorNombre = "El nombre es obligatorio"
 
-**Test UC-V2: ValidarDatosCampaniaUseCase — Fecha pasada en creación**
+**Test UC-V2: ValidarDatosCampaniaUseCase Ã¢Â€Â” Fecha pasada en creación**
 *   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = false
 *   **When:** invoke(...)
 *   **Then:** esValido = false, errorFecha = "La fecha no puede ser anterior a hoy"
 
-**Test UC-V3: ValidarDatosCampaniaUseCase — Fecha pasada permitida en edición**
+**Test UC-V3: ValidarDatosCampaniaUseCase Ã¢Â€Â” Fecha pasada permitida en edición**
 *   **Given:** nombre = "Campaña", cultivo = "Maíz", fechaInicio = <ayer en millis>, isEditMode = true
 *   **When:** invoke(...)
 *   **Then:** esValido = true, errorFecha = null
 
-**Test UC-V4: ValidarDatosCampaniaUseCase — Todos los campos válidos**
+**Test UC-V4: ValidarDatosCampaniaUseCase Ã¢Â€Â” Todos los campos válidos**
 *   **Given:** Todos los campos correctos, isEditMode = false
 *   **When:** invoke(...)
 *   **Then:** esValido = true, todos los errores = null
@@ -92,19 +678,30 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
 *   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
 
-**Test UC-V5: ValidarInsumoUseCase — Categoría vacía**
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
+
+**Test UC-V5: ValidarInsumoUseCase Ã¢Â€Â” Categoría vacía**
 *   **Given:** nombre = "Herbicida", categoria = ""
 *   **When:** invoke(nombre, categoria)
 *   **Then:** esValido = false, errorCategoria = "La categoría es obligatoria"
 
-**Test UC-V6: ValidarInsumoUseCase — Ambos campos válidos**
+**Test UC-V6: ValidarInsumoUseCase Ã¢Â€Â” Ambos campos válidos**
 *   **Given:** nombre = "Herbicida", categoria = "Químico"
 *   **When:** invoke(nombre, categoria)
 *   **Then:** esValido = true, errorNombre = null, errorCategoria = null
 
 ### Módulo de Tareas (CU5 - CU5.4)
 
-#### TareaViewModel — sincronizarCampania() [#292]
+#### TareaViewModel Ã¢Â€Â” sincronizarCampania() [#292]
 
 **Test VM-T1: sincronizarCampania actualiza el id cuando difiere del actual**
 *   **Given:** El `TareaViewModel` inicia sin `campaniaId` en el `SavedStateHandle` (estado inicial `null`).
@@ -212,7 +809,7 @@ A continuación, estructuramos los tests en formato `Given-When-Then` por módul
 *   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaña (Lanza `IllegalArgumentException`).
 *   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no debería encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
 *   **Observaciones:** Intentar guardar una observación con el campo de texto vacío (Lanza `IllegalArgumentException`).
-*   **Cosechas (Formulario):** Guardar sin campaña seleccionada (Issue 7) — Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacías (Issue 12) — Debe emitir el error visual correspondiente y deshabilitar el botón "Guardar".
+*   **Cosechas (Formulario):** Guardar sin campaña seleccionada (Issue 7) Ã¢Â€Â” Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacías (Issue 12) Ã¢Â€Â” Debe emitir el error visual correspondiente y deshabilitar el botón "Guardar".
 *   **Autenticación:** Iniciar sesión con un usuario inexistente o con credenciales vacías (El ViewModel debe capturar la excepción o el `null` y emitir el estado de `error` correspondiente).
 
 ---
@@ -240,7 +837,7 @@ Utilizaremos **KoverX** (o JaCoCo configurado para Kotlin) para generar reportes
 ### C. Automatización Continua (CI/CD) con GitHub Actions
 Para asegurar que no se introduzcan regresiones al proyecto, hemos configurado un flujo de trabajo (Workflow) en GitHub Actions (`.github/workflows/pr_tests.yml`). 
 
-**¿Qué hace automáticamente?**
+**Ã‚Â¿Qué hace automáticamente?**
 Cada vez que un desarrollador hace un *Push* o crea un *Pull Request* hacia las ramas `main` o `develop`:
 1. El servidor de GitHub arranca un entorno virtual Linux con Java 17.
 2. Ejecuta `./gradlew testDebugUnitTest` para validar todas nuestras pruebas de Use Cases y ViewModels.
@@ -256,7 +853,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 
 ## Módulo de Reportes
 
-#### ReportesViewModel — StateFlows contextuales [#299]
+#### ReportesViewModel Ã¢Â€Â” StateFlows contextuales [#299]
 
 **Test VM-R1: campanias emite lista vacía cuando la BD está vacía**
 *   **Given:** El `ReportesViewModel` inicia con BD sin campañas.
@@ -283,11 +880,52 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **When:** Se observa `pieChartData`.
 *   **Then:** Debe emitir `null` (el gráfico no debe mostrarse).
 
-#### ReportesViewModel — desglose cosechas por destino [#301]
+#### ReportesViewModel Ã¢Â€Â” desglose cosechas por destino [#301]
 
 **Test VM-R6: desgloseCosechasData agrupa por almacén y venta correctamente**
 *   **Given:** Una campaña con cosechas mixtas (algunas con `almacen` no vacío, otras con `almacen` en blanco).
 *   **When:** Se selecciona esa campaña con `seleccionarCampaniaIndividual()`.
+Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃƒÂƒÃ‚Â¡n incluidos de momento en el flujo bÃƒÂƒÃ‚Â¡sico para evitar tiempos muertos en la validaciÃƒÂƒÃ‚Â³n rÃƒÂƒÃ‚Â¡pida del PR, pero deben ejecutarse localmente antes de solicitar el PR.
+
+---
+*(Este documento se mantendrÃƒÂƒÃ‚Â¡ sincronizado con el cÃƒÂƒÃ‚Â³digo. Cualquier bug detectado en producciÃƒÂƒÃ‚Â³n en el futuro se traducirÃƒÂƒÃ‚Â¡ en un nuevo escenario "Given-When-Then" aquÃƒÂƒÃ‚Â­ antes de escribir el parche).*
+
+---
+
+## MÃƒÂƒÃ‚Â³dulo de Reportes
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” StateFlows contextuales [#299]
+
+**Test VM-R1: campanias emite lista vacÃƒÂƒÃ‚Â­a cuando la BD estÃƒÂƒÃ‚Â¡ vacÃƒÂƒÃ‚Â­a**
+*   **Given:** El `ReportesViewModel` inicia con BD sin campaÃƒÂƒÃ‚Â±as.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir una lista vacÃƒÂƒÃ‚Â­a.
+
+**Test VM-R2: campanias emite la lista real cuando la BD tiene registros**
+*   **Given:** La BD tiene 2 campaÃƒÂƒÃ‚Â±as registradas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir exactamente esas 2 campaÃƒÂƒÃ‚Â±as.
+
+**Test VM-R3: seleccionarCampaniaIndividual actualiza campaniaIndividual**
+*   **Given:** El ViewModel estÃƒÂƒÃ‚Â¡ inicializado sin selecciÃƒÂƒÃ‚Â³n (campaniaIndividual = null).
+*   **When:** Se llama a `seleccionarCampaniaIndividual(campania)`.
+*   **Then:** `campaniaIndividual` debe emitir la campaÃƒÂƒÃ‚Â±a elegida.
+
+**Test VM-R4: insumosIndividual emite lista vacÃƒÂƒÃ‚Â­a cuando no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada.
+*   **When:** Se observa `insumosIndividual`.
+*   **Then:** Debe emitir lista vacÃƒÂƒÃ‚Â­a sin consultar la BD.
+
+**Test VM-R5: pieChartData emite null cuando no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada (insumosIndividual vacÃƒÂƒÃ‚Â­o).
+*   **When:** Se observa `pieChartData`.
+*   **Then:** Debe emitir `null` (el grÃƒÂƒÃ‚Â¡fico no debe mostrarse).
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” desglose cosechas por destino [#301]
+
+**Test VM-R6: desgloseCosechasData agrupa por almacÃƒÂƒÃ‚Â©n y venta correctamente**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a con cosechas mixtas (algunas con `almacen` no vacÃƒÂƒÃ‚Â­o, otras con `almacen` en blanco).
+*   **When:** Se selecciona esa campaÃƒÂƒÃ‚Â±a con `seleccionarCampaniaIndividual()`.
 *   **Then:** `desgloseCosechasData` debe emitir un `PieChartData` con 2 slices:
     - Slice "Almacenada": suma de cantidades con `almacen.isNotBlank()`.
     - Slice "Vendida": suma de cantidades con `almacen.isBlank()`.
@@ -297,7 +935,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **When:** Se observa `desgloseCosechasData`.
 *   **Then:** Debe emitir `null` (sin gráfico).
 
-#### ReportesViewModel — guardia de exportación [#300]
+#### ReportesViewModel Ã¢Â€Â” guardia de exportación [#300]
 
 **Test VM-R8: exportarReporteCsv emite error si no hay campaña seleccionada**
 *   **Given:** No hay campaña seleccionada (`campaniaIndividual = null`).
@@ -309,7 +947,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **When:** Se llama a `exportarReportePdf(uri, context)`.
 *   **Then:** `exportStatus` debe emitir `"Seleccione una campaña para exportar"`.
 
-#### ReportesViewModel — comparación real entre campañas [#302]
+#### ReportesViewModel Ã¢Â€Â” comparación real entre campañas [#302]
 
 **Test VM-R10: cosechasA emite la lista de cosechas de la campaña A seleccionada**
 *   **Given:** La BD tiene cosechas asociadas a la campaña con `id = 1`.
@@ -323,34 +961,79 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 
 
 ### ReportesViewModel
-- **VM-R12:** Given misma campa�a en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
+- **VM-R12:** Given misma campaña en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a seleccionada pero sin cosechas en la BD.
+*   **When:** Se observa `desgloseCosechasData`.
+*   **Then:** Debe emitir `null` (sin grÃƒÂƒÃ‚Â¡fico).
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” guardia de exportaciÃƒÂƒÃ‚Â³n [#300]
+
+**Test VM-R8: exportarReporteCsv emite error si no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada (`campaniaIndividual = null`).
+*   **When:** Se llama a `exportarReporteCsv(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaÃƒÂƒÃ‚Â±a para exportar"` y no debe invocarse `ReportExporter`.
+
+**Test VM-R9: exportarReportePdf emite error si no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada.
+*   **When:** Se llama a `exportarReportePdf(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaÃƒÂƒÃ‚Â±a para exportar"`.
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” comparaciÃƒÂƒÃ‚Â³n real entre campaÃƒÂƒÃ‚Â±as [#302]
+
+**Test VM-R10: cosechasA emite la lista de cosechas de la campaÃƒÂƒÃ‚Â±a A seleccionada**
+*   **Given:** La BD tiene cosechas asociadas a la campaÃƒÂƒÃ‚Â±a con `id = 1`.
+*   **When:** Se llama a `seleccionarCampaniaA(campaniaSoja)` donde `campaniaSoja.id = 1`.
+*   **Then:** `cosechasA` debe emitir la lista real de cosechas de esa campaÃƒÂƒÃ‚Â±a.
+
+**Test VM-R11: cosechasA emite lista vacÃƒÂƒÃ‚Â­a cuando no hay campaÃƒÂƒÃ‚Â±a A seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada en el comparador (campaniaA = null).
+*   **When:** Se observa `cosechasA`.
+*   **Then:** Debe emitir una lista vacÃƒÂƒÃ‚Â­a.
+
+
+### ReportesViewModel
+- **VM-R12:** Given misma campaña en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
 
 ## ValidarDatosCosechaUseCase
 - **Dado** cantidad = null -> **Cuando** invoke() -> **Entonces** retorna Error("La cantidad debe ser mayor a 0.")
 - **Dado** fecha = null -> **Cuando** invoke() -> **Entonces** retorna Error("La fecha es obligatoria.")
 - **Dado** isAlmacenada=true y almacen en blanco -> **Cuando** invoke() -> **Entonces** retorna Error("El nombre del almacen o silo es obligatorio.")
-- **Dado** todos los campos son v�lidos -> **Cuando** invoke() -> **Entonces** retorna Success
+- **Dado** todos los campos son válidos -> **Cuando** invoke() -> **Entonces** retorna Success
 
-## FormularioInsumoViewModel � Validaci�n al guardar
-- **Dado** nombre vac�o y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserci�n
-- **Dado** nombre v�lido, categoria v�lida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserci�n
-- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar a�n)
+## FormularioInsumoViewModel Â— Validación al guardar
+- **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
+- **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
+- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
 
 
-## FormularioCosechaViewModel - Edici�n y validaci�n por campo (#335 / #336)
+## FormularioCosechaViewModel - Edición y validación por campo (#335 / #336)
 
-**Test VM-C6: Init con cosechaId v�lido carga la cosecha en el estado**
-*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almac�n "Silo A".
+**Test VM-C6: Init con cosechaId válido carga la cosecha en el estado**
+*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almacén "Silo A".
+- **Dado** todos los campos son válidos -> **Cuando** invoke() -> **Entonces** retorna Success
+
+## FormularioInsumoViewModel Ã‚Â— Validación al guardar
+- **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
+- **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
+- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
+
+
+## FormularioCosechaViewModel - Edición y validación por campo (#335 / #336)
+
+**Test VM-C6: Init con cosechaId válido carga la cosecha en el estado**
+*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almacén "Silo A".
 *   **When:** Se inicializa el ViewModel.
 *   **Then:** state.cosechaId == 7, state.cantidad == "55.0", state.almacen == "Silo A", state.almacenado == true.
 
 **Test VM-C7: Error de cantidad va a errorCantidad, no a errorFecha**
-*   **Given:** Campa�a seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
+*   **Given:** Campaña seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
+*   **Given:** Campaña seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
 *   **When:** Se llama a guardar().
 *   **Then:** errorCantidad != null, errorFecha == null.
 
 **Test VM-C8: Error de fecha va a errorFecha, no a errorCantidad**
-*   **Given:** Campa�a y cantidad v�lidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
+*   **Given:** Campaña y cantidad válidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
+*   **Given:** Campaña y cantidad válidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
 *   **When:** Se llama a guardar().
 *   **Then:** errorFecha != null, errorCantidad == null.
 
@@ -358,3 +1041,702 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 *   **Given:** Existe errorFecha en el state (provocado por un guardar fallido).
 *   **When:** Se llama a onFechaChange(timestamp).
 *   **Then:** errorFecha == null.
+## FormularioInsumoViewModel - Habilitacion de boton guardar en tiempo real (#403)
+
+**VM-I-1: Estado inicial en modo Alta tiene isGuardarHabilitado = false**
+* **Dado** el ViewModel se inicializa sin insumoId (modo Alta).
+* **Cuando** se observa el state.isGuardarHabilitado.
+* **Entonces** debe ser false.
+
+**VM-I-2: Tipear solo nombre no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida") y categoria esta vacia.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-3: Tipear solo categoria no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onCategoriaChange("Pesticidas") y nombre esta vacio.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-4: Tipear nombre y categoria validos habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida Total") y luego onCategoriaChange("Pesticidas").
+* **Entonces** isGuardarHabilitado = true, errorNombre = null, errorCategoria = null.
+
+**VM-I-5: Borrar nombre deshabilita el boton guardar**
+* **Dado** el formulario tiene nombre y categoria validos (isGuardarHabilitado = true).
+* **Cuando** se llama a onNombreChange("") vaciando el nombre.
+* **Entonces** isGuardarHabilitado vuelve a false.
+
+## NuevaTareaViewModel - Modo Edicion y preservacion de confirmar (#410)
+
+**VM-T-E1: Modo edicion precarga datos de la tarea existente incluyendo confirmar**
+* **Dado** existe una Tarea con id=5, nombre="Tarea Completada", confirmar=true en la BD.
+* **Cuando** el ViewModel inicia con tareaId=5 en el SavedStateHandle.
+* **Entonces** state.nombre = "Tarea Completada", state.confirmar = true, state.hora = "09:00".
+
+**VM-T-E2: Editar tarea completada preserva confirmar=true al guardar**
+* **Dado** una Tarea con confirmar=true esta cargada en modo edicion.
+* **Cuando** se modifica el nombre y se llama a guardar().
+* **Entonces** editarTareaUseCase recibe una Tarea con confirmar=true (no reseteado a false).
+
+
+
+
+## CosechaViewModel - Fix Race Condition (#441)
+
+**VM-C-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** campaniaIdSeleccionada permanece en 5.
+
+**VM-C-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** campaniaIdSeleccionada se actualiza a 7.
+
+**VM-C-S3: sincronizarCampania actualiza el id cuando difiere del actual**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(2).
+* **Entonces** campaniaIdSeleccionada emite 2.
+
+**VM-C-S4: sincronizarCampania no emite si el id es igual al actual (idempotente)**
+* **Dado** el ViewModel tiene campaniaId = 4 en SavedState.
+* **Cuando** se llama a sincronizarCampania(4).
+* **Entonces** NO se emite un nuevo evento (expectNoEvents).
+
+**VM-C-S5: isCampaniaValid emite false cuando campaniaId es nulo**
+* **Dado** el ViewModel inicia sin campaniaId válido.
+* **Cuando** se observa isCampaniaValid.
+* **Entonces** isCampaniaValid = false.
+
+**VM-C-S6: isCampaniaValid emite true tras sincronizarCampania con id válido**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(1).
+* **Entonces** isCampaniaValid = true.
+
+## TareaViewModel - Fix Race Condition (#441)
+
+**VM-T-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** filtroCampania permanece en 5.
+
+**VM-T-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** filtroCampania se actualiza a 7.
+
+## FormatearMoneda - Fix balance Dashboard (#437)
+
+**FM-1: Formatea valor positivo en millones**
+* **Dado** un valor de 6.133.500.
+* **Cuando** se llama a formatearMoneda(6133500.0).
+* **Entonces** devuelve "`$`6,1M".
+
+**FM-2: Formatea valor positivo en miles**
+* **Dado** un valor de 250.000.
+* **Cuando** se llama a formatearMoneda(250000.0).
+* **Entonces** devuelve "`$`250K".
+
+**FM-3: Formatea balance negativo en millones con signo al frente**
+* **Dado** un balance negativo de -6.133.500 (caso del bug reportado).
+* **Cuando** se llama a formatearMoneda(-6133500.0).
+* **Entonces** devuelve "-`$`6,1M" con el signo al frente (no al final como haría NumberFormat de locale es_AR).
+
+**FM-4: Formatea balance negativo en miles**
+* **Dado** un balance de -250.000.
+* **Cuando** se llama a formatearMoneda(-250000.0).
+* **Entonces** devuelve "-`$`250K".
+
+**FM-5: Formatea cero**
+* **Dado** valor = 0.0.
+* **Cuando** se llama a formatearMoneda(0.0).
+* **Entonces** devuelve "`$` ".
+
+**FM-6: Formatea exactamente 1.000.000**
+* **Dado** valor = 1.000.000.
+* **Cuando** se llama a formatearMoneda(1000000.0).
+* **Entonces** devuelve "`$`1,0M".
+
+## InsumoVinculacionViewModel - Pantalla unificada VincularInsumoScreen (#439)
+
+**VM-I-S1: Asignar insumo utiliza el campaniaId correcto**
+* **Dado** un InsumoVinculacionViewModel con una campaña seleccionada (campaniaId).
+* **Cuando** se llama a signarInsumo(idInsumo, cantidad, precio).
+* **Entonces** llama a AsignarInsumoACampaniaUseCase pasando correctamente el idCampania desde el estado, junto a idInsumo, cantidad y precio.
+
+## FormularioCosechaViewModel - Fixes verificacion manual (fix/cosechas-dashboard-vinculacion)
+
+**FC-1: Fallback al Singleton cuando no llega campaniaId por navegacion**
+* **Dado** un FormularioCosechaViewModel instanciado SIN campaniaId en SavedStateHandle y el UltimaSeleccionManager tiene el id=5.
+* **Cuando** se inicializa el ViewModel.
+* **Entonces** state.campaniaId es 5 (tomado del Singleton).
+
+**FC-2: campaniaId explicito tiene prioridad sobre el Singleton**
+* **Dado** un FormularioCosechaViewModel instanciado con campaniaId=3 en SavedStateHandle y el Singleton tiene id=9.
+* **Cuando** se inicializa el ViewModel.
+* **Entonces** state.campaniaId es 3 (no 9).
+
+**FC-3: Sanitizacion de coma en onCantidadChange**
+* **Dado** el usuario ingresa "1234,56" en el campo cantidad.
+* **Cuando** se llama a onCantidadChange("1234,56").
+* **Entonces** state.cantidad es "1234.56" (coma reemplazada por punto) y errorCantidad es null.
+
+**FC-4: Sanitizacion de coma en onPrecioChange**
+* **Dado** el usuario ingresa "100.000,50" en el campo precio.
+* **Cuando** se llama a onPrecioChange("100.000,50").
+* **Entonces** state.precio es "100.000.50" y no hay errorPrecio.
+
+**FC-5: Carga de detalle de venta al editar cosecha no almacenada**
+* **Dado** una cosecha con almacen="" y un CosechaNoAlmacenada asociado (tipo="venta", precio=150000).
+* **Cuando** se inicializa el ViewModel con cosechaId de esa cosecha.
+* **Entonces** state.tipo es "venta" y state.precio es "150000.0" y state.almacenado es false.
+
+**FC-6: Guardado edicion de cosecha no almacenada actualiza ambas tablas**
+* **Dado** un ViewModel en modo edicion con cosechaId y state valido (no almacenada).
+* **Cuando** se llama a guardar().
+* **Entonces** se invoca EditarCosechaConVentaUseCase con esAlmacenada=false, tipo y precioTotal correctos.
+
+## ObtenerResumenRendimientoUseCase - Fix calculo Dashboard
+
+**DR-1: Ingresos brutos = suma de precios totales de ventas (no cantidad x precio)**
+* **Dado** una venta de 1000 Tn con precio total = 150000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos == 150000.0 (NO 150.000.000).
+
+**DR-2: Solo las ventas (tipo="venta") suman a ingresos brutos**
+* **Dado** una CosechaNoAlmacenada con tipo="reserva" y precio=50000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos == 0 (no incluye reservas).
+
+## Fixes adicionales Verificacion Manual 2 (fix/cosechas-dashboard-vinculacion)
+
+**FC-7: Formateo de cantidades y monedas estandarizado (es_AR)**
+* **Dado** la pantalla de Insumos, Cosechas o Dashboard.
+* **Cuando** se muestran valores como 1234.56.
+* **Entonces** se muestran con el formato "1.234,56".
+
+**DC-1: El menú de Detalle de Campaña muestra todas las tareas**
+* **Dado** una campaña con 1 tarea pendiente y 1 completada.
+* **Cuando** se visualiza el CardModuloTareas.
+* **Entonces** dice "1 pendientes" y "1 completadas" (antes decía 0 completadas).
+
+**DC-2: El menú de Detalle de Campaña muestra todas las cosechas**
+* **Dado** una campaña con 1 cosecha almacenada de 5 Tn y 1 venta de 2 Tn.
+* **Cuando** se visualiza el CardModuloCosechas.
+* **Entonces** el total cosechado muestra 7 Tn (antes solo mostraba las almacenadas) y usa sufijo "Tn" en lugar de "Kg".
+
+**DR-3: El cálculo de ingresos detecta precio mayor a 0 en lugar de la palabra "venta"**
+* **Dado** una cosecha no almacenada cuyo tipo es "Reserva Especial" y precio = 50000.
+* **Cuando** se calcula el resumen mensual.
+* **Entonces** ingresosBrutos incluye esos 50000.
+# Plan EstratÃƒÂƒÃ‚Â©gico y Casos de Prueba (Living Documentation)
+
+Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actÃƒÂƒÃ‚Âºa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el cÃƒÂƒÃ‚Â³digo o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentaciÃƒÂƒÃ‚Â³n no se desfasen.
+
+## 1. Stack TecnolÃƒÂƒÃ‚Â³gico de Testing
+*   **Unit Testing (Casos de Uso, ViewModels, Mappers):** `JUnit 4`, `MockK` (Mocks nativos Kotlin) y `Turbine` (Pruebas de flujos/Flows). 
+    *   *Importante:* Para validar excepciones dentro de corrutinas (`runTest`), no se debe usar `assertThrows` de JUnit (ya que pierde el contexto suspendido), sino bloques nativos `try-catch` o `runCatching`.
+*   **Pruebas de IntegraciÃƒÂƒÃ‚Â³n/Base de Datos (DAOs):** `AndroidX Test`, `Room Testing` (con `inMemoryDatabaseBuilder`) ejecutado en Emulador (Pruebas Instrumentadas).
+*   **Pruebas de Interfaz de Usuario (UI):** `Compose Test Rule` nativo.
+
+---
+
+## 2. AnÃƒÂƒÃ‚Â¡lisis de Discrepancias (Documento 2025 vs Realidad 2026)
+
+Al contrastar la propuesta del aÃƒÂƒÃ‚Â±o 2025 con la arquitectura real implementada en la App, detectamos e implementamos mejoras significativas que impactan la forma en que escribiremos los tests:
+
+1.  **Redundancia de EdiciÃƒÂƒÃ‚Â³n (CampaÃƒÂƒÃ‚Â±as - CU2 y CU4):**
+    *   *En 2025:* Se separaba "Entrar al menÃƒÂƒÃ‚Âº" (CU2) de "Editar los campos" (CU4).
+    *   *Realidad:* La arquitectura moderna expone un solo `EditarCampaniaUseCase`. AdemÃƒÂƒÃ‚Â¡s, se agregÃƒÂƒÃ‚Â³ el campo **`estaActiva`** a la entidad `Campania` para controlar estados (por ejemplo, si estÃƒÂƒÃ‚Â¡ terminada o en curso). Testearemos directamente la actualizaciÃƒÂƒÃ‚Â³n de este estado en BD.
+2.  **Arquitectura de Notificaciones (Tareas - CU5):**
+    *   *En 2025:* DependÃƒÂƒÃ‚Â­a de un "Actor Externo".
+    *   *Realidad:* Reemplazado internamente por `WorkManagerTaskReminderScheduler`. Los tests de tareas deberÃƒÂƒÃ‚Â¡n validar (vÃƒÂƒÃ‚Â­a `MockK`) que el scheduler se mande a llamar o se cancele (ej. al completar o borrar una tarea).
+3.  **UnificaciÃƒÂƒÃ‚Â³n de MÃƒÂƒÃ‚Â³dulo de Cosechas (CU6 y CU7):**
+    *   *En 2025:* "Cosecha" (CU6) y "Datos no almacenados" (CU7) corrÃƒÂƒÃ‚Â­an por caminos distintos.
+    *   *Realidad:* Bifurcamos la lÃƒÂƒÃ‚Â³gica limpiamente en `RegistrarCosechaUseCase` (para silos) y `RegistrarCosechaConVentaUseCase` (Venta o Reserva como alimento). Los tests cubrirÃƒÂƒÃ‚Â¡n ambas variantes de inserciÃƒÂƒÃ‚Â³n.
+4.  **Refactor Total del MÃƒÂƒÃ‚Â³dulo de Insumos (CU9):**
+    *   *En 2025:* Los insumos se creaban directamente vinculados a una campaÃƒÂƒÃ‚Â±a.
+    *   *Realidad:* **Un cambio vital.** Ahora existe un CatÃƒÂƒÃ‚Â¡logo Global (`CrearInsumoCatalogoUseCase`) y posteriormente una vinculaciÃƒÂƒÃ‚Â³n a la campaÃƒÂƒÃ‚Â±a (`AsignarInsumoACampaniaUseCase`). AdemÃƒÂƒÃ‚Â¡s, el catÃƒÂƒÃ‚Â¡logo tiene la columna **`activo`**. Si el usuario elimina un insumo del catÃƒÂƒÃ‚Â¡logo (`EliminarInsumoCatalogoUseCase`), el test deberÃƒÂƒÃ‚Â¡ corroborar que **NO se hace un `DELETE` en la DB**, sino un `UPDATE activo = false` (Soft-Delete) para no corromper los histÃƒÂƒÃ‚Â³ricos de campaÃƒÂƒÃ‚Â±as pasadas.
+5.  **MÃƒÂƒÃ‚Â³dulos Nuevos (No previstos en 2025):**
+    *   *AutenticaciÃƒÂƒÃ‚Â³n:* `LoginUseCase` (SHA-256) y `RegistroUseCase`.
+    *   *Backups:* `CrearBackupUseCase` y `RestaurarBackupUseCase` usando SAF de Android.
+
+---
+
+## 3. Pruebas Fuera de los Casos de Uso (Out of Scope Tests)
+
+No toda la app es Casos de Uso. Existen componentes de bajo nivel y de infraestructura que testearemos independientemente:
+*   **DAOs (Data Access Objects):** 
+    Pruebas instrumentadas sobre `UsuarioDao`, `CampaniaDao`, `CampaniaInsumoDao` (validando foreign keys, borrados en cascada fÃƒÂƒÃ‚Â­sicos, y los queries filtrados por `activo = 1`).
+*   **Mappers (Data <-> Domain):** 
+    Pruebas unitarias para validar que al pasar de Entity a Domain Model no se pierda informaciÃƒÂƒÃ‚Â³n y viceversa.
+*   **ViewModels (Presentation):** 
+    Validar la emisiÃƒÂƒÃ‚Â³n correcta de los estados (`Loading`, `Success`, `Error`) hacia Jetpack Compose usando `Turbine` (ej: `LoginViewModelTest` verifica la transiciÃƒÂƒÃ‚Â³n a `isLoading = true` y luego `loginExitoso = true` o la asignaciÃƒÂƒÃ‚Â³n de mensajes de error).
+
+---
+
+## 4. Escenarios de Pruebas (Behavior-Driven Development - BDD)
+
+A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-Then` por mÃƒÂƒÃ‚Â³dulo, respetando el orden lÃƒÂƒÃ‚Â³gico de los Casos de Uso.
+
+### MÃƒÂƒÃ‚Â³dulo de CampaÃƒÂƒÃ‚Â±as (CU1 - CU4)
+
+**Test 1: Crear CampaÃƒÂƒÃ‚Â±a Exitosa**
+*   **Given:** Un nombre vÃƒÂƒÃ‚Â¡lido "Trigo de Invierno", cultivo "Trigo" y una fecha correcta.
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe insertar el registro en el repositorio y emitir el estado `Resource.Success`.
+
+**Test 2: Crear CampaÃƒÂƒÃ‚Â±a con Errores**
+*   **Given:** Un nombre vacÃƒÂƒÃ‚Â­o "".
+*   **When:** Invoco `CrearCampaniaUseCase`.
+*   **Then:** El sistema debe emitir `Resource.Error` con mensaje "El nombre no puede estar vacÃƒÂƒÃ‚Â­o" y NO llamar al repositorio.
+
+**Test UC-V1: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Nombre vacÃƒÂƒÃ‚Â­o**
+*   **Given:** nombre = "", cultivo = "Soja", fechaInicio = <fecha futura>, isEditMode = false
+*   **When:** invoke(nombre, cultivo, fechaInicio, isEditMode)
+*   **Then:** esValido = false, errorNombre = "El nombre es obligatorio"
+
+**Test UC-V2: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Fecha pasada en creaciÃƒÂƒÃ‚Â³n**
+*   **Given:** nombre = "CampaÃƒÂƒÃ‚Â±a", cultivo = "MaÃƒÂƒÃ‚Â­z", fechaInicio = <ayer en millis>, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = false, errorFecha = "La fecha no puede ser anterior a hoy"
+
+**Test UC-V3: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Fecha pasada permitida en ediciÃƒÂƒÃ‚Â³n**
+*   **Given:** nombre = "CampaÃƒÂƒÃ‚Â±a", cultivo = "MaÃƒÂƒÃ‚Â­z", fechaInicio = <ayer en millis>, isEditMode = true
+*   **When:** invoke(...)
+*   **Then:** esValido = true, errorFecha = null
+
+**Test UC-V4: ValidarDatosCampaniaUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Todos los campos vÃƒÂƒÃ‚Â¡lidos**
+*   **Given:** Todos los campos correctos, isEditMode = false
+*   **When:** invoke(...)
+*   **Then:** esValido = true, todos los errores = null
+
+### MÃƒÂƒÃ‚Â³dulo de Insumos (CU9 - CU9.4)
+
+**Test 3: EliminaciÃƒÂƒÃ‚Â³n LÃƒÂƒÃ‚Â³gica (Soft-Delete) de Insumo del CatÃƒÂƒÃ‚Â¡logo**
+*   **Given:** Que el insumo "Glifosato" existe en el catÃƒÂƒÃ‚Â¡logo con `activo = true` y ya fue utilizado en 2 campaÃƒÂƒÃ‚Â±as.
+*   **When:** Invoco `EliminarInsumoCatalogoUseCase` pasando ese insumo.
+*   **Then:** El repositorio debe realizar un `UPDATE` (cambiando `activo` a `false`) y NO un `DELETE` fÃƒÂƒÃ‚Â­sico. Las llamadas a `ObtenerCatalogoInsumosUseCase` ya no deben retornarlo.
+
+**Test 4: AsignaciÃƒÂƒÃ‚Â³n de Insumo a CampaÃƒÂƒÃ‚Â±a**
+*   **Given:** El "Glifosato" (activo en el catÃƒÂƒÃ‚Â¡logo) y la campaÃƒÂƒÃ‚Â±a "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` pasando `cantidad = 5` y `precio = 100`.
+*   **Then:** Se crea un registro en `CampaniaInsumoEntity` relacionando los IDs y estableciendo el coste.
+
+**Test 4.1: Asignación Múltiple del Mismo Insumo a la Misma Campaña [#455]**
+*   **Given:** El "Glifosato" ya asignado previamente a la campaña "Trigo de Invierno".
+*   **When:** Invoco `AsignarInsumoACampaniaUseCase` con el mismo Insumo y Campaña, pero pasando `cantidad = 2` y `precio = 120`.
+*   **Then:** Se inserta un *nuevo* registro independiente en `CampaniaInsumoEntity` (sin sobrescribir ni dar error), y el sistema ahora le asigna una fecha automática.
+
+**Test 4.2: Actualización Individual de Insumo Asignado Múltiples Veces [#455]**
+*   **Given:** Dos registros independientes del mismo insumo "Glifosato" en la campaña.
+*   **When:** Invoco la edición sobre el registro individual (e.g. vía ID específico).
+*   **Then:** Solo se modifican la cantidad y el precio de ese registro individual, manteniendo los demás registros intactos.
+
+
+**Test UC-V5: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” CategorÃƒÂƒÃ‚Â­a vacÃƒÂƒÃ‚Â­a**
+*   **Given:** nombre = "Herbicida", categoria = ""
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = false, errorCategoria = "La categorÃƒÂƒÃ‚Â­a es obligatoria"
+
+**Test UC-V6: ValidarInsumoUseCase ÃƒÂ¢Ã‚Â€Ã‚Â” Ambos campos vÃƒÂƒÃ‚Â¡lidos**
+*   **Given:** nombre = "Herbicida", categoria = "QuÃƒÂƒÃ‚Â­mico"
+*   **When:** invoke(nombre, categoria)
+*   **Then:** esValido = true, errorNombre = null, errorCategoria = null
+
+### MÃƒÂƒÃ‚Â³dulo de Tareas (CU5 - CU5.4)
+
+#### TareaViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” sincronizarCampania() [#292]
+
+**Test VM-T1: sincronizarCampania actualiza el id cuando difiere del actual**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` en el `SavedStateHandle` (estado inicial `null`).
+*   **When:** Se llama a `sincronizarCampania(5)`.
+*   **Then:** El StateFlow `campaniaIdSeleccionada` debe emitir el valor `5`.
+
+**Test VM-T2: sincronizarCampania no emite si el id es igual al actual**
+*   **Given:** El `TareaViewModel` ya tiene `campaniaIdSeleccionada = 5`.
+*   **When:** Se llama a `sincronizarCampania(5)` con el mismo valor.
+*   **Then:** El StateFlow **no** debe emitir un nuevo evento (idempotencia garantizada).
+
+**Test VM-T3: tareas emite lista vacÃƒÂƒÃ‚Â­a si no hay campaniaId vÃƒÂƒÃ‚Â¡lido**
+*   **Given:** El `TareaViewModel` inicia sin `campaniaId` vÃƒÂƒÃ‚Â¡lido.
+*   **When:** Se observa el StateFlow `tareas`.
+*   **Then:** Debe emitir inmediatamente una lista vacÃƒÂƒÃ‚Â­a, sin llamar al repositorio.
+
+**Test VM-T4: isCampaniaValid emite false cuando campaniaId es nulo**
+*   **Given:** `campaniaIdSeleccionada` es `null`.
+*   **When:** Se observa `isCampaniaValid`.
+*   **Then:** Debe emitir `false`.
+
+**Test VM-T5: isCampaniaValid emite true tras sincronizarCampania con id vÃƒÂƒÃ‚Â¡lido**
+*   **Given:** El ViewModel inicia con `campaniaId = null`.
+*   **When:** Se llama a `sincronizarCampania(3)`.
+*   **Then:** `isCampaniaValid` debe emitir `true`.
+
+
+**Test 5: Agendar tarea con recordatorio activado**
+*   **Given:** Una nueva tarea "Revisar fertilizante" con el switch `notificar = true`.
+*   **When:** Invoco `CrearTareaUseCase`.
+*   **Then:** El sistema guarda la tarea en BD y, posteriormente, invoca `taskReminderScheduler.schedule(tarea)`.
+
+**Test 6: Completar tarea programada (CancelaciÃƒÂƒÃ‚Â³n de Alerta)**
+*   **Given:** La tarea anterior, que actualmente tiene notificaciones encoladas.
+*   **When:** Invoco `ConfirmarTareaUseCase` seteando la tarea como `completada = true`.
+*   **Then:** El estado de la tarea cambia en BD, y obligatoriamente se invoca `taskReminderScheduler.cancel(tarea.id)` para evitar alertas fantasma.
+
+### MÃƒÂƒÃ‚Â³dulo de Cosechas (CU6 - CU7)
+
+**Test 7: Registrar Cosecha No Almacenada (Venta/Reserva)**
+*   **Given:** Una cosecha de "Soja" que no va al silo, sino que se vende (`venta = true`) a $100.
+*   **When:** Invoco `RegistrarCosechaConVentaUseCase`.
+*   **Then:** El sistema inserta el registro base en la tabla Cosechas, toma el ID generado, e inserta un segundo registro en `CosechaNoAlmacenadaEntity` vinculando la venta y el precio.
+
+**Test 8: Listar Cosechas de una CampaÃƒÂƒÃ‚Â±a**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a con cosechas mixtas (en silo y vendidas).
+*   **When:** Invoco `ObtenerCosechasPorCampaniaUseCase` y `ObtenerCosechasNoAlmacenadasUseCase`.
+*   **Then:** El repositorio debe devolver dos flujos distintos. El ViewModel debe ser capaz de fusionarlos para mostrar quÃƒÂƒÃ‚Â© fracciÃƒÂƒÃ‚Â³n de la cosecha total fue vendida.
+
+**Test 8.1: Formulario de Cosecha - Sin CampaÃƒÂƒÃ‚Â±a Seleccionada (Issue 7)**
+*   **Given:** Un `FormularioCosechaViewModel` creado sin `campaniaId` en el `SavedStateHandle` (acceso vÃƒÂƒÃ‚Â­a navegaciÃƒÂƒÃ‚Â³n global).
+*   **When:** El usuario ingresa una cantidad vÃƒÂƒÃ‚Â¡lida y presiona "Guardar Registro".
+*   **Then:** Se setea `errorCampania = "Debe seleccionar una campaÃƒÂƒÃ‚Â±a"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.2: Formulario de Cosecha - Cantidad Obligatoria (Issue 12)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a seleccionada y el campo `cantidad` vacÃƒÂƒÃ‚Â­o.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorCantidad = "La cantidad es obligatoria"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.3: Formulario de Cosecha - Precio InvÃƒÂƒÃ‚Â¡lido**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a y una `cantidad` vÃƒÂƒÃ‚Â¡lidas, con `almacenado = false`, `tipo = "Venta"` y un precio no numÃƒÂƒÃ‚Â©rico (ej. "abc").
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se setea `errorPrecio = "Precio invÃƒÂƒÃ‚Â¡lido"` y no se llama a ningÃƒÂƒÃ‚Âºn use case de registro.
+
+**Test 8.4: Formulario de Cosecha - Registro Exitoso (Almacenado)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a, `cantidad = 100`, y `almacen = "Silo 1"` vÃƒÂƒÃ‚Â¡lidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaUseCase` con los parÃƒÂƒÃ‚Â¡metros correctos y se emite `guardadoExitoso = true`.
+
+**Test 8.5: Formulario de Cosecha - Registro Exitoso (Venta)**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a, `cantidad = 100`, `almacenado = false`, `tipo = "Venta"` y `precio = 500` vÃƒÂƒÃ‚Â¡lidos.
+*   **When:** El usuario presiona "Guardar Registro".
+*   **Then:** Se llama a `RegistrarCosechaConVentaUseCase` con los parÃƒÂƒÃ‚Â¡metros correctos y se emite `guardadoExitoso = true`.
+
+### MÃƒÂƒÃ‚Â³dulo de Observaciones (CU8)
+
+**Test 9: Guardar ObservaciÃƒÂƒÃ‚Â³n con Imagen Adjunta**
+*   **Given:** Una nota de texto y una URI local que apunta a una foto en el dispositivo.
+*   **When:** Invoco `GuardarObservacionUseCase`.
+*   **Then:** El sistema guarda correctamente el string de la URI en la entidad para que luego Coil pueda renderizarla en la UI.
+
+### MÃƒÂƒÃ‚Â³dulo de AutenticaciÃƒÂƒÃ‚Â³n (Extra 1)
+
+**Test 10: Login Exitoso con Hash SHA-256**
+*   **Given:** Un usuario "DonElio" registrado en la base de datos con contraseÃƒÂƒÃ‚Â±a hasheada.
+*   **When:** El usuario ingresa la contraseÃƒÂƒÃ‚Â±a en texto plano y se invoca `LoginUseCase`.
+*   **Then:** El Use Case encripta el texto plano ingresado, lo compara con la BD, coincide, y emite `Resource.Success`.
+
+**Test 11: Login Fallido (Usuario no existe)**
+*   **Given:** Un intento de acceso con el nombre "Intruso".
+*   **When:** Invoco `LoginUseCase`.
+*   **Then:** Retorna `Resource.Error("Usuario no encontrado")`.
+
+### MÃƒÂƒÃ‚Â³dulo de Backups (Extra 2)
+
+**Test 12: GeneraciÃƒÂƒÃ‚Â³n de Backup Exitoso**
+*   **Given:** Una ruta URI proporcionada por el SAF (Storage Access Framework) donde el usuario tiene permisos de escritura.
+*   **When:** Invoco `CrearBackupUseCase`.
+*   **Then:** El archivo `.db` se copia exitosamente al destino y emite `Resource.Success`.
+
+---
+
+## 5. Casos de Borde (Edge Cases) a Testear
+*   **CampaÃƒÂƒÃ‚Â±as:** Intentar crear una campaÃƒÂƒÃ‚Â±a con nombre vacÃƒÂƒÃ‚Â­o (DeberÃƒÂƒÃ‚Â­a fallar con `Resource.Error`).
+*   **Insumos:** Intentar vincular una cantidad nula o negativa de insumos a una campaÃƒÂƒÃ‚Â±a (Lanza `IllegalArgumentException`).
+*   **Tareas:** Programar una tarea en el pasado con el switch de notificar en `true`. El `WorkManagerTaskReminderScheduler` no deberÃƒÂƒÃ‚Â­a encolar notificaciones retroactivas (debe validar que el delay calculado sea > 0).
+*   **Observaciones:** Intentar guardar una observaciÃƒÂƒÃ‚Â³n con el campo de texto vacÃƒÂƒÃ‚Â­o (Lanza `IllegalArgumentException`).
+*   **Cosechas (Formulario):** Guardar sin campaÃƒÂƒÃ‚Â±a seleccionada (Issue 7) ÃƒÂ¢Ã‚Â€Ã‚Â” Debe emitir `errorCampania` y NO crashear por FK constraint; guardar con `cantidad` o `unidad` vacÃƒÂƒÃ‚Â­as (Issue 12) ÃƒÂ¢Ã‚Â€Ã‚Â” Debe emitir el error visual correspondiente y deshabilitar el botÃƒÂƒÃ‚Â³n "Guardar".
+*   **AutenticaciÃƒÂƒÃ‚Â³n:** Iniciar sesiÃƒÂƒÃ‚Â³n con un usuario inexistente o con credenciales vacÃƒÂƒÃ‚Â­as (El ViewModel debe capturar la excepciÃƒÂƒÃ‚Â³n o el `null` y emitir el estado de `error` correspondiente).
+
+---
+
+## 6. Cobertura y EjecuciÃƒÂƒÃ‚Â³n de Tests
+
+Para garantizar que nuestros tests efectivamente cubren la lÃƒÂƒÃ‚Â³gica de negocio, implementaremos las siguientes estrategias:
+
+### A. EjecuciÃƒÂƒÃ‚Â³n de Pruebas (Comandos)
+1.  **Pruebas Unitarias (JVM Locales):**
+    *   Comando: `./gradlew testDebugUnitTest`
+    *   *PropÃƒÂƒÃ‚Â³sito:* Ejecutar todas las pruebas de Use Cases y ViewModels de manera ultra rÃƒÂƒÃ‚Â¡pida sin necesidad de un emulador.
+2.  **Pruebas Instrumentadas (Base de Datos):**
+    *   Comando: `./gradlew connectedDebugAndroidTest`
+    *   *PropÃƒÂƒÃ‚Â³sito:* Ejecutar las pruebas sobre los DAOs. Requiere que un dispositivo fÃƒÂƒÃ‚Â­sico o emulador estÃƒÂƒÃ‚Â© encendido y conectado.
+
+### B. MediciÃƒÂƒÃ‚Â³n de Cobertura (Code Coverage)
+Utilizaremos **KoverX** (o JaCoCo configurado para Kotlin) para generar reportes HTML visuales sobre quÃƒÂƒÃ‚Â© porcentaje de nuestro cÃƒÂƒÃ‚Â³digo estÃƒÂƒÃ‚Â¡ siendo probado.
+*   **Comando de Cobertura (Android):** `./gradlew koverHtmlReportDebug` (Es fundamental usar la variante `Debug` para que Kover analice correctamente las clases instrumentadas de Android).
+*   **Meta de Cobertura:**
+    *   `domain` (Reglas de negocio y Use Cases): **MÃƒÂƒÃ‚Â­nimo 80%**. Esta capa es crÃƒÂƒÃ‚Â­tica.
+    *   `data` (DAOs y Repositorios): **MÃƒÂƒÃ‚Â­nimo 70%**.
+    *   `presentation` (UI): No requerirÃƒÂƒÃ‚Â¡ cobertura estricta en la fase inicial para priorizar velocidad.
+
+### C. AutomatizaciÃƒÂƒÃ‚Â³n Continua (CI/CD) con GitHub Actions
+Para asegurar que no se introduzcan regresiones al proyecto, hemos configurado un flujo de trabajo (Workflow) en GitHub Actions (`.github/workflows/pr_tests.yml`). 
+
+**ÃƒÂ‚Ã‚Â¿QuÃƒÂƒÃ‚Â© hace automÃƒÂƒÃ‚Â¡ticamente?**
+Cada vez que un desarrollador hace un *Push* o crea un *Pull Request* hacia las ramas `main` o `develop`:
+1. El servidor de GitHub arranca un entorno virtual Linux con Java 17.
+2. Ejecuta `./gradlew testDebugUnitTest` para validar todas nuestras pruebas de Use Cases y ViewModels.
+3. Genera y sube el reporte de cobertura HTML (`koverHtmlReportDebug`) como un artefacto descargable.
+
+**Nota sobre Tests Instrumentados:**
+Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃƒÂƒÃ‚Â¡n incluidos de momento en el flujo bÃƒÂƒÃ‚Â¡sico para evitar tiempos muertos en la validaciÃƒÂƒÃ‚Â³n rÃƒÂƒÃ‚Â¡pida del PR, pero deben ejecutarse localmente antes de solicitar el PR.
+
+---
+*(Este documento se mantendrÃƒÂƒÃ‚Â¡ sincronizado con el cÃƒÂƒÃ‚Â³digo. Cualquier bug detectado en producciÃƒÂƒÃ‚Â³n en el futuro se traducirÃƒÂƒÃ‚Â¡ en un nuevo escenario "Given-When-Then" aquÃƒÂƒÃ‚Â­ antes de escribir el parche).*
+
+---
+
+## MÃƒÂƒÃ‚Â³dulo de Reportes
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” StateFlows contextuales [#299]
+
+**Test VM-R1: campanias emite lista vacÃƒÂƒÃ‚Â­a cuando la BD estÃƒÂƒÃ‚Â¡ vacÃƒÂƒÃ‚Â­a**
+*   **Given:** El `ReportesViewModel` inicia con BD sin campaÃƒÂƒÃ‚Â±as.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir una lista vacÃƒÂƒÃ‚Â­a.
+
+**Test VM-R2: campanias emite la lista real cuando la BD tiene registros**
+*   **Given:** La BD tiene 2 campaÃƒÂƒÃ‚Â±as registradas.
+*   **When:** Se observa el StateFlow `campanias`.
+*   **Then:** Debe emitir exactamente esas 2 campaÃƒÂƒÃ‚Â±as.
+
+**Test VM-R3: seleccionarCampaniaIndividual actualiza campaniaIndividual**
+*   **Given:** El ViewModel estÃƒÂƒÃ‚Â¡ inicializado sin selecciÃƒÂƒÃ‚Â³n (campaniaIndividual = null).
+*   **When:** Se llama a `seleccionarCampaniaIndividual(campania)`.
+*   **Then:** `campaniaIndividual` debe emitir la campaÃƒÂƒÃ‚Â±a elegida.
+
+**Test VM-R4: insumosIndividual emite lista vacÃƒÂƒÃ‚Â­a cuando no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada.
+*   **When:** Se observa `insumosIndividual`.
+*   **Then:** Debe emitir lista vacÃƒÂƒÃ‚Â­a sin consultar la BD.
+
+**Test VM-R5: pieChartData emite null cuando no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada (insumosIndividual vacÃƒÂƒÃ‚Â­o).
+*   **When:** Se observa `pieChartData`.
+*   **Then:** Debe emitir `null` (el grÃƒÂƒÃ‚Â¡fico no debe mostrarse).
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” desglose cosechas por destino [#301]
+
+**Test VM-R6: desgloseCosechasData agrupa por almacÃƒÂƒÃ‚Â©n y venta correctamente**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a con cosechas mixtas (algunas con `almacen` no vacÃƒÂƒÃ‚Â­o, otras con `almacen` en blanco).
+*   **When:** Se selecciona esa campaÃƒÂƒÃ‚Â±a con `seleccionarCampaniaIndividual()`.
+*   **Then:** `desgloseCosechasData` debe emitir un `PieChartData` con 2 slices:
+    - Slice "Almacenada": suma de cantidades con `almacen.isNotBlank()`.
+    - Slice "Vendida": suma de cantidades con `almacen.isBlank()`.
+
+**Test VM-R7: desgloseCosechasData emite null cuando no hay cosechas**
+*   **Given:** Una campaÃƒÂƒÃ‚Â±a seleccionada pero sin cosechas en la BD.
+*   **When:** Se observa `desgloseCosechasData`.
+*   **Then:** Debe emitir `null` (sin grÃƒÂƒÃ‚Â¡fico).
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” guardia de exportaciÃƒÂƒÃ‚Â³n [#300]
+
+**Test VM-R8: exportarReporteCsv emite error si no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada (`campaniaIndividual = null`).
+*   **When:** Se llama a `exportarReporteCsv(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaÃƒÂƒÃ‚Â±a para exportar"` y no debe invocarse `ReportExporter`.
+
+**Test VM-R9: exportarReportePdf emite error si no hay campaÃƒÂƒÃ‚Â±a seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada.
+*   **When:** Se llama a `exportarReportePdf(uri, context)`.
+*   **Then:** `exportStatus` debe emitir `"Seleccione una campaÃƒÂƒÃ‚Â±a para exportar"`.
+
+#### ReportesViewModel ÃƒÂ¢Ã‚Â€Ã‚Â” comparaciÃƒÂƒÃ‚Â³n real entre campaÃƒÂƒÃ‚Â±as [#302]
+
+**Test VM-R10: cosechasA emite la lista de cosechas de la campaÃƒÂƒÃ‚Â±a A seleccionada**
+*   **Given:** La BD tiene cosechas asociadas a la campaÃƒÂƒÃ‚Â±a con `id = 1`.
+*   **When:** Se llama a `seleccionarCampaniaA(campaniaSoja)` donde `campaniaSoja.id = 1`.
+*   **Then:** `cosechasA` debe emitir la lista real de cosechas de esa campaÃƒÂƒÃ‚Â±a.
+
+**Test VM-R11: cosechasA emite lista vacÃƒÂƒÃ‚Â­a cuando no hay campaÃƒÂƒÃ‚Â±a A seleccionada**
+*   **Given:** No hay campaÃƒÂƒÃ‚Â±a seleccionada en el comparador (campaniaA = null).
+*   **When:** Se observa `cosechasA`.
+*   **Then:** Debe emitir una lista vacÃƒÂƒÃ‚Â­a.
+
+
+### ReportesViewModel
+- **VM-R12:** Given misma campaña en A y B / When comparar / Then se emite estado de advertencia (UI lo maneja con condicional de igualdad de IDs).
+
+## ValidarDatosCosechaUseCase
+- **Dado** cantidad = null -> **Cuando** invoke() -> **Entonces** retorna Error("La cantidad debe ser mayor a 0.")
+- **Dado** fecha = null -> **Cuando** invoke() -> **Entonces** retorna Error("La fecha es obligatoria.")
+- **Dado** isAlmacenada=true y almacen en blanco -> **Cuando** invoke() -> **Entonces** retorna Error("El nombre del almacen o silo es obligatorio.")
+- **Dado** todos los campos son válidos -> **Cuando** invoke() -> **Entonces** retorna Success
+
+## FormularioInsumoViewModel Ã‚Â— Validación al guardar
+- **Dado** nombre vacío y se llama guardar() -> **Cuando** validarInsumoUseCase devuelve error -> **Entonces** state.errorNombre != null y NO se llama al UseCase de inserción
+- **Dado** nombre válido, categoria válida -> **Cuando** guardar() -> **Entonces** se invoca el UseCase de inserción
+- **Dado** el usuario escribe en el campo nombre -> **Cuando** onNombreChange() -> **Entonces** errorNombre se limpia (sin validar aún)
+
+
+## FormularioCosechaViewModel - Edición y validación por campo (#335 / #336)
+
+**Test VM-C6: Init con cosechaId válido carga la cosecha en el estado**
+*   **Given:** SavedStateHandle contiene cosechaId = 7 y obtenerCosechaPorIdUseCase(7) retorna una cosecha con cantidad 55.0 y almacén "Silo A".
+*   **When:** Se inicializa el ViewModel.
+*   **Then:** state.cosechaId == 7, state.cantidad == "55.0", state.almacen == "Silo A", state.almacenado == true.
+
+**Test VM-C7: Error de cantidad va a errorCantidad, no a errorFecha**
+*   **Given:** Campaña seleccionada. ValidarDatosCosechaUseCase retorna Error("La cantidad debe ser mayor a 0.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorCantidad != null, errorFecha == null.
+
+**Test VM-C8: Error de fecha va a errorFecha, no a errorCantidad**
+*   **Given:** Campaña y cantidad válidas. ValidarDatosCosechaUseCase retorna Error("La fecha es obligatoria.").
+*   **When:** Se llama a guardar().
+*   **Then:** errorFecha != null, errorCantidad == null.
+
+**Test VM-C9: onFechaChange limpia errorFecha**
+*   **Given:** Existe errorFecha en el state (provocado por un guardar fallido).
+*   **When:** Se llama a onFechaChange(timestamp).
+*   **Then:** errorFecha == null.
+## FormularioInsumoViewModel - Habilitacion de boton guardar en tiempo real (#403)
+
+**VM-I-1: Estado inicial en modo Alta tiene isGuardarHabilitado = false**
+* **Dado** el ViewModel se inicializa sin insumoId (modo Alta).
+* **Cuando** se observa el state.isGuardarHabilitado.
+* **Entonces** debe ser false.
+
+**VM-I-2: Tipear solo nombre no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida") y categoria esta vacia.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-3: Tipear solo categoria no habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onCategoriaChange("Pesticidas") y nombre esta vacio.
+* **Entonces** isGuardarHabilitado debe seguir siendo false.
+
+**VM-I-4: Tipear nombre y categoria validos habilita el boton guardar**
+* **Dado** el formulario esta en modo Alta.
+* **Cuando** se llama a onNombreChange("Herbicida Total") y luego onCategoriaChange("Pesticidas").
+* **Entonces** isGuardarHabilitado = true, errorNombre = null, errorCategoria = null.
+
+**VM-I-5: Borrar nombre deshabilita el boton guardar**
+* **Dado** el formulario tiene nombre y categoria validos (isGuardarHabilitado = true).
+* **Cuando** se llama a onNombreChange("") vaciando el nombre.
+* **Entonces** isGuardarHabilitado vuelve a false.
+
+## NuevaTareaViewModel - Modo Edicion y preservacion de confirmar (#410)
+
+**VM-T-E1: Modo edicion precarga datos de la tarea existente incluyendo confirmar**
+* **Dado** existe una Tarea con id=5, nombre="Tarea Completada", confirmar=true en la BD.
+* **Cuando** el ViewModel inicia con tareaId=5 en el SavedStateHandle.
+* **Entonces** state.nombre = "Tarea Completada", state.confirmar = true, state.hora = "09:00".
+
+**VM-T-E2: Editar tarea completada preserva confirmar=true al guardar**
+* **Dado** una Tarea con confirmar=true esta cargada en modo edicion.
+* **Cuando** se modifica el nombre y se llama a guardar().
+* **Entonces** editarTareaUseCase recibe una Tarea con confirmar=true (no reseteado a false).
+
+
+
+
+## CosechaViewModel - Fix Race Condition (#441)
+
+**VM-C-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** campaniaIdSeleccionada permanece en 5.
+
+**VM-C-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** campaniaIdSeleccionada se actualiza a 7.
+
+**VM-C-S3: sincronizarCampania actualiza el id cuando difiere del actual**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(2).
+* **Entonces** campaniaIdSeleccionada emite 2.
+
+**VM-C-S4: sincronizarCampania no emite si el id es igual al actual (idempotente)**
+* **Dado** el ViewModel tiene campaniaId = 4 en SavedState.
+* **Cuando** se llama a sincronizarCampania(4).
+* **Entonces** NO se emite un nuevo evento (expectNoEvents).
+
+**VM-C-S5: isCampaniaValid emite false cuando campaniaId es nulo**
+* **Dado** el ViewModel inicia sin campaniaId válido.
+* **Cuando** se observa isCampaniaValid.
+* **Entonces** isCampaniaValid = false.
+
+**VM-C-S6: isCampaniaValid emite true tras sincronizarCampania con id válido**
+* **Dado** el ViewModel inicia sin campaniaId.
+* **Cuando** se llama a sincronizarCampania(1).
+* **Entonces** isCampaniaValid = true.
+
+## TareaViewModel - Fix Race Condition (#441)
+
+**VM-T-S1: campaniaId explícito en SavedState no se sobreescribe por el manager**
+* **Dado** el ViewModel se crea con campaniaId = 5 en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 3.
+* **Entonces** filtroCampania permanece en 5.
+
+**VM-T-S2: sin campaniaId en SavedState el manager actúa como fallback**
+* **Dado** el ViewModel se crea sin campaniaId en SavedStateHandle.
+* **Cuando** el UltimaSeleccionManager emite id = 7.
+* **Entonces** filtroCampania se actualiza a 7.
+
+## FormatearMoneda - Fix balance Dashboard (#437)
+
+**FM-1: Formatea valor positivo en millones**
+* **Dado** un valor de 6.133.500.
+* **Cuando** se llama a formatearMoneda(6133500.0).
+* **Entonces** devuelve "`$`6,1M".
+
+**FM-2: Formatea valor positivo en miles**
+* **Dado** un valor de 250.000.
+* **Cuando** se llama a formatearMoneda(250000.0).
+* **Entonces** devuelve "`$`250K".
+
+**FM-3: Formatea balance negativo en millones con signo al frente**
+* **Dado** un balance negativo de -6.133.500 (caso del bug reportado).
+* **Cuando** se llama a formatearMoneda(-6133500.0).
+* **Entonces** devuelve "-`$`6,1M" con el signo al frente (no al final como haría NumberFormat de locale es_AR).
+
+**FM-4: Formatea balance negativo en miles**
+* **Dado** un balance de -250.000.
+* **Cuando** se llama a formatearMoneda(-250000.0).
+* **Entonces** devuelve "-`$`250K".
+
+**FM-5: Formatea cero**
+* **Dado** valor = 0.0.
+* **Cuando** se llama a formatearMoneda(0.0).
+* **Entonces** devuelve "`$` ".
+
+**FM-6: Formatea exactamente 1.000.000**
+* **Dado** valor = 1.000.000.
+* **Cuando** se llama a formatearMoneda(1000000.0).
+* **Entonces** devuelve "`$`1,0M".
+* **Entonces** filtroCampania se actualiza a 7.
+
+
+## Pruebas de Estabilizacion - Iteracion 5 (Issues #434, #438, #440)
+
+### Reportes UI
+- **UI-R1 (Issue #438):** Given una unica campania finalizada / When se visualiza la evolucion historica / Then el unico punto se centra horizontal y verticalmente en el Canvas.
+- **UI-R2 (Issue #434):** Given un nombre de campania muy largo / When se renderiza el eje X del grafico / Then el texto se trunca a 12 caracteres con '...'.
+
+### Insumos UI
+- **UI-I1 (Issue #440):** Given el formulario de Nuevo Insumo / When se tipean caracteres Unicode/Emojis complejos / Then se insertan y guardan correctamente en la BD local.
+
+
+
+## Pruebas de Estabilizacion - DTs #447, #449, #450
+
+### Tareas y Permisos (DTs)
+- **VM-T-E1/E2 (Issue #447/#410):** Given tarea completada en BD / When editamos en NuevaTareaViewModel / Then 'confirmar' se precarga en true y se mantiene true al guardar.
+- **UI-O-1 (Issue #449):** Given permiso concedido / When boton Camara en dialogo de edicion / Then lanza la camara directamente sin dialogos extra.
+- **UI-O-2 (Issue #449):** Given permiso denegado / When boton Camara en dialogo / Then se invoca el control de permisos de la UI (recordarPermisoCamara).
+

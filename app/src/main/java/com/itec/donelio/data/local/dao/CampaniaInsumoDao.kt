@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CampaniaInsumoDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun asignarInsumo(campaniaInsumo: CampaniaInsumoEntity): Long
+
+    @androidx.room.Update
+    suspend fun actualizarInsumo(campaniaInsumo: CampaniaInsumoEntity)
 
     @Query("DELETE FROM campania_insumo WHERE id_campania_insumo = :id")
     suspend fun desvincularInsumo(id: Int)

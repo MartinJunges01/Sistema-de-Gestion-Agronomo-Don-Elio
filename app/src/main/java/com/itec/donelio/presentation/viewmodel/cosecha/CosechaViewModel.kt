@@ -19,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CosechaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     private val obtenerCosechasNoAlmacenadasUseCase: ObtenerCosechasNoAlmacenadasUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
@@ -27,6 +28,24 @@ class CosechaViewModel @Inject constructor(
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+
+    init {
+        val idExplicito = _campaniaIdSeleccionada.value
+        if (idExplicito != null) {
+            // Hay un campaniaId explícito en SavedState: notificar al manager pero
+            // NO suscribir al flow para evitar que un ID obsoleto lo sobreescriba.
+            ultimaSeleccionManager.seleccionarCampania(idExplicito)
+        } else {
+            // Sin ID explícito: usar el manager como fuente de verdad (fallback BottomNav).
+            viewModelScope.launch {
+                ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                    if (id != null && _campaniaIdSeleccionada.value != id) {
+                        _campaniaIdSeleccionada.value = id
+                    }
+                }
+            }
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -47,7 +66,25 @@ class CosechaViewModel @Inject constructor(
     }.catch { _errorMessage.value = "Error al cargar cosechas" }
      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun seleccionarCampania(id: Int) { 
+        _campaniaIdSeleccionada.value = id 
+        ultimaSeleccionManager.seleccionarCampania(id)
+    }
+
+    /**
+     * Sincroniza el [campaniaId] externo con el estado interno del ViewModel.
+     * Equivalente a [seleccionarCampania] pero sin notificar al [ultimaSeleccionManager],
+     * ya que se usa desde las tarjetas de [DetalleCampaniaScreen] donde el ID ya es explícito
+     * y no debe alterar la "última selección global" del usuario.
+     *
+     * @param id Identificador de la campaña actualmente visible en pantalla.
+     */
+    fun sincronizarCampania(id: Int) {
+        if (_campaniaIdSeleccionada.value != id) {
+            _campaniaIdSeleccionada.value = id
+        }
+    }
+
     fun clearError() { _errorMessage.value = null }
 
     fun solicitarEliminacion(cosecha: Cosecha) {

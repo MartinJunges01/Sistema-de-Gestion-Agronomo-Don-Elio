@@ -176,14 +176,28 @@ fun TareasScreen(
 
             item {
                 Button(
+ feature/issues-466-467-468
                     onClick = { onGoToNuevaTarea(campaniaId.takeIf { it != -1 }, null) },
+
+                    onClick = { viewModel.onNuevaTareaClick() },
+ main
                     modifier = Modifier.fillMaxWidth().height(56.dp).padding(top = 16.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = AgriVerde),
-                    enabled = isCampaniaValid || filtroCampania != null // Se permite si hay una campaña seleccionada
+                    enabled = true // Siempre activo, el ViewModel decide
                 ) {
                     Icon(Icons.Default.Add, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Programar Nueva Tarea")
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is com.itec.donelio.presentation.viewmodel.tarea.TareaUiEvent.NavigateToNuevaTarea -> {
+                    onGoToNuevaTarea(campaniaId.takeIf { it != -1 }, null)
                 }
             }
         }

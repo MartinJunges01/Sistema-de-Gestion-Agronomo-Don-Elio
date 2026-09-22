@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.foundation.ExperimentalFoundationApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -50,6 +51,7 @@ fun GestionCampaniasScreen(
     val campaniasInactivas by viewModel.campaniasInactivas.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     var campaniaAEliminar by remember { mutableStateOf<Campania?>(null) }
+    var campaniaAReactivar by remember { mutableStateOf<Campania?>(null) }
     var showHistorial by remember { mutableStateOf(false) }
 
     androidx.compose.runtime.LaunchedEffect(Unit) {
@@ -73,6 +75,23 @@ fun GestionCampaniasScreen(
             },
             dismissButton = {
                 TextButton(onClick = { campaniaAEliminar = null }) { Text("Cancelar", color = TextoSecundario) }
+            }
+        )
+    }
+
+    if (campaniaAReactivar != null) {
+        AlertDialog(
+            onDismissRequest = { campaniaAReactivar = null },
+            title = { Text("¿Reactivar campaña?", fontWeight = FontWeight.Bold) },
+            text = { Text("La campaña volverá a aparecer en la lista de activas y estará disponible en todos los selectores.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.reactivarCampania(campaniaAReactivar!!)
+                    campaniaAReactivar = null
+                }) { Text("Reactivar", color = AgriVerde) }
+            },
+            dismissButton = {
+                TextButton(onClick = { campaniaAReactivar = null }) { Text("Cancelar", color = TextoSecundario) }
             }
         )
     }
@@ -136,7 +155,8 @@ fun GestionCampaniasScreen(
                                 CampaniaCard(
                                     campania = campania,
                                     onClick = { onGoToDetail(campania.id) },
-                                    onDelete = { campaniaAEliminar = campania }
+                                    onDelete = { campaniaAEliminar = campania },
+                                    onReactivar = { campaniaAReactivar = campania }
                                 )
                             }
                         }
@@ -148,7 +168,7 @@ fun GestionCampaniasScreen(
 }
 
 @Composable
-private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() -> Unit)?) {
+private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() -> Unit)?, onReactivar: (() -> Unit)? = null) {
     val backgroundColor = if (campania.estaActiva) Color.White else Color.Gray.copy(alpha = 0.1f)
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
@@ -177,9 +197,18 @@ private fun CampaniaCard(campania: Campania, onClick: () -> Unit, onDelete: (() 
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Icon(Icons.Default.ChevronRight, contentDescription = "Ver detalle", tint = TextoSecundario)
-            } else if (onDelete != null) {
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+            } else {
+                // Botón reactivar
+                if (onReactivar != null) {
+                    IconButton(onClick = onReactivar) {
+                        Icon(Icons.Default.Restore, contentDescription = "Reactivar", tint = AgriVerde)
+                    }
+                }
+                // Botón eliminar definitivamente
+                if (onDelete != null) {
+                    IconButton(onClick = onDelete) {
+                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red.copy(alpha = 0.7f))
+                    }
                 }
             }
         }

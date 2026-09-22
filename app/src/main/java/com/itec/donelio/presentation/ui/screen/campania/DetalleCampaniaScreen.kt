@@ -50,10 +50,18 @@ fun DetalleCampaniaScreen(
     onGoToCosechas: (Int) -> Unit,
     onGoToObservaciones: (Int) -> Unit,
     onGoToNuevaTarea: (Int) -> Unit,
+feature/issues-466-467-468
     onGoToNuevoInsumo: (Int) -> Unit,
     onGoToNuevaCosecha: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    onVincularInsumo: (Int) -> Unit,
+    onGoToNuevaCosecha: (Int) -> Unit
+) {
+    val state by viewModel.state.collectAsState()
+    var showArchivarDialog by remember { mutableStateOf(false) }
+main
 
     LaunchedEffect(state.finishSuccess) {
         if (state.finishSuccess) onBack()
@@ -84,12 +92,32 @@ fun DetalleCampaniaScreen(
                     }
                 }
                 if (state.campania?.estaActiva == true) {
-                    IconButton(onClick = { viewModel.finalizarCampania() }) { 
-                        Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White) 
+                    IconButton(onClick = { showArchivarDialog = true }) {
+                        Icon(Icons.Default.Archive, contentDescription = "Finalizar Campaña", tint = Color.White)
                     }
                 }
             }
         )
+
+        // Diálogo de confirmación para archivar campaña
+        if (showArchivarDialog) {
+            AlertDialog(
+                onDismissRequest = { showArchivarDialog = false },
+                title = { Text("¿Finalizar campaña?", fontWeight = FontWeight.Bold) },
+                text = { Text("La campaña pasará al historial y ya no aparecerá en los selectores activos.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.finalizarCampania()
+                        showArchivarDialog = false
+                    }) { Text("Confirmar", color = AgriVerde) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showArchivarDialog = false }) {
+                        Text("Cancelar", color = TextoSecundario)
+                    }
+                }
+            )
+        }
 
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -122,13 +150,25 @@ fun DetalleCampaniaScreen(
                         CardModuloTareas(campaniaId = campania.id, onGoToTareas = { onGoToTareas(campania.id) }, onGoToNueva = { onGoToNuevaTarea(campania.id) })
                     }
                     item {
+ feature/issues-466-467-468
                         CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onGoToNuevoInsumo(campania.id) })
+                        
+                        CardModuloInsumos(campaniaId = campania.id, onGoToInsumos = { onGoToInsumos(campania.id) }, onGoToNuevo = { onVincularInsumo(campania.id) })
+ main
                     }
                     item {
                         CardModuloCosechas(campaniaId = campania.id, onGoToCosechas = { onGoToCosechas(campania.id) }, onGoToNueva = { onGoToNuevaCosecha(campania.id) })
                     }
                     item {
+ feature/issues-466-467-468
                         CardModuloObservaciones(campaniaId = campania.id, onGoToObservaciones = { onGoToObservaciones(campania.id) })
+
+                        CardModuloObservaciones(
+                            campaniaId = campania.id,
+                            onGoToObservaciones = { onGoToObservaciones(campania.id) },
+                            onGoToNuevaObservacion = { onGoToObservaciones(campania.id) }
+                        )
+ main
                     }
                 }
             }
@@ -256,7 +296,11 @@ private fun ModuloCardBase(
 @Composable
 private fun CardModuloTareas(campaniaId: Int, onGoToTareas: () -> Unit, onGoToNueva: () -> Unit) {
     val vm: TareaViewModel = hiltViewModel(key = "card_tareas_$campaniaId")
+ feature/issues-466-467-468
     val tareasUi by vm.tareasUi.collectAsState()
+
+    val tareasUi by vm.todasLasTareas.collectAsState()
+ main
     val tareas = tareasUi.map { it.tarea }
     val pendientes = tareas.count { !it.confirmar }
     val completadas = tareas.count { it.confirmar }
@@ -279,13 +323,21 @@ private fun CardModuloInsumos(campaniaId: Int, onGoToInsumos: () -> Unit, onGoTo
     val vinculados by vm.insumosVinculados.collectAsState()
     val total = vinculados.sumOf { it.cantidad * it.precio }
 
+ feature/issues-466-467-468
     LaunchedEffect(campaniaId) { vm.seleccionarCampania(campaniaId) }
+
+    LaunchedEffect(campaniaId) { vm.sincronizarInsumos(campaniaId) }
+ main
 
     ModuloCardBase(
         title = "Insumos",
         icon = Icons.Default.Inventory,
         summary = "${vinculados.size} insumos",
+ feature/issues-466-467-468
         subSummary = "$ ${"%,.2f".format(total)}",
+
+        subSummary = com.itec.donelio.presentation.util.FormatUtils.formatMoneda(total),
+ main
         onCardClick = onGoToInsumos,
         onQuickAddClick = onGoToNuevo
     )
@@ -294,23 +346,43 @@ private fun CardModuloInsumos(campaniaId: Int, onGoToInsumos: () -> Unit, onGoTo
 @Composable
 private fun CardModuloCosechas(campaniaId: Int, onGoToCosechas: () -> Unit, onGoToNueva: () -> Unit) {
     val vm: CosechaViewModel = hiltViewModel(key = "card_cosechas_$campaniaId")
+ feature/issues-466-467-468
     val almacenadas by vm.almacenadas.collectAsState()
     val totalAlmacenado = almacenadas.sumOf { it.cantidad }
 
     LaunchedEffect(campaniaId) { vm.seleccionarCampania(campaniaId) }
 
+    val cosechas by vm.cosechas.collectAsState()
+    val totalCosechado = cosechas.sumOf { it.cantidad }
+
+    LaunchedEffect(campaniaId) { vm.sincronizarCampania(campaniaId) }
+ main
+
     ModuloCardBase(
         title = "Cosechas",
         icon = Icons.Default.Agriculture,
+ feature/issues-466-467-468
         summary = "${almacenadas.size} registradas",
         subSummary = formatCantidad(totalAlmacenado),
+
+        summary = "${cosechas.size} registradas",
+        subSummary = com.itec.donelio.presentation.util.FormatUtils.formatCantidad(totalCosechado, "Tn"),
+ main
         onCardClick = onGoToCosechas,
         onQuickAddClick = onGoToNueva
     )
 }
 
 @Composable
+ feature/issues-466-467-468
 private fun CardModuloObservaciones(campaniaId: Int, onGoToObservaciones: () -> Unit) {
+
+private fun CardModuloObservaciones(
+    campaniaId: Int,
+    onGoToObservaciones: () -> Unit,
+    onGoToNuevaObservacion: () -> Unit
+) {
+ main
     val vm: ObservacionViewModel = hiltViewModel(key = "card_observaciones_$campaniaId")
     val observaciones by vm.observaciones.collectAsState()
 
@@ -321,7 +393,11 @@ private fun CardModuloObservaciones(campaniaId: Int, onGoToObservaciones: () -> 
         icon = Icons.Default.NoteAlt,
         summary = "${observaciones.size} registradas",
         onCardClick = onGoToObservaciones,
+ feature/issues-466-467-468
         onQuickAddClick = onGoToObservaciones // Since adding requires opening the screen dialog
+
+        onQuickAddClick = onGoToNuevaObservacion
+ main
     )
 }
 
@@ -331,10 +407,4 @@ private fun formatFecha(timestamp: Long): String {
     return sdf.format(Date(timestamp))
 }
 
-private fun formatCantidad(cantidad: Double): String {
-    return if (cantidad == cantidad.toLong().toDouble()) {
-        "${cantidad.toLong()} Kg"
-    } else {
-        "%,.2f Kg".format(cantidad)
-    }
-}
+

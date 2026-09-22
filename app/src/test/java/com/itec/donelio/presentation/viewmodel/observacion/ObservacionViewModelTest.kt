@@ -49,8 +49,12 @@ class ObservacionViewModelTest {
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         every { obtenerObservacionesPorCampaniaUseCase(any()) } returns flowOf(emptyList())
 
+        val mockManager = mockk<com.itec.donelio.presentation.state.UltimaSeleccionManager>(relaxed = true)
+        every { mockManager.campaniaIdSeleccionada } returns kotlinx.coroutines.flow.MutableStateFlow(null)
+
         viewModel = ObservacionViewModel(
             savedStateHandle = savedStateHandle,
+            ultimaSeleccionManager = mockManager,
             obtenerObservacionesPorCampaniaUseCase = obtenerObservacionesPorCampaniaUseCase,
             obtenerCampaniasUseCase = obtenerCampaniasUseCase,
             editarObservacionUseCase = editarObservacionUseCase,

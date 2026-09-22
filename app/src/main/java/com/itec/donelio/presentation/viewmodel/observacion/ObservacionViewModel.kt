@@ -20,6 +20,7 @@ import com.itec.donelio.domain.use_case.ValidarObservacionUseCase
 @HiltViewModel
 class ObservacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
     private val editarObservacionUseCase: EditarObservacionUseCase,
@@ -33,6 +34,19 @@ class ObservacionViewModel @Inject constructor(
 
     private val _campaniaIdSeleccionada = MutableStateFlow<Int?>(savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 })
     val campaniaIdSeleccionada = _campaniaIdSeleccionada.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            ultimaSeleccionManager.campaniaIdSeleccionada.collect { id ->
+                if (id != null && _campaniaIdSeleccionada.value != id) {
+                    _campaniaIdSeleccionada.value = id
+                }
+            }
+        }
+        _campaniaIdSeleccionada.value?.let { 
+            ultimaSeleccionManager.seleccionarCampania(it) 
+        }
+    }
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
@@ -53,7 +67,10 @@ class ObservacionViewModel @Inject constructor(
      * Selecciona una campaña y actualiza el estado correspondiente.
      * @param id El ID de la campaña seleccionada.
      */
-    fun seleccionarCampania(id: Int) { _campaniaIdSeleccionada.value = id }
+    fun seleccionarCampania(id: Int) { 
+        _campaniaIdSeleccionada.value = id 
+        ultimaSeleccionManager.seleccionarCampania(id)
+    }
 
     /**
      * Limpia el mensaje de error actual.

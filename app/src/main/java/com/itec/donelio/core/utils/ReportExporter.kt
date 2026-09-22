@@ -8,6 +8,7 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.InsumoResumen
+import com.itec.donelio.presentation.util.FormatUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -23,11 +24,13 @@ object ReportExporter {
         return withContext(Dispatchers.IO) {
             try {
                 context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                    val csvHeader = "Campaña: $campaniaNombre\n\n--- INSUMOS ---\nInsumo,Cantidad,Total ($)\n"
+                    val csvHeader = "CampaÃ±a: $campaniaNombre\n\n--- INSUMOS ---\nInsumo,Cantidad,Total ($)\n"
                     outputStream.write(csvHeader.toByteArray())
                     
                     data.forEach { insumo ->
-                        val line = "${insumo.nombreInsumo},${insumo.cantidadTotal},${insumo.costoTotal}\n"
+                        val cantStr = FormatUtils.formatCantidad(insumo.cantidadTotal)
+                        val costoStr = FormatUtils.formatDecimal(insumo.costoTotal)
+                        val line = "${insumo.nombreInsumo},\"$cantStr\",\"$costoStr\"\n"
                         outputStream.write(line.toByteArray())
                     }
                     
@@ -36,9 +39,10 @@ object ReportExporter {
                     
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     cosechas.forEach { cosecha ->
-                        val destino = if (cosecha.almacen.isNotBlank()) "Almacén: ${cosecha.almacen}" else "Venta"
+                        val destino = if (cosecha.almacen.isNotBlank()) "AlmacÃ©n: ${cosecha.almacen}" else "Venta"
                         val fechaStr = dateFormat.format(Date(cosecha.fecha))
-                        val line = "${fechaStr},${cosecha.cantidad},${destino}\n"
+                        val cantStr = FormatUtils.formatCantidad(cosecha.cantidad)
+                        val line = "${fechaStr},\"$cantStr\",${destino}\n"
                         outputStream.write(line.toByteArray())
                     }
                 }
@@ -57,7 +61,9 @@ object ReportExporter {
                 val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
                 var page = pdfDocument.startPage(pageInfo)
                 var canvas: Canvas = page.canvas
-                val paint = Paint()
+                val paint = Paint().apply {
+                    typeface = android.graphics.Typeface.create(android.graphics.Typeface.SANS_SERIF, android.graphics.Typeface.NORMAL)
+                }
                 var yPosition = 50f
                 var pageNum = 1
 
@@ -104,22 +110,22 @@ object ReportExporter {
                     yPosition += 30f
                 }
 
-                // Título
+                // Tï¿½tulo
                 paint.color = Color.BLACK
                 paint.textSize = 24f
                 paint.isFakeBoldText = true
-                canvas.drawText("Reporte de Campaña", 50f, yPosition + 30f, paint)
+                canvas.drawText("Reporte de CampaÃ±a", 50f, yPosition + 30f, paint)
                 yPosition += 60f
 
-                // Subtítulo
+                // Subtï¿½tulo
                 paint.textSize = 14f
                 paint.isFakeBoldText = false
-                canvas.drawText("Sistema de Gestión Agrónomo - Don Elio", 50f, yPosition, paint)
+                canvas.drawText("Sistema de GestiÃ³n AgrÃ³nomo - Don Elio", 50f, yPosition, paint)
                 yPosition += 25f
 
-                // Nombre de Campaña
+                // Nombre de CampaÃ±a
                 paint.isFakeBoldText = true
-                canvas.drawText("Campaña: $campaniaNombre", 50f, yPosition, paint)
+                canvas.drawText("CampaÃ±a: $campaniaNombre", 50f, yPosition, paint)
                 yPosition += 45f
 
                 // SECCION INSUMOS
@@ -136,8 +142,8 @@ object ReportExporter {
                     }
                     
                     canvas.drawText(insumo.nombreInsumo, 50f, yPosition, paint)
-                    canvas.drawText(insumo.cantidadTotal.toString(), 300f, yPosition, paint)
-                    canvas.drawText(String.format("%.2f", insumo.costoTotal), 450f, yPosition, paint)
+                    canvas.drawText(FormatUtils.formatCantidad(insumo.cantidadTotal), 300f, yPosition, paint)
+                    canvas.drawText(FormatUtils.formatDecimal(insumo.costoTotal), 450f, yPosition, paint)
                     
                     granTotal += insumo.costoTotal
                     yPosition += 30f
@@ -150,7 +156,7 @@ object ReportExporter {
                 canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
                 yPosition += 25f
                 canvas.drawText("Total Gasto Insumos:", 250f, yPosition, paint)
-                canvas.drawText(String.format("$ %.2f", granTotal), 450f, yPosition, paint)
+                canvas.drawText(FormatUtils.formatMoneda(granTotal), 450f, yPosition, paint)
 
                 // SECCION COSECHAS
                 yPosition += 50f
@@ -170,10 +176,10 @@ object ReportExporter {
                     }
                     
                     val fechaStr = dateFormat.format(Date(cosecha.fecha))
-                    val destino = if (cosecha.almacen.isNotBlank()) "Almacén" else "Venta"
+                    val destino = if (cosecha.almacen.isNotBlank()) "AlmacÃ©n" else "Venta"
                     
                     canvas.drawText(fechaStr, 50f, yPosition, paint)
-                    canvas.drawText(String.format("%.2f", cosecha.cantidad), 250f, yPosition, paint)
+                    canvas.drawText(FormatUtils.formatCantidad(cosecha.cantidad), 250f, yPosition, paint)
                     canvas.drawText(destino, 450f, yPosition, paint)
                     
                     totalCosecha += cosecha.cantidad
@@ -187,7 +193,7 @@ object ReportExporter {
                 canvas.drawLine(50f, yPosition, 545f, yPosition, paint)
                 yPosition += 25f
                 canvas.drawText("Total Tn Cosechadas:", 200f, yPosition, paint)
-                canvas.drawText(String.format("%.2f Tn", totalCosecha), 380f, yPosition, paint)
+                canvas.drawText(FormatUtils.formatCantidad(totalCosecha, "Tn"), 380f, yPosition, paint)
 
                 pdfDocument.finishPage(page)
 
@@ -205,3 +211,4 @@ object ReportExporter {
         }
     }
 }
+

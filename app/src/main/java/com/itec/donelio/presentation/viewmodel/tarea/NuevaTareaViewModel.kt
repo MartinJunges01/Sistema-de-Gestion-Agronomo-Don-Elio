@@ -23,6 +23,7 @@ data class NuevaTareaFormState(
     val hora: String = "",
     val notificar: Boolean = true,
     val campaniaId: Int? = null,
+    val confirmar: Boolean = false,
     val isLoading: Boolean = false,
     val errorNombre: String? = null,
     val errorHora: String? = null,
@@ -36,11 +37,22 @@ class NuevaTareaViewModel @Inject constructor(
     private val crearTareaUseCase: CrearTareaUseCase,
     private val editarTareaUseCase: com.itec.donelio.domain.use_case.EditarTareaUseCase,
     private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+ feature/issues-466-467-468
     private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase
 ) : ViewModel() {
 
     private val initialCampaniaId = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
     private val tareaId = savedStateHandle.get<Int>("tareaId").takeIf { it != -1 }
+
+    private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase,
+    private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
+) : ViewModel() {
+
+    private val tareaId = savedStateHandle.get<Int>("tareaId").takeIf { it != -1 }
+    private val idFromNav = savedStateHandle.get<Int>("campaniaId").takeIf { it != -1 }
+    private val idFromManager = ultimaSeleccionManager.campaniaIdSeleccionada.value
+    private val initialCampaniaId = idFromNav ?: idFromManager
+ main
 
     private val _state = MutableStateFlow(NuevaTareaFormState(campaniaId = initialCampaniaId))
     val state: StateFlow<NuevaTareaFormState> = _state.asStateFlow()
@@ -63,6 +75,10 @@ class NuevaTareaViewModel @Inject constructor(
                     fecha = tarea.fecha,
                     hora = tarea.hora,
                     notificar = tarea.notificar,
+ feature/issues-466-467-468
+
+                    confirmar = tarea.confirmar,
+ main
                     campaniaId = tarea.idCampania
                 ) }
             }
@@ -116,14 +132,22 @@ class NuevaTareaViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             if (tareaId != null) {
+ feature/issues-466-467-468
                 // Modo Edición
+
+                // Modo Edición — se preserva el estado de confirmar para no revertir tareas completadas
+ main
                 val tareaEditada = com.itec.donelio.domain.model.Tarea(
                     id = tareaId,
                     nombre = current.nombre.trim(),
                     fecha = current.fecha,
                     hora = current.hora,
                     notificar = current.notificar,
+ feature/issues-466-467-468
                     confirmar = false, // Mantener estado de completada si se necesita, pero generalmente al editar está activa.
+
+                    confirmar = current.confirmar,
+ main
                     idCampania = current.campaniaId
                 )
                 editarTareaUseCase(tareaEditada).collect { resource ->

@@ -186,7 +186,7 @@ fun ObservacionesScreen(
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().imePadding()) {
         Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = { Text("Observaciones", fontWeight = FontWeight.Bold) },
@@ -464,12 +464,7 @@ private fun DialogEditarObservacion(
                                 tempCameraUri = uri
                                 cameraLauncher.launch(uri)
                             }
-                            val isGranted = androidx.core.content.ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.CAMERA
-                            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-                            
-                            if (isGranted) {
+                            if (controlPermiso.permisoConcedido) {
                                 accionPendiente?.invoke()
                                 accionPendiente = null
                             } else {

@@ -9,28 +9,29 @@
 ## Checklist de Progreso
 
 ### 🔴 NIVEL L1 — CRASHES Y ERRORES CRÍTICOS (BUGS BLOQUEANTES)
-- [ ] **[#403] Issue 403:** Botón Guardar permanece deshabilitado al crear insumo nuevo
-- [ ] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
+- [x] **[#403] Issue 403:** Botón Guardar permanece deshabilitado al crear insumo nuevo
+- [x] **[#409] Issue 409:** Regresión Issue #338 — teclado virtual sigue bloqueando scroll en formularios
 
 ### 🟠 NIVEL L2 — BUGS FUNCIONALES
-- [ ] **[#401] Issue 401:** Botón "Ver detalle →" del Dashboard no navega a Reportes
-- [ ] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
-- [ ] **[#404] Issue 404:** Edición de foto en observaciones sin implementar (Issue #337 sin resolver)
+- [x] **[#401] Issue 401:** Botón "Ver detalle →" del Dashboard no navega a Reportes
+- [x] **[#402] Issue 402:** Métricas del resumen financiero del Dashboard no coinciden con diseño del Issue #346
+- [x] **[#404] Issue 404:** Edición de foto en observaciones sin implementar (Issue #337 sin resolver)
 
 ### ⚪ NIVEL L3 — FIX UI / UX
-- [ ] **[#407] Issue 407:** Caracteres especiales (Ñ y acentos) no se renderizan en exportación PDF
-- [ ] **[#408] Issue 408:** Regresión de Issues #339/#340 — leyendas PieChart se desbordan y gráfico se recorta
+- [x] **[#407] Issue 407:** Caracteres especiales (Ñ y acentos) no se renderizan en exportación PDF
+- [x] **[#408] Issue 408:** Regresión de Issues #339/#340 — leyendas PieChart se desbordan y gráfico se recorta
 
 ### 🟡 NIVEL L4 — FEATURES NUEVAS
-- [ ] **[#410] Issue 410:** ABM completo de Tareas — agregar edición y eliminación
+- [x] **[#410] Issue 410:** ABM completo de Tareas — agregar edición y eliminación
 
 ### 🔵 NIVEL L5 — MEJORAS Y NUEVOS DESARROLLOS
-- [ ] **[#412] Issue 412:** Agregar etiquetas de eje X (nombre de campañas) al gráfico de evolución
-- [ ] **[#405] Issue 405:** Completar filtros avanzados de tiempo en Reportes (DateRangePicker + accesos rápidos)
-- [ ] **[#406] Issue 406:** Rediseñar UI del comparador de campañas + agregar métricas Cosecha/Ha y Costo/Tn
+- [x] **[#412] Issue 412:** Agregar etiquetas de eje X (nombre de campañas) al gráfico de evolución
+- [x] **[#405] Issue 405:** Completar filtros avanzados de tiempo en Reportes (DateRangePicker + accesos rápidos)
+- [x] **[#416] Issue 416:** Persistir selección de campaña al navegar desde BottomNav (UX)
+- [x] **[#406] Issue 406:** Rediseñar UI del comparador de campañas + agregar métricas Cosecha/Ha y Costo/Tn
 
 ### 📋 NIVEL L6 — DEUDA TÉCNICA (Pendientes de Iteración 3)
-- [ ] **[#398] Issue 398:** ReportesViewModel inyecta repositorios directamente (DT-022)
+- [x] **[#398] Issue 398:** ReportesViewModel inyecta repositorios directamente (DT-022)
 
 ---
 ---
@@ -297,11 +298,11 @@ El gráfico de evolución histórica (Canvas) actualmente dibuja los puntos pero
 
 ### Fase 1 — Bugs Bloqueantes (Sprint 1)
 1. **[#403]** Botón Guardar insumo deshabilitado (**crítico — regresión del Issue #334**)
-2. **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
+2. [x] **[#409]** Teclado bloquea scroll en formularios (**regresión del Issue #338**)
 
 ### Fase 2 — Bugs Funcionales (Sprint 1-2)
 3. **[#401]** Botón "Ver detalle" Dashboard sin navegación
-4. **[#402]** Métricas Dashboard incorrectas
+4. [x] **[#402]** Métricas Dashboard incorrectas
 5. **[#404]** Edición de foto en observaciones sin implementar
 
 ### Fase 3 — Fix UI/UX (Sprint 2)
