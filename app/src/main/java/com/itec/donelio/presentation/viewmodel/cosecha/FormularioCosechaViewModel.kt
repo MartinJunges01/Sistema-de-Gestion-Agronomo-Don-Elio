@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.use_case.EditarCosechaConVentaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechaPorIdUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaConVentaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaUseCase
@@ -47,7 +47,7 @@ class FormularioCosechaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val registrarCosechaUseCase: RegistrarCosechaUseCase,
     private val registrarConVentaUseCase: RegistrarCosechaConVentaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase,
     private val editarCosechaConVentaUseCase: EditarCosechaConVentaUseCase,
     private val validarDatosCosechaUseCase: ValidarDatosCosechaUseCase,
@@ -106,7 +106,7 @@ class FormularioCosechaViewModel @Inject constructor(
         }
     }
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onAlmacenadoChange(value: Boolean) { _state.update { it.copy(almacenado = value) } }

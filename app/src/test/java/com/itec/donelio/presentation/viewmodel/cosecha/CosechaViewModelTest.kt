@@ -5,7 +5,7 @@ import app.cash.turbine.test
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.use_case.EliminarCosechaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasNoAlmacenadasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import com.itec.donelio.presentation.state.UltimaSeleccionManager
@@ -42,7 +42,7 @@ class CosechaViewModelTest {
 
     private lateinit var obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase
     private lateinit var obtenerCosechasNoAlmacenadasUseCase: ObtenerCosechasNoAlmacenadasUseCase
-    private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var eliminarCosechaUseCase: EliminarCosechaUseCase
     private lateinit var mockManager: UltimaSeleccionManager
 
@@ -53,11 +53,11 @@ class CosechaViewModelTest {
         Dispatchers.setMain(testDispatcher)
         obtenerCosechasPorCampaniaUseCase = mockk()
         obtenerCosechasNoAlmacenadasUseCase = mockk()
-        obtenerCampaniasUseCase = mockk()
+        obtenerCampaniasActivasUseCase = mockk()
         eliminarCosechaUseCase = mockk()
         mockManager = mockk(relaxed = true)
 
-        every { obtenerCampaniasUseCase() } returns flowOf(emptyList<Campania>())
+        every { obtenerCampaniasActivasUseCase() } returns flowOf(emptyList<Campania>())
         every { obtenerCosechasPorCampaniaUseCase(any()) } returns flowOf(emptyList<Cosecha>())
         every { obtenerCosechasNoAlmacenadasUseCase(any()) } returns flowOf(emptyMap())
         every { mockManager.campaniaIdSeleccionada } returns MutableStateFlow(null)
@@ -80,7 +80,7 @@ class CosechaViewModelTest {
             ultimaSeleccionManager = mockManager,
             obtenerCosechasPorCampaniaUseCase = obtenerCosechasPorCampaniaUseCase,
             obtenerCosechasNoAlmacenadasUseCase = obtenerCosechasNoAlmacenadasUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             eliminarCosechaUseCase = eliminarCosechaUseCase
         )
     }

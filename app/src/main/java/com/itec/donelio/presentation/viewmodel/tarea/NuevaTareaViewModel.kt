@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.CrearTareaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +36,7 @@ class NuevaTareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val crearTareaUseCase: CrearTareaUseCase,
     private val editarTareaUseCase: com.itec.donelio.domain.use_case.EditarTareaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val obtenerTareaPorIdUseCase: com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase,
     private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
 ) : ViewModel() {
@@ -49,7 +49,7 @@ class NuevaTareaViewModel @Inject constructor(
     private val _state = MutableStateFlow(NuevaTareaFormState(campaniaId = initialCampaniaId))
     val state: StateFlow<NuevaTareaFormState> = _state.asStateFlow()
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {

@@ -7,12 +7,15 @@ import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.use_case.ConfirmarTareaUseCase
 import com.itec.donelio.domain.use_case.EditarTareaUseCase
 import com.itec.donelio.domain.use_case.EliminarTareaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerTareasFiltradasUseCase
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -26,6 +29,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.Calendar
 
 /**
  * Tests unitarios para [TareaViewModel].
@@ -40,7 +44,7 @@ import org.junit.Test
 class TareaViewModelTest {
 
     private lateinit var obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase
-    private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var confirmarTareaUseCase: ConfirmarTareaUseCase
     private lateinit var editarTareaUseCase: EditarTareaUseCase
     private lateinit var eliminarTareaUseCase: EliminarTareaUseCase
@@ -55,9 +59,9 @@ class TareaViewModelTest {
         confirmarTareaUseCase = mockk()
         editarTareaUseCase = mockk()
         eliminarTareaUseCase = mockk()
-        obtenerCampaniasUseCase = mockk()
+        obtenerCampaniasActivasUseCase = mockk()
 
-        every { obtenerCampaniasUseCase() } returns flowOf(emptyList<Campania>())
+        every { obtenerCampaniasActivasUseCase() } returns flowOf(emptyList<Campania>())
         every { obtenerTareasFiltradasUseCase(any(), any()) } returns flowOf(emptyList<Tarea>())
     }
 
@@ -85,7 +89,7 @@ class TareaViewModelTest {
             savedStateHandle = handle,
             ultimaSeleccionManager = mockManager,
             obtenerTareasFiltradasUseCase = obtenerTareasFiltradasUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             confirmarTareaUseCase = confirmarTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
             eliminarTareaUseCase = eliminarTareaUseCase,

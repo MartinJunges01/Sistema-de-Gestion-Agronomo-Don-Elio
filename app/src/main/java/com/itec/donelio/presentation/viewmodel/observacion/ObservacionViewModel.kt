@@ -7,7 +7,7 @@ import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.use_case.EditarObservacionUseCase
 import com.itec.donelio.domain.use_case.EliminarObservacionUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerObservacionesPorCampaniaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +22,7 @@ class ObservacionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val editarObservacionUseCase: EditarObservacionUseCase,
     private val eliminarObservacionUseCase: EliminarObservacionUseCase,
     private val validarObservacionUseCase: ValidarObservacionUseCase
@@ -55,7 +55,7 @@ class ObservacionViewModel @Inject constructor(
         .map { it != null && it != -1 }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)

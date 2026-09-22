@@ -5,7 +5,7 @@ import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.use_case.CrearTareaUseCase
 import com.itec.donelio.domain.use_case.EditarTareaUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerTareaPorIdUseCase
 import io.mockk.coEvery
 import io.mockk.every
@@ -42,7 +42,7 @@ class NuevaTareaViewModelTest {
 
     private lateinit var crearTareaUseCase: CrearTareaUseCase
     private lateinit var editarTareaUseCase: EditarTareaUseCase
-    private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var obtenerTareaPorIdUseCase: ObtenerTareaPorIdUseCase
     private lateinit var ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager
 
@@ -51,11 +51,11 @@ class NuevaTareaViewModelTest {
         Dispatchers.setMain(testDispatcher)
         crearTareaUseCase = mockk()
         editarTareaUseCase = mockk()
-        obtenerCampaniasUseCase = mockk()
+        obtenerCampaniasActivasUseCase = mockk()
         obtenerTareaPorIdUseCase = mockk()
         ultimaSeleccionManager = mockk()
 
-        coEvery { obtenerCampaniasUseCase() } returns flowOf(emptyList())
+        every { obtenerCampaniasActivasUseCase() } returns flowOf(emptyList())
         every { ultimaSeleccionManager.campaniaIdSeleccionada.value } returns null
     }
 
@@ -71,7 +71,7 @@ class NuevaTareaViewModelTest {
             savedStateHandle = handle,
             crearTareaUseCase = crearTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase,
             ultimaSeleccionManager = ultimaSeleccionManager
         )
@@ -84,7 +84,7 @@ class NuevaTareaViewModelTest {
             savedStateHandle = handle,
             crearTareaUseCase = crearTareaUseCase,
             editarTareaUseCase = editarTareaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             obtenerTareaPorIdUseCase = obtenerTareaPorIdUseCase,
             ultimaSeleccionManager = ultimaSeleccionManager
         )

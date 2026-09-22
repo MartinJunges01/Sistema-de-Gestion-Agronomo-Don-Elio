@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.itec.donelio.domain.model.Campania
 import com.itec.donelio.domain.model.Cosecha
 import com.itec.donelio.domain.model.CosechaNoAlmacenada
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasNoAlmacenadasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import com.itec.donelio.domain.use_case.EliminarCosechaUseCase
@@ -22,7 +22,7 @@ class CosechaViewModel @Inject constructor(
     private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     private val obtenerCosechasNoAlmacenadasUseCase: ObtenerCosechasNoAlmacenadasUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val eliminarCosechaUseCase: EliminarCosechaUseCase
 ) : ViewModel() {
 
@@ -57,7 +57,7 @@ class CosechaViewModel @Inject constructor(
         .map { it != null && it != -1 }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
