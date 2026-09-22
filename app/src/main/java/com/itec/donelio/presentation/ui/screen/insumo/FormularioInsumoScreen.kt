@@ -87,7 +87,7 @@ fun FormularioInsumoScreen(
             )
 
 
-            Text("Seleccionar Ãcono", fontWeight = FontWeight.Bold)
+            Text("Seleccionar Ícono", fontWeight = FontWeight.Bold)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

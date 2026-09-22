@@ -166,13 +166,9 @@ class TareaViewModel @Inject constructor(
     }
 
     /**
-     * Valida la selección y emite el evento de navegación o un error reactivo.
+     * Emite el evento de navegación hacia el formulario de Nueva Tarea.
      */
     fun onNuevaTareaClick() {
-        if (_filtroCampania.value != null) {
-            viewModelScope.launch { _uiEvent.send(TareaUiEvent.NavigateToNuevaTarea) }
-        } else {
-            _errorMessage.value = "Debes marcar una campaña para programar una tarea"
-        }
+        viewModelScope.launch { _uiEvent.send(TareaUiEvent.NavigateToNuevaTarea) }
     }
 }
