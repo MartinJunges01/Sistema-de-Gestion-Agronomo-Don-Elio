@@ -7,6 +7,7 @@ import com.itec.donelio.data.local.dao.CosechaDao
 import com.itec.donelio.data.local.dao.InsumoDao
 import com.itec.donelio.data.local.dao.ObservacionDao
 import com.itec.donelio.data.local.dao.TareaDao
+import com.itec.donelio.data.local.dao.CosechaNoAlmacenadaDao
 import com.itec.donelio.data.seed.DataSeederImpl
 import dagger.Module
 import dagger.Provides
@@ -27,7 +28,8 @@ object SeedModule {
         insumoDao: InsumoDao,
         campaniaInsumoDao: CampaniaInsumoDao,
         observacionDao: ObservacionDao,
-        cultivoDao: com.itec.donelio.data.local.dao.CultivoDao
+        cultivoDao: com.itec.donelio.data.local.dao.CultivoDao,
+        cosechaNoAlmacenadaDao: CosechaNoAlmacenadaDao
     ): DataSeeder {
         return DataSeederImpl(
             campaniaDao = campaniaDao,
@@ -36,7 +38,8 @@ object SeedModule {
             insumoDao = insumoDao,
             campaniaInsumoDao = campaniaInsumoDao,
             observacionDao = observacionDao,
-            cultivoDao = cultivoDao
+            cultivoDao = cultivoDao,
+            cosechaNoAlmacenadaDao = cosechaNoAlmacenadaDao
         )
     }
 }
