@@ -29,6 +29,20 @@ Breve descripción del problema encontrado...
 
 <!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
 
+## [PENDIENTE] Falta SnackbarHost en TareasScreen para mostrar errores del ViewModel
+
+**Severidad:** 🔵 UX / Deuda Técnica
+**Módulo:** Tareas
+**Archivo afectado:** `TareasScreen.kt`
+
+**Descripción**
+El `TareaViewModel` gestiona un estado `errorMessage` para emitir mensajes informativos (ej. "Error al actualizar estado de tarea"), pero la vista `TareasScreen` no tiene implementado un `SnackbarHost` ni recolecta este estado, por lo que estos errores fallan silenciosamente.
+
+**Criterios de Aceptación**
+- [ ] Implementar un `SnackbarHost` en el componente principal de `TareasScreen`.
+- [ ] Mostrar el mensaje recolectando `viewModel.errorMessage`.
+- [ ] Limpiar el error llamando a `viewModel.clearError()` luego de mostrarlo.
+
 ---
 
 ## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
