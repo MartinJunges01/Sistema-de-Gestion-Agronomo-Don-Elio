@@ -10,8 +10,7 @@ import com.itec.donelio.domain.use_case.ObtenerCatalogoInsumosUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechasPorCampaniaUseCase
 import com.itec.donelio.domain.use_case.ObtenerInsumosVinculadosUseCase
 import com.itec.donelio.domain.use_case.CalcularCostoPorHectareaUseCase
-import com.itec.donelio.domain.use_case.ObtenerTodosLosInsumosUtilizadosUseCase
-import com.itec.donelio.domain.use_case.ObtenerTodasLasCosechasUseCase
+import com.itec.donelio.domain.use_case.ObtenerResumenFinancieroPorFiltrosUseCase
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -52,8 +51,7 @@ class ReportesViewModelTest {
     private lateinit var calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
     private lateinit var obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase
     private lateinit var obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase
-    private lateinit var obtenerTodosLosInsumosUtilizadosUseCase: ObtenerTodosLosInsumosUtilizadosUseCase
-    private lateinit var obtenerTodasLasCosechasUseCase: ObtenerTodasLasCosechasUseCase
+    private lateinit var obtenerResumenFinancieroPorFiltrosUseCase: ObtenerResumenFinancieroPorFiltrosUseCase
     private lateinit var viewModel: ReportesViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -71,8 +69,7 @@ class ReportesViewModelTest {
         calcularCostoPorHectareaUseCase = mockk()
         obtenerCultivosUseCase = mockk()
         obtenerEvolucionCultivoUseCase = mockk()
-        obtenerTodosLosInsumosUtilizadosUseCase = mockk()
-        obtenerTodasLasCosechasUseCase = mockk()
+        obtenerResumenFinancieroPorFiltrosUseCase = mockk()
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
         every { obtenerInsumosVinculadosUseCase(any<Int>()) } returns flowOf(emptyList())
@@ -81,8 +78,7 @@ class ReportesViewModelTest {
         every { calcularCostoPorHectareaUseCase(any(), any()) } returns 0.0
         every { obtenerCultivosUseCase() } returns flowOf(emptyList())
         every { obtenerEvolucionCultivoUseCase(any<Int>()) } returns flowOf(emptyList())
-        every { obtenerTodosLosInsumosUtilizadosUseCase() } returns flowOf(emptyList())
-        every { obtenerTodasLasCosechasUseCase() } returns flowOf(emptyList())
+        every { obtenerResumenFinancieroPorFiltrosUseCase(any(), any()) } returns flowOf(null)
     }
 
     @After
@@ -98,10 +94,9 @@ class ReportesViewModelTest {
         calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase,
         obtenerCultivosUseCase = obtenerCultivosUseCase,
         obtenerEvolucionCultivoUseCase = obtenerEvolucionCultivoUseCase,
-        obtenerTodosLosInsumosUtilizadosUseCase = obtenerTodosLosInsumosUtilizadosUseCase,
-        obtenerTodasLasCosechasUseCase = obtenerTodasLasCosechasUseCase,
         editarCampaniaInsumoUseCase = mockk(),
-        desvincularInsumoUseCase = mockk()
+        desvincularInsumoUseCase = mockk(),
+        obtenerResumenFinancieroPorFiltrosUseCase = obtenerResumenFinancieroPorFiltrosUseCase
     )
 
     // ──────────────────────────────────────────────
@@ -330,6 +325,7 @@ class ReportesViewModelTest {
             
             cancelAndIgnoreRemainingEvents()
         }
+    }
     // ──────────────────────────────────────────────
     // VM-R8: exportarReporteCsv emite error sin campania
     // ──────────────────────────────────────────────
@@ -381,5 +377,4 @@ class ReportesViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-}
 }
