@@ -61,7 +61,7 @@ Para ejecutar la aplicación desde el entorno de desarrollo:
 
 Al abrir la aplicación por primera vez (o luego de cerrar sesión), se muestra la pantalla de acceso al sistema.
 
-![Login](capturas_manual/login.png)
+![Login](./capturas_manual/login.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -96,7 +96,7 @@ Permite ingresar al sistema con las credenciales de un usuario ya registrado. La
 
 Permite crear una cuenta nueva para acceder a la aplicación. Esta pantalla se usa únicamente la primera vez, o cuando se quiere agregar un nuevo usuario al sistema.
 
-![Registro](capturas_manual/registro.png)
+![Registro](./capturas_manual/registro.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -131,7 +131,7 @@ Registra un nuevo usuario en la base de datos local del dispositivo. Una vez reg
 
 Es la pantalla central de la aplicación. Se muestra inmediatamente después de iniciar sesión y presenta un resumen de todas las operaciones activas en tiempo real.
 
-![Dashboard](capturas_manual/dashboard.png)
+![Dashboard](./capturas_manual/dashboard.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -141,7 +141,7 @@ Ofrece una vista de alto nivel del estado del establecimiento: el rendimiento ec
 
 **Sección: Encabezado superior**
 
-![Cabecera Dashboard](capturas_manual/dashboard.png)
+![Cabecera Dashboard](./capturas_manual/dashboard.png)
 
 | Elemento | Descripción |
 |---|---|
@@ -159,7 +159,7 @@ Ofrece una vista de alto nivel del estado del establecimiento: el rendimiento ec
 
 **Sección: Rendimiento Global (Mes Actual)**
 
-![Rendimiento](capturas_manual/dashboard.png)
+![Rendimiento](./capturas_manual/dashboard.png)
 
 Muestra tres tarjetas con los indicadores financieros del mes en curso, calculados a partir de las campañas activas:
 
@@ -177,7 +177,7 @@ Muestra tres tarjetas con los indicadores financieros del mes en curso, calculad
 
 **Sección: Cumplimiento Semanal**
 
-![Cumplimiento](capturas_manual/dashboard.png)
+![Cumplimiento](./capturas_manual/dashboard.png)
 
 Muestra un gráfico circular que indica qué porcentaje de las tareas programadas para la semana actual (de lunes a domingo) ya fueron completadas.
 
@@ -192,7 +192,7 @@ Muestra un gráfico circular que indica qué porcentaje de las tareas programada
 
 **Sección: Tareas Próximas**
 
-![Tareas Próximas](capturas_manual/dashboard.png)
+![Tareas Próximas](./capturas_manual/dashboard.png)
 
 Lista las tareas pendientes más cercanas en el tiempo. Cada tarjeta muestra:
 - **Nombre de la tarea** en negrita.
@@ -208,7 +208,7 @@ Lista las tareas pendientes más cercanas en el tiempo. Cada tarjeta muestra:
 
 **Sección: Campañas Activas**
 
-![Campañas Activas](capturas_manual/dashboard.png)
+![Campañas Activas](./capturas_manual/dashboard.png)
 
 Lista todas las campañas marcadas como activas. Cada tarjeta muestra:
 - **Nombre de la campaña**.
@@ -226,7 +226,7 @@ Lista todas las campañas marcadas como activas. Cada tarjeta muestra:
 
 **Barra de navegación inferior**
 
-![Barra de Navegación](capturas_manual/dashboard.png)
+![Barra de Navegación](./capturas_manual/dashboard.png)
 
 La barra fija en la parte inferior de la pantalla permite acceder rápidamente a las secciones principales de la aplicación:
 
@@ -259,7 +259,7 @@ Una campaña es el eje central de la aplicación. Representa un ciclo agrícola 
 
 ##### 8.2.4.1 Pantalla: Listado de Campañas
 
-![Listado de Campañas](capturas_manual/listado_campania.png)
+![Listado de Campañas](./capturas_manual/listado_campania.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -298,7 +298,7 @@ Muestra todas las campañas organizadas en dos secciones: las campañas **activa
 
 ##### 8.2.4.2 Pantalla: Crear / Editar Campaña
 
-![Crear Campaña](capturas_manual/crear_campania.png)
+![Crear Campaña](./capturas_manual/crear_campania.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -334,7 +334,7 @@ Permite crear una nueva campaña o editar los datos de una existente. El título
 
 ##### 8.2.4.3 Pantalla: Detalle de Campaña
 
-![Detalle Campaña](capturas_manual/detalle_campania.png)
+![Detalle Campaña](./capturas_manual/detalle_campania.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -371,7 +371,7 @@ El módulo de Tareas funciona como una **agenda de actividades** del establecimi
 
 ##### 8.2.5.1 Pantalla: Listado de Tareas (Agenda)
 
-![Gestión de Tareas](capturas_manual/tareas.png)
+![Gestión de Tareas](./capturas_manual/tareas.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -412,7 +412,7 @@ Muestra todas las tareas organizadas en dos grupos: **Pendientes** y **Completad
 
 ##### 8.2.5.2 Pantalla: Nueva Tarea / Editar Tarea
 
-![Formulario Nueva Tarea](capturas_manual/formulario_tareas.png)
+![Formulario Nueva Tarea](./capturas_manual/formulario_tareas.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -453,7 +453,7 @@ El módulo de Insumos maneja dos conceptos separados que trabajan en conjunto: e
 
 ##### 8.2.6.1 Pantalla: Insumos de una Campaña
 
-![Listado Insumos](capturas_manual/catalogo_insumo.png)
+![Listado Insumos](./capturas_manual/catalogo_insumo.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -490,7 +490,7 @@ Muestra todos los insumos aplicados en la campaña seleccionada, agrupados por t
 
 ##### 8.2.6.2 Pantalla: Vincular Insumo a Campaña
 
-![Vincular Insumo](capturas_manual/formulario_vincular_insumo.png)
+![Vincular Insumo](./capturas_manual/formulario_vincular_insumo.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -547,7 +547,7 @@ El módulo de Cosechas permite registrar la producción obtenida en cada campañ
 
 ##### 8.2.7.1 Pantalla: Listado de Cosechas
 
-![Listado Cosechas](capturas_manual/listado_cosechas.png)
+![Listado Cosechas](./capturas_manual/listado_cosechas.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -569,7 +569,7 @@ Muestra todos los registros de cosechas de la campaña seleccionada, organizados
 
 ##### 8.2.7.2 Pantalla: Registrar / Editar Cosecha
 
-![Formulario Cosecha](capturas_manual/formulario_cosechas.png)
+![Formulario Cosecha](./capturas_manual/formulario_cosechas.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -615,7 +615,7 @@ Permite registrar una nueva cosecha o editar una existente. El título cambia en
 
 El Catálogo de Cultivos es la lista maestra de tipos de cultivos disponibles para asignar a las campañas. Es una pantalla administrativa que permite crear, renombrar y eliminar tipos de cultivo.
 
-![Catálogo Cultivos](capturas_manual/catalogo_cultivo.png)
+![Catálogo Cultivos](./capturas_manual/catalogo_cultivo.png)
 
 **Elementos de la pantalla:**
 
@@ -649,7 +649,7 @@ El Catálogo de Cultivos es la lista maestra de tipos de cultivos disponibles pa
 
 El módulo de Observaciones permite registrar notas de campo asociadas a una campaña: anotaciones sobre el estado del cultivo, condiciones climáticas, eventos inesperados, etc. Cada observación puede incluir texto, una foto tomada con la cámara o elegida desde la galería.
 
-![Observaciones](capturas_manual/observaciones.png)
+![Observaciones](./capturas_manual/observaciones.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -698,9 +698,9 @@ Cada tarjeta muestra:
 
 La pantalla de Reportes es la herramienta de análisis financiero y productivo del establecimiento. Permite visualizar el rendimiento de las campañas de múltiples formas y exportar la información a archivo.
 
-![Reportes de Rendimiento](capturas_manual/reportes_1.png)
+![Reportes de Rendimiento](./capturas_manual/reportes_1.png)
 
-![Desglose de Costos e Ingresos](capturas_manual/reportes_2.png)
+![Desglose de Costos e Ingresos](./capturas_manual/reportes_2.png)
 
 **¿Qué hace esta pantalla?**
 
@@ -755,7 +755,7 @@ Ofrece cuatro tipos de análisis:
 
 La pantalla de Configuración es accesible desde el ícono de engranaje ⚙️ del encabezado del Dashboard. Permite realizar copias de seguridad de toda la base de datos y restaurarla desde un archivo.
 
-![Configuración y Respaldo](capturas_manual/backup.png)
+![Configuración y Respaldo](./capturas_manual/backup.png)
 
 > **Esta pantalla es crítica.** Las operaciones de respaldo y restauración afectan a todos los datos de la aplicación. Se recomienda realizar respaldos periódicos, especialmente antes de actualizar o cambiar el dispositivo.
 
