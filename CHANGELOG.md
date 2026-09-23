@@ -20,12 +20,12 @@
 - Se implementó un flujo reactivo (Channel/Flow) en TareaViewModel para disparar la navegación solo si hay una campaña seleccionada, o mostrar un error en la UI de lo contrario (Issue #462).
 - Se inyectó el UltimaSeleccionManager en NuevaTareaViewModel para pre-seleccionar la campaña activa.
 
-**[2026-09-16] - feat(insumos): [#455] Multi-registro de Insumos (AcumulaciÃ³n HistÃ³rica)**
-- **DB/Domain**: Se eliminÃ³ el Ã­ndice Ãºnico `(id_campania, id_insumo)` en `CampaniaInsumoEntity`. El conflicto `REPLACE` se cambiÃ³ a `IGNORE`. Se agregÃ³ la propiedad `fechaAplicacion` autogenerada. Version de BD subida a 8.
-- **UI (Insumos)**: `InsumosScreen` se reescribiÃ³ para agrupar los insumos repetidos usando un acordeÃ³n expansible, sumando las cantidades en el resumen, y mostrando registros individuales con fecha y subtotal debajo.
-- **UI (Reportes)**: `ReportesRendimientoScreen` tambiÃ©n adoptÃ³ el formato de acordeÃ³n expansible en la leyenda del grÃ¡fico de torta, permitiendo hacer drill-down.
-- **UI**: Se agregÃ³ soporte para la ediciÃ³n y eliminaciÃ³n de cada registro individual en ambas pantallas, apoyado en nuevas funciones `editarInsumo()` y `eliminarInsumo()` en el `ReportesViewModel`.
-- **Tests**: Se actualizÃ³ `AsignarInsumoACampaniaUseCaseTest` con aserciones automÃ¡ticas de fechas y pruebas de multi-registro independiente. Se agregÃ³ test de integraciÃ³n en `CampaniaInsumoDaoTest`.
+**[2026-09-16] - feat(insumos): [#455] Multi-registro de Insumos (Acumulación Histórica)**
+- **DB/Domain**: Se eliminó el índice único `(id_campania, id_insumo)` en `CampaniaInsumoEntity`. El conflicto `REPLACE` se cambió a `IGNORE`. Se agregó la propiedad `fechaAplicacion` autogenerada. Version de BD subida a 8.
+- **UI (Insumos)**: `InsumosScreen` se reescribió para agrupar los insumos repetidos usando un acordeón expansible, sumando las cantidades en el resumen, y mostrando registros individuales con fecha y subtotal debajo.
+- **UI (Reportes)**: `ReportesRendimientoScreen` también adoptó el formato de acordeón expansible en la leyenda del gráfico de torta, permitiendo hacer drill-down.
+- **UI**: Se agregó soporte para la edición y eliminación de cada registro individual en ambas pantallas, apoyado en nuevas funciones `editarInsumo()` y `eliminarInsumo()` en el `ReportesViewModel`.
+- **Tests**: Se actualizó `AsignarInsumoACampaniaUseCaseTest` con aserciones automáticas de fechas y pruebas de multi-registro independiente. Se agregó test de integración en `CampaniaInsumoDaoTest`.
 
 **[2026-09-14] - Estabilizacion y correcciones de bugs UI/UX de Iteracion 5 (PRs 451, 452, 457)**
 - Se aplico truncamiento de nombres en eje X del grafico de evolucion (Issue #434).
@@ -34,7 +34,7 @@
 
 **[2026-09-12] - fix(ui): estandarización de números, contadores de campaña y cálculo de ingresos [out-of-scope]**
 
-> âš ï¸� Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
+> ⚠️� Correcciones adicionales derivadas de la segunda ronda de testeo manual sobre la rama de pruebas `test/verificacion-issues-441-437-439`.
 
 - `ObtenerResumenRendimientoUseCase`: Se cambió el filtro de ingresos. Ya no busca la palabra exacta "venta" en el campo `tipo` (ya que es de escritura libre), sino que asume como ingreso toda `CosechaNoAlmacenada` cuyo `precio > 0.0`.
 - `TareaViewModel` y `DetalleCampaniaScreen`: El card del menú ahora utiliza `todasLasTareas` para contabilizar y mostrar correctamente la cantidad de tareas "completadas" (antes mostraba 0 porque el flujo principal las ocultaba).
@@ -42,7 +42,7 @@
 - `FormatUtils` **[NUEVO]**: Se creó un utilitario centralizado con la configuración `Locale("es", "AR")` para asegurar que en toda la aplicación los miles se separen con punto (`.`) y los decimales con coma (`,`).
 - `DashboardOperacionesScreen`, `CosechasScreen`, `InsumosScreen`: Refactorizados para usar `FormatUtils` en lugar de formatos de texto ad-hoc.
 
-> âš ï¸� Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
+> ⚠️� Estos cambios fueron detectados durante la verificación manual post-merge de las ramas de la iteración 5. No estaban contemplados en los issues originales, pero afectaban la correcta funcionalidad del sistema.
 
 - `ObtenerResumenRendimientoUseCase`: Corregido el cálculo de `ingresosBrutos`. Antes multiplicaba `cantidad * venta.precio` (asumiendo precio unitario). Ahora suma `venta.precio` directamente, respetando la regla de negocio donde el usuario ingresa el **precio total** de la venta (out-of-scope de #437).
 - `EditarCosechaConVentaUseCase`: **[NUEVO]** Caso de uso que actualiza en una sola operación la tabla `Cosecha` y `CosechaNoAlmacenada`. Soluciona que la edición de cosechas tipo Venta solo actualizaba la tabla base.
@@ -169,428 +169,428 @@
 - Se añadio una tarjeta y grafico de barras para visualizar la diferencia de rentabilidad por hectarea entre campañas.
 
 
-**[2026-08-25] - [#351] feat(cultivos): ABM de Cultivos (CatÃƒÆ’Ã‚Â¡logo estandarizado)**
-- **Data/Domain:** Se creÃƒÆ’Ã‚Â³ la entidad `CultivoEntity` y `Cultivo` (modelo de dominio). Se implementÃƒÆ’Ã‚Â³ `CultivoDao` con soporte para soft-delete, y se expuso `CultivoRepository` y su implementaciÃƒÆ’Ã‚Â³n. Se actualizÃƒÆ’Ã‚Â³ la versiÃƒÆ’Ã‚Â³n de la base de datos a 7.
-- **CampaÃƒÆ’Ã‚Â±as:** Se reemplazÃƒÆ’Ã‚Â³ el campo de texto libre `cultivo` en `CampaniaEntity` y `Campania` por `id_cultivo` / `cultivoId` (FK) y `cultivoNombre`, realizando un `INNER JOIN` en todas las consultas de lectura para obtener su descripciÃƒÆ’Ã‚Â³n del catÃƒÆ’Ã‚Â¡logo de forma reactiva.
-- **UI:** Se implementÃƒÆ’Ã‚Â³ `CatalogoCultivosScreen` y su `CultivoCatalogoViewModel` para ABM con diÃƒÆ’Ã‚Â¡logos inline. El formulario de campaÃƒÆ’Ã‚Â±a ahora utiliza un `ExposedDropdownMenuBox` para seleccionar cultivos de forma estricta, con una opciÃƒÆ’Ã‚Â³n de inserciÃƒÆ’Ã‚Â³n rÃƒÆ’Ã‚Â¡pida para nuevos cultivos en el mismo formulario.
-- **Testing:** Se actualizaron todos los tests unitarios e instrumentados afectados, y se aÃƒÆ’Ã‚Â±adieron pruebas unitarias para `CultivoCatalogoViewModel`.
+**[2026-08-25] - [#351] feat(cultivos): ABM de Cultivos (CatÃƒÆ’Ã‚¡logo estandarizado)**
+- **Data/Domain:** Se creó la entidad `CultivoEntity` y `Cultivo` (modelo de dominio). Se implementó `CultivoDao` con soporte para soft-delete, y se expuso `CultivoRepository` y su implementación. Se actualizó la versión de la base de datos a 7.
+- **Campañas:** Se reemplazó el campo de texto libre `cultivo` en `CampaniaEntity` y `Campania` por `id_cultivo` / `cultivoId` (FK) y `cultivoNombre`, realizando un `INNER JOIN` en todas las consultas de lectura para obtener su descripción del catÃƒÆ’Ã‚¡logo de forma reactiva.
+- **UI:** Se implementó `CatalogoCultivosScreen` y su `CultivoCatalogoViewModel` para ABM con diÃƒÆ’Ã‚¡logos inline. El formulario de campaña ahora utiliza un `ExposedDropdownMenuBox` para seleccionar cultivos de forma estricta, con una opción de inserción rÃƒÆ’Ã‚¡pida para nuevos cultivos en el mismo formulario.
+- **Testing:** Se actualizaron todos los tests unitarios e instrumentados afectados, y se añadieron pruebas unitarias para `CultivoCatalogoViewModel`.
 - **Rama:** `Issue351`
 
-**[2026-08-25] - [#349] feat(db): HectÃƒÆ’Ã‚Â¡reas por campaÃƒÆ’Ã‚Â±a y mÃƒÆ’Ã‚Â©tricas Tn/Ha**
-- **Data/Domain:** Se agregÃƒÆ’Ã‚Â³ el campo `hectareas` (Double) a `CampaniaEntity` y `Campania`. Se incrementÃƒÆ’Ã‚Â³ la versiÃƒÆ’Ã‚Â³n de la base de datos Room a 6 implementando la migraciÃƒÆ’Ã‚Â³n correspondiente.
-- **UI:** El `FormularioCampaniaScreen` incluye validaciÃƒÆ’Ã‚Â³n de este nuevo campo. Se actualizÃƒÆ’Ã‚Â³ la vista de Reportes para mostrar la mÃƒÆ’Ã‚Â©trica `Rendimiento: X Tn/Ha`.
+**[2026-08-25] - [#349] feat(db): HectÃƒÆ’Ã‚¡reas por campaña y métricas Tn/Ha**
+- **Data/Domain:** Se agregó el campo `hectareas` (Double) a `CampaniaEntity` y `Campania`. Se incrementó la versión de la base de datos Room a 6 implementando la migración correspondiente.
+- **UI:** El `FormularioCampaniaScreen` incluye validación de este nuevo campo. Se actualizó la vista de Reportes para mostrar la métrica `Rendimiento: X Tn/Ha`.
 - **Rama:** `fix/issue-349-refactor-db`
 
 **[2026-08-25] - [#348] feat(reportes): Top 3 insumos de mayor gasto**
-- **UI:** Se agregÃƒÆ’Ã‚Â³ una nueva tarjeta en la pantalla de Reportes mostrando los 3 insumos con mayor porcentaje de gasto en la campaÃƒÆ’Ã‚Â±a actual.
+- **UI:** Se agregó una nueva tarjeta en la pantalla de Reportes mostrando los 3 insumos con mayor porcentaje de gasto en la campaña actual.
 - **Rama:** `fix/issue-348-top-insumos`
 
 **[2026-08-25] - [#347] feat(dashboard): Tasa de Cumplimiento de Tareas**
-- **Domain:** Se creÃƒÆ’Ã‚Â³ `ObtenerCumplimientoTareasUseCase` y el modelo `CumplimientoTareas` para calcular la relaciÃƒÆ’Ã‚Â³n entre tareas confirmadas y tareas totales en el periodo de las campaÃƒÆ’Ã‚Â±as activas.
-- **UI:** Se integrÃƒÆ’Ã‚Â³ al `HomeViewModel` y se visualiza la tasa de cumplimiento en el `DashboardOperacionesScreen`.
+- **Domain:** Se creó `ObtenerCumplimientoTareasUseCase` y el modelo `CumplimientoTareas` para calcular la relación entre tareas confirmadas y tareas totales en el periodo de las campañas activas.
+- **UI:** Se integró al `HomeViewModel` y se visualiza la tasa de cumplimiento en el `DashboardOperacionesScreen`.
 - **Rama:** `fix/issue-347-tasa-cumplimiento`
 
-**[2026-08-25] - [#346] feat(dashboard): Resumen financiero rÃƒÆ’Ã‚Â¡pido**
-- **Domain:** Se creÃƒÆ’Ã‚Â³ `ObtenerResumenRendimientoUseCase` y el modelo `ResumenRendimiento` para calcular capital invertido (insumos) y total cosechado del mes actual.
-- **UI:** Se agregÃƒÆ’Ã‚Â³ una tarjeta en el `DashboardOperacionesScreen` para mostrar estos indicadores financieros.
+**[2026-08-25] - [#346] feat(dashboard): Resumen financiero rÃƒÆ’Ã‚¡pido**
+- **Domain:** Se creó `ObtenerResumenRendimientoUseCase` y el modelo `ResumenRendimiento` para calcular capital invertido (insumos) y total cosechado del mes actual.
+- **UI:** Se agregó una tarjeta en el `DashboardOperacionesScreen` para mostrar estos indicadores financieros.
 - **Rama:** `fix/issue-346-resumen-dashboard`
 
-**[2026-08-25] - [#345] feat(tareas): RediseÃƒÆ’Ã‚Â±o de pantalla de tareas y filtros**
-- **Domain:** Se creÃƒÆ’Ã‚Â³ `ObtenerTareasFiltradasUseCase` para unificar la bÃƒÆ’Ã‚Âºsqueda de tareas por campaÃƒÆ’Ã‚Â±a y fecha.
-- **UI:** Se implementÃƒÆ’Ã‚Â³ `SelectorRangoFechas` interactivo (DateRangePicker). La pantalla de Tareas ahora usa este componente para permitir el filtrado de tareas en un rango especÃƒÆ’Ã‚Â­fico o mostrar pendientes por defecto.
+**[2026-08-25] - [#345] feat(tareas): Rediseño de pantalla de tareas y filtros**
+- **Domain:** Se creó `ObtenerTareasFiltradasUseCase` para unificar la búsqueda de tareas por campaña y fecha.
+- **UI:** Se implementó `SelectorRangoFechas` interactivo (DateRangePicker). La pantalla de Tareas ahora usa este componente para permitir el filtrado de tareas en un rango específico o mostrar pendientes por defecto.
 - **Rama:** `fix/issue-345-redisenio-tareas`
 
 **[2026-08-25] - [#344] feat(reportes): Leyenda de insumos con valores absolutos**
-- **UI:** Se reemplazÃƒÆ’Ã‚Â³ el `FlowRow` en `ReportesRendimientoScreen` por un `Column` ordenado, mostrando el porcentaje y el valor absoluto en pesos de cada insumo.
+- **UI:** Se reemplazó el `FlowRow` en `ReportesRendimientoScreen` por un `Column` ordenado, mostrando el porcentaje y el valor absoluto en pesos de cada insumo.
 - **Rama:** `fix/issue-344-orden-insumos`
 
-**[2026-08-25] - [#343] feat(reportes): ExportaciÃƒÆ’Ã‚Â³n de datos de cosechas**
-- **Domain:** Se incluyÃƒÆ’Ã‚Â³ la lista de `cosechas` como parte del modelo enviado al `ReportExporter`.
-- **Core:** Se actualizaron las funciones `exportToCsv` y `exportToPdf` para anexar el listado de las cosechas de la campaÃƒÆ’Ã‚Â±a seleccionada en ambos formatos.
+**[2026-08-25] - [#343] feat(reportes): Exportación de datos de cosechas**
+- **Domain:** Se incluyó la lista de `cosechas` como parte del modelo enviado al `ReportExporter`.
+- **Core:** Se actualizaron las funciones `exportToCsv` y `exportToPdf` para anexar el listado de las cosechas de la campaña seleccionada en ambos formatos.
 - **Rama:** `fix/issue-343-exportar-cosechas`
 
-**[2026-08-25] - [#341] feat(auth): Persistencia de SesiÃƒÆ’Ã‚Â³n**
-- **Core:** `SessionManager` ahora guarda `isLoggedIn`. Se aÃƒÆ’Ã‚Â±adiÃƒÆ’Ã‚Â³ `MainViewModel` para controlar el estado inicial de `MainActivity` mientras se carga el `DataStore`.
-- **UI:** El flujo de navegaciÃƒÆ’Ã‚Â³n dirige al Dashboard (Home) si la sesiÃƒÆ’Ã‚Â³n estÃƒÆ’Ã‚Â¡ activa o al Login en caso contrario. El Login fue modificado para persistir tambiÃƒÆ’Ã‚Â©n a los usuarios Invitados. Se agregÃƒÆ’Ã‚Â³ funcionalidad de "Cerrar sesiÃƒÆ’Ã‚Â³n" en el Dashboard.
+**[2026-08-25] - [#341] feat(auth): Persistencia de Sesión**
+- **Core:** `SessionManager` ahora guarda `isLoggedIn`. Se añadió `MainViewModel` para controlar el estado inicial de `MainActivity` mientras se carga el `DataStore`.
+- **UI:** El flujo de navegación dirige al Dashboard (Home) si la sesión estÃƒÆ’Ã‚¡ activa o al Login en caso contrario. El Login fue modificado para persistir también a los usuarios Invitados. Se agregó funcionalidad de "Cerrar sesión" en el Dashboard.
 - **Rama:** `fix/issue-341-persistencia-sesion`
 
-**[2026-08-25] - [#342] feat(campaÃƒÆ’Ã‚Â±as): Borrado y estilo visual de campaÃƒÆ’Ã‚Â±as inactivas**
-- **Data/Domain:** Se integrÃƒÆ’Ã‚Â³ `EliminarCampaniaUseCase` en `GestionCampaniasViewModel`. Se confirmÃƒÆ’Ã‚Â³ que Room maneja la eliminaciÃƒÆ’Ã‚Â³n en cascada.
-- **UI:** Las tarjetas de campaÃƒÆ’Ã‚Â±as inactivas en `GestionCampaniasScreen` tienen un color atenuado. Se agregÃƒÆ’Ã‚Â³ un botÃƒÆ’Ã‚Â³n de papelera y diÃƒÆ’Ã‚Â¡logo de confirmaciÃƒÆ’Ã‚Â³n para eliminaciÃƒÆ’Ã‚Â³n definitiva.
+**[2026-08-25] - [#342] feat(campañas): Borrado y estilo visual de campañas inactivas**
+- **Data/Domain:** Se integró `EliminarCampaniaUseCase` en `GestionCampaniasViewModel`. Se confirmó que Room maneja la eliminación en cascada.
+- **UI:** Las tarjetas de campañas inactivas en `GestionCampaniasScreen` tienen un color atenuado. Se agregó un botón de papelera y diÃƒÆ’Ã‚¡logo de confirmación para eliminación definitiva.
 - **Rama:** `fix/issue-342-campanias-inactivas`
 
 **[2026-08-25] - [#338] fix(ux): Teclado y Scroll en Formularios**
-- **UI:** Se ajustÃƒÆ’Ã‚Â³ el manejo de insets en `MainActivity` y se aplicÃƒÆ’Ã‚Â³ `consumeWindowInsets` en `screens.kt` para evitar el bloqueo de scroll y el bloque blanco superior al abrir el teclado virtual.
+- **UI:** Se ajustó el manejo de insets en `MainActivity` y se aplicó `consumeWindowInsets` en `screens.kt` para evitar el bloqueo de scroll y el bloque blanco superior al abrir el teclado virtual.
 - **Rama:** `fix/issue-338-teclado`
 
-**[2026-08-25] - [#337] feat(observaciones): EdiciÃƒÆ’Ã‚Â³n de fotos en observaciones**
-- **Dominio:** Se implementÃƒÆ’Ã‚Â³ `ValidarObservacionUseCase` y se ajustÃƒÆ’Ã‚Â³ `EditarObservacionUseCase` para manejar fotos.
-- **UI:** El diÃƒÆ’Ã‚Â¡logo de ediciÃƒÆ’Ã‚Â³n de observaciones ahora permite modificar o eliminar fotos utilizando cÃƒÆ’Ã‚Â¡mara y galerÃƒÆ’Ã‚Â­a con permisos dinÃƒÆ’Ã‚Â¡micos.
+**[2026-08-25] - [#337] feat(observaciones): Edición de fotos en observaciones**
+- **Dominio:** Se implementó `ValidarObservacionUseCase` y se ajustó `EditarObservacionUseCase` para manejar fotos.
+- **UI:** El diÃƒÆ’Ã‚¡logo de edición de observaciones ahora permite modificar o eliminar fotos utilizando cÃƒÆ’Ã‚¡mara y galería con permisos dinÃƒÆ’Ã‚¡micos.
 - **Rama:** `fix/issue-337-editar-foto-observacion`
 
-**[2026-08-25] - [#334] fix(insumos): CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de insumos en el catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo**
-- **ViewModel:** Se corrigiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ la lectura del `insumoId` en `FormularioInsumoViewModel` para que un valor de `-1` no se trate como ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n, habilitando correctamente el flujo de creaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
+**[2026-08-25] - [#334] fix(insumos): Creación de insumos en el catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo**
+- **ViewModel:** Se corrigió la lectura del `insumoId` en `FormularioInsumoViewModel` para que un valor de `-1` no se trate como edición, habilitando correctamente el flujo de creación.
 - **Rama:** `fix/issue-334-creacion-insumos`
 
 **[2026-08-12] - [#304] fix(ux): Pantalla no se desplaza al escribir (IME padding global)**
-- **UI:** En `screens.kt`, se aplicÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el modificador `imePadding()` al contenedor principal dentro del `Scaffold` para que el espaciado reaccione al teclado virtual de forma automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tica.
+- **UI:** En `screens.kt`, se aplicó el modificador `imePadding()` al contenedor principal dentro del `Scaffold` para que el espaciado reaccione al teclado virtual de forma automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡tica.
 - **UI:** Este ajuste resuelve globalmente el solapamiento del teclado en todos los formularios de la app.
 - **Rama:** `fix/ime-padding-formularios` (stacked sobre `fix/bloquear-modo-oscuro`)
 
 **[2026-08-12] - [#303] fix(ux): Bloquear Modo Oscuro (Forzar Tema Claro)**
-- **UI:** En `Theme.kt`, se modificÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ `DonElioTheme` para que el parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro `darkTheme` siempre sea `false` por defecto, ignorando el setting del sistema.
-- **UI:** Se forzÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ `isAppearanceLightStatusBars = true` para asegurar que los iconos de la barra de estado siempre sean oscuros.
+- **UI:** En `Theme.kt`, se modificó `DonElioTheme` para que el parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro `darkTheme` siempre sea `false` por defecto, ignorando el setting del sistema.
+- **UI:** Se forzó `isAppearanceLightStatusBars = true` para asegurar que los iconos de la barra de estado siempre sean oscuros.
 - **Rama:** `fix/bloquear-modo-oscuro`
 
-**[2026-08-11] - [#294] feat(observaciones): EdiciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de observaciones**
+**[2026-08-11] - [#294] feat(observaciones): Edición y eliminación de observaciones**
 - **Dominio:** Se crearon `EditarObservacionUseCase` y `EliminarObservacionUseCase`.
-- **ViewModels:** Se inyectaron los nuevos casos de uso en `ObservacionViewModel` para gestionar las acciones y los errores, exponiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ndolos como estado.
-- **UI:** Se agregaron ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­conos de editar y eliminar a cada `ObservacionCard` en `ObservacionesScreen`.
-- **UI:** Se implementaron diÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logos modales (AlertDialog) para confirmar la eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y para editar el texto de la observaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n in-place.
+- **ViewModels:** Se inyectaron los nuevos casos de uso en `ObservacionViewModel` para gestionar las acciones y los errores, exponiéndolos como estado.
+- **UI:** Se agregaron íconos de editar y eliminar a cada `ObservacionCard` en `ObservacionesScreen`.
+- **UI:** Se implementaron diÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logos modales (AlertDialog) para confirmar la eliminación y para editar el texto de la observación in-place.
 - **Rama:** `feat/issue-294-edicion-observaciones`
 
 **[2026-08-11] - [#291] fix(tareas): Selector de hora usa TimeInput en vez de texto libre**
-- **ViewModels:** `NuevaTareaViewModel` ahora valida que la hora no estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a y que cumpla el formato regex (HH:mm), exponiendo `errorHora`.
-- **UI:** En `NuevaTareaScreen` se reemplazÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el `OutlinedTextField` genÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©rico por un `TimeInput` nativo de Material 3 contenido dentro de un `AlertDialog`, previniendo el ingreso de texto arbitrario.
+- **ViewModels:** `NuevaTareaViewModel` ahora valida que la hora no esté vacía y que cumpla el formato regex (HH:mm), exponiendo `errorHora`.
+- **UI:** En `NuevaTareaScreen` se reemplazó el `OutlinedTextField` genérico por un `TimeInput` nativo de Material 3 contenido dentro de un `AlertDialog`, previniendo el ingreso de texto arbitrario.
 - **Rama:** `fix/issue-291-timepicker-hora`
 
 **[2026-08-11] - [#285] fix(dashboard): Tareas interactivas y filtradas por vencimiento**
-- **DAO/Dominio:** Actualizada la consulta `getTareasPendientesGlobales` para recibir `fechaLimite` y omitir tareas vencidas hace mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡s de 7 dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­as.
-- **ViewModels:** `HomeViewModel` ahora calcula dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡micamente la `fechaLimite` y la pasa al `ObtenerTareasPendientesUseCase`.
-- **UI:** Las tarjetas de "Tareas PrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ximas" ahora son clickeables (navegan al detalle de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a asociada).
+- **DAO/Dominio:** Actualizada la consulta `getTareasPendientesGlobales` para recibir `fechaLimite` y omitir tareas vencidas hace mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡s de 7 días.
+- **ViewModels:** `HomeViewModel` ahora calcula dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡micamente la `fechaLimite` y la pasa al `ObtenerTareasPendientesUseCase`.
+- **UI:** Las tarjetas de "Tareas Próximas" ahora son clickeables (navegan al detalle de la campaña asociada).
 - **UI:** Tratamiento visual condicional: tareas recientes vencidas se muestran con color rojo tenue.
-- **UI:** Se agregÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Ver todas" que redirige a la lista completa de tareas de la app.
+- **UI:** Se agregó el botón "Ver todas" que redirige a la lista completa de tareas de la app.
 - **Rama:** `fix/issue-285-dashboard-tareas`
 
 **[2026-08-11] - [#287] fix(login): Saludo muestra nombre de usuario en vez de Invitado**
-- **ViewModels:** `LoginViewModel` inyecta ahora `SessionManager` y luego del inicio de sesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n persistirÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ en DataStore el nombre real del usuario recibido del backend.
+- **ViewModels:** `LoginViewModel` inyecta ahora `SessionManager` y luego del inicio de sesión persistirÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ en DataStore el nombre real del usuario recibido del backend.
 - **Rama:** `fix/issue-287-saludo-usuario`
 
-**[2026-08-11] - [#290] fix(campanias): ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n estricta de fechas pasadas en creaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n**
+**[2026-08-11] - [#290] fix(campanias): Validación estricta de fechas pasadas en creación**
 - **Dominio:** 
-  - Creado `ValidarDatosCampaniaUseCase` para concentrar la lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gica de validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (nombre, cultivo y control estricto de no permitir fechas anteriores a hoy, ignorando la regla en modo ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n).
-  - AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida capa extra de defensa en `CrearCampaniaUseCase` para lanzar excepciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n si la fecha es menor a hoy (medianoche).
-- **ViewModels:** `CampaniaFormViewModel` limpiado completamente. Toda su lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gica condicional fue delegada al nuevo caso de uso, dedicÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ndose exclusivamente a actualizar la UI.
-- **UI:** En `FormularioCampaniaScreen`, se configurÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ `selectableDates` en el `rememberDatePickerState` para deshabilitar visualmente fechas anteriores a hoy, mejorando sustancialmente la UX.
+  - Creado `ValidarDatosCampaniaUseCase` para concentrar la lógica de validación (nombre, cultivo y control estricto de no permitir fechas anteriores a hoy, ignorando la regla en modo edición).
+  - Añadida capa extra de defensa en `CrearCampaniaUseCase` para lanzar excepción si la fecha es menor a hoy (medianoche).
+- **ViewModels:** `CampaniaFormViewModel` limpiado completamente. Toda su lógica condicional fue delegada al nuevo caso de uso, dedicÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ndose exclusivamente a actualizar la UI.
+- **UI:** En `FormularioCampaniaScreen`, se configuró `selectableDates` en el `rememberDatePickerState` para deshabilitar visualmente fechas anteriores a hoy, mejorando sustancialmente la UX.
 - **Rama:** `fix/campanias-validacion-fechas`
 
-**[2026-08-11] - [#289] fix(insumos): ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Formulario y DelegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a Dominio**
-- **Dominio:** Creado `ValidarInsumoUseCase` para evaluar la obligatoriedad de `nombre` y `categorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a`. Nota: El campo `unidad` no fue incluido en la validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n porque no existe en la arquitectura actual del proyecto.
+**[2026-08-11] - [#289] fix(insumos): Validación de Formulario y Delegación a Dominio**
+- **Dominio:** Creado `ValidarInsumoUseCase` para evaluar la obligatoriedad de `nombre` y `categoría`. Nota: El campo `unidad` no fue incluido en la validación porque no existe en la arquitectura actual del proyecto.
 - **ViewModels:** 
-  - `FormularioInsumoViewModel` modificado para consumir el caso de uso y exponer un estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºnico `isGuardarHabilitado`.
-  - `InsumoCatalogoViewModel` modificado para inyectar el caso de uso y exponer una funciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de delegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
+  - `FormularioInsumoViewModel` modificado para consumir el caso de uso y exponer un estado único `isGuardarHabilitado`.
+  - `InsumoCatalogoViewModel` modificado para inyectar el caso de uso y exponer una función de delegación de validación.
 - **UI:** 
-  - `FormularioInsumoScreen` muestra mensajes de error en los campos basÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ndose enteramente en el estado unificado, eliminando lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gica de negocio visual.
-  - `CatalogoInsumosScreen` refactorizado para el diÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo inline y agregado un `SnackbarHost` para observar errores del ViewModel.
+  - `FormularioInsumoScreen` muestra mensajes de error en los campos basÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ndose enteramente en el estado unificado, eliminando lógica de negocio visual.
+  - `CatalogoInsumosScreen` refactorizado para el diÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo inline y agregado un `SnackbarHost` para observar errores del ViewModel.
 - **Rama:** `fix/insumos-validacion-formulario`
 
-**[2026-08-02] - [#302] feat(reportes): Implementar ComparaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n Real entre CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as**
-- **Dominio:** `ReportesViewModel` ahora expone `cosechasA` y `cosechasB` asociadas a las campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as seleccionadas en el comparador.
-- **UI:** En `ReportesRendimientoScreen`, la secciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de "MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©tricas Comparativas" ahora muestra los verdaderos totales de Costo de Insumos y Rendimiento (Cosechas) para la CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a A y la CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a B.
-- **UI:** Se reemplazÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el `GraficoEvolucionPlaceholder` por un `DoubleBarIndicator`, que consiste en barras de progreso compuestas (Jetpack Compose) para representar visual y proporcionalmente la diferencia de Costos y Rendimiento entre ambas campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as seleccionadas.
+**[2026-08-02] - [#302] feat(reportes): Implementar Comparación Real entre Campañas**
+- **Dominio:** `ReportesViewModel` ahora expone `cosechasA` y `cosechasB` asociadas a las campañas seleccionadas en el comparador.
+- **UI:** En `ReportesRendimientoScreen`, la sección de "Métricas Comparativas" ahora muestra los verdaderos totales de Costo de Insumos y Rendimiento (Cosechas) para la Campaña A y la Campaña B.
+- **UI:** Se reemplazó el `GraficoEvolucionPlaceholder` por un `DoubleBarIndicator`, que consiste en barras de progreso compuestas (Jetpack Compose) para representar visual y proporcionalmente la diferencia de Costos y Rendimiento entre ambas campañas seleccionadas.
 - **Rama:** `feat/comparacion-campanias` (stacked sobre `feat/grafico-desglose-cosechas`)
-- **Dominio y UI:** Agregado el estado `desgloseCosechasData` al `ReportesViewModel` que filtra y agrupa dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡micamente el listado de cosechas en base a su destino (Almacenada vs Vendida/Reservada).
-- **UI:** AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido un nuevo grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico `PieChart` en `ReportesRendimientoScreen` para visualizar visualmente las proporciones del destino de las cosechas de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a activa.
-- **Tests:** Creado caso de prueba en `ReportesViewModelTest` para asegurar la correcta agrupaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n matemÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tica de las cosechas.
+- **Dominio y UI:** Agregado el estado `desgloseCosechasData` al `ReportesViewModel` que filtra y agrupa dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡micamente el listado de cosechas en base a su destino (Almacenada vs Vendida/Reservada).
+- **UI:** Añadido un nuevo grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡fico `PieChart` en `ReportesRendimientoScreen` para visualizar visualmente las proporciones del destino de las cosechas de la campaña activa.
+- **Tests:** Creado caso de prueba en `ReportesViewModelTest` para asegurar la correcta agrupación matemÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡tica de las cosechas.
 - **Rama:** `feat/grafico-desglose-cosechas` (stacked sobre `feat/reporte-insumos-mejorado`)
-- **ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n:** El exportador (`ReportExporter`) ahora recibe y pinta el nombre de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a en los archivos CSV y PDF generados. El nombre del archivo sugerido en el `FilePicker` ahora incluye el nombre de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a.
-- **ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n UI:** Se agregÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ una guardia en `ReportesRendimientoScreen` que verifica si hay una campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a seleccionada antes de abrir el `FilePicker`, mostrando un `Toast` si es `null`.
+- **Exportación:** El exportador (`ReportExporter`) ahora recibe y pinta el nombre de la campaña en los archivos CSV y PDF generados. El nombre del archivo sugerido en el `FilePicker` ahora incluye el nombre de la campaña.
+- **Validación UI:** Se agregó una guardia en `ReportesRendimientoScreen` que verifica si hay una campaña seleccionada antes de abrir el `FilePicker`, mostrando un `Toast` si es `null`.
 - **Rama:** `feat/reporte-insumos-mejorado` (stacked sobre `feat/migracion-db-insumos`)
-- **Base de Datos:** MigraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 5 (`MIGRATION_4_5`) usando copias de tabla temporales para eliminar la columna `unidad` de Insumos y Cosechas (limitaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de SQLite).
-- **Dominio y UI:** EliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del campo `unidad` explÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­cito en todo el cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³digo; se asume Kg/L de manera implÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­cita para simplificar el modelo y la UI.
+- **Base de Datos:** Migración a versión 5 (`MIGRATION_4_5`) usando copias de tabla temporales para eliminar la columna `unidad` de Insumos y Cosechas (limitación de SQLite).
+- **Dominio y UI:** Eliminación del campo `unidad` explícito en todo el código; se asume Kg/L de manera implícita para simplificar el modelo y la UI.
 - **Tests actualizados** para no requerir o asertar por el campo `unidad`.
 - **Rama:** `feat/migracion-db-insumos` (stacked sobre `feat/campanas-historial`)
 
 **[2026-07-29] - [#299] fix(reportes): Eliminar datos mockeados en Dashboard y reestructurar pantalla Reportes**
-- **Dashboard (`DashboardOperacionesScreen.kt`):** Eliminadas las tarjetas hardcodeadas "Clima 24ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°C" y "Salud Lotes 90% ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œptimo". El contenido restante sube automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ticamente.
-- **`ReportesViewModel.kt` reescrito:** Se reemplaza `ObtenerTodosLosInsumosVinculadosUseCase` por `ObtenerInsumosVinculadosUseCase(campaniaId)` contextual. Se inyectan `ObtenerCampaniasUseCase` y `ObtenerCosechasPorCampaniaUseCase`. Nuevos StateFlows: `campanias`, `campaniaIndividual`, `insumosIndividual`, `cosechasIndividual`, `campaniaA/B`, `insumosA/B`. `pieChartData` y `exportableData` ahora son contextuales a la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a seleccionada.
+- **Dashboard (`DashboardOperacionesScreen.kt`):** Eliminadas las tarjetas hardcodeadas "Clima 24ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°C" y "Salud Lotes 90% ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œptimo". El contenido restante sube automÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ticamente.
+- **`ReportesViewModel.kt` reescrito:** Se reemplaza `ObtenerTodosLosInsumosVinculadosUseCase` por `ObtenerInsumosVinculadosUseCase(campaniaId)` contextual. Se inyectan `ObtenerCampaniasUseCase` y `ObtenerCosechasPorCampaniaUseCase`. Nuevos StateFlows: `campanias`, `campaniaIndividual`, `insumosIndividual`, `cosechasIndividual`, `campaniaA/B`, `insumosA/B`. `pieChartData` y `exportableData` ahora son contextuales a la campaña seleccionada.
 - **`ReportesRendimientoScreen.kt` reestructurada en dos secciones:**
-  - *SecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ EstadÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­sticas individuales:* Dropdown con campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as reales de BD, tarjetas de costo de insumos y total cosechado, PieChart contextual (por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a seleccionada).
-  - *SecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 2 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ Comparador:* Dos dropdowns con campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as reales, `CardMetricaComparativa` con costo real de insumos A vs B, placeholder para grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico de evoluciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (scope #302).
-- **ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n CSV/PDF:** Ahora exporta los insumos de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a seleccionada en SecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 1 (en lugar de todos los insumos globales).
+  - *Sección 1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ Estadísticas individuales:* Dropdown con campañas reales de BD, tarjetas de costo de insumos y total cosechado, PieChart contextual (por campaña seleccionada).
+  - *Sección 2 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ Comparador:* Dos dropdowns con campañas reales, `CardMetricaComparativa` con costo real de insumos A vs B, placeholder para grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡fico de evolución (scope #302).
+- **Exportación CSV/PDF:** Ahora exporta los insumos de la campaña seleccionada en Sección 1 (en lugar de todos los insumos globales).
 - **Tests creados:** `ReportesViewModelTest.kt` con 5 casos Given-When-Then (JUnit 4 + MockK + Turbine).
-- **`docs/plan_de_pruebas.md` actualizado** con subsecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n `ReportesViewModel ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ StateFlows contextuales [#299]`.
-- **Nota de scope:** La lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gica de `campaniaA/B` e `insumosA/B` es un paso preparatorio del Issue #302. Documentado en la PR con `Partial-scope: #302`.
+- **`docs/plan_de_pruebas.md` actualizado** con subsección `ReportesViewModel ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ StateFlows contextuales [#299]`.
+- **Nota de scope:** La lógica de `campaniaA/B` e `insumosA/B` es un paso preparatorio del Issue #302. Documentado en la PR con `Partial-scope: #302`.
 - **Rama:** `fix/datos-mock-dashboard-reportes` (stacked sobre `fix/tab-tareas-no-actualiza`)
 
-**[2026-07-22] - [#292] fix(campania): PestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a Tareas no actualiza datos al cambiar de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a**
-- **Causa raÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­z doble resuelta:**
-  - `TabTareas` usaba `hiltViewModel(key = "tab_tareas")` con key estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡tica, haciendo que Hilt reutilizara la misma instancia del `TareaViewModel` sin importar la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a activa.
-  - El `campaniaId` recibido como parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro en `TabTareas` nunca se propagaba al ViewModel (que iniciaba con `null` desde `SavedStateHandle`).
-- **`TareaViewModel.kt` modificado:** Se agrega el mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©todo pÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºblico `sincronizarCampania(id: Int)` que actualiza `_campaniaIdSeleccionada` solo si el valor difiere del actual (idempotente, evita emisiones innecesarias en el StateFlow).
+**[2026-07-22] - [#292] fix(campania): Pestaña Tareas no actualiza datos al cambiar de campaña**
+- **Causa raíz doble resuelta:**
+  - `TabTareas` usaba `hiltViewModel(key = "tab_tareas")` con key estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡tica, haciendo que Hilt reutilizara la misma instancia del `TareaViewModel` sin importar la campaña activa.
+  - El `campaniaId` recibido como parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro en `TabTareas` nunca se propagaba al ViewModel (que iniciaba con `null` desde `SavedStateHandle`).
+- **`TareaViewModel.kt` modificado:** Se agrega el método público `sincronizarCampania(id: Int)` que actualiza `_campaniaIdSeleccionada` solo si el valor difiere del actual (idempotente, evita emisiones innecesarias en el StateFlow).
 - **`DetalleCampaniaScreen.kt` modificado:**
-  - `TabTareas`: key cambiada a `"tab_tareas_$campaniaId"` + `LaunchedEffect(campaniaId)` que invoca `sincronizarCampania()` como segunda lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­nea de defensa.
-  - `TabInsumos`: key corregida de `"tab_insumos"` a `"tab_insumos_$campaniaId"` (mismo patrÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de bug identificado).
+  - `TabTareas`: key cambiada a `"tab_tareas_$campaniaId"` + `LaunchedEffect(campaniaId)` que invoca `sincronizarCampania()` como segunda línea de defensa.
+  - `TabInsumos`: key corregida de `"tab_insumos"` a `"tab_insumos_$campaniaId"` (mismo patrón de bug identificado).
 - **Tests creados:** `TareaViewModelTest.kt` con 5 casos Given-When-Then (JUnit 4 + MockK + Turbine).
-- **`docs/plan_de_pruebas.md` actualizado** con subsecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n `TareaViewModel ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ sincronizarCampania() [#292]`.
+- **`docs/plan_de_pruebas.md` actualizado** con subsección `TareaViewModel ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ sincronizarCampania() [#292]`.
 - **Rama:** `fix/tab-tareas-no-actualiza` (stacked sobre `fix/permiso-camara-observaciones`)
 
-**[2026-06-30] - [#283] fix: Crash al Abrir la CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mara ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ Permiso CAMERA no Solicitado**
-- **Causa raÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­z resuelta:** La app lanzaba `cameraLauncher.launch(uri)` directamente sin verificar ni solicitar el permiso `CAMERA` en runtime, causando un `SecurityException` en Android 6.0+ (API 23).
-- **Nuevo mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo creado:** `presentation/util/CameraUtils.kt` con tres responsabilidades separadas:
+**[2026-06-30] - [#283] fix: Crash al Abrir la CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡mara ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ Permiso CAMERA no Solicitado**
+- **Causa raíz resuelta:** La app lanzaba `cameraLauncher.launch(uri)` directamente sin verificar ni solicitar el permiso `CAMERA` en runtime, causando un `SecurityException` en Android 6.0+ (API 23).
+- **Nuevo módulo creado:** `presentation/util/CameraUtils.kt` con tres responsabilidades separadas:
   - `EstadoPermisoCamara`: State holder observable con `mutableStateOf` para `permisoConcedido`, `mostrarRazon` y `denegadoPermanente`.
-  - `recordarPermisoCamara()`: Composable que gestiona el ciclo completo del permiso usando `ActivityResultContracts.RequestPermission()` y `ActivityCompat.shouldShowRequestPermissionRationale()` para distinguir denegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n temporal vs. permanente.
-  - `DialogoRazonPermisoCamara()`: `AlertDialog` de rationale que se muestra en primera denegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
+  - `recordarPermisoCamara()`: Composable que gestiona el ciclo completo del permiso usando `ActivityResultContracts.RequestPermission()` y `ActivityCompat.shouldShowRequestPermissionRationale()` para distinguir denegación temporal vs. permanente.
+  - `DialogoRazonPermisoCamara()`: `AlertDialog` de rationale que se muestra en primera denegación.
   - `abrirAjustesPermiso()`: Helper que lanza `Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)` cuando el permiso es denegado permanentemente.
-- **`ObservacionesScreen.kt` actualizado:** BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Tomar foto" ahora verifica `controlPermiso.permisoConcedido` antes de lanzar la cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mara. Si no estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ concedido, guarda la acciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n pendiente y llama a `controlPermiso.solicitar()`. `SnackbarHost` aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido al `Box` para feedback visual.
-- **Flujos cubiertos:** Permiso ya concedido (directo a cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mara) ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Primera denegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (muestra rationale) ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· DenegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n permanente (Snackbar con botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Abrir Ajustes").
+- **`ObservacionesScreen.kt` actualizado:** Botón "Tomar foto" ahora verifica `controlPermiso.permisoConcedido` antes de lanzar la cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡mara. Si no estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ concedido, guarda la acción pendiente y llama a `controlPermiso.solicitar()`. `SnackbarHost` añadido al `Box` para feedback visual.
+- **Flujos cubiertos:** Permiso ya concedido (directo a cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡mara) ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Primera denegación (muestra rationale) ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· Denegación permanente (Snackbar con botón "Abrir Ajustes").
 - **Rama:** `fix/permiso-camara-observaciones`
 
-**[2026-06-10] - Cosechas: Fix Crash FK [#284] y ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del Formulario [#293]**
-- **Issue 7 (#284):** Eliminado el crash `FOREIGN KEY constraint failed` al guardar una cosecha con `campaniaId = -1`. `FormularioCosechaViewModel` ahora inicializa `campaniaId` como `null` cuando `SavedStateHandle` no recibe un id vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lido (`takeIf { it != -1 }`), inyecta `ObtenerCampaniasUseCase` para exponer `campanias` y `onCampaniaChange()`, y `guardar()` valida `campaniaId == null` emitiendo `errorCampania = "Debe seleccionar una campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a"` antes de intentar la inserciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
-- **Issue 7 (UI):** `FormularioCosechaScreen` ahora muestra el componente `SelectorCampania` (etiqueta "CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a vinculada") con texto de error debajo cuando falta seleccionar campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a. El botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Guardar" queda deshabilitado mientras `campaniaId == null`.
-- **Issue 12 (#293):** `guardar()` ya no hace retorno silencioso con campos vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­os: setea `errorCantidad = "La cantidad es obligatoria"`. Adaptado a migraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n DB v5 (campo `unidad` eliminado del modelo).
-- **Issue 12 (UI):** BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Guardar" deshabilitado si hay errores o campos obligatorios vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­os (`cantidad`, `campaniaId`).
-- **Testing:** Creado `FormularioCosechaViewModelTest` con 5 casos (MockK + coroutines-test): sin campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a, cantidad vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a, almacenado vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lido y venta vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lida.
-- **DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n:** Marcados como completos Issues #284 y #293 en `.context/roadmap_iteracion_2.md`; agregados escenarios Given-When-Then en `docs/plan_de_pruebas.md`.
+**[2026-06-10] - Cosechas: Fix Crash FK [#284] y Validación del Formulario [#293]**
+- **Issue 7 (#284):** Eliminado el crash `FOREIGN KEY constraint failed` al guardar una cosecha con `campaniaId = -1`. `FormularioCosechaViewModel` ahora inicializa `campaniaId` como `null` cuando `SavedStateHandle` no recibe un id vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lido (`takeIf { it != -1 }`), inyecta `ObtenerCampaniasUseCase` para exponer `campanias` y `onCampaniaChange()`, y `guardar()` valida `campaniaId == null` emitiendo `errorCampania = "Debe seleccionar una campaña"` antes de intentar la inserción.
+- **Issue 7 (UI):** `FormularioCosechaScreen` ahora muestra el componente `SelectorCampania` (etiqueta "Campaña vinculada") con texto de error debajo cuando falta seleccionar campaña. El botón "Guardar" queda deshabilitado mientras `campaniaId == null`.
+- **Issue 12 (#293):** `guardar()` ya no hace retorno silencioso con campos vacíos: setea `errorCantidad = "La cantidad es obligatoria"`. Adaptado a migración DB v5 (campo `unidad` eliminado del modelo).
+- **Issue 12 (UI):** Botón "Guardar" deshabilitado si hay errores o campos obligatorios vacíos (`cantidad`, `campaniaId`).
+- **Testing:** Creado `FormularioCosechaViewModelTest` con 5 casos (MockK + coroutines-test): sin campaña, cantidad vacía, almacenado vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lido y venta vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lida.
+- **Documentación:** Marcados como completos Issues #284 y #293 en `.context/roadmap_iteracion_2.md`; agregados escenarios Given-When-Then en `docs/plan_de_pruebas.md`.
 - **Rama:** `fix-cosechas-estabilizacion`
 
-**[2026-06-23] - DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Entrega y Casos de Uso**
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `docs/FLOW.md` incorporando diagramas de flujo interactivos Mermaid para cada una de las 8 ramas principales del sistema.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `docs/diferencias_casos_de_uso_2025_2026.md` contrastando la propuesta teÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³rica original (2025) con la implementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n final en Clean Architecture (2026), aplicando el formato tabular de casos de uso requerido en la cursada.
+**[2026-06-23] - Documentación de Entrega y Casos de Uso**
+- Actualización de `docs/FLOW.md` incorporando diagramas de flujo interactivos Mermaid para cada una de las 8 ramas principales del sistema.
+- Creación de `docs/diferencias_casos_de_uso_2025_2026.md` contrastando la propuesta teórica original (2025) con la implementación final en Clean Architecture (2026), aplicando el formato tabular de casos de uso requerido en la cursada.
 
-**[2026-06-09] - PlanificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y DivisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de IteraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 2**
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `docs/bugs_identificados.md` refinando Issues 8, 15, 18, 19, 20 en relaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al rediseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o lineal, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de insumos con Flow y unificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a Toneladas.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `.context/iteracion_2.md` con el roadmap maestro priorizado de L1 a L5.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `docs/roadmap_desarrolladores.md` organizando las tareas para ejecuciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n en paralelo por 3 desarrolladores, con un desglose granular de ramas Git y orden de ejecuciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
+**[2026-06-09] - Planificación y División de Iteración 2**
+- Actualización de `docs/bugs_identificados.md` refinando Issues 8, 15, 18, 19, 20 en relación al rediseño lineal, validación de insumos con Flow y unificación a Toneladas.
+- Creación de `.context/iteracion_2.md` con el roadmap maestro priorizado de L1 a L5.
+- Creación de `docs/roadmap_desarrolladores.md` organizando las tareas para ejecución en paralelo por 3 desarrolladores, con un desglose granular de ramas Git y orden de ejecución.
 
-**[2026-06-09] - SesiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Pruebas Manuales APK Debug ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 23 Issues**
+**[2026-06-09] - Sesión de Pruebas Manuales APK Debug ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ Documentación de 23 Issues**
 - Reescritura completa de `docs/bugs_identificados.md` con 23 issues organizados por severidad (L1-L5).
-- **L1 (Crashes):** Crash por permisos de cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mara no solicitados (Issue 6), crash por FK constraint al registrar cosecha sin campaniaId (Issue 7).
-- **L2 (Bugs Funcionales):** Saludo siempre muestra "Invitado" (Issue 3 actualizado), catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo de insumos sin validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n completa (Issue 8), campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as permiten fechas pasadas (Issue 9), campo hora de tareas sin restricciones (Issue 10), tabs tareas/insumos no se actualizan al cambiar de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a (Issue 11), validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n faltante en formulario cosechas (Issue 12).
-- **L3 (Features Faltantes):** EdiciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n/eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de observaciones (Issue 13) y cosechas (Issue 14), separaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as activas/inactivas (Issue 15), navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n lateral entre campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as (Issue 16), campo hectÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡reas en cosecha (Issue 17).
-- **L4 (Reportes):** Selector de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a en grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico de insumos (Issue 18), grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡fico desglose cosechas (Issue 19), comparaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n real entre campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as (Issue 20).
+- **L1 (Crashes):** Crash por permisos de cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡mara no solicitados (Issue 6), crash por FK constraint al registrar cosecha sin campaniaId (Issue 7).
+- **L2 (Bugs Funcionales):** Saludo siempre muestra "Invitado" (Issue 3 actualizado), catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo de insumos sin validación completa (Issue 8), campañas permiten fechas pasadas (Issue 9), campo hora de tareas sin restricciones (Issue 10), tabs tareas/insumos no se actualizan al cambiar de campaña (Issue 11), validación faltante en formulario cosechas (Issue 12).
+- **L3 (Features Faltantes):** Edición/eliminación de observaciones (Issue 13) y cosechas (Issue 14), separación campañas activas/inactivas (Issue 15), navegación lateral entre campañas (Issue 16), campo hectÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡reas en cosecha (Issue 17).
+- **L4 (Reportes):** Selector de campaña en grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡fico de insumos (Issue 18), grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡fico desglose cosechas (Issue 19), comparación real entre campañas (Issue 20).
 - **L5 (UX):** Bloquear modo oscuro (Issue 21), teclado cubre campos al escribir (Issue 22), tarjetas mock del dashboard (Issue 23).
 
-**[2026-06-09] - GeneraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de APK de Debug para Pruebas**
-- Se generÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ el archivo APK en versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de depuraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (debug) mediante Gradle para facilitar las pruebas manuales en dispositivos fÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­sicos.
+**[2026-06-09] - Generación de APK de Debug para Pruebas**
+- Se generó el archivo APK en versión de depuración (debug) mediante Gradle para facilitar las pruebas manuales en dispositivos físicos.
 
-**[2026-06-04] - Fase 12: SincronizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n, Tests y Refactor (Issue 12.2)**
-- **Roadmap:** Sincronizados y marcados como completos los Issues silentes de permisos, exportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n/importaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de base de datos, BottomNav y Use Cases.
-- **Tests Instrumentados:** Diagnosticados y programados para soluciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n los errores de compilaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de DAOs (`CampaniaDaoTest` y `CampaniaInsumoDaoTest`) que fallaban por nomenclaturas antiguas.
-- **Refactor:** AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida la tarea para limpiar las importaciones comodÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­n (`*`) a lo largo del proyecto para apegarse a las mejores prÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡cticas de Kotlin.
+**[2026-06-04] - Fase 12: Sincronización, Tests y Refactor (Issue 12.2)**
+- **Roadmap:** Sincronizados y marcados como completos los Issues silentes de permisos, exportación/importación de base de datos, BottomNav y Use Cases.
+- **Tests Instrumentados:** Diagnosticados y programados para solución los errores de compilación de DAOs (`CampaniaDaoTest` y `CampaniaInsumoDaoTest`) que fallaban por nomenclaturas antiguas.
+- **Refactor:** Añadida la tarea para limpiar las importaciones comodín (`*`) a lo largo del proyecto para apegarse a las mejores prÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡cticas de Kotlin.
 
-**[2026-06-04] - Hotfix: CorrecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de compilaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y rebase de PR**
-- **Fix:** Corregido error de compilaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n en `ReportesViewModel.kt` causado por una importaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n faltante de la funciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de extensiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n `map` de `StateFlow`.
+**[2026-06-04] - Hotfix: Corrección de compilación y rebase de PR**
+- **Fix:** Corregido error de compilación en `ReportesViewModel.kt` causado por una importación faltante de la función de extensión `map` de `StateFlow`.
 - **Git:** Desecho un commit de merge local y rebasada la rama `feature/171` sobre `main` resolviendo los conflictos en `CHANGELOG.md` para permitir un "Rebase and merge" limpio en GitHub.
 
-**[2026-06-02] - Fase 7: ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Testing y CI/CD (Issue 1 Completo)**
-- **Testing Unitario (Dominio):** Refactor de aserciones para corrutinas (cambio de `assertThrows` por `try-catch`) para arreglar fallos silenciosos. Ampliada la cobertura aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adiendo pruebas a Casos de Uso faltantes (`RegistroUseCaseTest`, `EditarCampaniaUseCaseTest`, `EditarTareaUseCaseTest`, `ObtenerCampaniasUseCaseTest`), subiendo la cobertura del paquete de 26% a 36.2%.
-- **Testing Unitario (PresentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n):** Implementado `LoginViewModelTest` usando Turbine para testear la emisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n asÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­ncrona de `StateFlow`.
+**[2026-06-02] - Fase 7: Implementación de Testing y CI/CD (Issue 1 Completo)**
+- **Testing Unitario (Dominio):** Refactor de aserciones para corrutinas (cambio de `assertThrows` por `try-catch`) para arreglar fallos silenciosos. Ampliada la cobertura añadiendo pruebas a Casos de Uso faltantes (`RegistroUseCaseTest`, `EditarCampaniaUseCaseTest`, `EditarTareaUseCaseTest`, `ObtenerCampaniasUseCaseTest`), subiendo la cobertura del paquete de 26% a 36.2%.
+- **Testing Unitario (Presentación):** Implementado `LoginViewModelTest` usando Turbine para testear la emisión asíncrona de `StateFlow`.
 - **Testing Instrumentado (Datos):** Creados tests en memoria para los DAOs (`UsuarioDaoTest`, `CampaniaDaoTest`, `CampaniaInsumoDaoTest`) simulando un entorno de base de datos Android real con SQLite.
 - **Cobertura y CI/CD:** Corregida la tarea de GitHub Actions (`pr_tests.yml`) para invocar la variante correcta de Android (`koverHtmlReportDebug`), permitiendo la correcta lectura de reportes de cobertura en PRs.
-- **DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n:** Actualizado `plan_de_pruebas.md` documentando el correcto uso de excepciones en corrutinas y el comando especÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­fico de Kover.
+- **Documentación:** Actualizado `plan_de_pruebas.md` documentando el correcto uso de excepciones en corrutinas y el comando específico de Kover.
 
-**[2026-06-02] - Fase 7: PlanificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Estrategia de Testing (Issue 1)**
-- **Testing:** DefiniciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del stack tecnolÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gico (MockK, Turbine, Kover, AndroidX Test, Compose Rule).
-- **DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n Viva:** CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del documento `docs/plan_de_pruebas.md` que incluye:
-  - AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lisis detallado de discrepancias entre el diseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o original (2025) y la arquitectura final implementada.
-  - Escenarios BDD (Behavior-Driven Development) `Given-When-Then` para todos los mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulos de la aplicaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as, Insumos, Tareas, Cosechas, Observaciones, Auth y Backup).
-  - IntegraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n exhaustiva de Edge Cases (Casos de Borde).
-  - Estrategias de comandos de ejecuciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n local y metas de cobertura estricta (Kover 80% en domain, 70% en data).
+**[2026-06-02] - Fase 7: Planificación de Estrategia de Testing (Issue 1)**
+- **Testing:** Definición del stack tecnológico (MockK, Turbine, Kover, AndroidX Test, Compose Rule).
+- **Documentación Viva:** Creación del documento `docs/plan_de_pruebas.md` que incluye:
+  - AnÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lisis detallado de discrepancias entre el diseño original (2025) y la arquitectura final implementada.
+  - Escenarios BDD (Behavior-Driven Development) `Given-When-Then` para todos los módulos de la aplicación (Campañas, Insumos, Tareas, Cosechas, Observaciones, Auth y Backup).
+  - Integración exhaustiva de Edge Cases (Casos de Borde).
+  - Estrategias de comandos de ejecución local y metas de cobertura estricta (Kover 80% en domain, 70% en data).
 - **Roadmap:** Actualizado `.context/RoadmapOP.md` con el progreso en el Issue 1 de la Fase 7.
 
-**[2026-06-02] - Fase 6: ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Reportes a Archivos (Issue 2)**
-- **Dominio:** Creado modelo `InsumoResumen` para abstraer la informaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n exportable.
+**[2026-06-02] - Fase 6: Exportación de Reportes a Archivos (Issue 2)**
+- **Dominio:** Creado modelo `InsumoResumen` para abstraer la información exportable.
 - **Utilidad:** Creada clase `ReportExporter` que utiliza SAF y el ContentResolver para escribir los archivos.
-- **ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n CSV:** Implementada conversiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de datos de gastos por insumo en formato CSV.
-- **ExportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n PDF:** Implementada generaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de documento PDF usando la API nativa de Android `PdfDocument`, dibujando tablas en `Canvas`.
+- **Exportación CSV:** Implementada conversión de datos de gastos por insumo en formato CSV.
+- **Exportación PDF:** Implementada generación de documento PDF usando la API nativa de Android `PdfDocument`, dibujando tablas en `Canvas`.
 - **UI & ViewModel:** Integrados los launchers `ActivityResultContracts.CreateDocument` en `ReportesRendimientoScreen` y conectados a `ReportesViewModel`.
-**[2026-06-01] - Fase 9: RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Arquitectura DB y DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Bugs**
-- **Base de Datos:** Eliminado el soporte de borrado lÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³gico (soft-delete) de la tabla intermedia `CampaniaInsumoEntity`, aplicando borrado fÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­sico estricto (`DELETE`) en `CampaniaInsumoDao` para mantener la integridad referencial limpia.
-- **KSP Fix:** Solucionados conflictos de compilaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Room (KSP) causados por colisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de anotaciones `@Delete` y `@Query`.
-- **Limpieza de CÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³digo:** Removida la propiedad `activo` del dominio, mappers y datos semilla de insumos. Se incrementÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ la base de datos a la versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n 4 forzando `fallbackToDestructiveMigration()`.
-- **Limpieza de Repositorio:** AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adidos archivos de configuraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n locales de Android Studio (`.idea/misc.xml`, `.idea/deploymentTargetSelector.xml`) al `.gitignore` y eliminados del rastreo de git.
-- **DocumentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n:** Creado el archivo `docs/bugs_identificados.md` documentando 4 problemas conocidos listos para la prÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³xima iteraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
+**[2026-06-01] - Fase 9: Refactorización de Arquitectura DB y Documentación de Bugs**
+- **Base de Datos:** Eliminado el soporte de borrado lógico (soft-delete) de la tabla intermedia `CampaniaInsumoEntity`, aplicando borrado físico estricto (`DELETE`) en `CampaniaInsumoDao` para mantener la integridad referencial limpia.
+- **KSP Fix:** Solucionados conflictos de compilación de Room (KSP) causados por colisión de anotaciones `@Delete` y `@Query`.
+- **Limpieza de Código:** Removida la propiedad `activo` del dominio, mappers y datos semilla de insumos. Se incrementó la base de datos a la versión 4 forzando `fallbackToDestructiveMigration()`.
+- **Limpieza de Repositorio:** Añadidos archivos de configuración locales de Android Studio (`.idea/misc.xml`, `.idea/deploymentTargetSelector.xml`) al `.gitignore` y eliminados del rastreo de git.
+- **Documentación:** Creado el archivo `docs/bugs_identificados.md` documentando 4 problemas conocidos listos para la próxima iteración.
 
 **[2026-06-01] - Optimizaciones de Entorno y Datos de Prueba**
-- Migradas rutas locales del JDK (`org.gradle.java.home`) y cachÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© (`gradle.user.home`) desde `gradle.properties` hacia `local.properties` para prevenir sobreescrituras en repositorio compartido.
-- Restaurado botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n condicional de "Cargar datos de prueba" (`BuildConfig.DEBUG`) en `ConfiguracionDBScreen` manteniendo compatibilidad con el nuevo soft-delete (`activo`) de Insumos en el `DataSeederImpl`.
-**[2026-05-31] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Backup y CorrecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de RegresiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n**
-- Implementadas funcionalidades de exportaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n e importaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de base de datos (CU12, CU13) en `ConfiguracionDBScreen`.
+- Migradas rutas locales del JDK (`org.gradle.java.home`) y caché (`gradle.user.home`) desde `gradle.properties` hacia `local.properties` para prevenir sobreescrituras en repositorio compartido.
+- Restaurado botón condicional de "Cargar datos de prueba" (`BuildConfig.DEBUG`) en `ConfiguracionDBScreen` manteniendo compatibilidad con el nuevo soft-delete (`activo`) de Insumos en el `DataSeederImpl`.
+**[2026-05-31] - Implementación de Backup y Corrección de Regresión**
+- Implementadas funcionalidades de exportación e importación de base de datos (CU12, CU13) en `ConfiguracionDBScreen`.
 - Creados Casos de Uso `CrearBackupUseCase` y `RestaurarBackupUseCase`.
-- **Hotfix:** Revertida sobreescritura accidental del archivo `screens.kt` que habÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a eliminado la navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n moderna con `NavHost`.
+- **Hotfix:** Revertida sobreescritura accidental del archivo `screens.kt` que había eliminado la navegación moderna con `NavHost`.
 - Restaurados `CosechaDao.kt`, `gradle.properties` y `.idea/misc.xml` para eliminar cambios locales subidos por error en la PR.
 
 
-**[2026-05-25] - ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Roadmap y BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n Invitado**
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `.context/RoadmapOP.md` con issues finalizados de fase 8, 10 y 11.
-- AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Invitado" para debug en la pantalla de login (F8/Issue 1.8).
+**[2026-05-25] - Actualización de Roadmap y Botón Invitado**
+- Actualización de `.context/RoadmapOP.md` con issues finalizados de fase 8, 10 y 11.
+- Añadido botón "Invitado" para debug en la pantalla de login (F8/Issue 1.8).
 
-**[2026-05-25] - FinalizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de requerimientos fase 2**
-- Implementado swipe semanal para gestiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n visual de Tareas.
-- Implementado catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo de Insumos con ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­conos e integraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a base de datos.
-- Integrado YCharts para grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ficos de pie en Dashboard de Reportes.
-- AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido soporte de Soft-Delete (activo) en vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Insumos.
-- Forzada versiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Room DB a 2 con migraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n destructiva (entorno dev).
-- AÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida DataSeed con iconos e items eliminados para pruebas de UI.
+**[2026-05-25] - Finalización de requerimientos fase 2**
+- Implementado swipe semanal para gestión visual de Tareas.
+- Implementado catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo de Insumos con íconos e integración a base de datos.
+- Integrado YCharts para grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ficos de pie en Dashboard de Reportes.
+- Añadido soporte de Soft-Delete (activo) en vinculación de Insumos.
+- Forzada versión de Room DB a 2 con migración destructiva (entorno dev).
+- Añadida DataSeed con iconos e items eliminados para pruebas de UI.
 - Solucionados errores WorkerDaemon configurando gradle.user.home en entorno local.
-- Actualizados Roadmap y documentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Arquitectura.
+- Actualizados Roadmap y documentación de Arquitectura.
 
-**[2026-05-20] - IntegraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 20 issues de auditorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a en RoadmapOP.md**
-- Fusionados los 20 issues detectados en auditorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a de cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³digo dentro del `RoadmapOP.md` como Fases 8-12, organizados por criticidad.
+**[2026-05-20] - Integración de 20 issues de auditoría en RoadmapOP.md**
+- Fusionados los 20 issues detectados en auditoría de código dentro del `RoadmapOP.md` como Fases 8-12, organizados por criticidad.
 - Agregadas notas de referencia cruzada y de dependencia entre issues.
 - Eliminado `.context/IssuesPendientes.md` (contenido migrado a RoadmapOP.md).
 
-**[2026-05-19] - Implementar autenticaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n, refactor Clean Arch y conectar Use Cases muertos**
-- **Issue 1 (Login completo):** CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `UsuarioDao`, modelo de dominio `Usuario`, mappers, `LoginUseCase` (SHA-256), `RegistroUseCase` y `LoginViewModel`. ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `LoginScreen` y `RegistroScreen`.
-- **Issue 12 (Refactor Clean Arch):** CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 6 UseCases contenedores para queries reactivas. RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 6 ViewModels para inyectar UseCases en lugar de repositorios (`CampaniaFormViewModel`, `CampaniaDetailViewModel`, `TareaViewModel`, `CosechaViewModel`, `InsumoVinculacionViewModel` y `ObservacionViewModel`).
-- **Issue 13 (Use Cases muertos):** ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `EditarTareaUseCase`, `EliminarTareaUseCase`, `EditarInsumoCatalogoUseCase` y creaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `EliminarInsumoCatalogoUseCase`. DiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo de ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n inline en `CatalogoInsumosScreen`.
+**[2026-05-19] - Implementar autenticación, refactor Clean Arch y conectar Use Cases muertos**
+- **Issue 1 (Login completo):** Creación de `UsuarioDao`, modelo de dominio `Usuario`, mappers, `LoginUseCase` (SHA-256), `RegistroUseCase` y `LoginViewModel`. Conexión de `LoginScreen` y `RegistroScreen`.
+- **Issue 12 (Refactor Clean Arch):** Creación de 6 UseCases contenedores para queries reactivas. Refactorización de 6 ViewModels para inyectar UseCases en lugar de repositorios (`CampaniaFormViewModel`, `CampaniaDetailViewModel`, `TareaViewModel`, `CosechaViewModel`, `InsumoVinculacionViewModel` y `ObservacionViewModel`).
+- **Issue 13 (Use Cases muertos):** Conexión de `EditarTareaUseCase`, `EliminarTareaUseCase`, `EditarInsumoCatalogoUseCase` y creación de `EliminarInsumoCatalogoUseCase`. DiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo de edición inline en `CatalogoInsumosScreen`.
 
-**[2026-05-18] - Refactor de GestiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as (F4/Issue9)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `GestionCampaniasViewModel` con carga reactiva de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as desde `ObtenerCampaniasUseCase`.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `GestionCampaniasScreen` reemplazando `GestionParcelasScreen` (mock) con lista real desde BD.
-- CorrecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n: `onGoToDetail` ahora recibe `campaniaId` real del item clickeado.
-- Estado vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o con icono e indicaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n visual para crear campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a.
+**[2026-05-18] - Refactor de Gestión de Campañas (F4/Issue9)**
+- Creación de `GestionCampaniasViewModel` con carga reactiva de campañas desde `ObtenerCampaniasUseCase`.
+- Creación de `GestionCampaniasScreen` reemplazando `GestionParcelasScreen` (mock) con lista real desde BD.
+- Corrección de navegación: `onGoToDetail` ahora recibe `campaniaId` real del item clickeado.
+- Estado vacío con icono e indicación visual para crear campaña.
 
-**[2026-05-18] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo de Observaciones (F4/Issue8)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `ObservacionViewModel` con carga reactiva de observaciones por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a desde BD.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioObservacionViewModel` con formulario reactivo, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a `GuardarObservacionUseCase`.
-- RediseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o de `ObservacionesScreen` con formulario para guardar + listado reactivo de observaciones registradas.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TabObservaciones` en `DetalleCampaniaScreen` con ViewModel por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a y ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºltimas 3 observaciones.
+**[2026-05-18] - Implementación de Módulo de Observaciones (F4/Issue8)**
+- Creación de `ObservacionViewModel` con carga reactiva de observaciones por campaña desde BD.
+- Creación de `FormularioObservacionViewModel` con formulario reactivo, validación y conexión a `GuardarObservacionUseCase`.
+- Rediseño de `ObservacionesScreen` con formulario para guardar + listado reactivo de observaciones registradas.
+- Actualización de `TabObservaciones` en `DetalleCampaniaScreen` con ViewModel por campaña y últimas 3 observaciones.
 
-**[2026-05-18] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n completa CosechaNoAlmacenada (Venta/Reserva)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CosechaNoAlmacenadaDao`, modelo de dominio `CosechaNoAlmacenada`, repositorio e implementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `RegistrarCosechaConVentaUseCase` que inserta cosecha base + detalle de venta/reserva.
-- ExposiciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n del DAO en `DonElioDatabase` y DI en `DatabaseModule`/`RepositoryModule`.
+**[2026-05-18] - Implementación completa CosechaNoAlmacenada (Venta/Reserva)**
+- Creación de `CosechaNoAlmacenadaDao`, modelo de dominio `CosechaNoAlmacenada`, repositorio e implementación.
+- Creación de `RegistrarCosechaConVentaUseCase` que inserta cosecha base + detalle de venta/reserva.
+- Exposición del DAO en `DonElioDatabase` y DI en `DatabaseModule`/`RepositoryModule`.
 - Mappers `toDomain()`/`toEntity()` para `CosechaNoAlmacenadaEntity`.
 - `CosechaRepository.insertCosecha()` ahora retorna `Long` (ID generado).
-- `CosechaViewModel` ampliado: `almacenadas` (filtrado) y `noAlmacenadasDetalle` (mapa idÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢detalle).
-- `FormularioCosechaViewModel.guardar()` bifurca entre `RegistrarCosechaUseCase` y `RegistrarCosechaConVentaUseCase` segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn checkbox.
+- `CosechaViewModel` ampliado: `almacenadas` (filtrado) y `noAlmacenadasDetalle` (mapa id→detalle).
+- `FormularioCosechaViewModel.guardar()` bifurca entre `RegistrarCosechaUseCase` y `RegistrarCosechaConVentaUseCase` según checkbox.
 - `CosechasScreen` muestra tipo y precio en cards de venta/reserva.
-- `TabCosechas` en `DetalleCampaniaScreen` con key ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºnica por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a y resumen real de ventas.
+- `TabCosechas` en `DetalleCampaniaScreen` con key única por campaña y resumen real de ventas.
 
-**[2026-05-18] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo de Cosechas (F4/Issue7)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CosechaViewModel` con carga reactiva de cosechas por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a desde BD.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioCosechaViewModel` con formulario reactivo, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a `RegistrarCosechaUseCase`.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CosechasScreen` con datos reales, separaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n visual almacenadas/no-almacenadas.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioCosechaScreen` con ViewModel, DatePicker, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de cantidad y spinner de guardado.
-- Agregado parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro `campaniaId` opcional a `NavRoute.FormularioCosecha`.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TabCosechas` en `DetalleCampaniaScreen` con datos reales desde BD.
+**[2026-05-18] - Implementación de Módulo de Cosechas (F4/Issue7)**
+- Creación de `CosechaViewModel` con carga reactiva de cosechas por campaña desde BD.
+- Creación de `FormularioCosechaViewModel` con formulario reactivo, validación y conexión a `RegistrarCosechaUseCase`.
+- Refactorización de `CosechasScreen` con datos reales, separación visual almacenadas/no-almacenadas.
+- Refactorización de `FormularioCosechaScreen` con ViewModel, DatePicker, validación de cantidad y spinner de guardado.
+- Agregado parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro `campaniaId` opcional a `NavRoute.FormularioCosecha`.
+- Actualización de `TabCosechas` en `DetalleCampaniaScreen` con datos reales desde BD.
 
 **[2026-05-15] - Seed data para testing (debug source set)**
-- ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `sourceSets { debug { java.srcDir("src/debug/java") } }` en `app/build.gradle.kts`.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de interfaz `DataSeeder` en `src/main/` con `@BindsOptionalOf` para inyecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n opcional en Hilt.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `DataSeederImpl` en `src/debug/` con 4 campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as, 8 insumos, 8 tareas, 3 cosechas, 5 vinculaciones y 4 observaciones con fechas fijas mediante `Calendar`.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `SeedModule` en `src/debug/` proveyendo `DataSeederImpl` vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a Hilt.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `ConfiguracionDBViewModel` con estado `SeedState` (Idle/Cargando/Exito/Error) y mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©todo `cargarDatosPrueba()`.
-- BotÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Cargar datos de prueba" en `ConfiguracionDBScreen` visible solo en builds debug, con spinner y Snackbar de feedback.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `.context/RoadmapOP.md` con Issue 10 de Fase 4.
+- Configuración de `sourceSets { debug { java.srcDir("src/debug/java") } }` en `app/build.gradle.kts`.
+- Creación de interfaz `DataSeeder` en `src/main/` con `@BindsOptionalOf` para inyección opcional en Hilt.
+- Creación de `DataSeederImpl` en `src/debug/` con 4 campañas, 8 insumos, 8 tareas, 3 cosechas, 5 vinculaciones y 4 observaciones con fechas fijas mediante `Calendar`.
+- Creación de `SeedModule` en `src/debug/` proveyendo `DataSeederImpl` vía Hilt.
+- Creación de `ConfiguracionDBViewModel` con estado `SeedState` (Idle/Cargando/Exito/Error) y método `cargarDatosPrueba()`.
+- Botón "Cargar datos de prueba" en `ConfiguracionDBScreen` visible solo en builds debug, con spinner y Snackbar de feedback.
+- Actualización de `.context/RoadmapOP.md` con Issue 10 de Fase 4.
 
-**[2026-05-15] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo de Insumos (F4/Issue6)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `InsumoCatalogoViewModel` e `InsumoVinculacionViewModel` con carga reactiva desde BD.
-- ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CatalogoInsumosScreen` al catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo real con `ObtenerCatalogoInsumosUseCase`.
-- ConexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioInsumoScreen` a `CrearInsumoCatalogoUseCase` con validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y spinner.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `InsumosScreen` (vinculaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n) con datos reales, cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lculo `cantidad ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â� precio` formateado y atajo "Crear nuevo insumo" si no existe en catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioInsumoViewModel` con estado reactivo.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TabInsumos` en `DetalleCampaniaScreen` con conteo real y total estimado.
+**[2026-05-15] - Implementación de Módulo de Insumos (F4/Issue6)**
+- Creación de `InsumoCatalogoViewModel` e `InsumoVinculacionViewModel` con carga reactiva desde BD.
+- Conexión de `CatalogoInsumosScreen` al catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo real con `ObtenerCatalogoInsumosUseCase`.
+- Conexión de `FormularioInsumoScreen` a `CrearInsumoCatalogoUseCase` con validación y spinner.
+- Refactorización de `InsumosScreen` (vinculación) con datos reales, cÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡lculo `cantidad ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â� precio` formateado y atajo "Crear nuevo insumo" si no existe en catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo.
+- Creación de `FormularioInsumoViewModel` con estado reactivo.
+- Actualización de `TabInsumos` en `DetalleCampaniaScreen` con conteo real y total estimado.
 
-**[2026-05-15] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de MÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo de Tareas (F4/Issue5)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TareaViewModel` con carga reactiva de tareas por campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a desde BD.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `NuevaTareaViewModel` con formulario reactivo, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a `CrearTareaUseCase`.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TareasScreen` con datos reales, checkbox de confirmaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n con `ConfirmarTareaUseCase`, feedback visual (tachado + atenuado).
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `NuevaTareaScreen` con `DatePickerDialog` M3, validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de nombre y spinner de guardado.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `TabTareas` en `DetalleCampaniaScreen` con lista real de pendientes y resumen.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `NavRoute.NuevaTarea` con `campaniaId` opcional.
+**[2026-05-15] - Implementación de Módulo de Tareas (F4/Issue5)**
+- Creación de `TareaViewModel` con carga reactiva de tareas por campaña desde BD.
+- Creación de `NuevaTareaViewModel` con formulario reactivo, validación y conexión a `CrearTareaUseCase`.
+- Refactorización de `TareasScreen` con datos reales, checkbox de confirmación con `ConfirmarTareaUseCase`, feedback visual (tachado + atenuado).
+- Refactorización de `NuevaTareaScreen` con `DatePickerDialog` M3, validación de nombre y spinner de guardado.
+- Actualización de `TabTareas` en `DetalleCampaniaScreen` con lista real de pendientes y resumen.
+- Actualización de `NavRoute.NuevaTarea` con `campaniaId` opcional.
 
-**[2026-05-14] - Correcciones de bugs y navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (F4/Issue4)**
-- Bugfix: `CrearCampaniaUseCase` ahora acepta parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro `cultivo` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ el campo ya no se pierde al crear campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as nuevas.
+**[2026-05-14] - Correcciones de bugs y navegación (F4/Issue4)**
+- Bugfix: `CrearCampaniaUseCase` ahora acepta parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro `cultivo` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ el campo ya no se pierde al crear campañas nuevas.
 - Bugfix: `CampaniaFormViewModel` pasa `cultivo` al `crearCampaniaUseCase`.
-- Bugfix: `GestionParcelasScreen`, `TareasScreen`, `InsumosScreen`, `CosechasScreen`, `ObservacionesScreen` ya no hardcodean `campaniaId=1` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ todas las rutas aceptan `campaniaId` opcional y lo propagan correctamente.
-- Limpieza: eliminado parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro `onEditar` no usado en `HeaderCampania`.
+- Bugfix: `GestionParcelasScreen`, `TareasScreen`, `InsumosScreen`, `CosechasScreen`, `ObservacionesScreen` ya no hardcodean `campaniaId=1` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã¯¿Â½ todas las rutas aceptan `campaniaId` opcional y lo propagan correctamente.
+- Limpieza: eliminado parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro `onEditar` no usado en `HeaderCampania`.
 
-**[2026-05-14] - Pantalla Detalle de CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a con Tabs y encabezado fijo (F4/Issue4)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CampaniaDetailViewModel` con `SavedStateHandle` para carga de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a por ID + eliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
-- RediseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±o de `DetalleCampaniaScreen` con TopAppBar dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡mico, encabezado fijo (nombre, cultivo, fechas, estado) y TabRow con 5 tabs: Info, Tareas, Insumos, Cosechas, Observaciones.
-- Cada tab muestra resumen informativo y botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a su pantalla completa, pasando `campaniaId`.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `screens.kt` con `navArgument("campaniaId")` extraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­do y pasado al ViewModel.
-- NavegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n desde detalle a ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a (`onGoToEditar`) con el ID correcto.
+**[2026-05-14] - Pantalla Detalle de Campaña con Tabs y encabezado fijo (F4/Issue4)**
+- Creación de `CampaniaDetailViewModel` con `SavedStateHandle` para carga de campaña por ID + eliminación.
+- Rediseño de `DetalleCampaniaScreen` con TopAppBar dinÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡mico, encabezado fijo (nombre, cultivo, fechas, estado) y TabRow con 5 tabs: Info, Tareas, Insumos, Cosechas, Observaciones.
+- Cada tab muestra resumen informativo y botón de navegación a su pantalla completa, pasando `campaniaId`.
+- Actualización de `screens.kt` con `navArgument("campaniaId")` extraído y pasado al ViewModel.
+- Navegación desde detalle a edición de campaña (`onGoToEditar`) con el ID correcto.
 
-**[2026-05-14] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Formulario ABM CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as con validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y DatePicker (F4/Issue3)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CampaniaFormViewModel` con `SavedStateHandle` para modo ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n/creaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `FormularioCampaniaScreen` con campos nombre/cultivo validados, DatePicker M3, botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n guardar con spinner.
-- ActualizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `NavRoute.FormularioCampania` con `campaniaId` opcional vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a query param.
-- IntegraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CrearCampaniaUseCase` (creaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n) y `EditarCampaniaUseCase` (ediciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n) con `LaunchedEffect` para navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n post-guardado.
+**[2026-05-14] - Implementación de Formulario ABM Campañas con validación y DatePicker (F4/Issue3)**
+- Creación de `CampaniaFormViewModel` con `SavedStateHandle` para modo edición/creación.
+- Refactorización de `FormularioCampaniaScreen` con campos nombre/cultivo validados, DatePicker M3, botón guardar con spinner.
+- Actualización de `NavRoute.FormularioCampania` con `campaniaId` opcional vía query param.
+- Integración de `CrearCampaniaUseCase` (creación) y `EditarCampaniaUseCase` (edición) con `LaunchedEffect` para navegación post-guardado.
 
-**[2026-05-14] - Refactor: divisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de screens.kt en archivos individuales**
-- SeparaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 15 pantallas en archivos por feature (login, home, campania, tarea, cosecha, insumo, observacion, reportes, config).
-- ExtracciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de colores a `theme/AgriCoreColors.kt`.
+**[2026-05-14] - Refactor: división de screens.kt en archivos individuales**
+- Separación de 15 pantallas en archivos por feature (login, home, campania, tarea, cosecha, insumo, observacion, reportes, config).
+- Extracción de colores a `theme/AgriCoreColors.kt`.
 - Componentes compartidos movidos a `components/` (6 archivos).
-- NavegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n migrada a `navigation/NavRoutes.kt` con sealed class `NavRoute`.
-- SimplificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de la ruta `FormularioCampania` (sin parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metro opcional).
+- Navegación migrada a `navigation/NavRoutes.kt` con sealed class `NavRoute`.
+- Simplificación de la ruta `FormularioCampania` (sin parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metro opcional).
 
-**[2026-05-14] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de HomeViewModel y Dashboard reactivo (F4/Issue2)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `HomeViewModel` con inyecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `ObtenerCampaniasUseCase`.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `DashboardOperacionesScreen` para consumir datos reales desde BD.
-- Lista reactiva de campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as con navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n al detalle por ID.
-- Estado vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o con indicaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n visual para crear una nueva campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a.
+**[2026-05-14] - Implementación de HomeViewModel y Dashboard reactivo (F4/Issue2)**
+- Creación de `HomeViewModel` con inyección de `ObtenerCampaniasUseCase`.
+- Refactorización de `DashboardOperacionesScreen` para consumir datos reales desde BD.
+- Lista reactiva de campañas con navegación al detalle por ID.
+- Estado vacío con indicación visual para crear una nueva campaña.
 
-**[2026-05-14] - MigraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a Navigation Compose y Scaffold global (F4/Issue1)**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `NavRoute` (sealed class) reemplazando enum `Destino`.
-- MigraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n manual (lista/pila) a `NavHost` + `NavController`.
-- ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de BottomNavigationBar con preservaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de estado por pestaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a.
-- EliminaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `BackHandler` manual (delegado al NavController).
-- DefiniciciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de rutas con parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡metros (`DetalleCampania`, `FormularioCampania`).
+**[2026-05-14] - Migración a Navigation Compose y Scaffold global (F4/Issue1)**
+- Creación de `NavRoute` (sealed class) reemplazando enum `Destino`.
+- Migración de navegación manual (lista/pila) a `NavHost` + `NavController`.
+- Configuración de BottomNavigationBar con preservación de estado por pestaña.
+- Eliminación de `BackHandler` manual (delegado al NavController).
+- Definicición de rutas con parÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡metros (`DetalleCampania`, `FormularioCampania`).
 
-**[2026-05-12] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Casos de Uso (CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as y Tareas) - F3/Issue4**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
-- Cada Use Case con `@Inject constructor` y validaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de nombre no vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase` y `ConfirmarTareaUseCase`.
+**[2026-05-12] - Implementación de Casos de Uso (Campañas y Tareas) - F3/Issue4**
+- Creación de `CrearCampaniaUseCase`, `EditarCampaniaUseCase`, `EliminarCampaniaUseCase` y `ObtenerCampaniasUseCase`.
+- Cada Use Case con `@Inject constructor` y validación de nombre no vacío.
+- Creación de `CrearTareaUseCase`, `EditarTareaUseCase`, `EliminarTareaUseCase` y `ConfirmarTareaUseCase`.
 
-**[2026-05-14] - ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Resource<T> y manejo de errores en Use Cases**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `Resource<T>` en `domain/model/` con extensiones `onSuccess`, `onError`, `isSuccess`, `isError`.
-- RefactorizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de 7 Use Cases para retornar `Flow<Resource<Unit>>` con emisiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Loading, Success y Error.
-- Manejo de excepciones con try/catch y ejecuciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n en `Dispatchers.IO` mediante `flowOn`.
+**[2026-05-14] - Implementación de Resource<T> y manejo de errores en Use Cases**
+- Creación de `Resource<T>` en `domain/model/` con extensiones `onSuccess`, `onError`, `isSuccess`, `isError`.
+- Refactorización de 7 Use Cases para retornar `Flow<Resource<Unit>>` con emisión de Loading, Success y Error.
+- Manejo de excepciones con try/catch y ejecución en `Dispatchers.IO` mediante `flowOn`.
 
-**[2026-05-14] - CorrecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de mapeo Campania, unificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de nomenclatura e implementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Use Cases faltantes**
-- Corregido mapeo bidireccional `Campania` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ `CampaniaEntity`: agregado `cultivo` al modelo de dominio y `estaActiva` a la entidad; eliminados hardcodeos en `Mappers.kt`.
-- Renombrado `campaniaId` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ `idCampania` en `TareaRepository`, `CosechaRepository` y sus implementaciones.
+**[2026-05-14] - Corrección de mapeo Campania, unificación de nomenclatura e implementación de Use Cases faltantes**
+- Corregido mapeo bidireccional `Campania` → `CampaniaEntity`: agregado `cultivo` al modelo de dominio y `estaActiva` a la entidad; eliminados hardcodeos en `Mappers.kt`.
+- Renombrado `campaniaId` → `idCampania` en `TareaRepository`, `CosechaRepository` y sus implementaciones.
 - Creados modelos de dominio `Observacion` y `CampaniaInsumo` para mantener la pureza de la capa domain.
 - Creados `CampaniaInsumoRepository` y `ObservacionRepository` con sus implementaciones y bindings de Hilt.
-- Agregados mappers para `ObservacionEntity` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ `Observacion` y `CampaniaInsumoEntity` ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¯Â¿Â½ `CampaniaInsumo`.
+- Agregados mappers para `ObservacionEntity` → `Observacion` y `CampaniaInsumoEntity` → `CampaniaInsumo`.
 - Implementados 6 casos de uso: `RegistrarCosechaUseCase`, `CrearInsumoCatalogoUseCase`, `EditarInsumoCatalogoUseCase`, `ObtenerCatalogoInsumosUseCase`, `AsignarInsumoACampaniaUseCase`, `GuardarObservacionUseCase`.
 
-**[2026-05-12] - Card campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a activa en Tareas/Cosechas/Observaciones + botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n exportar en Reportes + diagrama de flujo**
-- TareasScreen, CosechasScreen y ObservacionesScreen: aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adida `CampanaSeleccionadaCard` de la campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a activa.
-- ReportesRendimientoScreen: aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de exportar (Excel/PDF) en TopAppBar con `DropdownMenu`.
-- Creado `docs/FLOW.md` con diagrama Mermaid de navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n y tabla de cobertura de Casos de Uso.
+**[2026-05-12] - Card campaña activa en Tareas/Cosechas/Observaciones + botón exportar en Reportes + diagrama de flujo**
+- TareasScreen, CosechasScreen y ObservacionesScreen: añadida `CampanaSeleccionadaCard` de la campaña activa.
+- ReportesRendimientoScreen: añadido botón de exportar (Excel/PDF) en TopAppBar con `DropdownMenu`.
+- Creado `docs/FLOW.md` con diagrama Mermaid de navegación y tabla de cobertura de Casos de Uso.
 
-**[2026-05-12] - Refactor de navegaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n global, mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³dulo de insumos y reportes**
-- BottomNav: aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adido acceso directo a `Destino.Insumos`; renombrado "Agenda" ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ "Tareas" y "Parcelas" ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ "CampaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as".
-- Home: `CampaniaSeleccionadaCard` ahora navega a `DetalleCampania`; botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n + navega a `FormularioCampania`.
-- InsumosScreen: reemplazado formulario inline por `ModalBottomSheet` con buscador, selector cantidad/precio y botÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n "Agregar al catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡logo".
-- FormularioInsumoScreen: simplificado a solo campos Nombre, CategorÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­a y Unidad.
-- ReportesRendimientoScreen: aÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±adidas tarjetas de mÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©tricas comparativas (Rendimiento, Ganancias, Costos, Insumos); selector dropdown para comparar dos campaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±as; grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ficos Canvas de evoluciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n mensual (Costos/Insumos) con leyenda bicolor.
+**[2026-05-12] - Refactor de navegación global, módulo de insumos y reportes**
+- BottomNav: añadido acceso directo a `Destino.Insumos`; renombrado "Agenda" → "Tareas" y "Parcelas" → "Campañas".
+- Home: `CampaniaSeleccionadaCard` ahora navega a `DetalleCampania`; botón + navega a `FormularioCampania`.
+- InsumosScreen: reemplazado formulario inline por `ModalBottomSheet` con buscador, selector cantidad/precio y botón "Agregar al catÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡logo".
+- FormularioInsumoScreen: simplificado a solo campos Nombre, Categoría y Unidad.
+- ReportesRendimientoScreen: añadidas tarjetas de métricas comparativas (Rendimiento, Ganancias, Costos, Insumos); selector dropdown para comparar dos campañas; grÃƒÆ’Ã†â€™Ãƒâ€šÃ‚¡ficos Canvas de evolución mensual (Costos/Insumos) con leyenda bicolor.
 
-**[2026-05-12] - InicializaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de documentaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de seguimiento**
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `CHANGELOG.md` en la raÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­z para el seguimiento de tareas.
+**[2026-05-12] - Inicialización de documentación de seguimiento**
+- Creación de `CHANGELOG.md` en la raíz para el seguimiento de tareas.
 - Ajuste de `donelioOP.md` para referenciar `.context/RoadmapOP.md`.
 
 **[2026-05-11] - Avance en Fase 3 (Capa de Dominio)**
-- DefiniciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de modelos de dominio (`data class` puros).
-- ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de `Mappers.kt`.
-- CreaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de interfaces de repositorios (`CampaniaRepository`, `TareaRepository`, etc.).
-- ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n base de los repositorios en la capa `data`.
+- Definición de modelos de dominio (`data class` puros).
+- Implementación de `Mappers.kt`.
+- Creación de interfaces de repositorios (`CampaniaRepository`, `TareaRepository`, etc.).
+- Implementación base de los repositorios en la capa `data`.
 
-**[2026-05-10] - FinalizaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Fase 1 y Fase 2**
-- ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n inicial del proyecto, dependencias y estructura de Clean Architecture.
-- ImplementaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n completa de la capa de datos: Entidades Room, TypeConverters y DAOs.
-- ConfiguraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Dagger-Hilt para inyecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de dependencias.
+**[2026-05-10] - Finalización de Fase 1 y Fase 2**
+- Configuración inicial del proyecto, dependencias y estructura de Clean Architecture.
+- Implementación completa de la capa de datos: Entidades Room, TypeConverters y DAOs.
+- Configuración de Dagger-Hilt para inyección de dependencias.
 
-**[2026-08-21] - Fix InserciÃƒÆ’Ã‚Â³n de Insumos al CatÃƒÆ’Ã‚Â¡logo [#334]**
-- Se corrigiÃƒÆ’Ã‚Â³ un error donde FormularioInsumoViewModel leÃƒÆ’Ã‚Â­a un insumoId = -1 por defecto y causaba que se ejecutara el flujo de actualizaciÃƒÆ’Ã‚Â³n silenciosamente en lugar de crear uno nuevo.
+**[2026-08-21] - Fix Inserción de Insumos al CatÃƒÆ’Ã‚¡logo [#334]**
+- Se corrigió un error donde FormularioInsumoViewModel leía un insumoId = -1 por defecto y causaba que se ejecutara el flujo de actualización silenciosamente en lugar de crear uno nuevo.
 
-**[2026-08-21] - Fix EdiciÃƒÆ’Ã‚Â³n de Cosechas [#335]**
-- Se agregÃƒÆ’Ã‚Â³ el parÃƒÆ’Ã‚Â¡metro cosechaId a la ruta de navegaciÃƒÆ’Ã‚Â³n de FormularioCosecha y se vinculÃƒÆ’Ã‚Â³ el evento onEditarCosecha para permitir la ediciÃƒÆ’Ã‚Â³n correcta de las cosechas.
+**[2026-08-21] - Fix Edición de Cosechas [#335]**
+- Se agregó el parÃƒÆ’Ã‚¡metro cosechaId a la ruta de navegación de FormularioCosecha y se vinculó el evento onEditarCosecha para permitir la edición correcta de las cosechas.
 
-**[2026-08-21] - Fix ValidaciÃƒÆ’Ã‚Â³n de Formulario de Cosechas [#336]**
-- Se aÃƒÆ’Ã‚Â±adiÃƒÆ’Ã‚Â³ una propiedad errorGeneral para evitar que todos los errores del formulario de cosecha se agruparan errÃƒÆ’Ã‚Â³neamente en el campo cantidad, mostrando en cambio un Snackbar universal.
-**[2026-08-21] - Fix Reportes ExportaciÃƒÆ’Ã‚Â³n vacÃƒÆ’Ã‚Â­a y Comparador [#355] [#356]**
-- Se agregÃƒÆ’Ã‚Â³ una guardia en ReportesViewModel para evitar exportar PDFs o CSVs vacÃƒÆ’Ã‚Â­os cuando no hay datos en la campaÃƒÆ’Ã‚Â±a seleccionada.
-- Se implementÃƒÆ’Ã‚Â³ una tarjeta de advertencia en ReportesRendimientoScreen para prevenir que el usuario seleccione la misma campaÃƒÆ’Ã‚Â±a en ambos selectores del comparador, documentando el caso en el plan de pruebas.
+**[2026-08-21] - Fix Validación de Formulario de Cosechas [#336]**
+- Se añadió una propiedad errorGeneral para evitar que todos los errores del formulario de cosecha se agruparan erróneamente en el campo cantidad, mostrando en cambio un Snackbar universal.
+**[2026-08-21] - Fix Reportes Exportación vacía y Comparador [#355] [#356]**
+- Se agregó una guardia en ReportesViewModel para evitar exportar PDFs o CSVs vacíos cuando no hay datos en la campaña seleccionada.
+- Se implementó una tarjeta de advertencia en ReportesRendimientoScreen para prevenir que el usuario seleccione la misma campaña en ambos selectores del comparador, documentando el caso en el plan de pruebas.
 **[2026-08-21] - Fix UI Detalles y Reportes [#339] [#340]**
-- Se migrÃƒÆ’Ã‚Â³ el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestaÃƒÆ’Ã‚Â±as se corten o dividan en varias lÃƒÆ’Ã‚Â­neas.
-- Se ocultÃƒÆ’Ã‚Â³ la leyenda por defecto de los grÃƒÆ’Ã‚Â¡ficos PieChart en ReportesRendimientoScreen y se creÃƒÆ’Ã‚Â³ una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el grÃƒÆ’Ã‚Â¡fico.
+- Se migró el TabRow a ScrollableTabRow en DetalleCampaniaScreen para evitar que los nombres de las pestañas se corten o dividan en varias líneas.
+- Se ocultó la leyenda por defecto de los grÃƒÆ’Ã‚¡ficos PieChart en ReportesRendimientoScreen y se creó una leyenda manual debajo utilizando FlowRow, solucionando el problema de solapamiento de etiquetas en el grÃƒÆ’Ã‚¡fico.
 
 
 
