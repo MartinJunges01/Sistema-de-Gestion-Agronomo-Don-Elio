@@ -41,6 +41,7 @@ Los módulos operativos deberían aislarse completamente de las campañas archiv
 
 **Criterios de Aceptación**
 - [ ] Refactorizar repositorios o UseCases de listado (ej: `ObtenerTareasFiltradasUseCase`) para que, si el `campaniaId` es nulo, devuelvan únicamente los registros pertenecientes a campañas activas.
+
 ## [PENDIENTE-DT-467] Lógica de cálculo financiero duplicada entre HomeViewModel y ReportesViewModel
 
 **Severidad:** 🔴 Deuda Técnica (DRY / Clean Architecture)
@@ -53,6 +54,20 @@ Al implementar el Issue #467, se creó `ObtenerResumenFinancieroPorFiltrosUseCas
 **Criterios de Aceptación**
 - [ ] Refactorizar `HomeViewModel` para consumir `ObtenerResumenFinancieroPorFiltrosUseCase` con filtros vacíos.
 - [ ] Eliminar `ObtenerResumenRendimientoUseCase` si ya no es utilizado por ninguna otra pantalla.
+
+## [PENDIENTE] Falta SnackbarHost en TareasScreen para mostrar errores del ViewModel
+
+**Severidad:** 🔵 UX / Deuda Técnica
+**Módulo:** Tareas
+**Archivo afectado:** `TareasScreen.kt`
+
+**Descripción**
+El `TareaViewModel` gestiona un estado `errorMessage` para emitir mensajes informativos (ej. "Error al actualizar estado de tarea"), pero la vista `TareasScreen` no tiene implementado un `SnackbarHost` ni recolecta este estado, por lo que estos errores fallan silenciosamente.
+
+**Criterios de Aceptación**
+- [ ] Implementar un `SnackbarHost` en el componente principal de `TareasScreen`.
+- [ ] Mostrar el mensaje recolectando `viewModel.errorMessage`.
+- [ ] Limpiar el error llamando a `viewModel.clearError()` luego de mostrarlo.
 
 ---
 
