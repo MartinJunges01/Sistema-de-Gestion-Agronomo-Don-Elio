@@ -34,7 +34,7 @@ fun FormularioInsumoScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
-    val iconosDisponibles = listOf("🧪", "💧", "🌱", "💊", "🛢️", "🌡️", "❄️", "🔥", "💨", "🍂")
+    val iconosDisponibles = listOf("🌱", "💧", "💊", "⛽", "⚙️", "🚜", "📦", "🧪", "🌾", "✂️")
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(state.guardadoExitoso) {
