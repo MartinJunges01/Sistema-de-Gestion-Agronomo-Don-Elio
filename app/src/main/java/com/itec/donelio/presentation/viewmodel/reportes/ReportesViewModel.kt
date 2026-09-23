@@ -56,8 +56,6 @@ class ReportesViewModel @Inject constructor(
     obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase,
     obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase,
-    private val obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase,
-    private val obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase,
     private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase,
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase,
     private val obtenerResumenFinancieroPorFiltrosUseCase: ObtenerResumenFinancieroPorFiltrosUseCase
@@ -117,23 +115,6 @@ class ReportesViewModel @Inject constructor(
     // Sección 1 — Estadísticas de campaña individual
     // ──────────────────────────────────────────────
 
-    val cultivos: StateFlow<List<com.itec.donelio.domain.model.Cultivo>> = obtenerCultivosUseCase()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
-    private val _cultivoSeleccionado = MutableStateFlow<com.itec.donelio.domain.model.Cultivo?>(null)
-    val cultivoSeleccionado: StateFlow<com.itec.donelio.domain.model.Cultivo?> = _cultivoSeleccionado.asStateFlow()
-
-    fun seleccionarCultivo(cultivo: com.itec.donelio.domain.model.Cultivo) {
-        _cultivoSeleccionado.value = cultivo
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val evolucionCultivo: StateFlow<List<com.itec.donelio.domain.model.PuntoCultivo>> = _cultivoSeleccionado
-        .flatMapLatest { cultivo ->
-            if (cultivo != null) obtenerEvolucionCultivoUseCase(cultivo.id)
-            else flowOf(emptyList())
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _campaniaIndividual = MutableStateFlow<Campania?>(null)
     val campaniaIndividual: StateFlow<Campania?> = _campaniaIndividual.asStateFlow()

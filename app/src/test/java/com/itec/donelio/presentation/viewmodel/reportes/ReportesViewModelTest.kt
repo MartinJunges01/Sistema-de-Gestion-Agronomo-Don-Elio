@@ -49,8 +49,6 @@ class ReportesViewModelTest {
     private lateinit var obtenerCosechasPorCampaniaUseCase: ObtenerCosechasPorCampaniaUseCase
     private lateinit var obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase
     private lateinit var calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase
-    private lateinit var obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase
-    private lateinit var obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase
     private lateinit var obtenerResumenFinancieroPorFiltrosUseCase: ObtenerResumenFinancieroPorFiltrosUseCase
     private lateinit var viewModel: ReportesViewModel
 
@@ -67,8 +65,6 @@ class ReportesViewModelTest {
         obtenerCosechasPorCampaniaUseCase = mockk()
         obtenerCatalogoInsumosUseCase = mockk()
         calcularCostoPorHectareaUseCase = mockk()
-        obtenerCultivosUseCase = mockk()
-        obtenerEvolucionCultivoUseCase = mockk()
         obtenerResumenFinancieroPorFiltrosUseCase = mockk()
 
         every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
@@ -76,8 +72,6 @@ class ReportesViewModelTest {
         every { obtenerCosechasPorCampaniaUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerCatalogoInsumosUseCase() } returns flowOf(emptyList())
         every { calcularCostoPorHectareaUseCase(any(), any()) } returns 0.0
-        every { obtenerCultivosUseCase() } returns flowOf(emptyList())
-        every { obtenerEvolucionCultivoUseCase(any<Int>()) } returns flowOf(emptyList())
         every { obtenerResumenFinancieroPorFiltrosUseCase(any(), any()) } returns flowOf(null)
     }
 
@@ -92,8 +86,6 @@ class ReportesViewModelTest {
         obtenerCosechasPorCampaniaUseCase = obtenerCosechasPorCampaniaUseCase,
         obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase,
         calcularCostoPorHectareaUseCase = calcularCostoPorHectareaUseCase,
-        obtenerCultivosUseCase = obtenerCultivosUseCase,
-        obtenerEvolucionCultivoUseCase = obtenerEvolucionCultivoUseCase,
         editarCampaniaInsumoUseCase = mockk(),
         desvincularInsumoUseCase = mockk(),
         obtenerResumenFinancieroPorFiltrosUseCase = obtenerResumenFinancieroPorFiltrosUseCase

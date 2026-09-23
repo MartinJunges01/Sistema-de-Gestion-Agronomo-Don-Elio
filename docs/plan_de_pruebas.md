@@ -1742,8 +1742,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃƒÂƒÃ�
 ## Pruebas de Estabilizacion - Iteracion 5 (Issues #434, #438, #440)
 
 ### Reportes UI
-- **UI-R1 (Issue #438):** Given una unica campania finalizada / When se visualiza la evolucion historica / Then el unico punto se centra horizontal y verticalmente en el Canvas.
-- **UI-R2 (Issue #434):** Given un nombre de campania muy largo / When se renderiza el eje X del grafico / Then el texto se trunca a 12 caracteres con '...'.
+- **Eliminado:** Gráfico de evolución histórica eliminado en Issue #468, tests obsoletos removidos.
 
 ### Insumos UI
 - **UI-I1 (Issue #440):** Given el formulario de Nuevo Insumo / When se tipean caracteres Unicode/Emojis complejos / Then se insertan y guardan correctamente en la BD local.
