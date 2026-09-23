@@ -33,6 +33,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TareasScreen(
@@ -46,18 +49,31 @@ fun TareasScreen(
     val filtroCampania by viewModel.filtroCampania.collectAsState()
     val filtroFechas by viewModel.filtroFechas.collectAsState()
     val isCampaniaValid by viewModel.isCampaniaValid.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     var mostrarSelectorFechas by remember { mutableStateOf(false) }
     var mostrarMenuCampanias by remember { mutableStateOf(false) }
     
     var tareaAEliminar by remember { mutableStateOf<com.itec.donelio.domain.model.Tarea?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
 
     val pendientes = tareasUi.filter { !it.tarea.confirmar }
     val completadas = tareasUi.filter { it.tarea.confirmar }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Agenda y Tareas", fontWeight = FontWeight.Bold) },
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = AgriFondo
+    ) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            TopAppBar(
+                title = { Text("Agenda y Tareas", fontWeight = FontWeight.Bold) },
             navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver") } },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = AgriFondo)
         )
@@ -187,6 +203,7 @@ fun TareasScreen(
                 }
             }
         }
+    }
     }
 
     LaunchedEffect(Unit) {

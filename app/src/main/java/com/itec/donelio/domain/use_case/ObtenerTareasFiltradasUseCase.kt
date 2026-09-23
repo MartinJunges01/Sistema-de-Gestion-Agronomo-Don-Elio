@@ -2,13 +2,16 @@ package com.itec.donelio.domain.use_case
 
 import com.itec.donelio.domain.model.Tarea
 import com.itec.donelio.domain.repository.TareaRepository
+import com.itec.donelio.domain.repository.CampaniaRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.util.Calendar
 import javax.inject.Inject
 
 class ObtenerTareasFiltradasUseCase @Inject constructor(
-    private val tareaRepository: TareaRepository
+    private val tareaRepository: TareaRepository,
+    private val campaniaRepository: CampaniaRepository
 ) {
     operator fun invoke(
         campaniaId: Int?,
@@ -17,7 +20,13 @@ class ObtenerTareasFiltradasUseCase @Inject constructor(
         val baseFlow = if (campaniaId != null && campaniaId != -1) {
             tareaRepository.getTareasByCampania(campaniaId)
         } else {
-            tareaRepository.getAllTareas()
+            combine(
+                tareaRepository.getAllTareas(),
+                campaniaRepository.getCampaniasActivas()
+            ) { tareas, activas ->
+                val idsActivos = activas.map { it.id }.toSet()
+                tareas.filter { it.idCampania in idsActivos }
+            }
         }
 
         return baseFlow.map { tareas ->

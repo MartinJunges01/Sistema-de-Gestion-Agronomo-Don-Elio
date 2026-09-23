@@ -179,7 +179,7 @@ fun InsumoAgrupado(
                         }
                     }
                     Text(
-                        "${FormatUtils.formatCantidad(cantidadTotal)} total — ${FormatUtils.formatMoneda(costoTotal)}",
+                        "${FormatUtils.formatCantidad(cantidadTotal)} total - ${FormatUtils.formatMoneda(costoTotal)}",
                         fontSize = 12.sp,
                         color = if (costoTotal > 0) AgriVerde else TextoSecundario
                     )
@@ -252,7 +252,7 @@ fun FilaRegistroIndividual(
         Spacer(modifier = Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                "${FormatUtils.formatCantidad(registro.cantidad)} × ${FormatUtils.formatMoneda(registro.precio)} = ${FormatUtils.formatMoneda(costoParcial)}",
+                "${FormatUtils.formatCantidad(registro.cantidad)} x ${FormatUtils.formatMoneda(registro.precio)} = ${FormatUtils.formatMoneda(costoParcial)}",
                 fontSize = 13.sp,
                 color = TextoPrincipal
             )
