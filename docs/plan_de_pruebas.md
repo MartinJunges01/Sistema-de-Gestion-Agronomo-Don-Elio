@@ -1,4 +1,4 @@
-﻿# Plan Estratégico y Casos de Prueba (Living Documentation)
+# Plan Estratégico y Casos de Prueba (Living Documentation)
 
 Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
 
@@ -440,6 +440,18 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 ---
 
 ## Módulo de Reportes
+
+#### ObtenerResumenFinancieroPorFiltrosUseCase [#467]
+
+**Test UC-RF1: Filtros vacíos suma todos los registros**
+*   **Given:** Insumos, cosechas y ventas en la base de datos sin filtro de campaña ni fechas.
+*   **When:** Se invoca el UseCase.
+*   **Then:** Devuelve el resumen sumando el total global (coincidiendo con Dashboard).
+
+**Test UC-RF2: Filtros aplicados acotan el resultado**
+*   **Given:** Insumos, cosechas y ventas de distintas campañas.
+*   **When:** Se invoca el UseCase con `campaniasIds = [1]`.
+*   **Then:** Devuelve el resumen filtrado solo considerando registros vinculados a la campaña 1.
 
 #### ReportesViewModel Ã¢Â€Â” StateFlows contextuales [#299]
 

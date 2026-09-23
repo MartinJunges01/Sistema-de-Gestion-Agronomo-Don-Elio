@@ -34,8 +34,7 @@ import javax.inject.Inject
 import com.itec.donelio.domain.use_case.EditarCampaniaInsumoUseCase
 import com.itec.donelio.domain.use_case.DesvincularInsumoUseCase
 
-import com.itec.donelio.domain.use_case.ObtenerTodosLosInsumosUtilizadosUseCase
-import com.itec.donelio.domain.use_case.ObtenerTodasLasCosechasUseCase
+import com.itec.donelio.domain.use_case.ObtenerResumenFinancieroPorFiltrosUseCase
 
 /**
  * ViewModel de la pantalla de Reportes y Análisis.
@@ -59,10 +58,9 @@ class ReportesViewModel @Inject constructor(
     private val calcularCostoPorHectareaUseCase: CalcularCostoPorHectareaUseCase,
     private val obtenerCultivosUseCase: com.itec.donelio.domain.use_case.ObtenerCultivosUseCase,
     private val obtenerEvolucionCultivoUseCase: com.itec.donelio.domain.use_case.ObtenerEvolucionCultivoUseCase,
-    private val obtenerTodosLosInsumosUtilizadosUseCase: ObtenerTodosLosInsumosUtilizadosUseCase,
-    private val obtenerTodasLasCosechasUseCase: ObtenerTodasLasCosechasUseCase,
     private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase,
-    private val desvincularInsumoUseCase: DesvincularInsumoUseCase
+    private val desvincularInsumoUseCase: DesvincularInsumoUseCase,
+    private val obtenerResumenFinancieroPorFiltrosUseCase: ObtenerResumenFinancieroPorFiltrosUseCase
 ) : ViewModel() {
 
     // ──────────────────────────────────────────────
@@ -101,36 +99,11 @@ class ReportesViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val resumenFiltrado: StateFlow<com.itec.donelio.domain.use_case.ResumenRendimiento?> = combine(
         _filtroCampaniasMulti,
-        _filtroRangoFechas,
-        obtenerTodosLosInsumosUtilizadosUseCase(),
-        obtenerTodasLasCosechasUseCase()
-    ) { filtroCamps, filtroFechas, todosInsumos, todasCosechas ->
-        
-        // Filtrar insumos
-        val insumosFiltrados = if (filtroCamps.isNotEmpty()) {
-            todosInsumos.filter { it.idCampania in filtroCamps }
-        } else {
-            todosInsumos
-        }
-        val capitalInvertido = insumosFiltrados.sumOf { it.cantidad * it.precio }
-
-        // Filtrar cosechas
-        val cosechasFiltradas = todasCosechas.filter { cosecha ->
-            val pasaCampania = if (filtroCamps.isNotEmpty()) cosecha.idCampania in filtroCamps else true
-            val pasaFecha = if (filtroFechas != null) {
-                cosecha.fecha in filtroFechas.first..filtroFechas.second
-            } else true
-            pasaCampania && pasaFecha
-        }
-        val totalCosechado = cosechasFiltradas.sumOf { it.cantidad }
-
-        val costoPorTn = if (totalCosechado > 0) capitalInvertido / totalCosechado else 0.0
-
-        com.itec.donelio.domain.use_case.ResumenRendimiento(
-            capitalInvertido = capitalInvertido,
-            totalCosechado = totalCosechado,
-            costoPorTonelada = costoPorTn
-        )
+        _filtroRangoFechas
+    ) { filtroCamps, filtroFechas ->
+        Pair(filtroCamps, filtroFechas)
+    }.flatMapLatest { (filtroCamps, filtroFechas) ->
+        obtenerResumenFinancieroPorFiltrosUseCase(filtroCamps, filtroFechas)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     // ──────────────────────────────────────────────

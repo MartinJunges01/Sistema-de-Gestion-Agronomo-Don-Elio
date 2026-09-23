@@ -150,7 +150,7 @@ fun ReportesRendimientoScreen(
                 val resumenFiltrado by viewModel.resumenFiltrado.collectAsState()
 
                 Text(
-                    "Resumen Productivo-Financiero",
+                    "Resumen Financiero",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = TextoPrincipal
@@ -286,17 +286,17 @@ fun ReportesRendimientoScreen(
                             modifier = Modifier.weight(1f)
                         )
                         TarjetaMetrica(
-                            titulo = "Volumen Cosechado",
-                            valor = FormatUtils.formatCantidad(resumenFiltrado!!.totalCosechado, "Tn"),
-                            icono = Icons.Default.Grain,
+                            titulo = "Ingresos Brutos",
+                            valor = FormatUtils.formatMoneda(resumenFiltrado!!.ingresosBrutos),
+                            icono = Icons.Default.AttachMoney,
                             color = AgriAzul,
                             modifier = Modifier.weight(1f)
                         )
                         TarjetaMetrica(
-                            titulo = "Costo/Tn",
-                            valor = FormatUtils.formatMoneda(resumenFiltrado!!.costoPorTonelada),
-                            icono = Icons.Default.MonetizationOn,
-                            color = Color(0xFFb91c1c),
+                            titulo = "Balance",
+                            valor = FormatUtils.formatMoneda(resumenFiltrado!!.balance),
+                            icono = Icons.Default.AccountBalanceWallet,
+                            color = if (resumenFiltrado!!.balance >= 0) AgriVerde else MaterialTheme.colorScheme.error,
                             modifier = Modifier.weight(1f)
                         )
                     }
