@@ -5,7 +5,7 @@ import com.itec.donelio.domain.model.Observacion
 import com.itec.donelio.domain.model.Resource
 import com.itec.donelio.domain.use_case.EditarObservacionUseCase
 import com.itec.donelio.domain.use_case.EliminarObservacionUseCase
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerObservacionesPorCampaniaUseCase
 import io.mockk.coEvery
 import io.mockk.every
@@ -29,7 +29,7 @@ class ObservacionViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var obtenerObservacionesPorCampaniaUseCase: ObtenerObservacionesPorCampaniaUseCase
-    private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var editarObservacionUseCase: EditarObservacionUseCase
     private lateinit var eliminarObservacionUseCase: EliminarObservacionUseCase
     private lateinit var validarObservacionUseCase: com.itec.donelio.domain.use_case.ValidarObservacionUseCase
@@ -40,13 +40,13 @@ class ObservacionViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         obtenerObservacionesPorCampaniaUseCase = mockk()
-        obtenerCampaniasUseCase = mockk()
+        obtenerCampaniasActivasUseCase = mockk()
         editarObservacionUseCase = mockk()
         eliminarObservacionUseCase = mockk()
         validarObservacionUseCase = com.itec.donelio.domain.use_case.ValidarObservacionUseCase()
         savedStateHandle = SavedStateHandle(mapOf("campaniaId" to 1))
 
-        every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
+        every { obtenerCampaniasActivasUseCase() } returns flowOf(emptyList())
         every { obtenerObservacionesPorCampaniaUseCase(any()) } returns flowOf(emptyList())
 
         val mockManager = mockk<com.itec.donelio.presentation.state.UltimaSeleccionManager>(relaxed = true)
@@ -56,7 +56,7 @@ class ObservacionViewModelTest {
             savedStateHandle = savedStateHandle,
             ultimaSeleccionManager = mockManager,
             obtenerObservacionesPorCampaniaUseCase = obtenerObservacionesPorCampaniaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             editarObservacionUseCase = editarObservacionUseCase,
             eliminarObservacionUseCase = eliminarObservacionUseCase,
             validarObservacionUseCase = validarObservacionUseCase

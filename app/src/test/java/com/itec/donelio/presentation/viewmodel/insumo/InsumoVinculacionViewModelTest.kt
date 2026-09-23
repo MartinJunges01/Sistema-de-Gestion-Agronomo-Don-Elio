@@ -32,7 +32,7 @@ class InsumoVinculacionViewModelTest {
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase = mockk()
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase = mockk()
     private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase = mockk()
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase = mockk()
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase = mockk()
 
     @Before
     fun setup() {
@@ -41,7 +41,7 @@ class InsumoVinculacionViewModelTest {
         every { ultimaSeleccionManager.campaniaIdSeleccionada } returns MutableStateFlow(null)
         every { obtenerInsumosVinculadosUseCase(any()) } returns emptyFlow()
         every { obtenerCatalogoInsumosUseCase() } returns emptyFlow()
-        every { obtenerCampaniasUseCase() } returns emptyFlow()
+        every { obtenerCampaniasActivasUseCase() } returns emptyFlow()
     }
 
     @After
@@ -60,7 +60,7 @@ class InsumoVinculacionViewModelTest {
             obtenerCatalogoInsumosUseCase = obtenerCatalogoInsumosUseCase,
             asignarInsumoACampaniaUseCase = asignarInsumoACampaniaUseCase,
             desvincularInsumoUseCase = desvincularInsumoUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             editarCampaniaInsumoUseCase = editarCampaniaInsumoUseCase
         )
     }

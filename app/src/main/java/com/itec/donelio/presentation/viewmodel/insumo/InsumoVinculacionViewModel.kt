@@ -21,7 +21,7 @@ class InsumoVinculacionViewModel @Inject constructor(
     private val obtenerCatalogoInsumosUseCase: ObtenerCatalogoInsumosUseCase,
     private val asignarInsumoACampaniaUseCase: AsignarInsumoACampaniaUseCase,
     private val desvincularInsumoUseCase: DesvincularInsumoUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val editarCampaniaInsumoUseCase: EditarCampaniaInsumoUseCase
 ) : ViewModel() {
 
@@ -54,7 +54,7 @@ class InsumoVinculacionViewModel @Inject constructor(
         .map { it != null && it != -1 }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -29,6 +29,7 @@ Breve descripción del problema encontrado...
 
 <!-- Añadir aquí las nuevas deudas técnicas detectadas durante la Iteración 6 -->
 
+
 ## [PENDIENTE-DT-466] Registros operativos de campañas archivadas visibles en listados generales
 
 **Severidad:** 🟡 UX / Deuda Técnica
@@ -69,7 +70,8 @@ El `TareaViewModel` gestiona un estado `errorMessage` para emitir mensajes infor
 - [ ] Mostrar el mensaje recolectando `viewModel.errorMessage`.
 - [ ] Limpiar el error llamando a `viewModel.clearError()` luego de mostrarlo.
 
----
+
+
 
 ## 🟢 DEUDA TÉCNICA RESUELTA — Iteración 6
 

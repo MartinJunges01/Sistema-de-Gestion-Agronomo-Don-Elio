@@ -137,6 +137,11 @@ A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-T
 *   **When:** invoke(...)
 *   **Then:** esValido = true, todos los errores = null
 
+**Test UC-C5: ObtenerCampaniasActivasUseCase filtra las archivadas [#466]**
+*   **Given:** Existen 2 campañas activas y 1 archivada en la base de datos.
+*   **When:** Se invoca `ObtenerCampaniasActivasUseCase`.
+*   **Then:** Retorna un Flow que emite únicamente las 2 campañas activas, omitiendo la archivada.
+
 ### Módulo de Insumos (CU9 - CU9.4)
 
 **Test 3: Eliminación Lógica (Soft-Delete) de Insumo del Catálogo**

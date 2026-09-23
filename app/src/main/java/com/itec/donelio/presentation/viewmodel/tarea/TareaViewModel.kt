@@ -22,7 +22,7 @@ class TareaViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val ultimaSeleccionManager: com.itec.donelio.presentation.state.UltimaSeleccionManager,
     private val obtenerTareasFiltradasUseCase: ObtenerTareasFiltradasUseCase,
-    private val obtenerCampaniasUseCase: ObtenerCampaniasUseCase,
+    private val obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase,
     private val confirmarTareaUseCase: ConfirmarTareaUseCase,
     private val editarTareaUseCase: EditarTareaUseCase,
     private val eliminarTareaUseCase: EliminarTareaUseCase,
@@ -63,7 +63,7 @@ class TareaViewModel @Inject constructor(
     private val _filtroFechas = MutableStateFlow<Pair<Long, Long>?>(null)
     val filtroFechas = _filtroFechas.asStateFlow()
 
-    val campanias: StateFlow<List<Campania>> = obtenerCampaniasUseCase()
+    val campanias: StateFlow<List<Campania>> = obtenerCampaniasActivasUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)

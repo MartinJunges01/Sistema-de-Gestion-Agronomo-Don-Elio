@@ -1,7 +1,7 @@
 package com.itec.donelio.presentation.viewmodel.cosecha
 
 import androidx.lifecycle.SavedStateHandle
-import com.itec.donelio.domain.use_case.ObtenerCampaniasUseCase
+import com.itec.donelio.domain.use_case.ObtenerCampaniasActivasUseCase
 import com.itec.donelio.domain.use_case.ObtenerCosechaPorIdUseCase
 import com.itec.donelio.domain.use_case.EditarCosechaUseCase
 import com.itec.donelio.domain.use_case.RegistrarCosechaConVentaUseCase
@@ -33,7 +33,7 @@ class FormularioCosechaViewModelTest {
 
     private lateinit var registrarCosechaUseCase: RegistrarCosechaUseCase
     private lateinit var registrarConVentaUseCase: RegistrarCosechaConVentaUseCase
-    private lateinit var obtenerCampaniasUseCase: ObtenerCampaniasUseCase
+    private lateinit var obtenerCampaniasActivasUseCase: ObtenerCampaniasActivasUseCase
     private lateinit var obtenerCosechaPorIdUseCase: ObtenerCosechaPorIdUseCase
     private lateinit var editarCosechaConVentaUseCase: com.itec.donelio.domain.use_case.EditarCosechaConVentaUseCase
     private lateinit var validarDatosCosechaUseCase: com.itec.donelio.domain.use_case.ValidarDatosCosechaUseCase
@@ -48,14 +48,14 @@ class FormularioCosechaViewModelTest {
         Dispatchers.setMain(testDispatcher)
         registrarCosechaUseCase = mockk()
         registrarConVentaUseCase = mockk()
-        obtenerCampaniasUseCase = mockk()
+        obtenerCampaniasActivasUseCase = mockk()
         obtenerCosechaPorIdUseCase = mockk()
         editarCosechaConVentaUseCase = mockk()
         validarDatosCosechaUseCase = mockk()
         cosechaNoAlmacenadaRepository = mockk()
         ultimaSeleccionManager = mockk()
         
-        every { obtenerCampaniasUseCase() } returns flowOf(emptyList())
+        every { obtenerCampaniasActivasUseCase() } returns flowOf(emptyList())
         coEvery { obtenerCosechaPorIdUseCase(any()) } returns null
         every { validarDatosCosechaUseCase(any(), any(), any(), any()) } returns com.itec.donelio.domain.util.ValidationResult.Success
         every { ultimaSeleccionManager.campaniaIdSeleccionada } returns kotlinx.coroutines.flow.MutableStateFlow(null)
@@ -64,7 +64,7 @@ class FormularioCosechaViewModelTest {
             savedStateHandle = SavedStateHandle(),
             registrarCosechaUseCase = registrarCosechaUseCase,
             registrarConVentaUseCase = registrarConVentaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
             editarCosechaConVentaUseCase = editarCosechaConVentaUseCase,
             validarDatosCosechaUseCase = validarDatosCosechaUseCase,
@@ -199,7 +199,7 @@ class FormularioCosechaViewModelTest {
             savedStateHandle = SavedStateHandle(mapOf("cosechaId" to 7, "campaniaId" to 2)),
             registrarCosechaUseCase = registrarCosechaUseCase,
             registrarConVentaUseCase = registrarConVentaUseCase,
-            obtenerCampaniasUseCase = obtenerCampaniasUseCase,
+            obtenerCampaniasActivasUseCase = obtenerCampaniasActivasUseCase,
             obtenerCosechaPorIdUseCase = obtenerCosechaPorIdUseCase,
             editarCosechaConVentaUseCase = editarCosechaConVentaUseCase,
             validarDatosCosechaUseCase = validarDatosCosechaUseCase,
