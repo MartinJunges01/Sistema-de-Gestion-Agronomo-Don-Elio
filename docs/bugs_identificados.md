@@ -42,6 +42,7 @@ Los módulos operativos deberían aislarse completamente de las campañas archiv
 
 **Criterios de Aceptación**
 - [ ] Refactorizar repositorios o UseCases de listado (ej: `ObtenerTareasFiltradasUseCase`) para que, si el `campaniaId` es nulo, devuelvan únicamente los registros pertenecientes a campañas activas.
+
 ## [PENDIENTE-DT-467] Lógica de cálculo financiero duplicada entre HomeViewModel y ReportesViewModel
 
 **Severidad:** 🔴 Deuda Técnica (DRY / Clean Architecture)
