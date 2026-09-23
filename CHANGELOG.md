@@ -1,3 +1,20 @@
+**[2026-09-22] - refactor(reportes): Eliminar gráfico de evolución histórica (Issue #468)**
+- Se eliminó el Canvas y el selector de cultivos en `ReportesRendimientoScreen`.
+- Se removieron los UseCases `ObtenerCultivosUseCase` y `ObtenerEvolucionCultivoUseCase` del `ReportesViewModel`.
+- Se eliminaron los escenarios correspondientes en `docs/plan_de_pruebas.md`.
+
+**[2026-09-22] - feat(campanias): Ocultar campañas deshabilitadas en selectores (Issue #466)**
+- Se reemplazó `ObtenerCampaniasUseCase` por `ObtenerCampaniasActivasUseCase` en todos los ViewModels operativos.
+- Las campañas archivadas ya no son seleccionables para la creación de tareas, cosechas, observaciones ni insumos.
+- Se documentó la deuda técnica en `docs/bugs_identificados.md` respecto a aislar los listados.
+- Se añadieron tests de comportamiento en `docs/plan_de_pruebas.md`.
+
+**[2026-09-22] - feat(reportes): Panel Financiero alineado al Dashboard (Closes #467)**
+- Se creó `ObtenerResumenFinancieroPorFiltrosUseCase` para orquestar insumos, cosechas y ventas en el módulo de Reportes.
+- Se actualizaron los títulos y tarjetas de `ReportesRendimientoScreen` para mostrar Capital Invertido, Ingresos Brutos y Balance.
+- Se agregó el caso Given-When-Then respectivo en `docs/plan_de_pruebas.md`.
+- Se documentó la deuda técnica respecto a la duplicación de lógica con el Dashboard en `docs/bugs_identificados.md`.
+
 **[2026-09-18] - fix(tareas): always enable fab and use reactive ui events for navigation (Closes #462)**
 - Se modificó TareasScreen.kt para que el botón de nueva tarea siempre esté activo.
 - Se implementó un flujo reactivo (Channel/Flow) en TareaViewModel para disparar la navegación solo si hay una campaña seleccionada, o mostrar un error en la UI de lo contrario (Issue #462).
