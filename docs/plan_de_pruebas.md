@@ -1,4 +1,4 @@
-﻿# Plan Estratégico y Casos de Prueba (Living Documentation)
+# Plan Estratégico y Casos de Prueba (Living Documentation)
 
 Este documento centraliza la estrategia de testing del proyecto "Don Elio" y actúa como fuente de la verdad para escribir las pruebas automatizadas (Test Cases). Es un **Living Document** (Documento Vivo), lo que significa que **deberemos mantenerlo actualizado obligatoriamente** cada vez que modifiquemos el código o agreguemos nuevas funcionalidades, asegurando que las pruebas y la documentación no se desfasen.
 
@@ -136,6 +136,11 @@ A continuaciÃƒÂƒÃ‚Â³n, estructuramos los tests en formato `Given-When-T
 *   **Given:** Todos los campos correctos, isEditMode = false
 *   **When:** invoke(...)
 *   **Then:** esValido = true, todos los errores = null
+
+**Test UC-C5: ObtenerCampaniasActivasUseCase filtra las archivadas [#466]**
+*   **Given:** Existen 2 campañas activas y 1 archivada en la base de datos.
+*   **When:** Se invoca `ObtenerCampaniasActivasUseCase`.
+*   **Then:** Retorna un Flow que emite únicamente las 2 campañas activas, omitiendo la archivada.
 
 ### Módulo de Insumos (CU9 - CU9.4)
 
@@ -440,6 +445,18 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no están incluid
 ---
 
 ## Módulo de Reportes
+
+#### ObtenerResumenFinancieroPorFiltrosUseCase [#467]
+
+**Test UC-RF1: Filtros vacíos suma todos los registros**
+*   **Given:** Insumos, cosechas y ventas en la base de datos sin filtro de campaña ni fechas.
+*   **When:** Se invoca el UseCase.
+*   **Then:** Devuelve el resumen sumando el total global (coincidiendo con Dashboard).
+
+**Test UC-RF2: Filtros aplicados acotan el resultado**
+*   **Given:** Insumos, cosechas y ventas de distintas campañas.
+*   **When:** Se invoca el UseCase con `campaniasIds = [1]`.
+*   **Then:** Devuelve el resumen filtrado solo considerando registros vinculados a la campaña 1.
 
 #### ReportesViewModel Ã¢Â€Â” StateFlows contextuales [#299]
 
@@ -1725,8 +1742,7 @@ Los tests que requieren emulador (`connectedDebugAndroidTest`) no estÃƒÂƒÃ�
 ## Pruebas de Estabilizacion - Iteracion 5 (Issues #434, #438, #440)
 
 ### Reportes UI
-- **UI-R1 (Issue #438):** Given una unica campania finalizada / When se visualiza la evolucion historica / Then el unico punto se centra horizontal y verticalmente en el Canvas.
-- **UI-R2 (Issue #434):** Given un nombre de campania muy largo / When se renderiza el eje X del grafico / Then el texto se trunca a 12 caracteres con '...'.
+- **Eliminado:** Gráfico de evolución histórica eliminado en Issue #468, tests obsoletos removidos.
 
 ### Insumos UI
 - **UI-I1 (Issue #440):** Given el formulario de Nuevo Insumo / When se tipean caracteres Unicode/Emojis complejos / Then se insertan y guardan correctamente en la BD local.
