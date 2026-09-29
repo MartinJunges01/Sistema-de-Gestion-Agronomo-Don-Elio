@@ -10,11 +10,14 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
@@ -129,7 +132,18 @@ fun DonElioTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+        typography = Typography
+    ) {
+        // Bloquea el escalado de fuente del sistema para que los tamaños sp
+        // definidos en el tema no se vean afectados por la preferencia del usuario.
+        val currentDensity = LocalDensity.current
+        CompositionLocalProvider(
+            LocalDensity provides Density(
+                density = currentDensity.density,
+                fontScale = 1.0f
+            )
+        ) {
+            content()
+        }
+    }
 }
