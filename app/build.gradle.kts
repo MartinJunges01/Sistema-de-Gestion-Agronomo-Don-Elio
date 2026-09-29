@@ -35,19 +35,39 @@ android {
         applicationId = "com.itec.donelio"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "GIT_COMMIT", "\"${getGitCommitHash()}\"")
         buildConfigField("String", "GIT_BRANCH", "\"${getGitBranchName()}\"")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("donelio.keystore")
+            storePassword = "donelio2026"
+            keyAlias = "donelio"
+            keyPassword = "donelio2026"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
+    }
+
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val newName = "DonElio-v${variant.versionName}-${variant.name}.apk"
+                output.outputFileName = newName
+            }
     }
 
     compileOptions {
