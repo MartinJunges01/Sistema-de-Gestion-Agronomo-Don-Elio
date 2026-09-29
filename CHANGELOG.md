@@ -1,3 +1,8 @@
+**[2026-09-29] - fix(ui): Bloquear escala de fuente del sistema en Theme**
+- Se detectó que el layout de la app (BottomNav, Dashboard) se rompía al cambiar el tamaño de fuente del dispositivo a niveles grandes.
+- Se agregó un `CompositionLocalProvider` en `DonElioTheme` (`Theme.kt`) para forzar `LocalDensity` con un `fontScale = 1.0f`.
+- Esto garantiza que los valores definidos en `sp` preserven el diseño original independientemente de la preferencia del SO, sin afectar los `dp`.
+
 **[2026-09-22] - refactor(reportes): Eliminar gráfico de evolución histórica (Issue #468)**
 - Se eliminó el Canvas y el selector de cultivos en `ReportesRendimientoScreen`.
 - Se removieron los UseCases `ObtenerCultivosUseCase` y `ObtenerEvolucionCultivoUseCase` del `ReportesViewModel`.
