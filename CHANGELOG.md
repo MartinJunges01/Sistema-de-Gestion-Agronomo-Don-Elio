@@ -1,3 +1,11 @@
+**[2026-10-06] - docs(readme): incorporar estructura de proyecto y descripción de módulos funcionales**
+- Se actualizó el `README.md` principal atendiendo la sugerencia del docente de Prácticas Profesionalizantes II para mejorar la visibilidad y presentación del repositorio en GitHub.
+- Se agregó el árbol detallado de directorios (`core/`, `data/`, `domain/`, `presentation/`, `di/`) con la descripción de la responsabilidad de cada subcarpeta bajo Clean Architecture.
+- Se incorporó la tabla de 10 módulos funcionales (features) con descripción de la responsabilidad de cada sección operativa del sistema: `home`, `campania`, `cultivo`, `tarea`, `insumo`, `cosecha`, `observacion`, `reportes`, `login` y `config`.
+- Se agregó el diagrama simplificado del flujo de datos unidireccional y enlace al documento técnico detallado `docs/ARCHITECTURE.md`.
+- Se actualizaron las instrucciones de ejecución añadiendo comandos Gradle CLI para compilación desde terminal.
+- Se incorporó una tabla de documentación adicional con enlaces directos a los docs técnicos del proyecto.
+
 **[2026-09-29] - fix(ui): Bloquear escala de fuente del sistema en Theme**
 - Se detectó que el layout de la app (BottomNav, Dashboard) se rompía al cambiar el tamaño de fuente del dispositivo a niveles grandes.
 - Se agregó un `CompositionLocalProvider` en `DonElioTheme` (`Theme.kt`) para forzar `LocalDensity` con un `fontScale = 1.0f`.
